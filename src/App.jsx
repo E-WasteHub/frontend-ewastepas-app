@@ -1,9 +1,24 @@
-function App() {
+import PWAInstallPrompt from './components/fragments/PWAInstallPrompt';
+import PWAOfflineReady from './components/fragments/PWAOfflineReady';
+import PWAUpdatePrompt from './components/fragments/PWAUpdatePrompt';
+import useDarkMode from './hooks/useDarkMode';
+import AppRouter from './routes';
+
+const App = () => {
+  const { isDarkMode } = useDarkMode();
+
   return (
-    <div className='flex flex-col min-h-screen'>
-      <h1 className='text-center text-4xl text-red-500 mt-12'>Hello World!</h1>
+    <div
+      className={`min-h-screen transition-colors duration-300 overflow-x-hidden ${
+        isDarkMode ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'
+      }`}
+    >
+      <AppRouter />
+      <PWAUpdatePrompt />
+      <PWAInstallPrompt />
+      <PWAOfflineReady />
     </div>
   );
-}
+};
 
 export default App;
