@@ -1,4 +1,4 @@
-import useDarkMode from '../../../hooks/useDarkMode';
+import useDarkMode from '../../hooks/useDarkMode';
 
 const Label = ({ htmlFor, children, required, error, className = '' }) => {
   const { isDarkMode } = useDarkMode();

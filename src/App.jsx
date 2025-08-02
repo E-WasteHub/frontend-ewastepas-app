@@ -1,6 +1,6 @@
-import PWAInstallPrompt from './components/fragments/PWAInstallPrompt';
-import PWAOfflineReady from './components/fragments/PWAOfflineReady';
-import PWAUpdatePrompt from './components/fragments/PWAUpdatePrompt';
+import PWAInstallPrompt from './components/modals/PWAInstallPrompt';
+import PWAOfflineReady from './components/modals/PWAOfflineReady';
+import PWAUpdatePrompt from './components/modals/PWAUpdatePrompt';
 import useDarkMode from './hooks/useDarkMode';
 import AppRouter from './routes';
 

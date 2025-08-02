@@ -1,33 +1,26 @@
 import { useContext } from 'react';
-import { DarkModeContext } from '../context/DarkModeContext';
+import { DarkMode } from '../context/DarkMode';
 
 const useDarkMode = () => {
-  const context = useContext(DarkModeContext);
+  const context = useContext(DarkMode);
 
   if (context === undefined) {
     throw new Error('useDarkMode must be used within a DarkModeProvider');
   }
 
   // Helper functions
-  const setLightMode = () => context.setTheme('light');
-  const setDarkMode = () => context.setTheme('dark');
-  const setSystemMode = () => context.setTheme('system');
+  const setLightMode = () => context.setIsDarkMode(false);
+  const setDarkMode = () => context.setIsDarkMode(true);
 
   const toggleTheme = () => {
-    if (context.theme === 'light') {
-      setDarkMode();
-    } else {
-      setLightMode();
-    }
+    context.setIsDarkMode(!context.isDarkMode);
   };
 
   return {
-    theme: context.theme,
     isDarkMode: context.isDarkMode,
-    setTheme: context.setTheme,
+    setIsDarkMode: context.setIsDarkMode,
     setLightMode,
     setDarkMode,
-    setSystemMode,
     toggleTheme,
   };
 };

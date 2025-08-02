@@ -1,8 +1,8 @@
 import { Sparkles } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { manfaatData } from '../../../data/manfaatData';
-import useDarkMode from '../../../hooks/useDarkMode';
+import { manfaatData } from '../../data/manfaatData';
+import useDarkMode from '../../hooks/useDarkMode';
 
 const ManfaatSection = () => {
   const { isDarkMode } = useDarkMode();

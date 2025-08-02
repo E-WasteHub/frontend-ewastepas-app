@@ -1,4 +1,7 @@
-import { BottomNavbar, Footer, Header, ScrollToTop } from '../components';
+import BottomNavbar from '../components/layout/BottomNavbar';
+import Footer from '../components/layout/Footer';
+import Header from '../components/layout/Navbar';
+import ScrollToTop from '../components/layout/ScrollToTop';
 
 const MainLayout = ({ children }) => {
   return (

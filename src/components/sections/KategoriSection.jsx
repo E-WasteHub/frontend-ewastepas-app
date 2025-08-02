@@ -1,8 +1,8 @@
 import { Layers } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { kategoriData } from '../../../data/kategoriData';
-import useDarkMode from '../../../hooks/useDarkMode';
+import { kategoriData } from '../../data/kategoriData';
+import useDarkMode from '../../hooks/useDarkMode';
 
 const KategoriSection = () => {
   const { isDarkMode } = useDarkMode();

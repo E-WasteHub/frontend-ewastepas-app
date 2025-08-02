@@ -1,29 +1,30 @@
 import { Link } from 'react-router-dom';
-import useDarkMode from '../../../hooks/useDarkMode';
-import useLogin from '../../../hooks/useLogin';
-import {
-  Alert,
-  Button,
-  CheckBox,
-  GoogleIcon,
-  PasswordToggle,
-} from '../../elements';
+
+import useDarkMode from '../../hooks/useDarkMode';
+import useRegister from '../../hooks/useRegister';
+import Alert from '../common/Alert';
+import Button from '../common/Button';
+import CheckBox from '../common/CheckBox';
+import PasswordToggle from '../common/PasswordToggle';
+import GoogleIcon from '../icons/GoogleIcon';
 import FormField from './FormField';
 
 // Use FormField as InputForm for compatibility
 const InputForm = FormField;
 
-const FormLogin = () => {
+const FormRegister = () => {
   const { isDarkMode } = useDarkMode();
   const {
     formData,
     isLoading,
     error,
     showPassword,
+    showKonfirmasiPassword,
     updateField,
     togglePassword,
+    toggleKonfirmasiPassword,
     handleSubmit,
-  } = useLogin();
+  } = useRegister();
 
   return (
     <div
@@ -71,35 +72,46 @@ const FormLogin = () => {
               isDarkMode ? 'text-white' : 'text-gray-900'
             }`}
           >
-            Selamat Datang Kembali
+            Bergabung dengan Kami
           </h1>
           <p
             className={`text-sm ${
               isDarkMode ? 'text-slate-400' : 'text-gray-600'
             }`}
           >
-            Masuk ke akun EwasteHub Anda
+            Buat akun EwasteHub dan mulai berkontribusi
           </p>
         </div>
       </div>
 
-      {/* Error Alert */}
-      {error && (
-        <div className='mb-6'>
-          <Alert type='error' message={error} />
-        </div>
-      )}
-
-      {/* Form */}
       <form onSubmit={handleSubmit} className='space-y-5'>
+        {error && (
+          <div className='mb-6'>
+            <Alert type='error' message={error} />
+          </div>
+        )}
+
+        <InputForm
+          label='Nama Lengkap'
+          name='namaLengkap'
+          type='text'
+          placeholder='Masukkan nama lengkap Anda'
+          value={formData.namaLengkap}
+          onChange={(e) => updateField('namaLengkap', e.target.value)}
+          disabled={isLoading}
+          autoComplete='name'
+          required
+        />
+
         <InputForm
           label='Email'
           name='email'
           type='email'
-          placeholder='nama@email.com'
+          placeholder='contoh@email.com'
           value={formData.email}
           onChange={(e) => updateField('email', e.target.value)}
           disabled={isLoading}
+          autoComplete='email'
           required
         />
 
@@ -112,6 +124,7 @@ const FormLogin = () => {
             value={formData.password}
             onChange={(e) => updateField('password', e.target.value)}
             disabled={isLoading}
+            autoComplete='new-password'
             required
           />
           <div className='absolute right-3 top-9'>
@@ -123,30 +136,71 @@ const FormLogin = () => {
           </div>
         </div>
 
-        <div className='flex items-center justify-between pt-2'>
-          <CheckBox
-            id='remember-me'
-            name='rememberMe'
-            label='Ingat saya'
-            checked={formData.rememberMe}
-            onChange={(e) => updateField('rememberMe', e.target.checked)}
+        <div className='relative'>
+          <InputForm
+            label='Konfirmasi Password'
+            name='konfirmasiPassword'
+            type={showKonfirmasiPassword ? 'text' : 'password'}
+            placeholder='Ulangi password'
+            value={formData.konfirmasiPassword}
+            onChange={(e) => updateField('konfirmasiPassword', e.target.value)}
             disabled={isLoading}
+            autoComplete='new-password'
+            required
           />
-          <Link
-            to='/forgot-password'
-            className={`text-sm font-medium transition-colors ${
-              isDarkMode
-                ? 'text-green-400 hover:text-green-300'
-                : 'text-green-600 hover:text-green-500'
-            }`}
-          >
-            Lupa password?
-          </Link>
+          <div className='absolute right-3 top-9'>
+            <PasswordToggle
+              showPassword={showKonfirmasiPassword}
+              onToggle={toggleKonfirmasiPassword}
+              disabled={isLoading}
+            />
+          </div>
+        </div>
+
+        {/* Terms Agreement */}
+        <div className='pt-2'>
+          <CheckBox
+            id='agree-terms'
+            name='agreeToTerms'
+            checked={formData.setujuSyarat}
+            onChange={(e) => updateField('setujuSyarat', e.target.checked)}
+            disabled={isLoading}
+            label={
+              <span
+                className={`text-sm ${
+                  isDarkMode ? 'text-slate-400' : 'text-gray-600'
+                }`}
+              >
+                Saya menyetujui{' '}
+                <Link
+                  to='/terms'
+                  className={`font-medium transition-colors ${
+                    isDarkMode
+                      ? 'text-green-400 hover:text-green-300'
+                      : 'text-green-600 hover:text-green-500'
+                  }`}
+                >
+                  Syarat dan Ketentuan
+                </Link>{' '}
+                dan{' '}
+                <Link
+                  to='/privacy'
+                  className={`font-medium transition-colors ${
+                    isDarkMode
+                      ? 'text-green-400 hover:text-green-300'
+                      : 'text-green-600 hover:text-green-500'
+                  }`}
+                >
+                  Kebijakan Privasi
+                </Link>
+              </span>
+            }
+          />
         </div>
 
         <div className='pt-2'>
           <Button type='submit' loading={isLoading}>
-            Masuk
+            Daftar Sekarang
           </Button>
         </div>
       </form>
@@ -181,26 +235,26 @@ const FormLogin = () => {
         className='flex items-center justify-center gap-3'
       >
         <GoogleIcon className='w-5 h-5' />
-        <span>Masuk dengan Google</span>
+        <span>Daftar dengan Google</span>
       </Button>
 
       {/* Footer */}
-      <div className='text-center mt-6 '>
+      <div className='text-center mt-6'>
         <p
           className={`text-sm ${
             isDarkMode ? 'text-slate-400' : 'text-gray-600'
           }`}
         >
-          Belum punya akun?{' '}
+          Sudah punya akun?{' '}
           <Link
-            to='/register'
+            to='/login'
             className={`font-medium transition-colors ${
               isDarkMode
                 ? 'text-green-400 hover:text-green-300'
                 : 'text-green-600 hover:text-green-500'
             }`}
           >
-            Daftar sekarang
+            Masuk disini
           </Link>
         </p>
       </div>
@@ -208,4 +262,4 @@ const FormLogin = () => {
   );
 };
 
-export default FormLogin;
+export default FormRegister;

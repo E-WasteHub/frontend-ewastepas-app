@@ -1,10 +1,10 @@
 import { BookText, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
-import { Badge } from '../components';
+import Badge from '../components/common/Badge';
 import { panduanData } from '../data/panduanData';
 import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-import { MainLayout } from '../layouts';
+import MainLayout from '../layouts/MainLayout';
 
 const PanduanAplikasiPage = () => {
   useDocumentTitle('Panduan | E-wasteHub');

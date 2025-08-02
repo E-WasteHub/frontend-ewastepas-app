@@ -1,6 +1,5 @@
 import { Eye, EyeOff } from 'lucide-react';
-import React from 'react';
-import useDarkMode from '../../../hooks/useDarkMode';
+import useDarkMode from '../../hooks/useDarkMode';
 
 const PasswordToggle = ({
   showPassword,

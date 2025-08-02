@@ -1,10 +1,10 @@
 import { Award } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
-import { Badge } from '../components';
+import Badge from '../components/common/Badge';
 import { manfaatData } from '../data/manfaatData';
 import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-import { MainLayout } from '../layouts';
+import MainLayout from '../layouts/MainLayout';
 
 const ManfaatPage = () => {
   useDocumentTitle('Manfaat | E-wasteHub');

@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import useDarkMode from '../../../hooks/useDarkMode';
+import useDarkMode from '../../hooks/useDarkMode';
 
 const Input = forwardRef(
   (
