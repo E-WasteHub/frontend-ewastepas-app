@@ -1,10 +1,11 @@
 import { Leaf } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import { Link } from 'react-router-dom';
-import ewasteDark from '../../../assets/img/ewasteDark.png';
-import ewasteLight from '../../../assets/img/ewasteLight.png';
-import useDarkMode from '../../../hooks/useDarkMode';
-import { Badge, Button } from '../../elements';
+import ewasteDark from '../../assets/img/ewasteDark.png';
+import ewasteLight from '../../assets/img/ewasteLight.png';
+import useDarkMode from '../../hooks/useDarkMode';
+import Badge from '../common/Badge';
+import Button from '../common/Button';
 
 const HeroSection = () => {
   const { isDarkMode } = useDarkMode();

@@ -1,8 +1,8 @@
 import { motion as Motion } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { faqData } from '../../../data/faqData';
-import useDarkMode from '../../../hooks/useDarkMode';
-import Accordion from '../../elements/Accordion';
+import { faqData } from '../../data/faqData';
+import useDarkMode from '../../hooks/useDarkMode';
+import Accordion from '../common/Accordion';
 
 const FAQSection = ({ id = '' }) => {
   const { isDarkMode } = useDarkMode();

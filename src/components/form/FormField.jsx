@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
-import { Input, Label } from '../../elements';
+import Input from '../common/Input';
+import Label from '../common/Label';
 
 const FormField = forwardRef((props, ref) => {
   const { label, name, error, required, ...rest } = props;

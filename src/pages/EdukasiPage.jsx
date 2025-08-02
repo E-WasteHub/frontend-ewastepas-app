@@ -2,11 +2,11 @@ import { BookOpen, ChevronLeft, ChevronRight, Zap } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Badge } from '../components';
+import Badge from '../components/common/Badge';
 import { educationTopics } from '../data/edukasiData';
 import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-import { MainLayout } from '../layouts';
+import MainLayout from '../layouts/MainLayout';
 
 const EdukasiPage = () => {
   useDocumentTitle('Edukasi | E-wasteHub');

@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+
 @theme {
   --font-sans: 'Mulish', sans-serif;
   --font-family: 'Mulish', sans-serif;

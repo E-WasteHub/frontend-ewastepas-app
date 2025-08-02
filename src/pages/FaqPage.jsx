@@ -1,11 +1,12 @@
 import { ChevronDown, HelpCircle, Mail, Phone } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import { useState } from 'react';
-import { Badge, Button } from '../components';
+import Badge from '../components/common/Badge';
+import Button from '../components/common/Button';
 import { faqData } from '../data/faqData';
 import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-import { MainLayout } from '../layouts';
+import MainLayout from '../layouts/MainLayout';
 
 const FaqPage = () => {
   useDocumentTitle('FAQ | E-wasteHub');

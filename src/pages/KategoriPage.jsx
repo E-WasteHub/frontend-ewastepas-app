@@ -1,10 +1,10 @@
 import { Layers } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
-import { Badge } from '../components';
+import Badge from '../components/common/Badge';
 import { kategoriData } from '../data/kategoriData';
 import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-import { MainLayout } from '../layouts';
+import MainLayout from '../layouts/MainLayout';
 
 const KategoriPage = () => {
   useDocumentTitle('Kategori | E-wasteHub');
