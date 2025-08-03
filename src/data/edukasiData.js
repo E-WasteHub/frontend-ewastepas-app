@@ -1,4 +1,3 @@
-// DIUBAH: Menambahkan lebih banyak ikon untuk topik dasar yang baru
 import {
   Biohazard,
   BookCheck,
@@ -7,24 +6,23 @@ import {
   Globe,
   PieChart,
   Plug,
-  Scale, // -> Untuk 'Bahaya'
+  Scale,
   ShoppingCart,
   Wrench,
 } from 'lucide-react';
 
 export const educationTopics = [
-  // --- TOPIK DASAR (BARU DITAMBAHKAN) ---
   {
     id: 'apa-itu-sampah-elektronik',
-    title: 'Mengenal Sampah Elektronik (E-Waste)',
+    title: 'Mengenal Sampah Elektronik',
     description:
-      'Definisi dasar sampah elektronik, dari ponsel lama dan laptop rusak hingga kabel dan baterai. Kenali barang di sekitar Anda yang termasuk e-waste.',
+      'Definisi dasar sampah elektronik, dari ponsel lama dan laptop rusak hingga kabel dan baterai. Kenali barang di sekitar Anda yang termasuk sampah elektronik.',
     Icon: Plug,
     category: 'Pengenalan Dasar',
   },
   {
     id: 'mengapa-ewaste-berbahaya',
-    title: 'Mengapa E-Waste Sangat Berbahaya?',
+    title: 'Mengapa sampah elektronik Sangat Berbahaya?',
     description:
       'Membahas kandungan zat beracun seperti timbal, merkuri, dan kadmium di dalamnya, serta dampaknya yang merusak kesehatan manusia dan lingkungan.',
     Icon: Biohazard,
@@ -32,9 +30,9 @@ export const educationTopics = [
   },
   {
     id: 'sumber-utama-ewaste',
-    title: 'Dari Mana Semua E-Waste Ini Berasal?',
+    title: 'Dari Mana Semua Sampah Elektronik Ini Berasal?',
     description:
-      'Menelusuri sumber utama e-waste, mulai dari siklus hidup produk yang pendek hingga kurangnya pilihan perbaikan dan budaya konsumerisme.',
+      'Menelusuri sumber utama sampah elektronik, mulai dari siklus hidup produk yang pendek hingga kurangnya pilihan perbaikan dan budaya konsumerisme.',
     Icon: ShoppingCart,
     category: 'Pengenalan Dasar',
   },
@@ -42,7 +40,7 @@ export const educationTopics = [
   // --- TOPIK LANJUTAN (DISESUAIKAN & DIPERTAHANKAN) ---
   {
     id: 'fakta-krisis-global',
-    title: 'Fakta Mengejutkan: Skala Krisis E-Waste Global',
+    title: 'Fakta Mengejutkan: Skala Krisis sampah elektronik Global',
     description:
       'Setelah memahami dasarnya, lihat data dari laporan global: 62 juta ton per tahun dan pertumbuhan yang jauh lebih cepat dari tingkat daur ulang.',
     Icon: Globe,
@@ -58,7 +56,7 @@ export const educationTopics = [
   },
   {
     id: 'harta-karun-tersembunyi',
-    title: 'Harta Karun Tersembunyi: E-Waste sebagai Tambang Kota',
+    title: 'Harta Karun Tersembunyi: sampah elektronik sebagai Tambang Kota',
     description:
       'Mengungkap nilai $91 miliar di dalam sampah elektronik. Pelajari tentang emas, tembaga, dan material berharga lainnya yang bisa dipulihkan.',
     Icon: Gem,
@@ -68,7 +66,7 @@ export const educationTopics = [
     id: 'panduan-daur-ulang-aman',
     title: 'Panduan Daur Ulang yang Benar & Aman',
     description:
-      'Langkah praktis memilah e-waste dan pentingnya menyerahkannya ke fasilitas daur ulang formal untuk menghindari bahaya praktik ilegal.',
+      'Langkah praktis memilah sampah elektronik dan pentingnya menyerahkannya ke fasilitas daur ulang formal untuk menghindari bahaya praktik ilegal.',
     Icon: BookCheck,
     category: 'Panduan Praktis',
   },
@@ -84,15 +82,15 @@ export const educationTopics = [
     id: 'kesenjangan-daur-ulang',
     title: 'Kesenjangan Daur Ulang: Fakta di Balik Angka 22.3%',
     description:
-      'Mengapa lebih dari 77% e-waste dunia tidak terkelola dengan baik? Membedah tantangan global dan peran kebijakan.',
+      'Mengapa lebih dari 77% sampah elektronik dunia tidak terkelola dengan baik? Membedah tantangan global dan peran kebijakan.',
     Icon: PieChart,
     category: 'Fakta & Data',
   },
   {
     id: 'regulasi-di-indonesia',
-    title: 'Aturan Main di Indonesia: Regulasi E-Waste',
+    title: 'Aturan Main di Indonesia: Regulasi sampah elektronik',
     description:
-      'Mengenal peraturan pemerintah (seperti PP No. 22 Tahun 2021) yang mengatur pengelolaan limbah B3, termasuk e-waste, di tingkat nasional.',
+      'Mengenal peraturan pemerintah (seperti PP No. 22 Tahun 2021) yang mengatur pengelolaan limbah B3, termasuk sampah elektronik, di tingkat nasional.',
     Icon: Scale,
     category: 'Regulasi Lokal',
   },

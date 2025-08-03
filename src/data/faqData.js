@@ -1,24 +1,25 @@
 export const faqData = [
   {
-    question: 'Apa itu E-wasteHub?',
+    question: 'Apa itu EWasteHub?',
     answer:
-      'Menjawab tantangan krisis e-waste global, E-wasteHub adalah platform digital yang memudahkan Anda untuk mengelola sampah elektronik secara bertanggung jawab. Kami menghubungkan Anda dengan mitra daur ulang formal dan tersertifikasi untuk memastikan e-waste diolah dengan aman bagi lingkungan dan manusia.',
+      'Menjawab tantangan krisis sampah elektronik global, EWasteHub adalah platform digital yang memudahkan Anda untuk mengelola sampah elektronik secara bertanggung jawab. Kami menghubungkan Anda dengan mitra daur ulang formal dan tersertifikasi untuk memastikan sampah elektronik diolah dengan aman bagi lingkungan dan manusia.',
   },
   {
     question:
-      'Mengapa saya tidak boleh membuang e-waste ke tempat sampah biasa?',
+      'Mengapa saya tidak boleh membuang sampah elektronik ke tempat sampah biasa?',
     answer:
-      'E-waste tergolong sebagai Limbah Bahan Berbahaya dan Beracun (B3). Di dalamnya terkandung zat seperti merkuri, timbal, dan kadmium yang dapat meresap ke tanah dan air, mencemari lingkungan, dan membahayakan kesehatan jika dibuang sembarangan di TPA (Tempat Pembuangan Akhir).',
+      'sampah elektronik tergolong sebagai Limbah Bahan Berbahaya dan Beracun (B3). Di dalamnya terkandung zat seperti merkuri, timbal, dan kadmium yang dapat meresap ke tanah dan air, mencemari lingkungan, dan membahayakan kesehatan jika dibuang sembarangan di TPA (Tempat Pembuangan Akhir).',
   },
   {
-    question: 'Jenis e-waste apa saja yang bisa diserahkan?',
+    question: 'Jenis sampah elektronik apa saja yang bisa diserahkan?',
     answer:
-      'Kami menerima hampir semua jenis e-waste, mengacu pada 6 kategori internasional. Ini mencakup: 1. Peralatan IT Kecil (HP, laptop), 2. Layar & Monitor (TV, monitor), 3. Lampu (LED, neon), 4. Peralatan Kecil (blender, mainan elektronik), 5. Peralatan Besar (mesin cuci), dan 6. Peralatan Penukar Suhu (kulkas, AC).',
+      'Kami menerima hampir semua jenis sampah elektronik, mengacu pada 6 kategori internasional. Ini mencakup: 1. Peralatan IT Kecil (HP, laptop), 2. Layar & Monitor (TV, monitor), 3. Lampu (LED, neon), 4. Peralatan Kecil (blender, mainan elektronik), 5. Peralatan Besar (mesin cuci), dan 6. Peralatan Penukar Suhu (kulkas, AC).',
   },
   {
-    question: 'Bagaimana proses daur ulang e-waste dilakukan setelah dijemput?',
+    question:
+      'Bagaimana proses daur ulang sampah elektronik dilakukan setelah dijemput?',
     answer:
-      'Proses kami mengikuti prinsip ekonomi sirkular. E-waste akan dipilah di fasilitas mitra kami. Komponen yang bisa digunakan kembali (reuse) atau diperbaiki (refurbish) akan dipisahkan. Sisanya akan melalui proses ekstraksi material berharga (urban mining) seperti emas dan tembaga, yang akan menjadi bahan baku untuk produk baru.',
+      'Proses kami mengikuti prinsip ekonomi sirkular. sampah elektronik akan dipilah di fasilitas mitra kami. Komponen yang bisa digunakan kembali (reuse) atau diperbaiki (refurbish) akan dipisahkan. Sisanya akan melalui proses ekstraksi material berharga (urban mining) seperti emas dan tembaga, yang akan menjadi bahan baku untuk produk baru.',
   },
   {
     question: 'Apa bedanya dengan menjual ke tukang loak/pemulung?',
@@ -38,11 +39,11 @@ export const faqData = [
   {
     question: 'Bagaimana cara kerja sistem poin reward?',
     answer:
-      'Setiap kali Anda menyerahkan e-waste, Anda akan mendapatkan poin berdasarkan jenis dan berat barang sesuai standar kami. Poin ini dapat Anda kumpulkan dan tukarkan dengan berbagai benefit menarik seperti voucher belanja, produk ramah lingkungan, atau donasi untuk program lingkungan.',
+      'Setiap kali Anda menyerahkan sampah elektronik, Anda akan mendapatkan poin berdasarkan jenis dan berat barang sesuai standar kami. Poin ini dapat Anda kumpulkan dan tukarkan dengan berbagai benefit menarik seperti voucher belanja, produk ramah lingkungan, atau donasi untuk program lingkungan.',
   },
   {
-    question: 'Bagaimana cara menjadwalkan pengambilan e-waste?',
+    question: 'Bagaimana cara menjadwalkan pengambilan sampah elektronik?',
     answer:
-      'Sangat mudah. Anda bisa menjadwalkan pengambilan langsung dari aplikasi kami. Cukup pilih jenis e-waste, tentukan alamat, dan pilih jadwal penjemputan yang sesuai. Mitra kurir kami akan menghubungi Anda untuk konfirmasi sebelum datang ke lokasi.',
+      'Sangat mudah. Anda bisa menjadwalkan pengambilan langsung dari aplikasi kami. Cukup pilih jenis sampah elektronik, tentukan alamat, dan pilih jadwal penjemputan yang sesuai. Mitra kurir kami akan menghubungi Anda untuk konfirmasi sebelum datang ke lokasi.',
   },
 ];

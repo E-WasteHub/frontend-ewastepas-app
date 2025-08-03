@@ -56,7 +56,7 @@ const FormRegister = () => {
               EwasteHub
             </h2>
             <div
-              className={`w-16 h-0.5 rounded-full ${
+              className={`w-32 h-0.5 mx-auto rounded-full ${
                 isDarkMode
                   ? 'bg-gradient-to-r from-green-400 to-emerald-400'
                   : 'bg-gradient-to-r from-green-500 to-emerald-500'

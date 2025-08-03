@@ -1,10 +1,9 @@
-// DIUBAH: Menggunakan ikon yang relevan dengan kategori ITU
 import {
   Laptop,
   Lightbulb,
   PlugZap,
-  Refrigerator, // Mengganti beberapa ikon lama
-  Tv, // Lebih generik untuk lampu
+  Refrigerator,
+  Tv,
   WashingMachine,
 } from 'lucide-react';
 
@@ -12,7 +11,7 @@ export const kategoriData = [
   // Kategori ini baru ditambahkan sesuai standar ITU
   {
     id: 1,
-    name: 'Peralatan Penukar Suhu', // Kategori 1 ITU
+    name: 'Peralatan Penukar Suhu',
     Icon: Refrigerator,
     description:
       'Peralatan yang berfungsi untuk pendinginan atau pemanasan, seperti kulkas, AC, dan freezer.',
@@ -22,7 +21,7 @@ export const kategoriData = [
   },
   {
     id: 2,
-    name: 'Layar & Monitor', // Kategori 2 ITU
+    name: 'Layar & Monitor',
     Icon: Tv,
     description:
       'Semua jenis layar termasuk TV, monitor komputer, dan laptop. Luas permukaan lebih dari 100 cm².',
@@ -32,7 +31,7 @@ export const kategoriData = [
   },
   {
     id: 3,
-    name: 'Lampu', // Kategori 3 ITU
+    name: 'Lampu',
     Icon: Lightbulb,
     description:
       'Berbagai jenis lampu seperti lampu neon (LFL), LED, bohlam, dan lampu lainnya.',
@@ -40,10 +39,9 @@ export const kategoriData = [
     points: 75,
     category: 'Kecil',
   },
-  // Kategori ini baru ditambahkan sesuai standar ITU
   {
     id: 4,
-    name: 'Peralatan Besar', // Kategori 4 ITU
+    name: 'Peralatan Besar',
     Icon: WashingMachine,
     description:
       'Peralatan dengan dimensi eksternal lebih dari 50 cm, seperti mesin cuci, oven, atau mesin fotokopi besar.',
@@ -58,7 +56,7 @@ export const kategoriData = [
   },
   {
     id: 5,
-    name: 'Peralatan Kecil', // Kategori 5 ITU
+    name: 'Peralatan Kecil',
     Icon: PlugZap,
     description:
       'Peralatan dengan dimensi eksternal kurang dari 50 cm, seperti vacuum cleaner, blender, mainan elektronik, dan alat-alat kecil lainnya.',
@@ -75,7 +73,7 @@ export const kategoriData = [
   },
   {
     id: 6,
-    name: 'Peralatan IT & Telekomunikasi Kecil', // Kategori 6 ITU
+    name: 'Peralatan IT & Telekomunikasi Kecil',
     Icon: Laptop,
     description:
       'Peralatan IT dengan dimensi eksternal kurang dari 50 cm, seperti ponsel, laptop, printer, router, dan GPS.',

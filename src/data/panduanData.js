@@ -1,10 +1,4 @@
-// DIUBAH: Menggunakan ikon yang lebih sesuai untuk alur PWA yang simpel
-import {
-  CalendarPlus, // Untuk penjadwalan
-  Gift, // Menggambarkan proses serah terima & reward
-  Trophy,
-  UserRoundPlus, // Untuk pendaftaran
-} from 'lucide-react';
+import { CalendarPlus, Gift, Trophy, UserRoundPlus } from 'lucide-react';
 
 export const panduanData = [
   {
