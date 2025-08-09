@@ -4,7 +4,7 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="src/assets/img/ewasteDark.png">
     <source media="(prefers-color-scheme: light)" srcset="src/assets/img/ewasteLight.png">
-    <img alt="EwasteHub Logo" src="src/assets/img/ewasteLight.png">
+    <img alt="EwasteHub Logo" width='150px' height='150px' src="src/assets/img/ewasteLight.png">
   </picture>
 </p>
 
