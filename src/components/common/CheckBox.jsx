@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react';
 import useDarkMode from '../../hooks/useDarkMode';
 
 const CheckBox = ({
@@ -12,8 +13,14 @@ const CheckBox = ({
 }) => {
   const { isDarkMode } = useDarkMode();
 
+  const handleClick = () => {
+    if (!disabled && onChange) {
+      onChange({ target: { checked: !checked, name } });
+    }
+  };
+
   return (
-    <div className={`flex items-center ${className}`}>
+    <div className={`flex items-start gap-3 ${className}`}>
       <input
         type='checkbox'
         id={id}
@@ -21,16 +28,39 @@ const CheckBox = ({
         checked={checked}
         onChange={onChange}
         disabled={disabled}
-        className={`h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500 ${
-          isDarkMode ? 'bg-slate-700 border-slate-600' : ''
-        }`}
+        className='sr-only'
         {...props}
       />
+
+      <button
+        type='button'
+        onClick={handleClick}
+        disabled={disabled}
+        className={`
+          flex items-center justify-center w-5 h-5 rounded border-2 transition-all ml-1
+          ${
+            disabled
+              ? 'opacity-50 cursor-not-allowed'
+              : 'cursor-pointer hover:scale-105'
+          }
+          ${
+            checked
+              ? 'bg-green-600 border-green-600 text-white'
+              : isDarkMode
+              ? 'bg-slate-800 border-slate-600 hover:border-slate-500'
+              : 'bg-white border-gray-300 hover:border-gray-400'
+          }
+        `}
+      >
+        {checked && <Check className='w-3 h-3' strokeWidth={3} />}
+      </button>
+
       {label && (
         <label
           htmlFor={id}
-          className={`ml-2 block text-sm ${
-            isDarkMode ? 'text-slate-300' : 'text-gray-900'
+          onClick={handleClick}
+          className={`text-sm cursor-pointer ${
+            isDarkMode ? 'text-slate-300' : 'text-gray-700'
           }`}
         >
           {label}

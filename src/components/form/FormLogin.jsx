@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
 import useDarkMode from '../../hooks/useDarkMode';
-import useLogin from '../../hooks/useLogin';
 import Alert from '../common/Alert';
 import Button from '../common/Button';
 import CheckBox from '../common/CheckBox';
+import GoogleIcon from '../common/GoogleIcon';
 import PasswordToggle from '../common/PasswordToggle';
-import GoogleIcon from '../icons/GoogleIcon';
 import FormField from './FormField';
 
 // Use FormField as InputForm for compatibility
@@ -14,14 +14,14 @@ const InputForm = FormField;
 const FormLogin = () => {
   const { isDarkMode } = useDarkMode();
   const {
-    formData,
+    loginData: formData,
     isLoading,
     error,
     showPassword,
-    updateField,
+    updateLoginField: updateField,
     togglePassword,
-    handleSubmit,
-  } = useLogin();
+    handleLogin: handleSubmit,
+  } = useAuth();
 
   return (
     <div
@@ -143,7 +143,7 @@ const FormLogin = () => {
         </div>
 
         <div className='pt-2'>
-          <Button type='submit' loading={isLoading}>
+          <Button type='submit' className='w-full h-12' loading={isLoading}>
             Masuk
           </Button>
         </div>
@@ -176,7 +176,7 @@ const FormLogin = () => {
         type='button'
         variant='secondary'
         disabled={isLoading}
-        className='flex items-center justify-center gap-3'
+        className='flex items-center justify-center gap-3 w-full h-12'
       >
         <GoogleIcon className='w-5 h-5' />
         <span>Masuk dengan Google</span>

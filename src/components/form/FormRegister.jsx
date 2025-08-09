@@ -1,12 +1,13 @@
+import { Users, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+import useAuth from '../../hooks/useAuth';
 import useDarkMode from '../../hooks/useDarkMode';
-import useRegister from '../../hooks/useRegister';
 import Alert from '../common/Alert';
 import Button from '../common/Button';
 import CheckBox from '../common/CheckBox';
+import GoogleIcon from '../common/GoogleIcon';
 import PasswordToggle from '../common/PasswordToggle';
-import GoogleIcon from '../icons/GoogleIcon';
 import FormField from './FormField';
 
 // Use FormField as InputForm for compatibility
@@ -15,20 +16,20 @@ const InputForm = FormField;
 const FormRegister = () => {
   const { isDarkMode } = useDarkMode();
   const {
-    formData,
+    registerData: formData,
     isLoading,
     error,
     showPassword,
     showKonfirmasiPassword,
-    updateField,
+    updateRegisterField: updateField,
     togglePassword,
     toggleKonfirmasiPassword,
-    handleSubmit,
-  } = useRegister();
+    handleRegister: handleSubmit,
+  } = useAuth();
 
   return (
     <div
-      className={`p-8 rounded-2xl border shadow-xl backdrop-blur-sm ${
+      className={`p-8 min-w-max rounded-2xl border shadow-xl backdrop-blur-sm ${
         isDarkMode
           ? 'bg-slate-800/95 border-slate-700/50 shadow-2xl shadow-slate-900/50'
           : 'bg-white/95 border-gray-200/50 shadow-2xl shadow-gray-900/10'
@@ -102,6 +103,126 @@ const FormRegister = () => {
           autoComplete='name'
           required
         />
+
+        {/* Role Selection */}
+        <div className='space-y-3'>
+          <label
+            className={`block text-sm font-medium ${
+              isDarkMode ? 'text-white' : 'text-gray-700'
+            }`}
+          >
+            Pilih Role
+          </label>
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+            {/* Masyarakat Role Button */}
+            <button
+              type='button'
+              onClick={() => updateField('role', 'masyarakat')}
+              disabled={isLoading}
+              className={`p-4 border-2 rounded-xl transition-all duration-200 ${
+                formData.role === 'masyarakat'
+                  ? isDarkMode
+                    ? 'border-green-400 bg-green-900/20 text-green-300'
+                    : 'border-green-500 bg-green-50 text-green-700'
+                  : isDarkMode
+                  ? 'border-slate-600 hover:border-slate-500 text-slate-300'
+                  : 'border-gray-300 hover:border-gray-400 text-gray-700'
+              } ${
+                isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md'
+              }`}
+            >
+              <div className='flex items-center space-x-3'>
+                <div
+                  className={`flex items-center justify-center w-10 h-10 rounded-full ${
+                    formData.role === 'masyarakat'
+                      ? isDarkMode
+                        ? 'bg-green-800/50'
+                        : 'bg-green-100'
+                      : isDarkMode
+                      ? 'bg-slate-700'
+                      : 'bg-gray-100'
+                  }`}
+                >
+                  <Users
+                    className={`w-5 h-5 ${
+                      formData.role === 'masyarakat'
+                        ? isDarkMode
+                          ? 'text-green-300'
+                          : 'text-green-600'
+                        : isDarkMode
+                        ? 'text-slate-400'
+                        : 'text-gray-500'
+                    }`}
+                  />
+                </div>
+                <div className='text-left'>
+                  <div className='font-medium text-sm'>Masyarakat</div>
+                  <div
+                    className={`text-xs ${
+                      isDarkMode ? 'text-slate-400' : 'text-gray-500'
+                    }`}
+                  >
+                    Pengguna umum
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            {/* Mitra Kurir Role Button */}
+            <button
+              type='button'
+              onClick={() => updateField('role', 'mitra-kurir')}
+              disabled={isLoading}
+              className={`p-4 border-2 rounded-xl transition-all duration-200 ${
+                formData.role === 'mitra-kurir'
+                  ? isDarkMode
+                    ? 'border-green-400 bg-green-900/20 text-green-300'
+                    : 'border-green-500 bg-green-50 text-green-700'
+                  : isDarkMode
+                  ? 'border-slate-600 hover:border-slate-500 text-slate-300'
+                  : 'border-gray-300 hover:border-gray-400 text-gray-700'
+              } ${
+                isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md'
+              }`}
+            >
+              <div className='flex items-center space-x-3'>
+                <div
+                  className={`flex items-center justify-center w-10 h-10 rounded-full ${
+                    formData.role === 'mitra-kurir'
+                      ? isDarkMode
+                        ? 'bg-green-800/50'
+                        : 'bg-green-100'
+                      : isDarkMode
+                      ? 'bg-slate-700'
+                      : 'bg-gray-100'
+                  }`}
+                >
+                  <Zap
+                    className={`w-5 h-5 ${
+                      formData.role === 'mitra-kurir'
+                        ? isDarkMode
+                          ? 'text-green-300'
+                          : 'text-green-600'
+                        : isDarkMode
+                        ? 'text-slate-400'
+                        : 'text-gray-500'
+                    }`}
+                  />
+                </div>
+                <div className='text-left'>
+                  <div className='font-medium text-sm'>Mitra Kurir</div>
+                  <div
+                    className={`text-xs ${
+                      isDarkMode ? 'text-slate-400' : 'text-gray-500'
+                    }`}
+                  >
+                    Partner kurir
+                  </div>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
 
         <InputForm
           label='Email'
@@ -199,7 +320,7 @@ const FormRegister = () => {
         </div>
 
         <div className='pt-2'>
-          <Button type='submit' loading={isLoading}>
+          <Button type='submit' className='w-full h-12' loading={isLoading}>
             Daftar Sekarang
           </Button>
         </div>
@@ -232,7 +353,7 @@ const FormRegister = () => {
         type='button'
         variant='secondary'
         disabled={isLoading}
-        className='flex items-center justify-center gap-3'
+        className='flex items-center justify-center gap-3 w-full h-12'
       >
         <GoogleIcon className='w-5 h-5' />
         <span>Daftar dengan Google</span>

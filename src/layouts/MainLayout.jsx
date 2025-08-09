@@ -1,7 +1,7 @@
-import BottomNavbar from '../components/layout/BottomNavbar';
-import Footer from '../components/layout/Footer';
-import Header from '../components/layout/Navbar';
-import ScrollToTop from '../components/layout/ScrollToTop';
+import BottomNavbar from '../components/navigation/BottomNavbar';
+import Footer from '../components/navigation/Footer';
+import Header from '../components/navigation/Navbar';
+import ScrollToTop from '../components/navigation/ScrollToTop';
 
 const MainLayout = ({ children }) => {
   return (

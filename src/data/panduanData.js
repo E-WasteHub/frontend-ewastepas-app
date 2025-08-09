@@ -1,60 +1,52 @@
-import { CalendarPlus, Gift, Trophy, UserRoundPlus } from 'lucide-react';
+import { CalendarPlus, Gift, UserRoundPlus } from 'lucide-react';
 
 export const panduanData = [
   {
     id: 1,
-    number: '01',
-    title: 'Buat Akun Gratis',
-    description:
-      'Kunjungi situs kami lewat browser di HP atau laptop Anda, lalu daftar dengan email. Hanya butuh satu menit!',
+    number: 1,
+    title: 'Daftar Akun',
+    description: 'Buat akun masyarakat untuk mulai menggunakan E-wasteHub',
     Icon: UserRoundPlus,
     steps: [
-      'Buka EwasteHub.com (misalnya) di browser Anda.',
-      "Klik tombol 'Daftar' dan isi data diri singkat.",
-      'Verifikasi akun Anda melalui link yang dikirim ke email.',
+      'Pilih role "Masyarakat" di halaman utama',
+      'Klik tombol "Daftar" atau "Register"',
+      'Isi form pendaftaran dengan lengkap (nama, email, password)',
+      'Verifikasi email melalui link yang dikirim ke email Anda',
+      'Login dengan akun yang sudah dibuat',
     ],
-    tips: 'Untuk akses cepat seperti aplikasi, pilih "Tambahkan ke Layar Utama" (Add to Home Screen) dari menu browser Anda.',
+    tip: 'Pastikan email yang digunakan aktif untuk menerima verifikasi',
   },
   {
     id: 2,
-    number: '02',
-    title: 'Jadwalkan Penjemputan',
-    description:
-      'Login ke akun Anda, laporkan jenis e-waste yang akan diserahkan, dan atur jadwal penjemputan.',
+    number: 2,
+    title: 'Jadwal Penjemputan',
+    description: 'Atur jadwal penjemputan sampah elektronik Anda',
     Icon: CalendarPlus,
     steps: [
-      "Klik menu 'Jemput Sampah' atau tombol serupa di halaman utama.",
-      'Pilih kategori barang dan isi alamat penjemputan Anda.',
-      'Pilih tanggal dan jam yang paling sesuai untuk Anda.',
+      'Login ke dashboard masyarakat',
+      'Klik menu "Penjemputan" atau "Jemput Sampah"',
+      'Pilih kategori e-waste yang akan diserahkan',
+      'Isi detail barang (jenis, kondisi, perkiraan berat)',
+      'Tentukan alamat penjemputan',
+      'Pilih tanggal dan waktu yang tersedia',
+      'Konfirmasi jadwal penjemputan',
     ],
-    tips: 'Pastikan e-waste sudah dikumpulkan dalam satu wadah (misal: kardus) agar penjemputan lebih efisien.',
+    tip: 'Siapkan e-waste dalam satu wadah dan pastikan mudah diakses kurir',
   },
   {
     id: 3,
-    number: '03',
-    title: 'Serahkan & Terima Poin',
-    description:
-      'Kurir kami akan datang sesuai jadwal. Setelah e-waste Anda kami verifikasi, poin akan langsung ditambahkan ke akun Anda.',
+    number: 3,
+    title: 'Serahkan & Dapat Poin',
+    description: 'Serahkan e-waste kepada kurir dan dapatkan poin reward',
     Icon: Gift,
     steps: [
-      'Tunggu kurir datang sesuai jadwal yang telah dipilih.',
-      'Serahkan e-waste yang sudah Anda siapkan.',
-      'Anda akan mendapat notifikasi via email/web saat poin sudah masuk.',
+      'Tunggu kurir datang sesuai jadwal yang dipilih',
+      'Serahkan e-waste yang sudah disiapkan',
+      'Kurir akan melakukan verifikasi dan penimbangan',
+      'Tandatangani bukti serah terima',
+      'Poin akan otomatis masuk ke akun setelah verifikasi selesai',
+      'Cek dashboard untuk melihat poin yang diterima',
     ],
-    tips: 'Anda bisa memantau status penjemputan, dari "Dijadwalkan" hingga "Selesai", langsung di dashboard akun Anda.',
-  },
-  {
-    id: 4,
-    number: '04',
-    title: 'Lihat Dampak & Tukar Hadiah',
-    description:
-      'Kontribusi Anda sangat berarti! Lihat laporan dampak lingkungan Anda dan tukarkan poin dengan berbagai hadiah menarik.',
-    Icon: Trophy,
-    steps: [
-      "Masuk ke menu 'Laporan Dampak' atau 'Profil' Anda.",
-      "Jelajahi 'Katalog Reward' untuk melihat pilihan hadiah.",
-      'Pilih hadiah dan tukarkan poin Anda dengan mudah.',
-    ],
-    tips: 'Ajak teman Anda bergabung lewat link referral unik di profil Anda untuk mendapatkan bonus poin bersama!',
+    tip: 'Pantau status penjemputan dan notifikasi poin melalui dashboard',
   },
 ];
