@@ -1,8 +1,8 @@
 import { Layers } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
-import { Link } from 'react-router-dom';
 import { kategoriData } from '../../data/kategoriData';
 import useDarkMode from '../../hooks/useDarkMode';
+import Badge from '../common/Badge';
 
 const KategoriSection = () => {
   const { isDarkMode } = useDarkMode();
@@ -22,16 +22,10 @@ const KategoriSection = () => {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <div
-            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium mb-4 ${
-              isDarkMode
-                ? 'bg-green-900/50 text-green-400'
-                : 'bg-green-100 text-green-600'
-            }`}
-          >
+          <Badge variant='soft' color='green' size='md' className='mb-4'>
             <Layers className='mr-1.5 h-4 w-4' />
             Kategori Sampah Elektronik
-          </div>
+          </Badge>
           <h2
             className={`mb-4 text-3xl font-bold md:text-4xl ${
               isDarkMode ? 'text-white' : 'text-slate-900'
@@ -50,8 +44,8 @@ const KategoriSection = () => {
         </Motion.div>
 
         {/* Categories Grid */}
-        <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4'>
-          {kategoriData.slice(0, 4).map((category, index) => {
+        <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
+          {kategoriData.slice(0, 6).map((category, index) => {
             const { Icon } = category;
             return (
               <Motion.div
@@ -107,27 +101,19 @@ const KategoriSection = () => {
                   </p>
                   <div className='flex flex-wrap justify-center gap-1'>
                     {category.items?.slice(0, 2).map((item, itemIndex) => (
-                      <span
+                      <Badge
                         key={itemIndex}
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          isDarkMode
-                            ? 'bg-slate-700 text-slate-300'
-                            : 'bg-gray-100 text-gray-600'
-                        }`}
+                        color='gray'
+                        size='sm'
+                        className='text-xs'
                       >
                         {item}
-                      </span>
+                      </Badge>
                     ))}
                     {category.items?.length > 2 && (
-                      <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          isDarkMode
-                            ? 'bg-slate-700 text-slate-300'
-                            : 'bg-gray-100 text-gray-600'
-                        }`}
-                      >
+                      <Badge color='gray' size='sm' className='text-xs'>
                         +{category.items.length - 2} lainnya
-                      </span>
+                      </Badge>
                     )}
                   </div>
                 </div>
@@ -135,18 +121,6 @@ const KategoriSection = () => {
             );
           })}
         </div>
-
-        {/* View All Button */}
-        {kategoriData.length > 4 && (
-          <div className='mt-12 text-end'>
-            <Link
-              to='/kategori'
-              className='inline-block px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors'
-            >
-              Lihat Semua Kategori
-            </Link>
-          </div>
-        )}
       </div>
     </section>
   );

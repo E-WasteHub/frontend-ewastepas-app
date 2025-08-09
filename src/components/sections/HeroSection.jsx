@@ -55,7 +55,7 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Pengelolaan Tahap Awal Pengumpulan
+            Yuk Antar Jemput
             <span
               className={`block mt-2 bg-gradient-to-r bg-clip-text text-transparent ${
                 isDarkMode
@@ -118,7 +118,7 @@ const HeroSection = () => {
           <div className='w-full mt-12 max-w-sm md:max-w-md'>
             <Motion.img
               src={isDarkMode ? ewasteDark : ewasteLight}
-              alt='E-wasteHub Illustration'
+              alt='EWasteHub Illustration'
               className='object-contain w-full h-full filter drop-shadow-2xl'
               animate={{
                 y: [0, -30, 0],

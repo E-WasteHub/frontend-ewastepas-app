@@ -1,12 +1,12 @@
 import { Route } from 'react-router-dom';
 
 // Public Pages
-import EdukasiPage from '../pages/EdukasiPage';
-import FaqPage from '../pages/FaqPage';
-import HomePage from '../pages/HomePage';
-import KategoriPage from '../pages/KategoriPage';
-import ManfaatPage from '../pages/ManfaatPage';
-import PanduanAplikasiPage from '../pages/PanduanAplikasiPage';
+import EdukasiDetailPage from '../pages/home/EdukasiDetailPage';
+import EdukasiPage from '../pages/home/EdukasiPage';
+import HomePage from '../pages/home/HomePage';
+import KategoriPage from '../pages/home/KategoriPage';
+import ManfaatPage from '../pages/home/ManfaatPage';
+import PanduanAplikasiPage from '../pages/home/PanduanAplikasiPage';
 
 /**
  * Public routes that are accessible to all users
@@ -17,7 +17,11 @@ export const publicRoutes = [
   <Route key='kategori' path='/kategori' element={<KategoriPage />} />,
   <Route key='manfaat' path='/manfaat' element={<ManfaatPage />} />,
   <Route key='edukasi' path='/edukasi' element={<EdukasiPage />} />,
-  <Route key='faq' path='/faq' element={<FaqPage />} />,
+  <Route
+    key='edukasi-detail'
+    path='/edukasi/:id'
+    element={<EdukasiDetailPage />}
+  />,
   <Route
     key='panduan'
     path='/panduan-aplikasi'
