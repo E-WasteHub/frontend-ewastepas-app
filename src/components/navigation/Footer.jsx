@@ -1,8 +1,6 @@
 import { Link } from 'react-router-dom';
-// Impor gambar dengan benar
-import ewasteDarkLogo from '../../assets/img/ewasteDark.png';
-import ewasteLightLogo from '../../assets/img/ewasteLight.png';
 import useDarkMode from '../../hooks/useDarkMode';
+import LogoApp from '../common/LogoApp';
 
 const Footer = () => {
   // Kita tetap butuh isDarkMode hanya untuk memilih sumber gambar
@@ -28,18 +26,7 @@ const Footer = () => {
             className='flex items-center'
             aria-label='Kembali ke Beranda'
           >
-            <img
-              src={isDarkMode ? ewasteDarkLogo : ewasteLightLogo}
-              alt='E-wasteHub Logo'
-              className='h-7 w-7 sm:h-8 sm:w-8 mr-2 sm:mr-3'
-            />
-            <span
-              className={`text-lg sm:text-xl font-bold ${
-                isDarkMode ? 'text-green-600' : 'text-green-400'
-              }`}
-            >
-              EwasteHub
-            </span>
+            <LogoApp size='md' showText={true} textSize='xl' />
           </Link>
 
           {/* Copyright */}

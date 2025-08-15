@@ -1,4 +1,4 @@
-import { ArrowRight, Clock, Users, Zap } from 'lucide-react';
+import { ArrowRight, Users, Zap } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import useDarkMode from '../../hooks/useDarkMode';
@@ -173,28 +173,6 @@ const InformasiSection = () => {
             </Link>
           </Motion.div>
         </div>
-
-        {/* Operating Hours */}
-        <Motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          viewport={{ once: true }}
-          className='text-center'
-        >
-          <div
-            className={`inline-flex items-center gap-3 px-6 py-3 rounded-xl ${
-              isDarkMode
-                ? 'bg-slate-800/50 text-slate-400 border border-slate-700/50'
-                : 'bg-white text-gray-500 shadow-sm border border-gray-200'
-            }`}
-          >
-            <Clock className='w-4 h-4' />
-            <span className='text-sm font-medium'>
-              Layanan 24/7 • Respons Cepat • Tim Profesional
-            </span>
-          </div>
-        </Motion.div>
       </div>
     </section>
   );

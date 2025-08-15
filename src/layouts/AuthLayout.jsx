@@ -11,8 +11,8 @@ const AuthLayout = ({ children }) => {
       <div
         className={`absolute inset-0 ${
           isDarkMode
-            ? 'bg-gradient-to-br from-slate-900 via-white/10 to-slate-900'
-            : 'bg-gradient-to-br from-green-100 via-white/50 to-emerald-100'
+            ? 'bg-gradient-to-br from-slate-900 via-slate-800/80 to-slate-900'
+            : 'bg-gradient-to-br from-green-50 via-white/80 to-emerald-50'
         }`}
       />
 
@@ -85,8 +85,10 @@ const AuthLayout = ({ children }) => {
       </div>
 
       {/* Content */}
-      <div className='relative z-10 flex items-center justify-center px-6 py-12 md:py-12 pt-24 md:pt-12 min-h-screen'>
-        <div className='w-full max-w-md'>{children}</div>
+      <div className='relative z-10 px-4 py-8 md:py-12 pt-20 md:pt-12 min-h-screen'>
+        <div className='flex items-center justify-center min-h-[calc(100vh-8rem)]'>
+          {children}
+        </div>
       </div>
     </div>
   );

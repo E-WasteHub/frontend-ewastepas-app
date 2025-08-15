@@ -37,7 +37,7 @@ const Card = ({ children, className = '' }) => {
   return (
     <div
       className={`rounded-lg shadow-md overflow-hidden ${
-        isDarkMode ? 'bg-slate-900' : 'bg-white'
+        isDarkMode ? 'bg-slate-800' : 'bg-white'
       } ${className}`}
     >
       {children}

@@ -1,7 +1,6 @@
 import { Link, NavLink } from 'react-router-dom';
-import ewasteDarkLogo from '../../assets/img/ewasteDark.png';
-import ewasteLightLogo from '../../assets/img/ewasteLight.png';
 import useDarkMode from '../../hooks/useDarkMode';
+import LogoApp from '../common/LogoApp';
 import ThemeSelector from './ThemeSelector';
 
 const Navbar = () => {
@@ -10,7 +9,6 @@ const Navbar = () => {
   const navLinks = [
     { to: '/', text: 'Beranda' },
     { to: '/edukasi', text: 'Edukasi' },
-    { to: '/kategori', text: 'Kategori' },
     { to: '/panduan-aplikasi', text: 'Panduan' },
   ];
 
@@ -25,21 +23,9 @@ const Navbar = () => {
       <div className='flex items-center justify-between px-2 py-3 mx-auto max-w-7xl'>
         <div className='flex items-center justify-between w-full lg:w-auto'>
           {/* Logo & Text */}
-          <div className='flex items-center gap-2'>
-            <img
-              src={isDarkMode ? ewasteDarkLogo : ewasteLightLogo}
-              alt='E-wasteHub Logo'
-              className='w-10 h-10 rounded-xl'
-            />
-            <Link
-              to='/'
-              className={`text-xl font-bold transition-colors ${
-                isDarkMode ? 'text-green-300' : 'text-green-500'
-              }`}
-            >
-              EwasteHub
-            </Link>
-          </div>
+          <Link to='/' className='flex items-center'>
+            <LogoApp size='xl' showText={true} textSize='2xl' />
+          </Link>
 
           {/* Theme Selector - MOBILE ONLY */}
           <div className='block lg:hidden ml-2'>
