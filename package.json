@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:dev": "vite build --mode development --outDir dev-dist",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -13,7 +14,7 @@
     "@tailwindcss/vite": "^4.1.11",
     "axios": "^1.11.0",
     "lucide-react": "^0.527.0",
-    "motion": "^12.23.9",
+    "motion": "^12.23.12",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.7.1",
@@ -28,7 +29,6 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
-    "vite": "^7.0.4",
-    "vite-plugin-pwa": "^1.0.2"
+    "vite": "^7.0.4"
   }
 }

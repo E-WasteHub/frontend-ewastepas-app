@@ -1,11 +1,10 @@
-import { BookOpen, FileText, Grid3X3, Home, User } from 'lucide-react';
+import { BookOpen, FileText, Home, User } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import useDarkMode from '../../hooks/useDarkMode';
 
 const navItems = [
   { to: '/', label: 'Beranda', Icon: Home },
   { to: '/edukasi', label: 'Edukasi', Icon: BookOpen },
-  { to: '/kategori', label: 'Kategori', Icon: Grid3X3 },
   { to: '/panduan-aplikasi', label: 'Panduan', Icon: FileText },
   { to: '/login', label: 'Profil', Icon: User },
 ];
@@ -17,9 +16,6 @@ const BottomNavbar = () => {
     : 'bg-white/95 border-slate-200';
   const textColor = isDarkMode ? 'text-slate-400' : 'text-slate-600';
   const activeColor = isDarkMode ? 'text-green-400' : 'text-green-600';
-  const hoverColor = isDarkMode
-    ? 'hover:text-slate-200'
-    : 'hover:text-slate-800';
 
   return (
     <nav
@@ -36,7 +32,7 @@ const BottomNavbar = () => {
               className={({ isActive }) => `
                 flex flex-col items-center justify-center flex-1 py-2 px-1
                 transition-all duration-200 rounded-lg mx-1
-                ${isActive ? activeColor : `${textColor} ${hoverColor}`}
+                ${isActive ? activeColor : `${textColor}`}
                 ${isActive ? 'bg-green-50/20' : ''}
               `}
             >
