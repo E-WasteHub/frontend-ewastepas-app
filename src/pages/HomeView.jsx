@@ -1,9 +1,11 @@
-import EdukasiSection from '../components/sections/EdukasiSection';
-import HeroSection from '../components/sections/HeroSection';
-import InformasiSection from '../components/sections/InformasiSection';
-import KategoriSection from '../components/sections/KategoriSection';
+import {
+  EdukasiSection,
+  HeroSection,
+  InformasiSection,
+  KategoriSection,
+} from '../components/fragments';
+import MainLayout from '../components/layouts/MainLayout';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-import MainLayout from '../layouts/MainLayout';
 
 const HomePage = () => {
   useDocumentTitle('EwasteHub App');

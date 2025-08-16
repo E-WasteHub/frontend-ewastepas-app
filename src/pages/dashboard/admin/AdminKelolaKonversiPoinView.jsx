@@ -1,19 +1,15 @@
 import {
   Clock,
   Coins,
-  Download,
   Edit,
   Eye,
   Filter,
   Gift,
   Package,
-  Plus,
   Search,
   ShoppingBag,
   Star,
   Trash2,
-  TrendingUp,
-  Upload,
 } from 'lucide-react';
 import { useState } from 'react';
 import Badge from '../../../components/common/Badge';
@@ -186,22 +182,6 @@ const AdminKelolaKonversiPoinView = () => {
     return matchSearch && matchKategori && matchStatus;
   });
 
-  // Statistics
-  const stats = {
-    total: konversiData.length,
-    aktif: konversiData.filter((item) => item.status === 'aktif').length,
-    habis: konversiData.filter((item) => item.status === 'habis').length,
-    nonaktif: konversiData.filter((item) => item.status === 'nonaktif').length,
-    totalPoinTertukar: konversiData.reduce(
-      (acc, item) => acc + item.total_ditukar * item.poin_dibutuhkan,
-      0
-    ),
-    totalTransaksi: konversiData.reduce(
-      (acc, item) => acc + item.total_ditukar,
-      0
-    ),
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -295,12 +275,6 @@ const AdminKelolaKonversiPoinView = () => {
     setSelectedItem(null);
   };
 
-  const openAddModal = () => {
-    resetForm();
-    setModalMode('add');
-    setShowModal(true);
-  };
-
   const getStatusBadge = (status, stok_tersisa = 0) => {
     if (status === 'habis' || stok_tersisa === 0) {
       return (
@@ -389,124 +363,6 @@ const AdminKelolaKonversiPoinView = () => {
               Kelola reward dan konversi poin untuk pengguna E-WasteHub
             </p>
           </div>
-
-          <div className='flex space-x-3'>
-            <Button variant='outline' className='flex items-center space-x-2'>
-              <Download className='h-4 w-4' />
-              <span>Export</span>
-            </Button>
-            <Button variant='outline' className='flex items-center space-x-2'>
-              <Upload className='h-4 w-4' />
-              <span>Import</span>
-            </Button>
-            <Button
-              variant='primary'
-              onClick={openAddModal}
-              className='flex items-center space-x-2'
-            >
-              <Plus className='h-4 w-4' />
-              <span>Tambah Reward</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* Statistics Cards */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Total Reward
-                </p>
-                <p
-                  className={`text-2xl font-bold ${
-                    isDarkMode ? 'text-white' : 'text-gray-900'
-                  }`}
-                >
-                  {stats.total}
-                </p>
-                <p className={`text-xs text-green-500`}>{stats.aktif} aktif</p>
-              </div>
-              <Gift
-                className={`h-8 w-8 ${
-                  isDarkMode ? 'text-blue-400' : 'text-blue-600'
-                }`}
-              />
-            </div>
-          </Card>
-
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Total Transaksi
-                </p>
-                <p className={`text-2xl font-bold text-green-500`}>
-                  {stats.totalTransaksi}
-                </p>
-                <p
-                  className={`text-xs ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`}
-                >
-                  penukaran
-                </p>
-              </div>
-              <TrendingUp className='h-8 w-8 text-green-500' />
-            </div>
-          </Card>
-
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Poin Tertukar
-                </p>
-                <p className={`text-2xl font-bold text-purple-500`}>
-                  {stats.totalPoinTertukar.toLocaleString()}
-                </p>
-                <p
-                  className={`text-xs ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`}
-                >
-                  total poin
-                </p>
-              </div>
-              <Coins className='h-8 w-8 text-purple-500' />
-            </div>
-          </Card>
-
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Stok Habis
-                </p>
-                <p className={`text-2xl font-bold text-orange-500`}>
-                  {stats.habis}
-                </p>
-                <p className={`text-xs text-orange-500`}>perlu restock</p>
-              </div>
-              <Package className='h-8 w-8 text-orange-500' />
-            </div>
-          </Card>
         </div>
 
         {/* Filters */}

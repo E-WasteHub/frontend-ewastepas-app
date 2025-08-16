@@ -2,12 +2,11 @@ import { BookOpen } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Badge from '../components/common/Badge';
-import Pagination from '../components/common/Pagination';
+import { Badge, Pagination } from '../components/elements';
+import MainLayout from '../components/layouts/MainLayout';
 import { educationTopics } from '../data/edukasiData';
 import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-import MainLayout from '../layouts/MainLayout';
 
 const EdukasiPage = () => {
   useDocumentTitle('Edukasi | E-wasteHub');

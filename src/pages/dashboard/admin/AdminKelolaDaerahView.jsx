@@ -1,15 +1,12 @@
 import {
   Building2,
-  Download,
   Edit,
   Eye,
   Filter,
   MapPin,
   Package,
-  Plus,
   Search,
   Trash2,
-  Upload,
   Users,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -148,22 +145,6 @@ const AdminKelolaDaerahView = () => {
     return matchSearch && matchProvinsi;
   });
 
-  // Statistics
-  const stats = {
-    total: daerahData.length,
-    aktif: daerahData.filter((item) => item.status === 'aktif').length,
-    nonaktif: daerahData.filter((item) => item.status === 'nonaktif').length,
-    totalPengguna: daerahData.reduce(
-      (acc, item) => acc + item.jumlahPengguna,
-      0
-    ),
-    totalDropbox: daerahData.reduce((acc, item) => acc + item.jumlahDropbox, 0),
-    totalTransaksi: daerahData.reduce(
-      (acc, item) => acc + item.transaksi_bulan_ini,
-      0
-    ),
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -240,12 +221,6 @@ const AdminKelolaDaerahView = () => {
     setSelectedItem(null);
   };
 
-  const openAddModal = () => {
-    resetForm();
-    setModalMode('add');
-    setShowModal(true);
-  };
-
   const getStatusBadge = (status) => {
     return status === 'aktif' ? (
       <Badge variant='success'>Aktif</Badge>
@@ -277,130 +252,6 @@ const AdminKelolaDaerahView = () => {
               Kelola data daerah untuk layanan E-WasteHub
             </p>
           </div>
-
-          <div className='flex space-x-3'>
-            <Button variant='outline' className='flex items-center space-x-2'>
-              <Download className='h-4 w-4' />
-              <span>Export</span>
-            </Button>
-            <Button variant='outline' className='flex items-center space-x-2'>
-              <Upload className='h-4 w-4' />
-              <span>Import</span>
-            </Button>
-            <Button
-              variant='primary'
-              onClick={openAddModal}
-              className='flex items-center space-x-2'
-            >
-              <Plus className='h-4 w-4' />
-              <span>Tambah Daerah</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* Statistics Cards */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Total Daerah
-                </p>
-                <p
-                  className={`text-2xl font-bold ${
-                    isDarkMode ? 'text-white' : 'text-gray-900'
-                  }`}
-                >
-                  {stats.total}
-                </p>
-                <p className={`text-xs text-green-500`}>{stats.aktif} aktif</p>
-              </div>
-              <MapPin
-                className={`h-8 w-8 ${
-                  isDarkMode ? 'text-blue-400' : 'text-blue-600'
-                }`}
-              />
-            </div>
-          </Card>
-
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Total Pengguna
-                </p>
-                <p className={`text-2xl font-bold text-green-500`}>
-                  {stats.totalPengguna.toLocaleString()}
-                </p>
-                <p
-                  className={`text-xs ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`}
-                >
-                  di semua daerah
-                </p>
-              </div>
-              <Users className='h-8 w-8 text-green-500' />
-            </div>
-          </Card>
-
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Total Dropbox
-                </p>
-                <p className={`text-2xl font-bold text-purple-500`}>
-                  {stats.totalDropbox}
-                </p>
-                <p
-                  className={`text-xs ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`}
-                >
-                  lokasi aktif
-                </p>
-              </div>
-              <Building2 className='h-8 w-8 text-purple-500' />
-            </div>
-          </Card>
-
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Transaksi Bulan Ini
-                </p>
-                <p className={`text-2xl font-bold text-blue-500`}>
-                  {stats.totalTransaksi}
-                </p>
-                <p
-                  className={`text-xs ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`}
-                >
-                  semua daerah
-                </p>
-              </div>
-              <Package className='h-8 w-8 text-blue-500' />
-            </div>
-          </Card>
         </div>
 
         {/* Filters */}

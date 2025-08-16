@@ -3,14 +3,11 @@ import {
   CheckCircle,
   Clock,
   DollarSign,
-  Download,
   Eye,
   Filter,
   MapPin,
   Package,
-  RefreshCw,
   Search,
-  TrendingUp,
   Truck,
   User,
   XCircle,
@@ -145,22 +142,6 @@ const AdminTransaksiView = () => {
     return matchSearch && matchStatus && matchJenis;
   });
 
-  // Statistics
-  const stats = {
-    total: transaksiData.length,
-    selesai: transaksiData.filter((item) => item.status === 'selesai').length,
-    dalam_perjalanan: transaksiData.filter(
-      (item) => item.status === 'dalam_perjalanan'
-    ).length,
-    menunggu: transaksiData.filter(
-      (item) => item.status === 'menunggu_konfirmasi'
-    ).length,
-    dibatalkan: transaksiData.filter((item) => item.status === 'dibatalkan')
-      .length,
-    totalPoin: transaksiData.reduce((acc, item) => acc + item.totalPoin, 0),
-    totalBerat: transaksiData.reduce((acc, item) => acc + item.totalBerat, 0),
-  };
-
   const getStatusBadge = (status) => {
     switch (status) {
       case 'selesai':
@@ -240,120 +221,6 @@ const AdminTransaksiView = () => {
               Monitor dan kelola semua transaksi dalam sistem
             </p>
           </div>
-
-          <div className='flex space-x-3'>
-            <Button variant='outline' className='flex items-center space-x-2'>
-              <Download className='h-4 w-4' />
-              <span>Export</span>
-            </Button>
-            <Button variant='primary' className='flex items-center space-x-2'>
-              <RefreshCw className='h-4 w-4' />
-              <span>Refresh</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* Statistics Cards */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Total Transaksi
-                </p>
-                <p
-                  className={`text-2xl font-bold ${
-                    isDarkMode ? 'text-white' : 'text-gray-900'
-                  }`}
-                >
-                  {stats.total}
-                </p>
-                <div className='flex items-center space-x-1 mt-1'>
-                  <TrendingUp className='h-3 w-3 text-green-500' />
-                  <span className='text-xs text-green-500'>
-                    +12% dari bulan lalu
-                  </span>
-                </div>
-              </div>
-              <Package
-                className={`h-8 w-8 ${
-                  isDarkMode ? 'text-blue-400' : 'text-blue-600'
-                }`}
-              />
-            </div>
-          </Card>
-
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Transaksi Selesai
-                </p>
-                <p className={`text-2xl font-bold text-green-500`}>
-                  {stats.selesai}
-                </p>
-                <div className='flex items-center space-x-1 mt-1'>
-                  <span className='text-xs text-gray-500'>
-                    {Math.round((stats.selesai / stats.total) * 100)}% dari
-                    total
-                  </span>
-                </div>
-              </div>
-              <CheckCircle className='h-8 w-8 text-green-500' />
-            </div>
-          </Card>
-
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Total Poin Terdistribusi
-                </p>
-                <p className={`text-2xl font-bold text-blue-500`}>
-                  {stats.totalPoin.toLocaleString()}
-                </p>
-                <div className='flex items-center space-x-1 mt-1'>
-                  <DollarSign className='h-3 w-3 text-blue-500' />
-                  <span className='text-xs text-blue-500'>Poin</span>
-                </div>
-              </div>
-              <DollarSign className='h-8 w-8 text-blue-500' />
-            </div>
-          </Card>
-
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Total Berat (Kg)
-                </p>
-                <p className={`text-2xl font-bold text-purple-500`}>
-                  {stats.totalBerat.toFixed(1)}
-                </p>
-                <div className='flex items-center space-x-1 mt-1'>
-                  <Package className='h-3 w-3 text-purple-500' />
-                  <span className='text-xs text-purple-500'>Kilogram</span>
-                </div>
-              </div>
-              <Package className='h-8 w-8 text-purple-500' />
-            </div>
-          </Card>
         </div>
 
         {/* Filters */}

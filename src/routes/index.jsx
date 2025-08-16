@@ -10,7 +10,7 @@ const AppRouter = () => {
       {/* --- Rute Publik --- */}
       {publicRoutes}
 
-      {/* --- Rute Autentikasi (Login & Register) --- */}
+      {/* --- Rute Autentikasi  --- */}
       {authRoutes}
 
       {/* --- Rute dashboard --- */}

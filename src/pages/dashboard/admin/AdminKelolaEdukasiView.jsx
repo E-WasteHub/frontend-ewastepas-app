@@ -1,17 +1,14 @@
 import {
   BookOpen,
   Calendar,
-  Download,
   Edit,
   ExternalLink,
   Eye,
   FileText,
   Filter,
   Image,
-  Plus,
   Search,
   Trash2,
-  Upload,
   User,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -154,16 +151,6 @@ const AdminKelolaEdukasiView = () => {
     return matchSearch && matchKategori && matchStatus;
   });
 
-  // Statistics
-  const stats = {
-    total: edukasiData.length,
-    published: edukasiData.filter((item) => item.status === 'published').length,
-    draft: edukasiData.filter((item) => item.status === 'draft').length,
-    review: edukasiData.filter((item) => item.status === 'review').length,
-    totalViews: edukasiData.reduce((acc, item) => acc + item.views, 0),
-    totalLikes: edukasiData.reduce((acc, item) => acc + item.likes, 0),
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -249,12 +236,6 @@ const AdminKelolaEdukasiView = () => {
     setSelectedItem(null);
   };
 
-  const openAddModal = () => {
-    resetForm();
-    setModalMode('add');
-    setShowModal(true);
-  };
-
   const getStatusBadge = (status) => {
     switch (status) {
       case 'published':
@@ -327,126 +308,6 @@ const AdminKelolaEdukasiView = () => {
               Kelola konten edukasi untuk pengguna E-WasteHub
             </p>
           </div>
-
-          <div className='flex space-x-3'>
-            <Button variant='outline' className='flex items-center space-x-2'>
-              <Download className='h-4 w-4' />
-              <span>Export</span>
-            </Button>
-            <Button variant='outline' className='flex items-center space-x-2'>
-              <Upload className='h-4 w-4' />
-              <span>Import</span>
-            </Button>
-            <Button
-              variant='primary'
-              onClick={openAddModal}
-              className='flex items-center space-x-2'
-            >
-              <Plus className='h-4 w-4' />
-              <span>Tambah Artikel</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* Statistics Cards */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Total Artikel
-                </p>
-                <p
-                  className={`text-2xl font-bold ${
-                    isDarkMode ? 'text-white' : 'text-gray-900'
-                  }`}
-                >
-                  {stats.total}
-                </p>
-                <p className={`text-xs text-green-500`}>
-                  {stats.published} published
-                </p>
-              </div>
-              <BookOpen
-                className={`h-8 w-8 ${
-                  isDarkMode ? 'text-blue-400' : 'text-blue-600'
-                }`}
-              />
-            </div>
-          </Card>
-
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Total Views
-                </p>
-                <p className={`text-2xl font-bold text-green-500`}>
-                  {stats.totalViews.toLocaleString()}
-                </p>
-                <p
-                  className={`text-xs ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`}
-                >
-                  semua artikel
-                </p>
-              </div>
-              <Eye className='h-8 w-8 text-green-500' />
-            </div>
-          </Card>
-
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Total Likes
-                </p>
-                <p className={`text-2xl font-bold text-purple-500`}>
-                  {stats.totalLikes}
-                </p>
-                <p
-                  className={`text-xs ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`}
-                >
-                  engagement
-                </p>
-              </div>
-              <BookOpen className='h-8 w-8 text-purple-500' />
-            </div>
-          </Card>
-
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Perlu Review
-                </p>
-                <p className={`text-2xl font-bold text-orange-500`}>
-                  {stats.review + stats.draft}
-                </p>
-                <p className={`text-xs text-orange-500`}>draft & review</p>
-              </div>
-              <FileText className='h-8 w-8 text-orange-500' />
-            </div>
-          </Card>
         </div>
 
         {/* Filters */}

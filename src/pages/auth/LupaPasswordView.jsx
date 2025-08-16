@@ -1,7 +1,7 @@
 // src/pages/auth/LupaPasswordView.jsx
-import FormLupaPassword from '../../components/form/FormLupaPassword';
+import { FormLupaPassword } from '../../components/fragments';
+import AuthLayout from '../../components/layouts/AuthLayout';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
-import AuthLayout from '../../layouts/AuthLayout';
 
 const LupaPasswordView = () => {
   useDocumentTitle('Lupa Kata Sandi - E-WasteHub');

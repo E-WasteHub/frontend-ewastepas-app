@@ -1,14 +1,11 @@
 import {
   DollarSign,
-  Download,
   Edit,
   Eye,
   Filter,
   Package,
-  Plus,
   Search,
   Trash2,
-  Upload,
   Weight,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -125,14 +122,6 @@ const AdminKelolaJenisView = () => {
     return matchSearch && matchKategori;
   });
 
-  // Statistics
-  const stats = {
-    total: jenisData.length,
-    aktif: jenisData.filter((item) => item.status === 'aktif').length,
-    nonaktif: jenisData.filter((item) => item.status === 'nonaktif').length,
-    totalTransaksi: jenisData.reduce((acc, item) => acc + item.transaksi, 0),
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -205,12 +194,6 @@ const AdminKelolaJenisView = () => {
     setSelectedItem(null);
   };
 
-  const openAddModal = () => {
-    resetForm();
-    setModalMode('add');
-    setShowModal(true);
-  };
-
   const getStatusBadge = (status) => {
     return status === 'aktif' ? (
       <Badge variant='success'>Aktif</Badge>
@@ -242,108 +225,6 @@ const AdminKelolaJenisView = () => {
               Kelola jenis-jenis e-waste dan sistem poin
             </p>
           </div>
-
-          <div className='flex space-x-3'>
-            <Button variant='outline' className='flex items-center space-x-2'>
-              <Download className='h-4 w-4' />
-              <span>Export</span>
-            </Button>
-            <Button variant='outline' className='flex items-center space-x-2'>
-              <Upload className='h-4 w-4' />
-              <span>Import</span>
-            </Button>
-            <Button
-              variant='primary'
-              onClick={openAddModal}
-              className='flex items-center space-x-2'
-            >
-              <Plus className='h-4 w-4' />
-              <span>Tambah Jenis</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* Statistics Cards */}
-        <div className='grid grid-cols-1 md:grid-cols-4 gap-6'>
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Total Jenis
-                </p>
-                <p
-                  className={`text-2xl font-bold ${
-                    isDarkMode ? 'text-white' : 'text-gray-900'
-                  }`}
-                >
-                  {stats.total}
-                </p>
-              </div>
-              <Package
-                className={`h-8 w-8 ${
-                  isDarkMode ? 'text-blue-400' : 'text-blue-600'
-                }`}
-              />
-            </div>
-          </Card>
-
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Jenis Aktif
-                </p>
-                <p className={`text-2xl font-bold text-green-500`}>
-                  {stats.aktif}
-                </p>
-              </div>
-              <Package className='h-8 w-8 text-green-500' />
-            </div>
-          </Card>
-
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Jenis Nonaktif
-                </p>
-                <p className={`text-2xl font-bold text-gray-500`}>
-                  {stats.nonaktif}
-                </p>
-              </div>
-              <Package className='h-8 w-8 text-gray-500' />
-            </div>
-          </Card>
-
-          <Card className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  Total Transaksi
-                </p>
-                <p className={`text-2xl font-bold text-blue-500`}>
-                  {stats.totalTransaksi}
-                </p>
-              </div>
-              <DollarSign className='h-8 w-8 text-blue-500' />
-            </div>
-          </Card>
         </div>
 
         {/* Filters */}

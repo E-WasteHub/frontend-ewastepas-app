@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-import DashboardLayout from '../layouts/DashboardLayout';
+import DashboardLayout from '../components/layouts/DashboardLayout';
 
 // Lazy load dashboard components
 const DashboardMasyarakatView = lazy(() =>
@@ -11,8 +11,8 @@ const PermintaanPenjemputanView = lazy(() =>
 const LacakPenjemputanView = lazy(() =>
   import('../pages/dashboard/masyarakat/LacakPenjemputanView')
 );
-const RiwayatView = lazy(() =>
-  import('../pages/dashboard/masyarakat/RiwayatView')
+const RiwayatMasyarakatView = lazy(() =>
+  import('../pages/dashboard/masyarakat/RiwayatMasyarakatView')
 );
 
 // Shared Components
@@ -33,8 +33,18 @@ const AdminKelolaDropboxView = lazy(() =>
 const AdminKelolaEdukasiView = lazy(() =>
   import('../pages/dashboard/admin/AdminKelolaEdukasiView')
 );
+const AdminKelolaKategoriView = lazy(() =>
+  import('../pages/dashboard/admin/AdminKelolaKategoriView')
+);
 const AdminKelolaJenisView = lazy(() =>
   import('../pages/dashboard/admin/AdminKelolaJenisView')
+);
+
+const AdminTransaksiView = lazy(() =>
+  import('../pages/dashboard/admin/AdminTransaksiView')
+);
+const AdminVerifikasiView = lazy(() =>
+  import('../pages/dashboard/admin/AdminVerifikasiView')
 );
 
 // Mitra Kurir routes
@@ -83,7 +93,7 @@ export const dashboardRoutes = [
   },
   {
     path: '/dashboard/masyarakat/riwayat',
-    element: createProtectedRoute(RiwayatView),
+    element: createProtectedRoute(RiwayatMasyarakatView),
     title: 'Riwayat Transaksi',
   },
   {
@@ -119,9 +129,24 @@ export const dashboardRoutes = [
     title: 'Kelola Edukasi',
   },
   {
+    path: '/dashboard/admin/kelola-kategori',
+    element: createProtectedRoute(AdminKelolaKategoriView),
+    title: 'Kelola Kategori',
+  },
+  {
     path: '/dashboard/admin/kelola-jenis',
     element: createProtectedRoute(AdminKelolaJenisView),
     title: 'Kelola Jenis E-Waste',
+  },
+  {
+    path: '/dashboard/admin/transaksi',
+    element: createProtectedRoute(AdminTransaksiView),
+    title: 'Kelola Transaksi Penjemputan',
+  },
+  {
+    path: '/dashboard/admin/verifikasi',
+    element: createProtectedRoute(AdminVerifikasiView),
+    title: 'Kelola Verifikasi Akun',
   },
   {
     path: '/dashboard/admin/profil',
