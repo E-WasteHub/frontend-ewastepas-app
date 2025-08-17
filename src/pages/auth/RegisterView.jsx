@@ -1,6 +1,6 @@
-import FormRegister from '../../components/form/FormRegister';
+import FormRegister from '../../components/fragments/form/FormRegister';
+import AuthLayout from '../../components/layouts/AuthLayout';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
-import AuthLayout from '../../layouts/AuthLayout';
 
 const RegisterPage = () => {
   useDocumentTitle('Registrasi - E-WasteHub');

@@ -11,9 +11,9 @@ import {
   User,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import Button from '../../../components/common/Button';
-import Card from '../../../components/common/Card';
-import Pagination from '../../../components/common/Pagination';
+import Button from '../../../components/elements/Button';
+import Card from '../../../components/elements/Card';
+import Pagination from '../../../components/elements/Pagination';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 

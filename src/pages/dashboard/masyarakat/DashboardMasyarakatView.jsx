@@ -1,11 +1,11 @@
 import { Calendar, MapPin, Plus, Search, Star, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Badge from '../../../components/common/Badge';
-import Button from '../../../components/common/Button';
-import Card from '../../../components/common/Card';
-import Loading from '../../../components/common/Loading';
-import SapaanDashboard from '../../../components/common/SapaanDashboard';
+import Badge from '../../../components/elements/Badge';
+import Button from '../../../components/elements/Button';
+import Card from '../../../components/elements/Card';
+import Loading from '../../../components/elements/Loading';
+import SapaanDashboard from '../../../components/elements/SapaanDashboard';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import {

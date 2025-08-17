@@ -10,10 +10,10 @@ import {
   X,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import Alert from '../../../components/common/Alert';
-import Badge from '../../../components/common/Badge';
-import Card from '../../../components/common/Card';
-import Pagination from '../../../components/common/Pagination';
+import Alert from '../../../components/elements/Alert';
+import Badge from '../../../components/elements/Badge';
+import Card from '../../../components/elements/Card';
+import Pagination from '../../../components/elements/Pagination';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 

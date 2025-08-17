@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-import DashboardLayout from '../layouts/DashboardLayout';
+import DashboardLayout from '../components/layouts/DashboardLayout';
 
 // Lazy load dashboard components
 const DashboardMasyarakatView = lazy(() =>

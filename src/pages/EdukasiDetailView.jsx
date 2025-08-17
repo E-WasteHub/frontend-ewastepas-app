@@ -1,11 +1,11 @@
 import { ArrowLeft, BookOpen, Clock, Tag } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import { Link, useParams } from 'react-router-dom';
-import Badge from '../components/common/Badge';
+import Badge from '../components/elements/Badge';
+import MainLayout from '../components/layouts/MainLayout';
 import { educationTopics } from '../data/edukasiData';
 import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-import MainLayout from '../layouts/MainLayout';
 
 const EdukasiDetailPage = () => {
   const { id } = useParams();

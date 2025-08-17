@@ -15,12 +15,12 @@ import {
   X,
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import Badge from '../../components/common/Badge';
-import Button from '../../components/common/Button';
-import Card from '../../components/common/Card';
+import Badge from '../../components/elements/Badge';
+import Button from '../../components/elements/Button';
+import Card from '../../components/elements/Card';
+import DashboardLayout from '../../components/layouts/DashboardLayout';
 import useDarkMode from '../../hooks/useDarkMode';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
-import DashboardLayout from '../../layouts/DashboardLayout';
 
 const ProfilView = () => {
   // State untuk boundary class attributes dari panduan

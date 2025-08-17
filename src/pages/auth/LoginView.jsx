@@ -1,7 +1,7 @@
 // src/pages/auth/LoginPage.jsx
-import FormLogin from '../../components/form/FormLogin';
+import FormLogin from '../../components/fragments/form/FormLogin';
+import AuthLayout from '../../components/layouts/AuthLayout';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
-import AuthLayout from '../../layouts/AuthLayout';
 
 const LoginPage = () => {
   useDocumentTitle('Masuk - E-WasteHub');

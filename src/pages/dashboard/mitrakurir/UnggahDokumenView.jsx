@@ -7,9 +7,9 @@ import {
   X,
 } from 'lucide-react';
 import { useState } from 'react';
-import Alert from '../../../components/common/Alert';
-import Button from '../../../components/common/Button';
-import Card from '../../../components/common/Card';
+import Alert from '../../../components/elements/Alert';
+import Button from '../../../components/elements/Button';
+import Card from '../../../components/elements/Card';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 

@@ -1,6 +1,6 @@
-import FormVerifikasiOTP from '../../components/form/FormVerifikasiOTP';
+import FormVerifikasiOTP from '../../components/fragments/form/FormVerifikasiOTP';
+import AuthLayout from '../../components/layouts/AuthLayout';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
-import AuthLayout from '../../layouts/AuthLayout';
 
 const VerifikasiOTPView = () => {
   useDocumentTitle('Verifikasi OTP - E-WasteHub');

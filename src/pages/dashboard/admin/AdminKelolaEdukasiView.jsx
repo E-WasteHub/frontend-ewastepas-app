@@ -15,9 +15,9 @@ import {
   User,
 } from 'lucide-react';
 import { useState } from 'react';
-import Badge from '../../../components/common/Badge';
-import Button from '../../../components/common/Button';
-import Card from '../../../components/common/Card';
+import Badge from '../../../components/elements/Badge';
+import Button from '../../../components/elements/Button';
+import Card from '../../../components/elements/Card';
 import useDarkMode from '../../../hooks/useDarkMode';
 
 const AdminKelolaEdukasiView = () => {
