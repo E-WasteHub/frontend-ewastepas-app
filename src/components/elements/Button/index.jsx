@@ -4,6 +4,8 @@ const Button = ({
   children,
   variant = 'primary',
   disabled = false,
+  isLoading = false,
+  loadingText = 'Loading...',
   className = '',
   ...props
 }) => {
@@ -29,10 +31,17 @@ const Button = ({
   return (
     <button
       className={`${baseStyle} ${variantStyle} ${className}`}
-      disabled={disabled}
+      disabled={disabled || isLoading}
       {...props}
     >
-      {children}
+      {isLoading ? (
+        <div className='flex items-center justify-center gap-2'>
+          <div className='animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent'></div>
+          {loadingText}
+        </div>
+      ) : (
+        children
+      )}
     </button>
   );
 };

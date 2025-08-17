@@ -9,12 +9,14 @@ const Input = forwardRef(
       label,
       placeholder,
       name,
+      id,
       value,
       onChange,
       error,
       required = false,
       disabled = false,
       showPasswordToggle = false,
+      autocomplete,
       className = '',
       ...props
     },
@@ -44,8 +46,8 @@ const Input = forwardRef(
       }
 
       return isDarkMode
-        ? 'border-slate-600 focus:border-blue-500 focus:ring-blue-500/20'
-        : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500/20';
+        ? 'border-slate-600 focus:border-green-500 focus:ring-green-500/20'
+        : 'border-gray-300 focus:border-green-500 focus:ring-green-500/20';
     };
 
     // Disabled styling
@@ -69,12 +71,14 @@ const Input = forwardRef(
       setShowPassword(!showPassword);
     };
 
+    // Gunakan id dari prop, jika tidak ada fallback ke name
+    const inputId = id || name;
     return (
       <div className='space-y-2'>
         {/* Label */}
         {label && (
           <label
-            htmlFor={name}
+            htmlFor={inputId}
             className={`block text-sm font-medium ${
               error
                 ? 'text-red-500'
@@ -94,10 +98,12 @@ const Input = forwardRef(
             ref={ref}
             type={inputType}
             name={name}
+            id={inputId}
             placeholder={placeholder}
             value={value}
             onChange={handleChange}
             disabled={disabled}
+            autoComplete={autocomplete}
             className={inputClasses}
             {...props}
           />

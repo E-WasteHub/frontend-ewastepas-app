@@ -84,7 +84,7 @@ const InformasiSection = () => {
                     isDarkMode ? 'text-white' : 'text-slate-900'
                   }`}
                 >
-                  Daftar sebagai Pengguna
+                  Daftar sebagai Masyarakat
                 </h3>
 
                 <p

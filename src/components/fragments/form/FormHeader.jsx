@@ -25,7 +25,7 @@ const FormHeader = ({
       {title && (
         <h1
           className={`text-2xl font-bold mb-2 ${
-            isDarkMode ? 'text-slate-100' : 'text-gray-900'
+            isDarkMode ? 'text-green-400' : 'text-green-500'
           }`}
         >
           {title}
@@ -35,8 +35,8 @@ const FormHeader = ({
       {/* Subtitle */}
       {subtitle && (
         <p
-          className={`text-sm ${
-            isDarkMode ? 'text-slate-400' : 'text-gray-600'
+          className={`text-2xl font-semibold ${
+            isDarkMode ? 'text-white' : 'text-gray-600'
           }`}
         >
           {subtitle}

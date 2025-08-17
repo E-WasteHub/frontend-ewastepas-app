@@ -312,6 +312,7 @@ const ProfilView = () => {
                 )}
                 <label
                   htmlFor='profile-photo'
+                  aria-label='Ubah foto profil'
                   className='absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 text-white p-1.5 rounded-full cursor-pointer transition-colors'
                 >
                   <Camera className='w-3 h-3' />
