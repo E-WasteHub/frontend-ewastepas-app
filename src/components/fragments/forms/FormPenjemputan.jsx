@@ -1,9 +1,8 @@
 import { Plus, Trash2, Upload, X } from 'lucide-react';
 import { useState } from 'react';
-import { kategoriData } from '../../../data/kategoriData';
+import { kategoriSampahDummy } from '../../../data/kategoriSampahDummy';
 import useDarkMode from '../../../hooks/useDarkMode';
-import Button from '../../elements/Button';
-import Card from '../../elements/Card';
+import { Button, Card } from '../../elements';
 import { Input, Textarea } from '../../elements/Form';
 
 const FormPenjemputan = ({
@@ -25,7 +24,7 @@ const FormPenjemputan = ({
   // Get available sampah items based on selected kategori
   const getAvailableSampah = () => {
     if (!selectedKategori) return [];
-    const kategori = kategoriData.find(
+    const kategori = kategoriSampahDummy.find(
       (k) => k.id === parseInt(selectedKategori)
     );
     return kategori ? kategori.items : [];
@@ -34,7 +33,7 @@ const FormPenjemputan = ({
   // Handle tambah sampah
   const handleTambahSampah = () => {
     if (selectedKategori && selectedSampah) {
-      const kategori = kategoriData.find(
+      const kategori = kategoriSampahDummy.find(
         (k) => k.id === parseInt(selectedKategori)
       );
       if (kategori) {
@@ -132,8 +131,8 @@ const FormPenjemputan = ({
                   }`}
                 >
                   <option value=''>Pilih kategori sampah...</option>
-                  {kategoriData && kategoriData.length > 0 ? (
-                    kategoriData.map((kategori) => (
+                  {kategoriSampahDummy && kategoriSampahDummy.length > 0 ? (
+                    kategoriSampahDummy.map((kategori) => (
                       <option key={kategori.id} value={kategori.id}>
                         {kategori.name} - {kategori.category} ({kategori.points}{' '}
                         poin/kg)
@@ -153,7 +152,7 @@ const FormPenjemputan = ({
                   >
                     <div className='flex items-start gap-3'>
                       {(() => {
-                        const kategori = kategoriData.find(
+                        const kategori = kategoriSampahDummy.find(
                           (k) => k.id === parseInt(selectedKategori)
                         );
                         const IconComponent = kategori?.Icon;
@@ -168,7 +167,7 @@ const FormPenjemputan = ({
                           }`}
                         >
                           {
-                            kategoriData.find(
+                            kategoriSampahDummy.find(
                               (k) => k.id === parseInt(selectedKategori)
                             )?.name
                           }
@@ -179,7 +178,7 @@ const FormPenjemputan = ({
                           }`}
                         >
                           {
-                            kategoriData.find(
+                            kategoriSampahDummy.find(
                               (k) => k.id === parseInt(selectedKategori)
                             )?.description
                           }

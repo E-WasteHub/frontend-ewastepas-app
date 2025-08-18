@@ -2,6 +2,34 @@ import { ArrowLeft, Moon, Sun } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import useDarkMode from '../../hooks/useDarkMode';
 
+const BackButton = ({ isDarkMode }) => (
+  <Link
+    to='/'
+    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 backdrop-blur-md border ${
+      isDarkMode
+        ? 'text-slate-300 hover:text-white bg-slate-800/90 hover:bg-slate-700/90 border-slate-700/50'
+        : 'text-slate-700 hover:text-slate-900 bg-white/90 hover:bg-white border-gray-200/50'
+    }`}
+  >
+    <ArrowLeft size={16} />
+    Kembali ke Beranda
+  </Link>
+);
+
+const ThemeToggleButton = ({ isDarkMode, toggleTheme }) => (
+  <button
+    onClick={toggleTheme}
+    className={`p-2.5 rounded-lg transition-all duration-200 backdrop-blur-md border ${
+      isDarkMode
+        ? 'text-slate-300 hover:text-white bg-slate-800/90 hover:bg-slate-700/90 border-slate-700/50'
+        : 'text-slate-700 hover:text-slate-900 bg-white/90 hover:bg-white border-gray-200/50'
+    }`}
+    aria-label='Toggle theme'
+  >
+    {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+  </button>
+);
+
 const AuthLayout = ({ children }) => {
   const { isDarkMode, toggleTheme } = useDarkMode();
 
@@ -16,38 +44,20 @@ const AuthLayout = ({ children }) => {
         }`}
       />
 
-      {/* Desktop Controls - Top corners */}
+      {/* Desktop Controls */}
       <div className='hidden md:block'>
         <div className='fixed top-6 left-6 z-50'>
-          <Link
-            to='/'
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 backdrop-blur-md border ${
-              isDarkMode
-                ? 'text-slate-300 hover:text-white bg-slate-800/90 hover:bg-slate-700/90 border-slate-700/50'
-                : 'text-slate-700 hover:text-slate-900 bg-white/90 hover:bg-white border-gray-200/50'
-            }`}
-          >
-            <ArrowLeft size={16} />
-            Kembali ke Beranda
-          </Link>
+          <BackButton isDarkMode={isDarkMode} />
         </div>
-
         <div className='fixed top-6 right-6 z-50'>
-          <button
-            onClick={toggleTheme}
-            className={`p-2.5 rounded-lg transition-all duration-200 backdrop-blur-md border ${
-              isDarkMode
-                ? 'text-slate-300 hover:text-white bg-slate-800/90 hover:bg-slate-700/90 border-slate-700/50'
-                : 'text-slate-700 hover:text-slate-900 bg-white/90 hover:bg-white border-gray-200/50'
-            }`}
-            aria-label='Toggle theme'
-          >
-            {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
+          <ThemeToggleButton
+            isDarkMode={isDarkMode}
+            toggleTheme={toggleTheme}
+          />
         </div>
       </div>
 
-      {/* Mobile Controls - Top bar */}
+      {/* Mobile Controls */}
       <div className='md:hidden'>
         <div className='fixed top-0 left-0 right-0 z-50 p-4'>
           <div

@@ -2,26 +2,15 @@ import darkLogo from '../../../assets/img/ewasteDark.png';
 import lightLogo from '../../../assets/img/ewasteLight.png';
 import useDarkMode from '../../../hooks/useDarkMode';
 
-const FormHeader = ({
-  title,
-  subtitle,
-  showLogo = true,
-  centerAlign = true,
-  className = '',
-}) => {
+const FormHeader = ({ title, subtitle, showLogo = true, center = true }) => {
   const { isDarkMode } = useDarkMode();
   const logo = isDarkMode ? darkLogo : lightLogo;
 
   return (
-    <div className={`${centerAlign ? 'text-center' : ''} ${className}`}>
-      {/* Logo */}
+    <div className={center ? 'text-center' : ''}>
       {showLogo && (
-        <div className='flex justify-center mb-6'>
-          <img src={logo} alt='E-Waste Hub' className='h-16 w-auto' />
-        </div>
+        <img src={logo} alt='EWasteHub' className='h-16 w-auto mx-auto mb-6' />
       )}
-
-      {/* Title */}
       {title && (
         <h1
           className={`text-2xl font-bold mb-2 ${
@@ -31,12 +20,10 @@ const FormHeader = ({
           {title}
         </h1>
       )}
-
-      {/* Subtitle */}
       {subtitle && (
         <p
-          className={`text-2xl font-semibold ${
-            isDarkMode ? 'text-white' : 'text-gray-600'
+          className={`text-base ${
+            isDarkMode ? 'text-slate-300' : 'text-gray-600'
           }`}
         >
           {subtitle}

@@ -2,7 +2,7 @@ import { BookText, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import Badge from '../components/elements/Badge';
 import MainLayout from '../components/layouts/MainLayout';
-import { panduanData } from '../data/panduanData';
+import { panduanDummy } from '../data/panduanDummy';
 import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
@@ -24,7 +24,7 @@ const PanduanAplikasiPage = () => {
         }`}
       >
         <div className='max-w-3xl mx-auto'>
-          <Badge variant='soft' color='green' size='md' className='mb-6'>
+          <Badge variant='solid' intent='success' size='md' className='mb-6'>
             <BookText className='w-4 h-4 mr-2' />
             Panduan Mudah
           </Badge>
@@ -56,7 +56,7 @@ const PanduanAplikasiPage = () => {
       >
         <div className='max-w-4xl mx-auto'>
           <div className='space-y-4'>
-            {panduanData.map((step, index) => {
+            {panduanDummy.map((step, index) => {
               const { Icon } = step;
               const isActive = activeStep === index;
 

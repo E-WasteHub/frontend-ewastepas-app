@@ -11,26 +11,21 @@ const Button = ({
 }) => {
   const { isDarkMode } = useDarkMode();
 
-  // Style dasar untuk semua button
   const baseStyle =
     'px-6 py-3 rounded-lg font-medium transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed';
 
-  // Style berdasarkan variant
-  let variantStyle = '';
-
-  if (variant === 'primary') {
-    variantStyle = isDarkMode
+  const variants = {
+    primary: isDarkMode
       ? 'bg-green-500 text-white hover:bg-green-600'
-      : 'bg-green-600 text-white hover:bg-green-700';
-  } else if (variant === 'secondary') {
-    variantStyle = isDarkMode
+      : 'bg-green-600 text-white hover:bg-green-700',
+    secondary: isDarkMode
       ? 'bg-slate-700 text-slate-200 hover:bg-slate-600'
-      : 'bg-gray-200 text-gray-800 hover:bg-gray-300';
-  }
+      : 'bg-gray-200 text-gray-800 hover:bg-gray-300',
+  };
 
   return (
     <button
-      className={`${baseStyle} ${variantStyle} ${className}`}
+      className={`${baseStyle} ${variants[variant]} ${className}`}
       disabled={disabled || isLoading}
       {...props}
     >

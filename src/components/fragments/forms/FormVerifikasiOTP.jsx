@@ -11,7 +11,8 @@ const FormVerifikasiOTP = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
-  const [timer, setTimer] = useState(300); // 5 minutes
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [timer, setTimer] = useState(300); // 5 menit
   const inputRefs = useRef([]);
 
   // Timer countdown
@@ -24,7 +25,7 @@ const FormVerifikasiOTP = () => {
     }
   }, [timer]);
 
-  // Format timer to MM:SS
+  // Format timer ke MM:SS
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -34,22 +35,21 @@ const FormVerifikasiOTP = () => {
   };
 
   const handleInputChange = (index, value) => {
-    // Only allow numbers
-    if (!/^\d*$/.test(value)) return;
+    if (!/^\d*$/.test(value)) return; // hanya angka
 
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
     setError('');
 
-    // Auto focus next input
+    // Auto focus ke input berikutnya
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
   };
 
   const handleKeyDown = (index, e) => {
-    // Handle backspace
+    // Backspace untuk kembali ke input sebelumnya
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -66,7 +66,6 @@ const FormVerifikasiOTP = () => {
     }
     setOtp(newOtp);
 
-    // Focus the next empty input or the last input
     const nextIndex = Math.min(digits.length, 5);
     inputRefs.current[nextIndex]?.focus();
   };
@@ -82,26 +81,32 @@ const FormVerifikasiOTP = () => {
 
     setError('');
     setIsLoading(true);
+    setIsSuccess(false);
 
-    // TODO: Implement OTP verification logic
+    // TODO: Integrasi dengan API verifikasi OTP
     console.log('OTP submitted:', otpValue);
-    setTimeout(() => setIsLoading(false), 2000);
+
+    setTimeout(() => {
+      setIsLoading(false);
+      setIsSuccess(true);
+    }, 2000);
   };
 
   const handleResendOTP = () => {
     setIsResending(true);
     setError('');
+    setIsSuccess(false);
 
-    // TODO: Implement resend OTP logic
+    // TODO: Integrasi dengan API resend OTP
     console.log('Resending OTP...');
     setTimeout(() => {
       setIsResending(false);
-      setTimer(300); // Reset to 5 minutes
+      setTimer(300); // Reset timer ke 5 menit
     }, 2000);
   };
+
   return (
     <div className='w-full max-w-md mx-auto'>
-      {/* Container dengan border dan shadow seperti wireframe */}
       <div
         className={`${
           isDarkMode
@@ -109,7 +114,7 @@ const FormVerifikasiOTP = () => {
             : 'bg-white border-gray-200'
         } rounded-2xl border shadow-lg p-8`}
       >
-        {/* Header dengan Logo */}
+        {/* Header */}
         <FormHeader
           title='EWasteHub'
           subtitle='Verifikasi OTP'
@@ -117,46 +122,51 @@ const FormVerifikasiOTP = () => {
           className='mb-6'
         />
 
-        {/* Subtitle Description */}
+        {/* Subtitle */}
         <p
-          className={`text-center text-md font-semi-bold mb-6 ${
-            isDarkMode ? 'text-white' : 'text-slate-800'
+          className={`text-center text-md mb-6 ${
+            isDarkMode ? 'text-slate-300' : 'text-gray-700'
           }`}
         >
-          Masukkan kode OTP
+          Masukkan kode OTP yang dikirim ke email Anda
         </p>
 
-        {/* Error Alert */}
+        {/* Alert */}
         {error && <Alert type='error' message={error} className='mb-4' />}
+        {isSuccess && (
+          <Alert
+            type='success'
+            message='Verifikasi berhasil! Anda akan diarahkan ke halaman berikutnya.'
+            className='mb-4'
+          />
+        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className='space-y-6'>
-          {/* OTP Input Boxes */}
-          <div>
-            <div className='flex justify-center gap-2 mb-4'>
-              {otp.map((digit, index) => (
-                <input
-                  key={index}
-                  ref={(el) => (inputRefs.current[index] = el)}
-                  type='text'
-                  maxLength='1'
-                  value={digit}
-                  onChange={(e) => handleInputChange(index, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(index, e)}
-                  onPaste={index === 0 ? handlePaste : undefined}
-                  disabled={isLoading}
-                  className={`w-14 h-14 text-center text-lg font-semibold border rounded-md focus:outline-none focus:ring-2 transition-colors ${
-                    isDarkMode
-                      ? 'bg-slate-700 border-slate-600 text-slate-100 focus:ring-green-500 focus:border-green-500'
-                      : 'bg-white border-gray-300 text-gray-900 focus:ring-green-500 focus:border-green-500'
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                />
-              ))}
-            </div>
+          {/* OTP Inputs */}
+          <div className='flex justify-center gap-2 mb-4'>
+            {otp.map((digit, index) => (
+              <input
+                key={index}
+                ref={(el) => (inputRefs.current[index] = el)}
+                type='text'
+                maxLength='1'
+                value={digit}
+                onChange={(e) => handleInputChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                onPaste={index === 0 ? handlePaste : undefined}
+                disabled={isLoading}
+                className={`w-14 h-14 text-center text-lg font-semibold border rounded-md focus:outline-none focus:ring-2 transition-colors ${
+                  isDarkMode
+                    ? 'bg-slate-700 border-slate-600 text-slate-100 focus:ring-green-500 focus:border-green-500'
+                    : 'bg-white border-gray-300 text-gray-900 focus:ring-green-500 focus:border-green-500'
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              />
+            ))}
           </div>
 
-          {/* Timer Card */}
-          {timer > 0 && (
+          {/* Timer */}
+          {timer > 0 ? (
             <div
               className={`${
                 isDarkMode
@@ -185,10 +195,7 @@ const FormVerifikasiOTP = () => {
                 </span>
               </p>
             </div>
-          )}
-
-          {/* Timer Expired Message */}
-          {timer === 0 && (
+          ) : (
             <div
               className={`${
                 isDarkMode
@@ -206,7 +213,7 @@ const FormVerifikasiOTP = () => {
             </div>
           )}
 
-          {/* Resend Button - Only show when timer is 0 */}
+          {/* Resend OTP */}
           {timer === 0 && (
             <div className='text-center'>
               <button
@@ -224,7 +231,7 @@ const FormVerifikasiOTP = () => {
             </div>
           )}
 
-          {/* Submit Button */}
+          {/* Submit */}
           <Button
             type='submit'
             variant='primary'
@@ -236,7 +243,7 @@ const FormVerifikasiOTP = () => {
           </Button>
         </form>
 
-        {/* Footer Link */}
+        {/* Footer */}
         <div
           className={`text-center mt-6 pt-4 border-t ${
             isDarkMode ? 'border-slate-700' : 'border-gray-200'

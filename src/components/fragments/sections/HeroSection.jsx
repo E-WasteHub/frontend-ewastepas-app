@@ -41,7 +41,7 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <Badge variant='soft' color='green' size='md'>
+            <Badge variant='solid' intent='success' size='md'>
               <Leaf className='mr-1.5 h-4 w-4' />
               Solusi Ramah Lingkungan
             </Badge>

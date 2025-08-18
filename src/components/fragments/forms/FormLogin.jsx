@@ -25,19 +25,21 @@ const FormLogin = () => {
 
   return (
     <div className='w-full max-w-md mx-auto'>
-      {/* Container dengan border dan shadow seperti wireframe */}
       <div
-        className={`${
-          isDarkMode
-            ? 'bg-slate-800 border-slate-700'
-            : 'bg-white border-gray-200'
-        } rounded-2xl border shadow-lg p-8`}
+        className={`
+          ${
+            isDarkMode
+              ? 'bg-slate-800 border-slate-700'
+              : 'bg-white border-gray-200'
+          }
+          rounded-2xl border shadow-lg p-8
+        `}
       >
-        {/* Header dengan Logo */}
+        {/* Header */}
         <FormHeader
           title='EWasteHub'
           subtitle='Masuk ke Akun Anda'
-          showLogo={true}
+          showLogo
           className='mb-6'
         />
 
@@ -46,59 +48,55 @@ const FormLogin = () => {
 
         {/* Form */}
         <form onSubmit={onSubmit} className='space-y-4'>
-          {/* Email Input */}
-          <div>
-            <Input
-              type='email'
-              label='Email'
-              name='email'
-              placeholder='Masukkan email Anda'
-              value={email}
-              onChange={handleInputChange}
-              disabled={isLoading}
-              required
-              className='text-sm'
-            />
-          </div>
+          <Input
+            type='email'
+            label='Email'
+            name='email'
+            placeholder='Masukkan email Anda'
+            value={email}
+            onChange={handleInputChange}
+            disabled={isLoading}
+            required
+            className='text-sm'
+          />
 
-          {/* Password Input */}
-          <div>
-            <Input
-              type='password'
-              label='Kata sandi'
-              name='password'
-              placeholder='Masukkan kata sandi Anda'
-              value={password}
-              onChange={handleInputChange}
-              disabled={isLoading}
-              required
-              showPasswordToggle={true}
-              className='text-sm'
-            />
-          </div>
+          <Input
+            type='password'
+            label='Kata sandi'
+            name='password'
+            placeholder='Masukkan kata sandi Anda'
+            value={password}
+            onChange={handleInputChange}
+            disabled={isLoading}
+            required
+            showPasswordToggle
+            className='text-sm'
+          />
 
-          {/* Remember Me dan Lupa Password dalam satu baris */}
+          {/* Remember Me & Lupa Password */}
           <div className='flex items-center justify-between text-sm'>
-            <div className='flex items-center space-x-2'>
+            <label className='flex items-center space-x-2'>
               <Checkbox
                 name='rememberMe'
                 checked={rememberMe}
                 onChange={handleInputChange}
                 disabled={isLoading}
               />
-              <label
-                className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}
-              >
+              <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>
                 Ingat saya
-              </label>
-            </div>
+              </span>
+            </label>
+
             <Link
               to='/lupa-password'
-              className={`${
-                isDarkMode
-                  ? 'text-green-400 hover:text-green-300'
-                  : 'text-green-600 hover:text-green-500'
-              } transition-colors`}
+              className={`
+                ${
+                  isDarkMode
+                    ? 'text-green-400 hover:text-green-300'
+                    : 'text-green-600 hover:text-green-500'
+                }
+                transition-colors
+              `}
             >
               Lupa kata sandi?
             </Link>
@@ -116,25 +114,25 @@ const FormLogin = () => {
           </Button>
         </form>
 
-        {/* Footer Link */}
+        {/* Footer */}
         <div
-          className={`text-center mt-6 pt-4 border-t ${
-            isDarkMode ? 'border-slate-700' : 'border-gray-200'
-          }`}
+          className={`
+            text-center text-sm mt-6 pt-4 border-t
+            ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}
+          `}
         >
-          <p
-            className={`text-sm ${
-              isDarkMode ? 'text-slate-400' : 'text-gray-600'
-            }`}
-          >
+          <p className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>
             Belum punya akun?{' '}
             <Link
               to='/register'
-              className={`${
-                isDarkMode
-                  ? 'text-green-400 hover:text-green-300'
-                  : 'text-green-600 hover:text-green-500'
-              } font-medium transition-colors`}
+              className={`
+                ${
+                  isDarkMode
+                    ? 'text-green-400 hover:text-green-300'
+                    : 'text-green-600 hover:text-green-500'
+                }
+                font-semibold transition-colors
+              `}
             >
               Daftar di sini
             </Link>

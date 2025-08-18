@@ -21,7 +21,7 @@ const InformasiSection = () => {
           className='text-center mb-12'
         >
           {/* Badge */}
-          <Badge variant='soft' color='green' size='md' className='mb-4'>
+          <Badge variant='solid' intent='success' size='md' className='mb-4'>
             <Zap className='w-4 h-4 mr-1.5' />
             Bergabung Sekarang
           </Badge>

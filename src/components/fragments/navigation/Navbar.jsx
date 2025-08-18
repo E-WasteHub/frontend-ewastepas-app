@@ -12,6 +12,17 @@ const Navbar = () => {
     { to: '/panduan-aplikasi', text: 'Panduan' },
   ];
 
+  const getNavLinkClass = (isActive) =>
+    `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+      isActive
+        ? isDarkMode
+          ? 'text-emerald-400 underline decoration-2 underline-offset-8'
+          : 'text-emerald-600 underline decoration-2 underline-offset-8'
+        : isDarkMode
+        ? 'text-slate-300 hover:text-slate-100 hover:bg-slate-800/50'
+        : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+    }`;
+
   return (
     <header
       className={`fixed top-0 z-40 w-full border-b shadow-md backdrop-blur-md ${
@@ -20,11 +31,11 @@ const Navbar = () => {
           : 'bg-white/90 border-slate-200'
       }`}
     >
-      <div className='flex items-center justify-between px-2 py-3 mx-auto max-w-7xl'>
+      <div className='flex items-center justify-between px-4 py-3 mx-auto max-w-7xl'>
+        {/* Logo + Mobile Theme Selector */}
         <div className='flex items-center justify-between w-full lg:w-auto'>
-          {/* Logo & Text */}
           <Link to='/' className='flex items-center'>
-            <LogoApp size='xl' showText={true} textSize='2xl' />
+            <LogoApp size='xl' withText={true} textSize='2xl' />
           </Link>
 
           {/* Theme Selector - MOBILE ONLY */}
@@ -34,30 +45,20 @@ const Navbar = () => {
         </div>
 
         {/* Navigation Links */}
-        <nav className='items-center hidden space-x-4 text-sm font-medium lg:flex'>
+        <nav className='items-center hidden space-x-4 lg:flex'>
           {navLinks.map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
               end={link.to === '/'}
-              className={({ isActive }) =>
-                `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                  isActive
-                    ? isDarkMode
-                      ? 'text-emerald-400 underline decoration-2 underline-offset-8'
-                      : 'text-emerald-600 underline decoration-2 underline-offset-8'
-                    : isDarkMode
-                    ? 'text-slate-300 hover:text-slate-100 hover:bg-slate-800/50'
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
-                }`
-              }
+              className={({ isActive }) => getNavLinkClass(isActive)}
             >
               {link.text}
             </NavLink>
           ))}
 
           {/* Auth Buttons & Theme Selector */}
-          <div className='flex items-center gap-4 ml-1'>
+          <div className='flex items-center text-sm gap-4 ml-2'>
             {/* Theme Selector - DESKTOP */}
             <ThemeSelector />
 

@@ -87,93 +87,56 @@ Setelah instalasi selesai, Anda dapat menjalankan aplikasi dalam beberapa mode:
 
 ## 📂 Struktur Proyek
 
-Struktur direktori proyek ini dirancang agar modular dan mudah dipahami:
+Struktur direktori proyek ini sudah disesuaikan dengan workspace nyata. Berikut penjelasan dan struktur folder utama:
 
 ```
 frontend-ewastehub-app/
-├── public/                     # Aset statis yang tidak diproses oleh build tool
-│   ├── favicon.ico            # Ikon website
-│   └── vite.svg              # Logo Vite
-├── src/
-│   ├── assets/               # Gambar, ikon, dan file media lainnya
-│   │   ├── react.svg        # Logo React
-│   │   └── img/             # Folder gambar
-│   │       ├── ewasteDark.png   # Logo dark mode
-│   │       └── ewasteLight.png  # Logo light mode
-│   ├── components/           # Komponen React yang dapat digunakan kembali
-│   │   ├── common/          # Komponen dasar (Button, Input, Card, dll)
-│   │   ├── form/            # Komponen form (FormField, FormLogin, dll)
-│   │   ├── navigation/      # Komponen navigasi
-│   │   └── sections/        # Komponen bagian halaman
-│   ├── context/             # React Context untuk state management global
-│   │   └── DarkMode.jsx     # Context untuk dark mode
-│   ├── data/                # Data statis atau mock
-│   │   ├── edukasiData.js   # Data artikel edukasi
-│   │   ├── faqData.js       # Data FAQ
-│   │   ├── kategoriData.js  # Data kategori sampah
-│   │   ├── manfaatData.js   # Data manfaat daur ulang
-│   │   └── panduanData.js   # Data panduan aplikasi
-│   ├── hooks/               # Custom React Hooks untuk logika bersama
-│   │   ├── useAuth.js       # Hook untuk autentikasi
-│   │   ├── useDarkMode.js   # Hook untuk dark mode
-│   │   └── useDocumentTitle.js # Hook untuk mengatur judul halaman
-│   ├── layouts/             # Komponen tata letak halaman
-│   │   ├── AuthLayout.jsx   # Layout untuk halaman autentikasi
-│   │   └── MainLayout.jsx   # Layout utama aplikasi
-│   ├── pages/               # Komponen yang mewakili halaman/rute aplikasi
-│   │   ├── auth/           # Halaman autentikasi
-│   │   ├── dashboard/      # Halaman dashboard untuk berbagai role
-│   │   │   ├── admin/     # Dashboard administrator
-│   │   │   ├── kurir/     # Dashboard kurir
-│   │   │   └── masyarakat/ # Dashboard masyarakat
-│   │   └── home/          # Halaman beranda
-│   ├── routes/             # Konfigurasi dan definisi rute aplikasi
-│   │   ├── adminRoutes.jsx     # Rute khusus admin
-│   │   ├── authRoutes.jsx      # Rute autentikasi
-│   │   ├── index.jsx           # Konfigurasi rute utama
-│   │   ├── masyarakatRoutes.jsx # Rute khusus masyarakat
-│   │   ├── mitrakurirRoutes.jsx # Rute khusus kurir
-│   │   ├── protectedRoute.jsx   # Komponen untuk proteksi rute
-│   │   └── publicRoutes.jsx     # Rute publik
-│   ├── services/           # Service layer untuk API calls
-│   │   ├── authService.js      # Service autentikasi
-│   │   ├── daerahService.js    # Service data daerah
-│   │   ├── dropboxService.js   # Service dropbox
-│   │   ├── edukasiService.js   # Service edukasi
-│   │   ├── jenisService.js     # Service jenis sampah
-│   │   ├── kategoriService.js  # Service kategori
-│   │   ├── konversiPoinService.js # Service konversi poin
-│   │   ├── penjemputanKurirService.js # Service penjemputan kurir
-│   │   ├── penjemputanService.js # Service penjemputan
-│   │   ├── profilService.js    # Service profil pengguna
-│   │   └── transaksiService.js # Service transaksi
-│   ├── store/              # State management (untuk integrasi backend)
-│   │   ├── authStore.js        # Store autentikasi
-│   │   ├── daerahStore.js      # Store data daerah
-│   │   ├── dropboxStore.js     # Store dropbox
-│   │   ├── edukasiStore.js     # Store edukasi
-│   │   ├── jenisStore.js       # Store jenis sampah
-│   │   ├── kategoriStore.js    # Store kategori
-│   │   ├── konversiPoinStore.js # Store konversi poin
-│   │   ├── penjemputanStore.js # Store penjemputan
-│   │   ├── profilStore.js      # Store profil
-│   │   └── transaksiStore.js   # Store transaksi
-│   ├── utils/              # Utility functions dan helper
-│   │   └── RouteScrollManager.jsx # Utility untuk scroll management
-│   ├── App.jsx             # Komponen aplikasi utama
-│   ├── index.css           # CSS global dan Tailwind imports
-│   └── main.jsx            # Entry point React aplikasi
-├── dev-dist/               # Build hasil development mode
-├── dist/                   # Build hasil production mode
-├── .gitignore              # File dan folder yang diabaikan oleh Git
-├── .vscode/                # Konfigurasi VS Code
-├── eslint.config.js        # Konfigurasi ESLint
-├── index.html              # Titik masuk HTML utama
-├── package.json            # Daftar dependensi dan skrip proyek
-├── package-lock.json       # Lock file untuk dependensi
-├── vite.config.js          # Konfigurasi Vite
-└── README.md               # Dokumentasi proyek
+├── public/                # Aset statis yang langsung diakses browser (favicon, logo, dsb)
+├── src/                   # Seluruh source code aplikasi
+│   ├── assets/            # Gambar, ikon, dan media lain
+│   │   ├── react.svg
+│   │   └── img/           # Berisi gambar/logo (misal ewasteDark.png, ewasteLight.png)
+│   ├── components/        # Komponen React reusable
+│   │   ├── elements/      # Komponen atom/molekul (tombol, input, dsb)
+│   │   ├── fragments/     # Komponen organism (gabungan elements)
+│   │   └── layouts/       # Layout/template halaman
+│   ├── context/           # React Context untuk state global (misal DarkMode)
+│   ├── data/              # Data statis/mock (edukasiData.js, kategoriData.js, panduanData.js)
+│   ├── hooks/             # Custom React Hooks (useDarkMode, useLoginForm, dsb)
+│   ├── pages/             # Komponen halaman utama (HomeView, EdukasiView, dsb)
+│   │   ├── auth/          # Halaman autentikasi
+│   │   └── dashboard/     # Halaman dashboard (peran admin, kurir, masyarakat)
+│   ├── routes/            # Konfigurasi dan definisi rute aplikasi
+│   ├── services/          # Service layer untuk API call
+│   ├── store/             # State management (integrasi backend)
+│   └── utils/             # Utility/helper functions
+│   ├── App.jsx            # Komponen aplikasi utama
+│   ├── index.css          # CSS global dan Tailwind imports
+│   └── main.jsx           # Entry point React
+├── dev-dist/              # Build hasil development mode (otomatis oleh Vite)
+├── .gitignore             # File/folder yang diabaikan Git
+├── eslint.config.js       # Konfigurasi ESLint
+├── index.html             # Titik masuk HTML utama
+├── package.json           # Daftar dependensi & skrip proyek
+├── package-lock.json      # Lock file dependensi
+├── vite.config.js         # Konfigurasi Vite
+└── README.md              # Dokumentasi proyek
 ```
+
+**Penjelasan Singkat:**
+
+- `public/`: Berisi aset statis yang tidak diproses oleh Vite (favicon, logo, dsb).
+- `src/assets/`: Gambar, ikon, dan media lain yang digunakan di aplikasi.
+- `src/components/`: Komponen React yang reusable, dipisah berdasarkan tingkatannya (elements, fragments, layouts).
+- `src/context/`: State global menggunakan React Context (misal dark mode).
+- `src/data/`: Data statis atau mock untuk kebutuhan tampilan/development.
+- `src/hooks/`: Custom hooks untuk logika yang bisa digunakan ulang.
+- `src/pages/`: Komponen halaman utama aplikasi, termasuk subfolder untuk autentikasi dan dashboard.
+- `src/routes/`: Konfigurasi rute aplikasi (routing).
+- `src/services/`: Berisi fungsi untuk komunikasi dengan API/backend.
+- `src/store/`: State management, biasanya untuk integrasi data dari backend.
+- `src/utils/`: Fungsi-fungsi utilitas/helper.
+- File utama lain (`App.jsx`, `main.jsx`, `index.css`) adalah entry point aplikasi React.
 
 ## 🎯 Fitur Aplikasi
 

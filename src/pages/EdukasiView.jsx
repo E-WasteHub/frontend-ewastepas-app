@@ -5,23 +5,26 @@ import { Link } from 'react-router-dom';
 import Badge from '../components/elements/Badge';
 import Pagination from '../components/elements/Pagination';
 import MainLayout from '../components/layouts/MainLayout';
-import { educationTopics } from '../data/edukasiData';
+import { kontenEdukasiDummy } from '../data';
 import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
-const EdukasiPage = () => {
+const EdukasiView = () => {
   useDocumentTitle('Edukasi | E-wasteHub');
   const { isDarkMode } = useDarkMode();
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 4; // supaya ada 2 halaman dari 4 data
+
+  // Ambil hanya 4 data pertama
+  const edukasiData = kontenEdukasiDummy.slice(0, 6);
 
   // Calculate pagination
-  const totalPages = Math.ceil(educationTopics.length / itemsPerPage);
+  const totalPages = Math.ceil(edukasiData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentTopics = educationTopics.slice(startIndex, endIndex);
+  const currentTopics = edukasiData.slice(startIndex, endIndex);
 
   const goToPage = (page) => {
     setCurrentPage(page);
@@ -38,8 +41,8 @@ const EdukasiPage = () => {
       >
         <div className='max-w-4xl mx-auto'>
           <Badge
-            variant='soft'
-            color='green'
+            variant='solid'
+            intent='success'
             size='md'
             className='mb-4 sm:mb-6'
           >
@@ -60,8 +63,8 @@ const EdukasiPage = () => {
               isDarkMode ? 'text-slate-300' : 'text-slate-600'
             }`}
           >
-            Jelajahi berbagai topik untuk memahami pentingnya pengelolaan sampah
-            elektronik yang bertanggung jawab.
+            Jelajahi berbagai artikel untuk memahami pentingnya pengelolaan
+            sampah elektronik yang bertanggung jawab.
           </p>
         </div>
       </section>
@@ -79,102 +82,83 @@ const EdukasiPage = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6 }}
           >
-            {currentTopics.map((topic, index) => {
-              const { Icon } = topic;
-
-              return (
-                <Motion.div
-                  key={topic.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className='group'
+            {currentTopics.map((topic, index) => (
+              <Motion.div
+                key={topic.id_konten}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className='group'
+              >
+                <Link
+                  to={`/edukasi/${topic.id_konten}`}
+                  className='block h-full'
                 >
-                  <Link to={`/edukasi/${topic.id}`} className='block h-full'>
-                    <article
-                      className={`p-6 border rounded-xl hover:border-green-500 hover:shadow-lg transition-all duration-300 h-full ${
-                        isDarkMode
-                          ? 'bg-slate-800 border-slate-700'
-                          : 'bg-white border-slate-200'
+                  <article
+                    className={`p-6 text-center border rounded-xl hover:border-green-500 hover:shadow-lg transition-all duration-300 h-full ${
+                      isDarkMode
+                        ? 'bg-slate-800 border-slate-700'
+                        : 'bg-white border-slate-200'
+                    }`}
+                  >
+                    {/* Thumbnail */}
+                    {topic.gambar && (
+                      <div className='mb-4'>
+                        <img
+                          src={topic.gambar}
+                          alt={topic.judul_konten}
+                          className='w-full h-40 object-cover rounded-md'
+                        />
+                      </div>
+                    )}
+
+                    {/* Title */}
+                    <h3
+                      className={`text-lg font-semibold mb-3 ${
+                        isDarkMode ? 'text-white' : 'text-slate-900'
                       }`}
                     >
-                      {/* Header with Icon and Category */}
-                      <div className='flex items-start gap-4 mb-4'>
-                        {Icon && (
-                          <div
-                            className={`flex items-center justify-center w-12 h-12 rounded-full flex-shrink-0 ${
-                              isDarkMode ? 'bg-green-900/50' : 'bg-green-100'
-                            }`}
-                          >
-                            <Icon
-                              className={`w-6 h-6 ${
-                                isDarkMode ? 'text-green-400' : 'text-green-600'
-                              }`}
-                            />
-                          </div>
-                        )}
+                      {topic.judul_konten}
+                    </h3>
 
-                        <div className='flex-1'>
-                          <Badge color='gray' size='sm' className='mb-2'>
-                            {topic.category}
-                          </Badge>
+                    {/* Description Preview */}
+                    <p
+                      className={`text-sm leading-relaxed mb-4 line-clamp-4 ${
+                        isDarkMode ? 'text-slate-400' : 'text-slate-600'
+                      }`}
+                    >
+                      {topic.isi_konten.substring(0, 150)}...
+                    </p>
 
-                          <h3
-                            className={`text-lg font-semibold mb-2 ${
-                              isDarkMode ? 'text-white' : 'text-slate-900'
-                            }`}
-                          >
-                            {topic.title}
-                          </h3>
-                        </div>
-                      </div>
-
-                      {/* Description */}
-                      <p
-                        className={`text-sm leading-relaxed mb-4 line-clamp-4 ${
-                          isDarkMode ? 'text-slate-400' : 'text-slate-600'
+                    {/* Footer */}
+                    <div className='flex items-center justify-end text-sm'>
+                      <span
+                        className={`font-medium ${
+                          isDarkMode ? 'text-green-400' : 'text-green-600'
                         }`}
                       >
-                        {topic.description}
-                      </p>
-
-                      {/* Footer */}
-                      <div className='flex items-center justify-between text-sm'>
-                        <span
-                          className={
-                            isDarkMode ? 'text-slate-500' : 'text-slate-500'
-                          }
-                        >
-                          5 menit baca
+                        <span className='flex items-center gap-1'>
+                          Baca selengkapnya
+                          <svg
+                            className='w-4 h-4'
+                            fill='none'
+                            stroke='currentColor'
+                            viewBox='0 0 24 24'
+                          >
+                            <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              strokeWidth={2}
+                              d='M9 5l7 7-7 7'
+                            />
+                          </svg>
                         </span>
-                        <span
-                          className={`font-medium ${
-                            isDarkMode ? 'text-green-400' : 'text-green-600'
-                          }`}
-                        >
-                          <span className='flex items-center gap-1'>
-                            Baca selengkapnya
-                            <svg
-                              className='w-4 h-4'
-                              fill='none'
-                              stroke='currentColor'
-                              viewBox='0 0 24 24'
-                            >
-                              <path
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                                strokeWidth={2}
-                                d='M9 5l7 7-7 7'
-                              />
-                            </svg>
-                          </span>
-                        </span>
-                      </div>
-                    </article>
-                  </Link>
-                </Motion.div>
-              );
-            })}
+                      </span>
+                    </div>
+                  </article>
+                </Link>
+              </Motion.div>
+            ))}
           </Motion.div>
 
           {/* Pagination */}
@@ -190,4 +174,4 @@ const EdukasiPage = () => {
   );
 };
 
-export default EdukasiPage;
+export default EdukasiView;

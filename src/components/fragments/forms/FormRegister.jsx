@@ -9,6 +9,7 @@ import FormHeader from './FormHeader';
 const FormRegister = () => {
   const { isDarkMode } = useDarkMode();
   const [searchParams] = useSearchParams();
+
   const [selectedRole, setSelectedRole] = useState('');
   const [formData, setFormData] = useState({
     nama: '',
@@ -16,7 +17,9 @@ const FormRegister = () => {
     password: '',
     confirmPassword: '',
   });
+
   const [error, setError] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const roles = [
@@ -24,7 +27,7 @@ const FormRegister = () => {
     { value: 'mitra-kurir', label: 'Mitra Kurir' },
   ];
 
-  // Efek untuk mengatur role berdasarkan parameter URL
+  // Atur role berdasarkan query param (?role=mitra-kurir)
   useEffect(() => {
     const roleParam = searchParams.get('role');
     const validRoles = ['masyarakat', 'mitra-kurir'];
@@ -47,23 +50,40 @@ const FormRegister = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Validasi
     if (!selectedRole) {
       setError('Silakan pilih peran Anda');
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      setError('Format email tidak valid');
+      return;
+    }
+    if (formData.password.length < 6) {
+      setError('Kata sandi minimal 6 karakter');
       return;
     }
     if (formData.password !== formData.confirmPassword) {
       setError('Konfirmasi kata sandi tidak cocok');
       return;
     }
+
+    // Reset error dan mulai proses
     setError('');
+    setIsSuccess(false);
     setIsLoading(true);
-    // TODO: Implement registration logic
+
+    // Simulasi proses register (API call)
     console.log('Registration data:', { ...formData, role: selectedRole });
-    setTimeout(() => setIsLoading(false), 2000);
+    setTimeout(() => {
+      setIsLoading(false);
+      setIsSuccess(true);
+    }, 2000);
   };
+
   return (
     <div className='w-full max-w-lg mx-auto mt-4'>
-      {/* Container dengan border dan shadow seperti wireframe */}
       <div
         className={`${
           isDarkMode
@@ -71,7 +91,7 @@ const FormRegister = () => {
             : 'bg-white border-gray-200'
         } rounded-2xl border shadow-lg p-8`}
       >
-        {/* Header dengan Logo */}
+        {/* Header */}
         <FormHeader
           title='EWasteHub'
           subtitle='Buat Akun Baru'
@@ -79,12 +99,19 @@ const FormRegister = () => {
           className='mb-6'
         />
 
-        {/* Error Alert */}
+        {/* Error / Success Alert */}
         {error && <Alert type='error' message={error} className='mb-4' />}
+        {isSuccess && (
+          <Alert
+            type='success'
+            message='Pendaftaran berhasil! Silakan login.'
+            className='mb-4'
+          />
+        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className='space-y-4'>
-          {/* Pilihan Peran dengan Button */}
+          {/* Role Selector */}
           <div>
             <label
               className={`block text-sm font-medium mb-2 ${
@@ -102,9 +129,7 @@ const FormRegister = () => {
                   disabled={isLoading}
                   className={`flex-1 py-2 px-4 text-sm font-medium rounded-md border transition-colors ${
                     selectedRole === role.value
-                      ? isDarkMode
-                        ? 'bg-green-600 text-white border-green-600'
-                        : 'bg-green-600 text-white border-green-600'
+                      ? 'bg-green-600 text-white border-green-600'
                       : isDarkMode
                       ? 'bg-slate-700 text-slate-200 border-slate-600 hover:bg-slate-600'
                       : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
@@ -115,75 +140,68 @@ const FormRegister = () => {
               ))}
             </div>
           </div>
-          {/* Nama Lengkap Input */}
-          <div>
-            <Input
-              type='text'
-              label='Nama Lengkap'
-              name='nama'
-              id='nama'
-              placeholder='Masukkan nama lengkap Anda'
-              value={formData.nama}
-              onChange={handleInputChange}
-              disabled={isLoading}
-              required
-              autocomplete='name'
-              className='text-sm'
-            />
-          </div>
 
-          {/* Email Input */}
-          <div>
-            <Input
-              type='email'
-              label='Email'
-              name='email'
-              id='email'
-              placeholder='Masukkan email Anda'
-              value={formData.email}
-              onChange={handleInputChange}
-              disabled={isLoading}
-              required
-              autocomplete='email'
-              className='text-sm'
-            />
-          </div>
+          {/* Nama Lengkap */}
+          <Input
+            type='text'
+            label='Nama Lengkap'
+            name='nama'
+            id='nama'
+            placeholder='Masukkan nama lengkap Anda'
+            value={formData.nama}
+            onChange={handleInputChange}
+            disabled={isLoading}
+            required
+            autoComplete='name'
+            className='text-sm'
+          />
 
-          {/* Password Input */}
-          <div>
-            <Input
-              type='password'
-              label='Kata Sandi'
-              name='password'
-              id='password'
-              placeholder='Masukkan kata sandi'
-              value={formData.password}
-              onChange={handleInputChange}
-              disabled={isLoading}
-              required
-              showPasswordToggle={true}
-              autocomplete='new-password'
-              className='text-sm'
-            />
-          </div>
+          {/* Email */}
+          <Input
+            type='email'
+            label='Email'
+            name='email'
+            id='email'
+            placeholder='Masukkan email Anda'
+            value={formData.email}
+            onChange={handleInputChange}
+            disabled={isLoading}
+            required
+            autoComplete='email'
+            className='text-sm'
+          />
 
-          {/* Confirm Password Input */}
-          <div>
-            <Input
-              type='password'
-              label='Konfirmasi Kata Sandi'
-              name='confirmPassword'
-              id='confirmPassword'
-              placeholder='Konfirmasi kata sandi'
-              value={formData.confirmPassword}
-              onChange={handleInputChange}
-              disabled={isLoading}
-              required
-              showPasswordToggle={true}
-              autocomplete='new-password'
-              className='text-sm'
-            />
-          </div>
+          {/* Password */}
+          <Input
+            type='password'
+            label='Kata Sandi'
+            name='password'
+            id='password'
+            placeholder='Masukkan kata sandi'
+            value={formData.password}
+            onChange={handleInputChange}
+            disabled={isLoading}
+            required
+            showPasswordToggle={true}
+            autoComplete='new-password'
+            className='text-sm'
+          />
+
+          {/* Confirm Password */}
+          <Input
+            type='password'
+            label='Konfirmasi Kata Sandi'
+            name='confirmPassword'
+            id='confirmPassword'
+            placeholder='Konfirmasi kata sandi'
+            value={formData.confirmPassword}
+            onChange={handleInputChange}
+            disabled={isLoading}
+            required
+            showPasswordToggle={true}
+            autoComplete='new-password'
+            className='text-sm'
+          />
 
           {/* Submit Button */}
           <Button
@@ -197,7 +215,7 @@ const FormRegister = () => {
           </Button>
         </form>
 
-        {/* Footer Link */}
+        {/* Footer */}
         <div
           className={`text-center mt-6 pt-4 border-t ${
             isDarkMode ? 'border-slate-700' : 'border-gray-200'

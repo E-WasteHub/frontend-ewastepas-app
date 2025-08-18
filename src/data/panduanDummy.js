@@ -1,6 +1,6 @@
 import { CalendarPlus, Gift, UserRoundPlus } from 'lucide-react';
 
-export const panduanData = [
+export const panduanDummy = [
   {
     id: 1,
     number: 1,
