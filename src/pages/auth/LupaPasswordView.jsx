@@ -1,5 +1,5 @@
 // src/pages/auth/LupaPasswordView.jsx
-import FormLupaPassword from '../../components/fragments/form/FormLupaPassword';
+import FormLupaPassword from '../../components/fragments/forms/FormLupaPassword';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 

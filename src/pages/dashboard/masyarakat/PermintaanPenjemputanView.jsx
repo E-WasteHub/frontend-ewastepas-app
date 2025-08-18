@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Loading from '../../../components/elements/Loading';
-import FormPenjemputan from '../../../components/fragments/form/FormPenjemputan';
+import FormPenjemputan from '../../../components/fragments/forms/FormPenjemputan.jsx';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import {

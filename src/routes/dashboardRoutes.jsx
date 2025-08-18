@@ -11,8 +11,8 @@ const PermintaanPenjemputanView = lazy(() =>
 const LacakPenjemputanView = lazy(() =>
   import('../pages/dashboard/masyarakat/LacakPenjemputanView')
 );
-const RiwayatView = lazy(() =>
-  import('../pages/dashboard/masyarakat/RiwayatView')
+const RiwayatMasyarakatView = lazy(() =>
+  import('../pages/dashboard/masyarakat/RiwayatMasyarakatView')
 );
 
 // Shared Components
@@ -83,7 +83,7 @@ export const dashboardRoutes = [
   },
   {
     path: '/dashboard/masyarakat/riwayat',
-    element: createProtectedRoute(RiwayatView),
+    element: createProtectedRoute(RiwayatMasyarakatView),
     title: 'Riwayat Transaksi',
   },
   {

@@ -1,7 +1,7 @@
+import ScrollToTop from '../elements/ScrollToTop';
 import BottomNavbar from '../fragments/navigation/BottomNavbar';
 import Footer from '../fragments/navigation/Footer';
 import Header from '../fragments/navigation/Navbar';
-import ScrollToTop from '../elements/ScrollToTop/index.';
 
 const MainLayout = ({ children }) => {
   return (

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 // import { useNavigate, useLocation } from 'react-router-dom'; // Untuk validasi role nanti
 import useDarkMode from '../../hooks/useDarkMode';
+import { Breadcrumb } from '../elements';
 import BottombarDashboard from '../fragments/navigation/dashboard/BottombarDashboard';
-import BreadcrumbDashboard from '../fragments/navigation/dashboard/BreadcrumbDashboard';
 import NavbarDashboard from '../fragments/navigation/dashboard/NavbarDashboard';
 import SidebarDashboard from '../fragments/navigation/dashboard/SidebarDashboard';
 // import useAuthStore from '../store/authStore'; // Untuk validasi role nanti
@@ -95,7 +95,11 @@ const DashboardLayout = ({
           <div className='p-4 lg:p-6 pb-24 lg:pb-6'>
             {/* Breadcrumb */}
             {showBreadcrumb && (
-              <BreadcrumbDashboard customBreadcrumbs={customBreadcrumbs} />
+              <Breadcrumb
+                customBreadcrumbs={customBreadcrumbs}
+                homeLabel='Dashboard'
+                homePath='/dashboard'
+              />
             )}
             {children}
           </div>

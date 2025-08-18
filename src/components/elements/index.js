@@ -11,3 +11,5 @@ export { default as RoleProtectedRoute } from './RoleProtectedRoute/index.jsx';
 export { default as SapaanDashboard } from './SapaanDashboard/index.jsx';
 export { default as ScrollToTop } from './ScrollToTop/index.jsx';
 export { default as ThemeSelector } from './ThemeSelector/index.jsx';
+
+export { default as Breadcrumb } from './Breadcrumb';
