@@ -38,8 +38,8 @@ const Textarea = forwardRef(
       }
 
       return isDarkMode
-        ? 'border-slate-600 focus:border-blue-500 focus:ring-blue-500/20'
-        : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500/20';
+        ? 'border-slate-600 focus:border-green-500 focus:ring-green-500/20'
+        : 'border-gray-300 focus:border-green-500 focus:ring-green-500/20';
     };
 
     // Disabled styling

@@ -2,87 +2,31 @@
  * Service untuk mengelola permintaan penjemputan e-waste
  */
 
-// Mock data untuk kategori sampah
+import { kategoriData } from '../data/kategoriData';
+
+// Convert kategoriData to options format for compatibility
 export const kategoriUtamaOptions = [
   { value: '', label: 'Pilih Kategori Sampah' },
-  { value: 'kategori1', label: 'Peralatan Penukar Suhu' },
-  { value: 'kategori2', label: 'Layar & Monitor' },
-  { value: 'kategori3', label: 'Lampu' },
-  { value: 'kategori4', label: 'Peralatan Besar' },
-  { value: 'kategori5', label: 'Peralatan Kecil' },
-  { value: 'kategori6', label: 'Peralatan IT & Telekomunikasi Kecil' },
+  ...kategoriData.map((kategori) => ({
+    value: kategori.id.toString(),
+    label: `${kategori.name} - ${kategori.category} (${kategori.points} poin/kg)`,
+  })),
 ];
 
 // Alias untuk kompatibilitas
 export const kategoriSampahOptions = kategoriUtamaOptions;
 
-// Jenis spesifik untuk setiap kategori
-const jenisKategoriOptions = {
-  kategori1: [
-    { value: '', label: 'Pilih Jenis Peralatan' },
-    { value: 'kulkas', label: 'Kulkas/Lemari Es' },
-    { value: 'freezer', label: 'Freezer' },
-    { value: 'ac_split', label: 'AC Split' },
-    { value: 'ac_window', label: 'AC Window' },
-    { value: 'chiller', label: 'Chiller' },
-    { value: 'dehumidifier', label: 'Dehumidifier' },
-  ],
-  kategori2: [
-    { value: '', label: 'Pilih Jenis Layar/Monitor' },
-    { value: 'tv_lcd', label: 'TV LCD' },
-    { value: 'tv_led', label: 'TV LED' },
-    { value: 'tv_plasma', label: 'TV Plasma' },
-    { value: 'monitor_crt', label: 'Monitor CRT' },
-    { value: 'monitor_lcd', label: 'Monitor LCD/LED' },
-    { value: 'laptop', label: 'Laptop' },
-    { value: 'tablet', label: 'Tablet' },
-  ],
-  kategori3: [
-    { value: '', label: 'Pilih Jenis Lampu' },
-    { value: 'led', label: 'Lampu LED' },
-    { value: 'fluorescent', label: 'Lampu Fluorescent/TL' },
-    { value: 'cfl', label: 'Lampu CFL/Hemat Energi' },
-    { value: 'halogen', label: 'Lampu Halogen' },
-    { value: 'hid', label: 'Lampu HID' },
-    { value: 'neon', label: 'Lampu Neon' },
-  ],
-  kategori4: [
-    { value: '', label: 'Pilih Jenis Peralatan Besar' },
-    { value: 'mesin_cuci', label: 'Mesin Cuci' },
-    { value: 'mesin_pengering', label: 'Mesin Pengering' },
-    { value: 'dishwasher', label: 'Mesin Pencuci Piring' },
-    { value: 'oven_listrik', label: 'Oven Listrik' },
-    { value: 'microwave', label: 'Microwave' },
-    { value: 'printer_besar', label: 'Printer/Copier Besar' },
-    { value: 'water_heater', label: 'Water Heater Listrik' },
-  ],
-  kategori5: [
-    { value: '', label: 'Pilih Jenis Peralatan Kecil' },
-    { value: 'smartphone', label: 'Smartphone/HP' },
-    { value: 'feature_phone', label: 'HP Biasa/Feature Phone' },
-    { value: 'radio', label: 'Radio' },
-    { value: 'speaker', label: 'Speaker/Sound System' },
-    { value: 'kamera_digital', label: 'Kamera Digital' },
-    { value: 'camcorder', label: 'Camcorder' },
-    { value: 'mp3_player', label: 'MP3 Player' },
-    { value: 'power_bank', label: 'Power Bank' },
-    { value: 'charger', label: 'Charger/Adaptor' },
-  ],
-  kategori6: [
-    { value: '', label: 'Pilih Jenis Peralatan IT/Telekomunikasi' },
-    { value: 'router', label: 'Router' },
-    { value: 'modem', label: 'Modem' },
-    { value: 'switch', label: 'Network Switch' },
-    { value: 'hard_drive', label: 'Hard Drive/HDD' },
-    { value: 'ssd', label: 'SSD' },
-    { value: 'usb_drive', label: 'USB Drive/Flashdisk' },
-    { value: 'memory_card', label: 'Memory Card' },
-    { value: 'keyboard', label: 'Keyboard' },
-    { value: 'mouse', label: 'Mouse' },
-    { value: 'webcam', label: 'Webcam' },
-    { value: 'headset', label: 'Headset/Headphone' },
-  ],
-};
+// Generate jenis options from kategoriData
+const jenisKategoriOptions = {};
+kategoriData.forEach((kategori) => {
+  jenisKategoriOptions[kategori.id.toString()] = [
+    { value: '', label: 'Pilih Jenis Sampah' },
+    ...kategori.items.map((item) => ({
+      value: item.toLowerCase().replace(/\s+/g, '_'),
+      label: item,
+    })),
+  ];
+});
 
 // Data waktu operasional
 export const waktuOperasionalOptions = [
@@ -184,7 +128,7 @@ export const processPhotoUpload = (files) => {
           resolvePhoto({
             id: Date.now() + Math.random(),
             file: file,
-            preview: e.target.result,
+            url: e.target.result, // Changed from 'preview' to 'url' for consistency
             name: file.name,
             size: file.size,
           });

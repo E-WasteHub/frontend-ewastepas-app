@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Loading from '../../../components/elements/Loading';
-import FormPenjemputan from '../../../components/fragments/forms/FormPenjemputan.jsx';
+import FormPenjemputan from '../../../components/fragments/forms/FormPenjemputan';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import {
@@ -10,7 +10,7 @@ import {
 
 const PermintaanPenjemputanView = () => {
   const { isDarkMode } = useDarkMode();
-  useDocumentTitle('Permintaan Penjemputan - E-WasteHub');
+  useDocumentTitle('Permintaan Penjemputan');
 
   // Form state
   const [formData, setFormData] = useState({
@@ -81,30 +81,12 @@ const PermintaanPenjemputanView = () => {
   };
 
   return (
-    <div className='min-h-screen lg:min-h-auto flex flex-col'>
-      {/* Header - Fixed */}
-      <div className='flex-shrink-0 px-4 md:px-6 lg:px-8 py-3 md:py-4'>
-        <div className='max-w-7xl mx-auto'>
-          <h1
-            className={`text-lg md:text-xl lg:text-2xl font-bold ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`}
-          >
-            Permintaan Penjemputan
-          </h1>
-          <p
-            className={`text-sm md:text-base mt-1 ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-600'
-            }`}
-          >
-            Mari berkontribusi untuk lingkungan yang lebih bersih!
-          </p>
-        </div>
-      </div>
-
+    <div
+      className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}
+    >
       {/* Loading Overlay */}
       {isSubmitting && (
-        <div className='absolute inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center'>
+        <div className='fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center'>
           <Loading
             variant='spinner'
             size='lg'
@@ -114,31 +96,22 @@ const PermintaanPenjemputanView = () => {
         </div>
       )}
 
-      {/* Form Content - Fill remaining space */}
-      <div className='flex-1 lg:flex-initial'>
-        <form onSubmit={handleSubmit} className='h-full lg:h-auto'>
-          {/* Form Body - Conditional scrolling */}
-          <div
-            className={`overflow-y-auto lg:overflow-y-visible px-4 md:px-6 lg:px-8 py-4 md:py-6 ${
-              isDarkMode ? 'bg-gray-900' : 'bg-gray-50'
-            }`}
-          >
-            <div className='max-w-7xl mx-auto'>
-              <FormPenjemputan
-                formData={formData}
-                onInputChange={handleInputChange}
-                daftarSampah={formData.sampah}
-                onSampahChange={(newSampah) =>
-                  setFormData((prev) => ({ ...prev, sampah: newSampah }))
-                }
-                photos={photos}
-                onPhotoUpload={handlePhotoUpload}
-                onPhotoRemove={handleRemovePhoto}
-                isSubmitting={isSubmitting}
-                onCancel={handleCancel}
-              />
-            </div>
-          </div>
+      {/* Form Content */}
+      <div className='py-8 px-4'>
+        <form onSubmit={handleSubmit}>
+          <FormPenjemputan
+            formData={formData}
+            onInputChange={handleInputChange}
+            daftarSampah={formData.sampah}
+            onSampahChange={(newSampah) =>
+              setFormData((prev) => ({ ...prev, sampah: newSampah }))
+            }
+            photos={photos}
+            onPhotoUpload={handlePhotoUpload}
+            onPhotoRemove={handleRemovePhoto}
+            isSubmitting={isSubmitting}
+            onCancel={handleCancel}
+          />
         </form>
       </div>
     </div>

@@ -6,49 +6,120 @@
 // Mock data untuk development
 const mockData = {
   userProfile: {
-    nama: 'John Doe',
-    totalPoin: 2500,
+    nama_lengkap: 'John Doe',
+    email: 'john.doe@example.com',
+    poin_pengguna: 2500,
+    alamat_pengguna: 'Jl. Contoh No. 123, Jakarta',
   },
   riwayatTerakhir: [
     {
       id: 1,
-      kode: 'EWH-001',
-      tanggal: '2024-08-10',
+      kode_penjemputan: 'EWH-001',
+      tanggal_permintaan: '2024-08-10',
       status: 'selesai',
-      totalPoin: 150,
-      jenisSampah: ['Laptop Bekas', 'Mouse'],
+      total_poin: 150,
+      kurir: 'Ahmad Kurir',
+      alamat_jemput: 'Jl. Sudirman No. 45, Jakarta',
+      sampah: ['Laptop Bekas', 'Mouse'],
+      dropbox: 'Dropbox Sudirman',
     },
     {
       id: 2,
-      kode: 'EWH-002',
-      tanggal: '2024-08-08',
+      kode_penjemputan: 'EWH-002',
+      tanggal_permintaan: '2024-08-08',
       status: 'dalam_proses',
-      totalPoin: 200,
-      jenisSampah: ['Smartphone', 'Charger'],
+      total_poin: 200,
+      kurir: 'Budi Kurir',
+      alamat_jemput: 'Jl. Thamrin No. 12, Jakarta',
+      sampah: ['Smartphone', 'Charger'],
+      dropbox: 'Dropbox Thamrin',
     },
     {
       id: 3,
-      kode: 'EWH-003',
-      tanggal: '2024-08-05',
+      kode_penjemputan: 'EWH-003',
+      tanggal_permintaan: '2024-08-05',
       status: 'menunggu',
-      totalPoin: 100,
-      jenisSampah: ['Printer Bekas'],
+      total_poin: 100,
+      kurir: null,
+      alamat_jemput: 'Jl. Gatot Subroto No. 88, Jakarta',
+      sampah: ['Printer Bekas'],
+      dropbox: null,
     },
     {
       id: 4,
-      kode: 'EWH-004',
-      tanggal: '2024-08-03',
+      kode_penjemputan: 'EWH-004',
+      tanggal_permintaan: '2024-08-03',
       status: 'selesai',
-      totalPoin: 300,
-      jenisSampah: ['TV LED', 'Remote'],
+      total_poin: 300,
+      kurir: 'Citra Kurir',
+      alamat_jemput: 'Jl. Kuningan No. 67, Jakarta',
+      sampah: ['TV LED', 'Remote'],
+      dropbox: 'Dropbox Kuningan',
     },
     {
       id: 5,
-      kode: 'EWH-005',
-      tanggal: '2024-08-01',
+      kode_penjemputan: 'EWH-005',
+      tanggal_permintaan: '2024-08-01',
       status: 'selesai',
-      totalPoin: 180,
-      jenisSampah: ['Keyboard', 'Speaker'],
+      total_poin: 180,
+      kurir: 'Dedi Kurir',
+      alamat_jemput: 'Jl. Senayan No. 23, Jakarta',
+      sampah: ['Keyboard', 'Speaker'],
+      dropbox: 'Dropbox Senayan',
+    },
+  ],
+  notifikasi: [
+    {
+      id: 1,
+      tipe: 'selesai',
+      judul: 'Penjemputan Selesai',
+      pesan:
+        'Sampah elektronik Anda telah berhasil dijemput dan diantar ke dropbox.',
+      kode_penjemputan: 'EWH-001',
+      waktu: '2024-08-10T14:30:00Z',
+    },
+    {
+      id: 2,
+      tipe: 'dalam_proses',
+      judul: 'Kurir Dalam Perjalanan',
+      pesan:
+        'Kurir sedang menuju lokasi penjemputan Anda. Estimasi tiba 15 menit.',
+      kode_penjemputan: 'EWH-002',
+      waktu: '2024-08-08T10:15:00Z',
+    },
+    {
+      id: 3,
+      tipe: 'dikonfirmasi',
+      judul: 'Permintaan Dikonfirmasi',
+      pesan: 'Permintaan penjemputan Anda telah dikonfirmasi oleh kurir.',
+      kode_penjemputan: 'EWH-003',
+      waktu: '2024-08-05T09:00:00Z',
+    },
+  ],
+  artikelEdukasi: [
+    {
+      id_konten: 1,
+      judul_konten: 'Cara Memilah Sampah Elektronik dengan Benar',
+      isi_konten:
+        'Sampah elektronik atau e-waste memerlukan penanganan khusus karena mengandung bahan berbahaya. Berikut adalah panduan lengkap cara memilah sampah elektronik...',
+      gambar: '/images/edukasi/pemilahan-ewaste.jpg',
+      tanggal_dibuat: '2024-08-01T00:00:00Z',
+    },
+    {
+      id_konten: 2,
+      judul_konten: 'Dampak Positif Daur Ulang E-Waste untuk Lingkungan',
+      isi_konten:
+        'Daur ulang sampah elektronik memberikan dampak positif yang signifikan bagi lingkungan. Dengan mendaur ulang e-waste, kita dapat mengurangi pencemaran...',
+      gambar: '/images/edukasi/daur-ulang-ewaste.jpg',
+      tanggal_dibuat: '2024-07-28T00:00:00Z',
+    },
+    {
+      id_konten: 3,
+      judul_konten: 'Tips Memperpanjang Umur Perangkat Elektronik',
+      isi_konten:
+        'Memperpanjang umur perangkat elektronik adalah salah satu cara terbaik untuk mengurangi e-waste. Berikut adalah tips praktis yang bisa Anda terapkan...',
+      gambar: '/images/edukasi/tips-perawatan.jpg',
+      tanggal_dibuat: '2024-07-25T00:00:00Z',
     },
   ],
 };
@@ -156,6 +227,62 @@ export const calculateStats = (riwayat) => {
 };
 
 /**
+ * Mengambil notifikasi terbaru untuk masyarakat
+ * @param {number} limit - Jumlah notifikasi yang ingin diambil
+ * @returns {Promise<Object>} Data notifikasi
+ */
+export const getNotifikasiTerbaru = async (limit = 3) => {
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 400));
+
+    // TODO: Ganti dengan real API call
+    // const response = await fetch(`/api/notifikasi?limit=${limit}`);
+    // const data = await response.json();
+
+    const limitedData = mockData.notifikasi.slice(0, limit);
+
+    return {
+      success: true,
+      data: limitedData,
+    };
+  } catch (error) {
+    console.error('Error fetching notifikasi:', error);
+    return {
+      success: false,
+      error: 'Gagal memuat notifikasi',
+    };
+  }
+};
+
+/**
+ * Mengambil artikel edukasi terbaru
+ * @param {number} limit - Jumlah artikel yang ingin diambil
+ * @returns {Promise<Object>} Data artikel edukasi
+ */
+export const getArtikelEdukasiTerbaru = async (limit = 3) => {
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 600));
+
+    // TODO: Ganti dengan real API call
+    // const response = await fetch(`/api/edukasi/artikel?limit=${limit}`);
+    // const data = await response.json();
+
+    const limitedData = mockData.artikelEdukasi.slice(0, limit);
+
+    return {
+      success: true,
+      data: limitedData,
+    };
+  } catch (error) {
+    console.error('Error fetching artikel edukasi:', error);
+    return {
+      success: false,
+      error: 'Gagal memuat artikel edukasi',
+    };
+  }
+};
+
+/**
  * Utility function untuk generate greeting message
  * @param {string} nama - Nama pengguna
  * @returns {string} Pesan sapaan
@@ -181,6 +308,8 @@ export default {
   getDashboardData,
   getUserProfile,
   getRiwayatTerbaru,
+  getNotifikasiTerbaru,
+  getArtikelEdukasiTerbaru,
   calculateStats,
   generateGreeting,
 };

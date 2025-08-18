@@ -41,7 +41,30 @@ const Badge = ({
         : isDarkMode
         ? 'bg-red-900/50 text-red-300'
         : 'bg-red-100 text-red-700',
-
+    blue:
+      variant === 'soft'
+        ? isDarkMode
+          ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+          : 'bg-blue-50 text-blue-700 border border-blue-200'
+        : variant === 'outline'
+        ? isDarkMode
+          ? 'border border-blue-500/50 text-blue-300 bg-transparent'
+          : 'border border-blue-300 text-blue-700 bg-transparent'
+        : isDarkMode
+        ? 'bg-blue-900/50 text-blue-300'
+        : 'bg-blue-100 text-blue-700',
+    yellow:
+      variant === 'soft'
+        ? isDarkMode
+          ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
+          : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+        : variant === 'outline'
+        ? isDarkMode
+          ? 'border border-yellow-500/50 text-yellow-300 bg-transparent'
+          : 'border border-yellow-300 text-yellow-700 bg-transparent'
+        : isDarkMode
+        ? 'bg-yellow-900/50 text-yellow-300'
+        : 'bg-yellow-100 text-yellow-700',
     gray:
       variant === 'soft'
         ? isDarkMode
@@ -56,11 +79,23 @@ const Badge = ({
         : 'bg-gray-100 text-gray-600',
   };
 
+  // Mapping untuk variant yang lebih user-friendly
+  const variantMapping = {
+    success: 'green',
+    danger: 'red',
+    warning: 'yellow',
+    info: 'blue',
+    secondary: 'gray',
+  };
+
+  // Gunakan mapping jika variant adalah alias
+  const finalColor = variantMapping[variant] || color;
+
   return (
     <span
       className={`inline-flex items-center font-medium rounded-full ${
         sizes[size]
-      } ${colors[color] || colors.gray} ${className}`}
+      } ${colors[finalColor] || colors.gray} ${className}`}
       {...props}
     >
       {children}

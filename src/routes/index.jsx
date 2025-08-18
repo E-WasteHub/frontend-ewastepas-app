@@ -14,9 +14,9 @@ const AppRouter = () => {
       {authRoutes}
 
       {/* --- Rute dashboard --- */}
-      {dashboardRoutes.map((route, index) => (
+      {dashboardRoutes.map((route) => (
         <Route
-          key={index}
+          key={route.path}
           path={route.path}
           element={
             <Suspense

@@ -68,7 +68,7 @@ const Breadcrumb = ({
     <nav className='mb-4' aria-label='Breadcrumb'>
       <ol className='flex items-center space-x-1 text-sm'>
         {breadcrumbs.map((breadcrumb, index) => (
-          <li key={breadcrumb.path} className='flex items-center'>
+          <li key={`${index}-${breadcrumb.path}`} className='flex items-center'>
             {index > 0 && (
               <ChevronRight
                 className={`w-3 h-3 mx-1 ${
