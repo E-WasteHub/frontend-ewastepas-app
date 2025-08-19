@@ -1,6 +1,6 @@
 // Alert & Feedback
 export { default as Alert } from './Alert';
-export { default as Loading } from './Loading';
+export { Loading, LoadingOverlay } from './Loading';
 
 // Data Display
 export { default as Badge } from './Badge';
@@ -9,7 +9,20 @@ export { default as Button } from './Button';
 export { default as Card } from './Card';
 
 // Form Components
-export { Checkbox, Input, Label, Select, Textarea } from './Form';
+export {
+  AvatarUpload,
+  Checkbox,
+  FileUploadMultiple,
+  FileUploadSingle,
+  Input,
+  Label,
+  SearchInput,
+  Select,
+  Textarea,
+} from './Form';
+
+// Filter
+export { FilterGroup, FilterOption } from './Filter';
 
 // Icons
 export { GoogleIcon, LogoApp } from './Icon';

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import useDarkMode from '../../../hooks/useDarkMode';
-import Alert from '../../elements/Alert';
-import Button from '../../elements/Button';
-import { Input } from '../../elements/Form';
-import FormHeader from './FormHeader';
+import useDarkMode from '../../../../hooks/useDarkMode';
+import Alert from '../../../elements/Alert';
+import Button from '../../../elements/Button';
+import { Input } from '../../../elements/Form';
+import FormHeader from '../FormHeader';
 
 const FormRegister = () => {
   const { isDarkMode } = useDarkMode();

@@ -1,43 +1,41 @@
-// utils/peranUtils.js
+import { bottomMenuItemsByRole } from './menuUtils';
 
-// Normalisasi role ke format konsisten
 export const normalizeRole = (role) => {
   if (!role) return 'masyarakat';
-  const normalized = role.toLowerCase();
-  if (['mitra kurir', 'mitrakurir', 'mitra-kurir'].includes(normalized)) {
+  const normalizedRole = role.toLowerCase();
+  if (['mitra kurir', 'mitrakurir', 'mitra-kurir'].includes(normalizedRole)) {
     return 'mitra-kurir';
   }
-  return normalized;
+  return normalizedRole;
 };
 
-// Deteksi role berdasarkan path URL
-export const detectRoleFromPath = (pathname, fallbackRole) => {
+export const detectRoleFromPath = (pathname, fallback = 'masyarakat') => {
   if (pathname.startsWith('/dashboard/admin')) return 'admin';
   if (pathname.startsWith('/dashboard/mitra-kurir')) return 'mitra-kurir';
   if (pathname.startsWith('/dashboard/masyarakat')) return 'masyarakat';
-  return normalizeRole(fallbackRole);
+  return normalizeRole(fallback);
 };
 
-// Nama role yang ditampilkan ke user
 export const getRoleDisplayName = (role) => {
   switch (normalizeRole(role)) {
     case 'admin':
       return 'Admin';
     case 'mitra-kurir':
       return 'Mitra Kurir';
+    case 'masyarakat':
     default:
       return 'Masyarakat';
   }
 };
 
-// URL profil sesuai role
-export const getProfileUrl = (role) => {
-  switch (normalizeRole(role)) {
-    case 'admin':
-      return '/dashboard/admin/profil';
-    case 'mitra-kurir':
-      return '/dashboard/mitra-kurir/profil';
-    default:
-      return '/dashboard/masyarakat/profil';
-  }
+/**
+ * Helper untuk ambil path profil sesuai role
+ */
+export const getProfilePathByRole = (role) => {
+  const normalizedRole = normalizeRole(role);
+  return (
+    bottomMenuItemsByRole[normalizedRole]?.find(
+      (item) => item.title.toLowerCase() === 'profil'
+    )?.path || '/dashboard/masyarakat/profil'
+  );
 };

@@ -2,7 +2,7 @@ import { Layers } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import { kategoriSampahDummy } from '../../../data'; // data sesuai entity
 import useDarkMode from '../../../hooks/useDarkMode';
-import Badge from '../../elements/Badge';
+import { Badge } from '../../elements';
 
 const KategoriSection = () => {
   const { isDarkMode } = useDarkMode();

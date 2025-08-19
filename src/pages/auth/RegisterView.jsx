@@ -2,7 +2,7 @@ import FormRegister from '../../components/fragments/forms/FormRegister';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 
-const RegisterPage = () => {
+const RegisterView = () => {
   useDocumentTitle('Registrasi - E-WasteHub');
 
   return (
@@ -12,4 +12,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default RegisterView;

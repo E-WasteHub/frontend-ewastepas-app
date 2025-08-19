@@ -1,37 +1,255 @@
-import { Suspense } from 'react';
+import { Suspense, lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { authRoutes } from './authRoutes.jsx';
-import { dashboardRoutes } from './dashboardRoutes.jsx';
-import { publicRoutes } from './publicRoutes.jsx';
+import LoadingOverlay from '../components/elements/Loading/LoadingOverlay';
+import DashboardLayout from '../components/layouts/DashboardLayout';
+
+// ================= Public Pages =================
+import EdukasiDetailView from '../pages/EdukasiDetailView';
+import EdukasiView from '../pages/EdukasiView';
+import HomeView from '../pages/HomeView';
+import PanduanAplikasiView from '../pages/PanduanAplikasiView';
+
+// ================= Auth Pages =================
+import LoginView from '../pages/auth/LoginView';
+import LupaPasswordView from '../pages/auth/LupaPasswordView';
+import RegisterView from '../pages/auth/RegisterView';
+import VerifikasiOTPView from '../pages/auth/VerifikasiOTPView';
+
+// ================= Admin Pages =================
+const AdminDashboardView = lazy(() =>
+  import('../pages/dashboard/admin/AdminDashboardView')
+);
+const AdminDataMasterView = lazy(() =>
+  import('../pages/dashboard/admin/AdminDataMasterView')
+);
+const AdminKelolaDaerahView = lazy(() =>
+  import('../pages/dashboard/admin/AdminKelolaDaerahView')
+);
+const AdminKelolaDropboxView = lazy(() =>
+  import('../pages/dashboard/admin/AdminKelolaDropboxView')
+);
+const AdminKelolaEdukasiView = lazy(() =>
+  import('../pages/dashboard/admin/AdminKelolaEdukasiView')
+);
+const AdminKelolaJenisView = lazy(() =>
+  import('../pages/dashboard/admin/AdminKelolaJenisView')
+);
+
+// ================= Masyarakat Pages =================
+const DashboardMasyarakatView = lazy(() =>
+  import('../pages/dashboard/masyarakat/DashboardMasyarakatView')
+);
+const PermintaanPenjemputanView = lazy(() =>
+  import('../pages/dashboard/masyarakat/PermintaanPenjemputanView')
+);
+const LacakPenjemputanView = lazy(() =>
+  import('../pages/dashboard/masyarakat/LacakPenjemputanView')
+);
+const RiwayatMasyarakatView = lazy(() =>
+  import('../pages/dashboard/masyarakat/RiwayatMasyarakatView')
+);
+
+// ================= Mitra Kurir Pages =================
+const DashboardKurirView = lazy(() =>
+  import('../pages/dashboard/mitrakurir/DashboardMitraKurirView')
+);
+const DaftarPermintaanKurirView = lazy(() =>
+  import('../pages/dashboard/mitrakurir/DaftarPermintaanKurirView')
+);
+const DetailPermintaanKurirView = lazy(() =>
+  import('../pages/dashboard/mitrakurir/DetailPermintaanKurirView')
+);
+const UnggahDokumenView = lazy(() =>
+  import('../pages/dashboard/mitrakurir/UnggahDokumenView')
+);
+const RiwayatMitraKurirView = lazy(() =>
+  import('../pages/dashboard/mitrakurir/RiwayatMitraKurirView')
+);
+
+// ================= Shared (Dashboard Profil) =================
+const ProfilView = lazy(() => import('../pages/dashboard/ProfilView'));
 
 const AppRouter = () => {
   return (
-    <Routes>
-      {/* --- Rute Publik --- */}
-      {publicRoutes}
+    <Suspense
+      fallback={
+        <div className='flex items-center justify-center min-h-screen'>
+          <LoadingOverlay size='xl' text='Memuat halaman...' />
+        </div>
+      }
+    >
+      <Routes>
+        {/* ========= Public Routes ========= */}
+        <Route path='/' element={<HomeView />} />
+        <Route path='/edukasi' element={<EdukasiView />} />
+        <Route path='/edukasi/:id' element={<EdukasiDetailView />} />
+        <Route path='/panduan-aplikasi' element={<PanduanAplikasiView />} />
 
-      {/* --- Rute Autentikasi (Login & Register) --- */}
-      {authRoutes}
+        {/* ========= Auth Routes ========= */}
+        <Route path='/login' element={<LoginView />} />
+        <Route path='/register' element={<RegisterView />} />
+        <Route path='/lupa-password' element={<LupaPasswordView />} />
+        <Route path='/verifikasi-otp' element={<VerifikasiOTPView />} />
 
-      {/* --- Rute dashboard --- */}
-      {dashboardRoutes.map((route) => (
+        {/* ========= Dashboard - Admin ========= */}
         <Route
-          key={route.path}
-          path={route.path}
+          path='/dashboard/admin'
           element={
-            <Suspense
-              fallback={
-                <div className='flex items-center justify-center min-h-screen'>
-                  <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-green-500'></div>
-                </div>
-              }
-            >
-              <route.element />
-            </Suspense>
+            <DashboardLayout>
+              <AdminDashboardView />
+            </DashboardLayout>
           }
         />
-      ))}
-    </Routes>
+        <Route
+          path='/dashboard/admin/data-master'
+          element={
+            <DashboardLayout>
+              <AdminDataMasterView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/admin/kelola-daerah'
+          element={
+            <DashboardLayout>
+              <AdminKelolaDaerahView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/admin/kelola-dropbox'
+          element={
+            <DashboardLayout>
+              <AdminKelolaDropboxView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/admin/kelola-edukasi'
+          element={
+            <DashboardLayout>
+              <AdminKelolaEdukasiView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/admin/kelola-jenis'
+          element={
+            <DashboardLayout>
+              <AdminKelolaJenisView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/admin/profil'
+          element={
+            <DashboardLayout>
+              <ProfilView />
+            </DashboardLayout>
+          }
+        />
+
+        {/* ========= Dashboard - Masyarakat ========= */}
+        <Route
+          path='/dashboard/masyarakat'
+          element={
+            <DashboardLayout>
+              <DashboardMasyarakatView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/masyarakat/penjemputan'
+          element={
+            <DashboardLayout>
+              <PermintaanPenjemputanView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/masyarakat/lacak'
+          element={
+            <DashboardLayout>
+              <LacakPenjemputanView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/masyarakat/riwayat'
+          element={
+            <DashboardLayout>
+              <RiwayatMasyarakatView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/masyarakat/profil'
+          element={
+            <DashboardLayout>
+              <ProfilView />
+            </DashboardLayout>
+          }
+        />
+
+        {/* ========= Dashboard - Mitra Kurir ========= */}
+        <Route
+          path='/dashboard/mitra-kurir'
+          element={
+            <DashboardLayout>
+              <DashboardKurirView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/mitra-kurir/daftar-permintaan'
+          element={
+            <DashboardLayout>
+              <DaftarPermintaanKurirView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/mitra-kurir/detail-permintaan/:id'
+          element={
+            <DashboardLayout>
+              <DetailPermintaanKurirView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/mitra-kurir/unggah-dokumen'
+          element={
+            <DashboardLayout>
+              <UnggahDokumenView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/mitra-kurir/riwayat'
+          element={
+            <DashboardLayout>
+              <RiwayatMitraKurirView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/mitra-kurir/profil'
+          element={
+            <DashboardLayout>
+              <ProfilView />
+            </DashboardLayout>
+          }
+        />
+
+        {/* ========= 404 Fallback ========= */}
+        <Route
+          path='*'
+          element={
+            <div className='p-6 text-center'>Halaman tidak ditemukan</div>
+          }
+        />
+      </Routes>
+    </Suspense>
   );
 };
 

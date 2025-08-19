@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom';
 import ewasteDark from '../../../assets/img/ewasteDark.png';
 import ewasteLight from '../../../assets/img/ewasteLight.png';
 import useDarkMode from '../../../hooks/useDarkMode';
-import Badge from '../../elements/Badge';
-import Button from '../../elements/Button';
+import { Badge, Button } from '../../elements';
 
 const HeroSection = () => {
   const { isDarkMode } = useDarkMode();

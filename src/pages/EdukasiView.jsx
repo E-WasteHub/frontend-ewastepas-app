@@ -2,7 +2,7 @@ import { BookOpen } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Badge from '../components/elements/Badge';
+import { Badge } from '../components/elements';
 import Pagination from '../components/elements/Pagination';
 import MainLayout from '../components/layouts/MainLayout';
 import { kontenEdukasiDummy } from '../data';

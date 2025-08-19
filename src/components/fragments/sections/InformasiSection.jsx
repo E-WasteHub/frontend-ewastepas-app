@@ -2,7 +2,7 @@ import { ArrowRight, Users, Zap } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
-import Badge from '../../elements/Badge';
+import { Badge } from '../../elements';
 
 const InformasiSection = () => {
   const { isDarkMode } = useDarkMode();

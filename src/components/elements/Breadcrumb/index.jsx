@@ -1,93 +1,41 @@
-import { ChevronRight, Home } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import useDarkMode from '../../../hooks/useDarkMode';
 
-const ROUTE_MAP = {
-  dashboard: 'Dashboard',
-  masyarakat: 'Masyarakat',
-  admin: 'Admin',
-  'mitra-kurir': 'Mitra Kurir',
-  penjemputan: 'Buat Permintaan',
-  lacak: 'Lacak Penjemputan',
-  riwayat: 'Riwayat Transaksi',
-  profil: 'Profil',
-  'data-master': 'Data Master',
-  'kelola-daerah': 'Kelola Daerah',
-  'kelola-dropbox': 'Kelola Dropbox',
-  'kelola-jenis': 'Kelola Jenis',
-  'kelola-edukasi': 'Kelola Edukasi',
-  verifikasi: 'Verifikasi Akun',
-  transaksi: 'Transaksi',
-  permintaan: 'Permintaan Tersedia',
-  aktif: 'Penjemputan Aktif',
-  dokumen: 'Unggah Dokumen',
-  edukasi: 'Konten Edukasi',
-  kategori: 'Kategori',
-  pengaturan: 'Pengaturan',
-};
-
-const Breadcrumb = ({
-  customBreadcrumbs = null,
-  homeLabel = 'Beranda',
-  homePath = '/',
-}) => {
+const Breadcrumb = ({ customBreadcrumbs }) => {
   const location = useLocation();
-  const { isDarkMode } = useDarkMode();
+  const segments = location.pathname.split('/').filter(Boolean);
 
-  const generateBreadcrumbs = () => {
-    const pathnames = location.pathname.split('/').filter(Boolean);
-    const breadcrumbs = [{ name: homeLabel, path: homePath, icon: Home }];
+  // Kalau ada customBreadcrumbs, pakai itu. Kalau tidak, generate otomatis
+  const breadcrumbs =
+    customBreadcrumbs ||
+    segments.slice(1).map((segment, index) => {
+      const path = '/' + segments.slice(0, index + 2).join('/');
 
-    let currentPath = '';
-    pathnames.forEach((p, idx) => {
-      currentPath += `/${p}`;
-      breadcrumbs.push({
-        name: ROUTE_MAP[p] || p.charAt(0).toUpperCase() + p.slice(1),
-        path: currentPath,
-        isLast: idx === pathnames.length - 1,
-      });
+      // Format label -> capitalize + ganti dash dengan spasi
+      const label = segment
+        .replace(/-/g, ' ')
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+
+      return { label, path };
     });
 
-    return breadcrumbs;
-  };
-
-  const breadcrumbs = customBreadcrumbs || generateBreadcrumbs();
-
   return (
-    <nav className='mb-4' aria-label='Breadcrumb'>
-      <ol className='flex items-center space-x-1 text-sm'>
-        {breadcrumbs.map((b, i) => (
-          <li key={b.path} className='flex items-center'>
-            {i > 0 && (
-              <ChevronRight
-                className={`w-3 h-3 mx-1 ${
-                  isDarkMode ? 'text-gray-500' : 'text-gray-400'
-                }`}
-              />
-            )}
-            {b.isLast ? (
-              <span
-                className={`font-medium ${
-                  isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}
-              >
-                {b.name}
-              </span>
-            ) : (
-              <Link
-                to={b.path}
-                className={`transition-colors ${
-                  isDarkMode
-                    ? 'text-gray-500 hover:text-gray-300'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                {b.name}
-              </Link>
-            )}
+    <nav className='mb-4 px-8'>
+      <ul className='flex items-center gap-2 text-sm'>
+        {breadcrumbs.map((crumb, index) => (
+          <li
+            key={`${index}-${crumb.path}`}
+            className='flex items-center gap-2'
+          >
+            <Link
+              to={crumb.path}
+              className='text-green-600 hover:underline capitalize'
+            >
+              {crumb.label}
+            </Link>
+            {index < breadcrumbs.length - 1 && <span>/</span>}
           </li>
         ))}
-      </ol>
+      </ul>
     </nav>
   );
 };

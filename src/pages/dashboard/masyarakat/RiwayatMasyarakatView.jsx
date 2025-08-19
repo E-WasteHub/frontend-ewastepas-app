@@ -13,10 +13,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import Badge from '../../../components/elements/Badge';
-import Button from '../../../components/elements/Button';
-import Card from '../../../components/elements/Card';
-import Pagination from '../../../components/elements/Pagination';
+import { Badge, Button, Card, Pagination } from '../../../components/elements';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 

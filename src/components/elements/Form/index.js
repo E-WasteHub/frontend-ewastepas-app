@@ -1,6 +1,10 @@
+export { default as AvatarUpload } from './AvatarUpload';
 export { default as Checkbox } from './Checkbox';
 export { default as ErrorMessage } from './ErrorMessage';
+export { default as FileUploadMultiple } from './FileUploadMultiple';
+export { default as FileUploadSingle } from './FileUploadSingle';
 export { default as Input } from './Input';
 export { default as Label } from './Label';
+export { default as SearchInput } from './SearchInput';
 export { default as Select } from './Select';
 export { default as Textarea } from './Textarea';

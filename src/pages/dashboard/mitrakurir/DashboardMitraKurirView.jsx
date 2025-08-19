@@ -1,10 +1,7 @@
 import { ArrowRight, Package, Truck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Alert from '../../../components/elements/Alert';
-import Badge from '../../../components/elements/Badge';
-import Button from '../../../components/elements/Button';
-import Card from '../../../components/elements/Card';
+import { Alert, Badge, Button, Card } from '../../../components/elements';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 

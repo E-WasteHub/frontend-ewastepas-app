@@ -1,6 +1,6 @@
 import { BookText, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
-import Badge from '../components/elements/Badge';
+import { Badge } from '../components/elements';
 import MainLayout from '../components/layouts/MainLayout';
 import { panduanDummy } from '../data/panduanDummy';
 import useDarkMode from '../hooks/useDarkMode';

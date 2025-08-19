@@ -1,8 +1,8 @@
 import useDarkMode from '../../../hooks/useDarkMode';
 
 const Badge = ({
-  variant = 'solid', // solid | soft | outline
-  intent = 'secondary', // success | danger | warning | info | secondary
+  variant = 'solid',
+  intent = 'secondary',
   size = 'md',
   className = '',
   children,

@@ -3,7 +3,7 @@ import FormLogin from '../../components/fragments/forms/FormLogin';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 
-const LoginPage = () => {
+const LoginView = () => {
   useDocumentTitle('Masuk - E-WasteHub');
 
   return (
@@ -13,4 +13,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default LoginView;
