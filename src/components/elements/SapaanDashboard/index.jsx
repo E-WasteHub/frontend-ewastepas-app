@@ -1,6 +1,6 @@
 import useDarkMode from '../../../hooks/useDarkMode';
 
-const SapaanDashboard = ({ userProfile }) => {
+const SapaanDashboard = ({ userProfile, subtitle }) => {
   const { isDarkMode } = useDarkMode();
 
   const hour = new Date().getHours();
@@ -12,10 +12,7 @@ const SapaanDashboard = ({ userProfile }) => {
       <h1 className='text-2xl font-bold mb-2'>
         {sapaan}, {userProfile?.nama_lengkap || 'Pengguna'}!
       </h1>
-      <p>
-        Selamat datang di dashboard EWasteHub. Mari kelola sampah elektronik
-        Anda dengan baik.
-      </p>
+      <p>{subtitle}</p>
     </div>
   );
 };

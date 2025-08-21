@@ -1,37 +1,23 @@
-import {
-  Clock,
-  Eye,
-  Filter,
-  MapPin,
-  Package,
-  Search,
-  Truck,
-  User,
-} from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import Alert from '../../../components/elements/Alert';
-import Badge from '../../../components/elements/Badge';
-import Button from '../../../components/elements/Button';
-import Card from '../../../components/elements/Card';
-import Pagination from '../../../components/elements/Pagination';
+import { Alert, Card, Pagination } from '../../../components/elements';
+import { FilterCard } from '../../../components/fragments';
+import { RequestList } from '../../../components/fragments/uidashboard';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 
 const DaftarPermintaanKurirView = () => {
-  useDocumentTitle('Daftar Permintaan - E-WasteHub');
+  useDocumentTitle('Daftar Permintaan');
   const { isDarkMode } = useDarkMode();
 
-  // State
   const [daftarPermintaan, setDaftarPermintaan] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('semua');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRequest, setSelectedRequest] = useState(null);
   const itemsPerPage = 3;
 
-  // Mock data permintaan lengkap
   const mockPermintaan = [
     {
       id: 1,
@@ -169,38 +155,18 @@ const DaftarPermintaanKurirView = () => {
     const loadData = async () => {
       try {
         setIsLoading(true);
-        // Simulasi API call
-        await new Promise((resolve) => setTimeout(resolve, 800));
+        await new Promise((r) => setTimeout(r, 800));
         setDaftarPermintaan(mockPermintaan);
-        setError('');
       } catch (err) {
         setError('Gagal memuat daftar permintaan');
-        console.error('Error loading requests:', err);
       } finally {
         setIsLoading(false);
       }
     };
-
     loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const ambilPermintaan = async (idPermintaan) => {
-    try {
-      setDaftarPermintaan((prev) =>
-        prev.map((permintaan) =>
-          permintaan.id === idPermintaan
-            ? { ...permintaan, status: 'diambil' }
-            : permintaan
-        )
-      );
-    } catch (err) {
-      setError('Gagal mengambil permintaan');
-      console.error('Error taking request:', err);
-    }
-  };
-
-  // Filter dan search
+  // Filter
   const filteredData = daftarPermintaan.filter((item) => {
     const matchesSearch =
       item.kodePenjemputan.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -208,7 +174,13 @@ const DaftarPermintaanKurirView = () => {
       item.alamat.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
-      statusFilter === 'semua' || item.status === statusFilter;
+      statusFilter === 'all'
+        ? true
+        : statusFilter === 'active'
+        ? item.status === 'menunggu' || item.status === 'diambil'
+        : statusFilter === 'completed'
+        ? item.status === 'selesai'
+        : true;
 
     return matchesSearch && matchesStatus;
   });
@@ -221,355 +193,93 @@ const DaftarPermintaanKurirView = () => {
     startIndex + itemsPerPage
   );
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'menunggu':
-        return (
-          <Badge variant='secondary' className='bg-yellow-100 text-yellow-800'>
-            Menunggu
-          </Badge>
-        );
-      case 'diambil':
-        return (
-          <Badge variant='primary' className='bg-blue-100 text-blue-800'>
-            Diambil
-          </Badge>
-        );
-      case 'selesai':
-        return (
-          <Badge variant='success' className='bg-green-100 text-green-800'>
-            Selesai
-          </Badge>
-        );
-      case 'dibatalkan':
-        return (
-          <Badge variant='danger' className='bg-red-100 text-red-800'>
-            Dibatalkan
-          </Badge>
-        );
-      default:
-        return <Badge variant='secondary'>Unknown</Badge>;
-    }
-  };
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, statusFilter]);
-
   if (isLoading) {
     return (
       <div className='flex items-center justify-center h-full'>
-        <div className='text-center'>
-          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4'></div>
-          <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>
-            Memuat daftar permintaan...
-          </p>
-        </div>
+        <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>
+          Memuat daftar permintaan...
+        </p>
       </div>
     );
   }
 
   return (
-    <div className='w-full h-full flex flex-col lg:block lg:max-w-7xl lg:mx-auto lg:space-y-4'>
+    <div className='max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-4'>
       {/* Header */}
-      <div className='flex-shrink-0 p-4 lg:p-0'>
+      <div className='lg:col-span-4 mb-2'>
         <h1
-          className={`text-xl lg:text-2xl font-bold ${
+          className={`text-2xl font-bold ${
             isDarkMode ? 'text-white' : 'text-gray-900'
           }`}
         >
           Daftar Permintaan Penjemputan
         </h1>
         <p
-          className={`mt-1 text-sm lg:text-base ${
-            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+          className={`text-sm ${
+            isDarkMode ? 'text-gray-400' : 'text-gray-600'
           }`}
         >
-          Kelola semua permintaan penjemputan yang tersedia
+          Kelola dan ambil permintaan penjemputan yang tersedia
         </p>
       </div>
 
-      {/* Error Alert */}
-      {error && (
-        <div className='flex-shrink-0 px-4 lg:px-0'>
-          <Alert type='error' message={error} />
-        </div>
-      )}
+      {/* Sidebar kiri */}
+      <div className='lg:col-span-1'>
+        <FilterCard
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          daftarPermintaan={daftarPermintaan}
+        />
+      </div>
 
-      {/* Filters & Search */}
-      <div className='flex-shrink-0 px-4 lg:px-0'>
+      {/* Konten kanan */}
+      <div className='lg:col-span-3'>
+        {error && <Alert type='error' message={error} />}
         <Card
           className={`${
-            isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'
-          }`}
+            isDarkMode
+              ? 'bg-gray-800 border-gray-700'
+              : 'bg-white border-gray-200'
+          } border p-6`}
         >
-          <div className='p-4'>
-            <div className='flex flex-col md:flex-row gap-3'>
-              {/* Search */}
-              <div className='flex-1'>
-                <div className='relative'>
-                  <Search
-                    className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${
-                      isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                    }`}
-                  />
-                  <input
-                    type='text'
-                    placeholder='Cari kode, nama, atau alamat...'
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      isDarkMode
-                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400'
-                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
-                    }`}
-                  />
-                </div>
-              </div>
+          <h3
+            className={`text-lg font-semibold mb-2 ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}
+          >
+            Permintaan Tersedia
+          </h3>
+          <p
+            className={`text-sm mb-4 ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}
+          >
+            Menampilkan daftar permintaan penjemputan
+          </p>
 
-              {/* Status Filter */}
-              <div className='flex items-center gap-2'>
-                <Filter
-                  className={`h-4 w-4 ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`}
-                />
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    isDarkMode
-                      ? 'bg-gray-700 border-gray-600 text-white'
-                      : 'bg-white border-gray-300 text-gray-900'
-                  }`}
-                >
-                  <option value='semua'>Semua Status</option>
-                  <option value='menunggu'>Menunggu</option>
-                  <option value='diambil'>Diambil</option>
-                  <option value='selesai'>Selesai</option>
-                  <option value='dibatalkan'>Dibatalkan</option>
-                </select>
-              </div>
-            </div>
+          <RequestList
+            requests={paginatedData}
+            onSelect={setSelectedRequest}
+            selectedId={selectedRequest?.id}
+            role='mitra-kurir'
+          />
 
-            {/* Summary */}
-            <div className='mt-3 flex items-center justify-between text-sm'>
-              <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>
-                {paginatedData.length} dari {filteredData.length} permintaan
-              </span>
-              <span
-                className={`font-medium ${
-                  isDarkMode ? 'text-green-400' : 'text-green-600'
-                }`}
-              >
-                {daftarPermintaan.filter((p) => p.status === 'menunggu').length}{' '}
-                Tersedia
-              </span>
-            </div>
-          </div>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => {
+                setSelectedRequest(null);
+                setCurrentPage(page);
+              }}
+              isDarkMode={isDarkMode}
+            />
+          )}
         </Card>
       </div>
-
-      {/* Scrollable Content Area */}
-      <div className='flex-1 overflow-y-auto px-4 lg:px-0 lg:overflow-visible'>
-        {/* List Permintaan */}
-        <div className='space-y-3 pb-4 lg:pb-0'>
-          {paginatedData.length === 0 ? (
-            <Card
-              className={`${
-                isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'
-              }`}
-            >
-              <div className='text-center py-8'>
-                <Truck
-                  className={`mx-auto h-12 w-12 ${
-                    isDarkMode ? 'text-gray-600' : 'text-gray-400'
-                  }`}
-                />
-                <p
-                  className={`mt-4 text-sm ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  {searchTerm || statusFilter !== 'semua'
-                    ? 'Tidak ada permintaan yang sesuai dengan filter'
-                    : 'Tidak ada permintaan penjemputan'}
-                </p>
-              </div>
-            </Card>
-          ) : (
-            paginatedData.map((permintaan) => (
-              <Card
-                key={permintaan.id}
-                className={`${
-                  isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'
-                }`}
-              >
-                <div className='p-4'>
-                  <div className='flex items-start justify-between'>
-                    <div className='flex-1 min-w-0'>
-                      {/* Header */}
-                      <div className='flex items-center gap-3 mb-3'>
-                        <h4
-                          className={`font-medium text-base ${
-                            isDarkMode ? 'text-white' : 'text-gray-900'
-                          }`}
-                        >
-                          {permintaan.kodePenjemputan}
-                        </h4>
-                        {getStatusBadge(permintaan.status)}
-                      </div>
-
-                      {/* Info Grid */}
-                      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-3'>
-                        <div className='flex items-center gap-2'>
-                          <User className='h-4 w-4 text-blue-500' />
-                          <div>
-                            <p
-                              className={`text-sm font-medium ${
-                                isDarkMode ? 'text-white' : 'text-gray-900'
-                              }`}
-                            >
-                              {permintaan.namaPemesan}
-                            </p>
-                            <p
-                              className={`text-xs ${
-                                isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                              }`}
-                            >
-                              {permintaan.telepon}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className='flex items-center gap-2'>
-                          <MapPin className='h-4 w-4 text-green-500' />
-                          <div>
-                            <p
-                              className={`text-sm ${
-                                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                              }`}
-                            >
-                              {permintaan.jarak}
-                            </p>
-                            <p
-                              className={`text-xs ${
-                                isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                              } truncate max-w-48`}
-                            >
-                              {permintaan.alamat}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className='flex items-center gap-2'>
-                          <Clock className='h-4 w-4 text-orange-500' />
-                          <div>
-                            <p
-                              className={`text-sm ${
-                                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                              }`}
-                            >
-                              {new Date(
-                                permintaan.waktuPenjemputan
-                              ).toLocaleDateString('id-ID')}
-                            </p>
-                            <p
-                              className={`text-xs ${
-                                isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                              }`}
-                            >
-                              {new Date(
-                                permintaan.waktuPenjemputan
-                              ).toLocaleTimeString('id-ID', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Items & Points */}
-                      <div className='flex items-center justify-between'>
-                        <div className='flex items-center gap-2'>
-                          <Package className='h-4 w-4 text-purple-500' />
-                          <span
-                            className={`text-sm ${
-                              isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                            }`}
-                          >
-                            {permintaan.jenisSampah.join(', ')}
-                          </span>
-                        </div>
-                        <span
-                          className={`font-medium text-sm ${
-                            isDarkMode ? 'text-green-400' : 'text-green-600'
-                          }`}
-                        >
-                          +{permintaan.estimasiPoin} poin
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className='ml-4 flex flex-col gap-2'>
-                      {permintaan.status === 'menunggu' ? (
-                        <>
-                          <Button
-                            onClick={() => ambilPermintaan(permintaan.id)}
-                            size='sm'
-                            className='bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1'
-                          >
-                            Ambil
-                          </Button>
-                          <Link
-                            to={`/dashboard/mitra-kurir/detail-permintaan/${permintaan.id}`}
-                          >
-                            <Button
-                              variant='outline'
-                              size='sm'
-                              className='w-full text-xs px-3 py-1'
-                            >
-                              <Eye className='h-3 w-3 mr-1' />
-                              Detail
-                            </Button>
-                          </Link>
-                        </>
-                      ) : (
-                        <Link
-                          to={`/dashboard/mitra-kurir/detail-permintaan/${permintaan.id}`}
-                        >
-                          <Button
-                            variant='outline'
-                            size='sm'
-                            className='text-xs px-3 py-1'
-                          >
-                            <Eye className='h-3 w-3 mr-1' />
-                            Lihat
-                          </Button>
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            ))
-          )}
-        </div>
-      </div>
-
-      {/* Fixed Pagination - Outside scrollable area for mobile visibility */}
-      {totalPages > 1 && (
-        <div className='flex-shrink-0 px-4 lg:px-0 py-3 lg:py-0'>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            isDarkMode={isDarkMode}
-          />
-        </div>
-      )}
     </div>
   );
 };

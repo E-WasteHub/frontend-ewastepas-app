@@ -59,15 +59,15 @@ const EdukasiSection = () => {
             >
               <Link to={`/edukasi/${item.id_konten}`} className='block h-full'>
                 <div
-                  className={`p-6 text-center border rounded-xl hover:border-green-500 hover:shadow-lg transition-all duration-300 h-full ${
+                  className={`border w-full rounded-xl overflow-hidden hover:border-green-500 hover:shadow-lg transition-all duration-300 h-full ${
                     isDarkMode
                       ? 'bg-slate-800 border-slate-700'
                       : 'bg-white border-slate-200'
                   }`}
                 >
-                  {/* Gambar Thumbnail */}
+                  {/* Gambar Thumbnail (header card) */}
                   {item.gambar && (
-                    <div className='flex items-center justify-center w-20 h-20 mx-auto mb-4 overflow-hidden rounded-full bg-gray-100'>
+                    <div className='w-full aspect-[16/9]'>
                       <img
                         src={item.gambar}
                         alt={item.judul_konten}
@@ -76,46 +76,36 @@ const EdukasiSection = () => {
                     </div>
                   )}
 
-                  {/* Judul */}
-                  <h3
-                    className={`text-lg font-semibold mb-3 ${
-                      isDarkMode ? 'text-white' : 'text-slate-900'
-                    }`}
-                  >
-                    {item.judul_konten}
-                  </h3>
+                  {/* Konten dalam card */}
+                  <div className='p-6 text-center'>
+                    {/* Judul */}
+                    <h3
+                      className={`text-lg font-semibold mb-3 ${
+                        isDarkMode ? 'text-white' : 'text-slate-900'
+                      }`}
+                    >
+                      {item.judul_konten}
+                    </h3>
 
-                  {/* Deskripsi singkat */}
-                  <p
-                    className={`text-sm leading-relaxed mb-4 line-clamp-3 ${
-                      isDarkMode ? 'text-slate-400' : 'text-slate-600'
-                    }`}
-                  >
-                    {item.isi_konten}
-                  </p>
+                    {/* Deskripsi singkat */}
+                    <p
+                      className={`text-sm leading-relaxed mb-4 line-clamp-3 ${
+                        isDarkMode ? 'text-slate-400' : 'text-slate-600'
+                      }`}
+                    >
+                      {item.isi_konten}
+                    </p>
 
-                  {/* Read More */}
-                  <div
-                    className={`text-xs font-medium ${
-                      isDarkMode ? 'text-green-400' : 'text-green-600'
-                    }`}
-                  >
-                    <span className='flex items-center justify-center gap-1'>
-                      Baca selengkapnya
-                      <svg
-                        className='w-3 h-3'
-                        fill='none'
-                        stroke='currentColor'
-                        viewBox='0 0 24 24'
-                      >
-                        <path
-                          strokeLinecap='round'
-                          strokeLinejoin='round'
-                          strokeWidth={2}
-                          d='M9 5l7 7-7 7'
-                        />
-                      </svg>
-                    </span>
+                    {/* Read More */}
+                    <div
+                      className={`text-xs font-medium ${
+                        isDarkMode ? 'text-green-400' : 'text-green-600'
+                      }`}
+                    >
+                      <span className='flex items-center justify-center gap-1'>
+                        Baca selengkapnya
+                      </span>
+                    </div>
                   </div>
                 </div>
               </Link>

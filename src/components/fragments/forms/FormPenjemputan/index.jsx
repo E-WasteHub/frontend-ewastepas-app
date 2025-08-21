@@ -1,14 +1,9 @@
+// src/components/fragments/forms/FormPenjemputan/index.jsx
 import { useState } from 'react';
 import { jenisSampahDummy, kategoriSampahDummy } from '../../../../data/index';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import { Button, Card } from '../../../elements';
-import {
-  FileUploadMultiple,
-  Input,
-  Label,
-  Select,
-  Textarea,
-} from '../../../elements/Form';
+import { Input, Label, Select, Textarea } from '../../../elements/Form';
 import SampahList from './SampahList';
 
 const FormPenjemputan = ({
@@ -16,10 +11,9 @@ const FormPenjemputan = ({
   onInputChange,
   daftarSampah,
   onSampahChange,
-  photos,
-  setPhotos,
   isSubmitting,
   onCancel,
+  showAlert,
 }) => {
   const { isDarkMode } = useDarkMode();
   const [selectedKategori, setSelectedKategori] = useState('');
@@ -28,11 +22,9 @@ const FormPenjemputan = ({
   // Ambil jenis sampah dari kategori terpilih
   const getAvailableSampah = () => {
     if (!selectedKategori) return [];
-    const filtered = jenisSampahDummy.filter(
+    return jenisSampahDummy.filter(
       (j) => j.id_kategori_sampah === Number(selectedKategori)
     );
-
-    return filtered;
   };
 
   const handleTambahSampah = () => {
@@ -48,21 +40,34 @@ const FormPenjemputan = ({
         const exists = daftarSampah.find(
           (s) => s.id_jenis_sampah === jenis.id_jenis_sampah
         );
-        if (!exists) {
-          const newSampah = {
-            id: Date.now() + Math.random(),
-            id_kategori_sampah: kategori.id_kategori_sampah,
-            nama_kategori_sampah: kategori.nama_kategori_sampah,
-            poin_per_kg: kategori.poin_kategori_sampah,
-            id_jenis_sampah: jenis.id_jenis_sampah,
-            nama_jenis_sampah: jenis.nama_jenis_sampah,
-            deskripsi_jenis_sampah: jenis.deskripsi_jenis_sampah,
-            berat: 1,
-          };
 
-          onSampahChange([...daftarSampah, newSampah]);
-          setSelectedSampah('');
+        if (exists) {
+          showAlert?.(
+            'Peringatan',
+            'Jenis sampah ini sudah ditambahkan.',
+            'warning'
+          );
+          return;
         }
+
+        const newSampah = {
+          id: Date.now() + Math.random(),
+          id_kategori_sampah: kategori.id_kategori_sampah,
+          nama_kategori_sampah: kategori.nama_kategori_sampah,
+          poin_per_kg: kategori.poin_kategori_sampah,
+          id_jenis_sampah: jenis.id_jenis_sampah,
+          nama_jenis_sampah: jenis.nama_jenis_sampah,
+          deskripsi_jenis_sampah: jenis.deskripsi_jenis_sampah,
+          berat: 1,
+        };
+
+        onSampahChange([...daftarSampah, newSampah]);
+        setSelectedSampah('');
+        showAlert?.(
+          'Berhasil',
+          `Sampah "${jenis.nama_jenis_sampah}" berhasil ditambahkan.`,
+          'success'
+        );
       }
     }
   };
@@ -95,21 +100,19 @@ const FormPenjemputan = ({
               {/* Kategori */}
               <div>
                 <Label required>Pilih Kategori Sampah</Label>
-                <div className='flex gap-2'>
-                  <Select
-                    value={selectedKategori}
-                    onChange={(val) => {
-                      setSelectedKategori(val);
-                      setSelectedSampah('');
-                    }}
-                    placeholder='Pilih kategori...'
-                    options={kategoriSampahDummy.map((kategori) => ({
-                      value: kategori.id_kategori_sampah,
-                      label: `${kategori.nama_kategori_sampah} (${kategori.poin_kategori_sampah} poin/kg)`,
-                    }))}
-                    className='flex-1'
-                  />
-                </div>
+                <Select
+                  value={selectedKategori}
+                  onChange={(val) => {
+                    setSelectedKategori(val);
+                    setSelectedSampah('');
+                  }}
+                  placeholder='Pilih kategori...'
+                  options={kategoriSampahDummy.map((kategori) => ({
+                    value: kategori.id_kategori_sampah,
+                    label: `${kategori.nama_kategori_sampah} (${kategori.poin_kategori_sampah} poin/kg)`,
+                  }))}
+                  className='w-full'
+                />
               </div>
 
               {/* Sampah */}
@@ -181,13 +184,7 @@ const FormPenjemputan = ({
               <SampahList
                 daftarSampah={daftarSampah}
                 onSampahChange={onSampahChange}
-              />
-              {/* ✅ Sinkron dengan FileUploadBox terbaru */}
-              <FileUploadMultiple
-                label='Foto Sampah'
-                files={photos}
-                onFilesChange={setPhotos}
-                accept='image/*'
+                showAlert={showAlert}
               />
             </div>
           </div>

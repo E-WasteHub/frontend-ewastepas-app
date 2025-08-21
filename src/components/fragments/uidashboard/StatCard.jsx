@@ -1,22 +1,45 @@
 import useDarkMode from '../../../hooks/useDarkMode';
 
-const StatCard = ({ title, value, color = 'text-green-600', icon }) => {
+const StatCard = ({ title, value, color, icon, subtitle }) => {
   const { isDarkMode } = useDarkMode();
 
   return (
     <div
-      className={`shadow rounded-lg p-6 flex-1 min-w-[150px] flex flex-col items-center justify-center gap-2 transition ${
-        isDarkMode ? 'bg-slate-800 text-slate-100' : 'bg-white text-gray-900'
+      className={`px-6 py-6 rounded-lg shadow-md ${
+        isDarkMode ? 'bg-gray-800' : 'bg-white'
       }`}
     >
-      {/* Header */}
-      <div className='flex items-center gap-2'>
-        {icon && <span className='text-xl'>{icon}</span>}
-        <h2 className='text-base font-medium'>{title}</h2>
-      </div>
+      <div className='flex items-center justify-between'>
+        {/* Bagian teks */}
+        <div className='flex-1 text-center'>
+          <p
+            className={`text-md ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}
+          >
+            {title}
+          </p>
+          <p className={`text-2xl font-bold ${color}`}>{value}</p>
+          {subtitle && (
+            <span
+              className={`text-sm ${
+                isDarkMode ? 'text-gray-500' : 'text-gray-400'
+              }`}
+            >
+              {subtitle}
+            </span>
+          )}
+        </div>
 
-      {/* Value */}
-      <p className={`text-2xl md:text-3xl font-bold ${color}`}>{value}</p>
+        {/* Icon */}
+        <div
+          className={`ml-4 p-3 rounded-lg ${
+            isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+          }`}
+        >
+          {icon}
+        </div>
+      </div>
     </div>
   );
 };

@@ -21,6 +21,9 @@ const Button = ({
     secondary: isDarkMode
       ? 'bg-slate-700 text-slate-200 hover:bg-slate-600'
       : 'bg-gray-200 text-gray-800 hover:bg-gray-300',
+    icon: isDarkMode
+      ? 'bg-slate-600 border border-slate-800'
+      : 'bg-slate-200 border border-slate-300',
   };
 
   return (

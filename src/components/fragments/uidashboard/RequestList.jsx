@@ -1,12 +1,13 @@
 import useDarkMode from '../../../hooks/useDarkMode';
 import RequestDetail from './RequestDetail';
 
-const RequestList = ({ requests, onSelect, selectedId }) => {
+const RequestList = ({ requests, onSelect, selectedId, role }) => {
   const { isDarkMode } = useDarkMode();
 
   return (
     <div className='space-y-4'>
-      {requests.map((req) => {
+      {requests.slice(0, 3).map((req) => {
+        // ✅ hanya ambil 3 terbaru
         const isSelected = selectedId === req.id;
         return (
           <div
@@ -93,7 +94,7 @@ const RequestList = ({ requests, onSelect, selectedId }) => {
             </button>
 
             {/* Detail expand */}
-            {isSelected && <RequestDetail request={req} />}
+            {isSelected && <RequestDetail request={req} role={role} />}
           </div>
         );
       })}

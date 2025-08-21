@@ -1,151 +1,138 @@
 import { Gift, Truck } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import SapaanDashboard from '../../../components/elements/SapaanDashboard';
-import { StatCard } from '../../../components/fragments';
+import { Link } from 'react-router-dom';
+import { Card, SapaanDashboard } from '../../../components/elements';
+import { RiwayatCard, StatCard } from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 
 const DashboardMasyarakatView = ({ userProfile }) => {
   useDocumentTitle('Dashboard Masyarakat');
   const { isDarkMode } = useDarkMode();
+
   const [stats, setStats] = useState({
     totalPoin: 0,
     totalPenjemputan: 0,
     sedangBerlangsung: 0,
   });
-
-  const [riwayat, setRiwayat] = useState([]);
+  const [requests, setRequests] = useState([]);
 
   useEffect(() => {
-    // 🔹 Dummy data untuk simulasi
+    // 🔹 Dummy data (nantinya diganti API)
     const dummyRiwayat = [
       {
-        id: 1,
-        tanggal: '2025-08-15',
-        jenis: 'Elektronik Kecil',
-        status: 'Selesai',
-        poin: 20,
+        kodePenjemputan: 'EWH-001',
+        tanggal: '15 Januari 2024',
+        jenisSampah: ['Handphone', 'Laptop'],
+        alamat: 'Jl. Merdeka No. 123, Jakarta Pusat',
+        kurir: 'Ahmad Budiman',
+        status: 'Menunggu Kurir',
+        poin: 25,
       },
       {
-        id: 2,
-        tanggal: '2025-08-10',
-        jenis: 'Baterai & Charger',
-        status: 'Diproses',
-        poin: 15,
+        kodePenjemputan: 'EWH-002',
+        tanggal: '20 Januari 2024',
+        jenisSampah: ['TV Tabung'],
+        alamat: 'Jl. Sudirman No. 456, Jakarta Selatan',
+        kurir: null,
+        status: 'Dibatalkan',
+        poin: 0,
       },
       {
-        id: 3,
-        tanggal: '2025-08-05',
-        jenis: 'Laptop Rusak',
+        kodePenjemputan: 'EWH-003',
+        tanggal: '16 Januari 2024',
+        jenisSampah: ['Laptop'],
+        alamat: 'Jl. Asia Afrika No. 11, Bandung',
+        kurir: 'Ahmad Budiman',
         status: 'Selesai',
         poin: 30,
       },
     ];
 
-    setRiwayat(dummyRiwayat);
+    setRequests(dummyRiwayat);
 
-    // 🔹 Update statistik berdasarkan riwayat
     setStats({
       totalPoin: dummyRiwayat.reduce((sum, r) => sum + r.poin, 0),
       totalPenjemputan: dummyRiwayat.length,
-      sedangBerlangsung: dummyRiwayat.filter((r) => r.status === 'Diproses')
-        .length,
+      sedangBerlangsung: dummyRiwayat.filter(
+        (r) => r.status === 'Menunggu Kurir' || r.status === 'Diproses'
+      ).length,
     });
   }, []);
 
   return (
-    <div className='max-w-7xl mx-auto space-y-6'>
-      {/* 🔹 Sapaan Dashboard */}
-      <SapaanDashboard userProfile={userProfile} />
+    <div
+      className={`max-w-7xl mx-auto px-4 md:px-6 lg:px-8 ${
+        isDarkMode ? 'bg-slate-900' : 'bg-slate-50'
+      } space-y-3`}
+    >
+      {/* 🔹 Sapaan */}
+      <SapaanDashboard
+        userProfile={userProfile}
+        subtitle='Selamat datang di EWasteHub. Yuk kelola e-waste kamu!'
+      />
 
       {/* 🔹 Statistik */}
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
         <StatCard
           title='Total Poin'
           value={stats.totalPoin}
-          color='text-green-600'
-          icon={<Gift className='w-5 h-5 text-green-500' />}
+          icon={<Gift className='w-6 h-6 text-green-500' />}
         />
         <StatCard
           title='Total Penjemputan'
           value={stats.totalPenjemputan}
-          color='text-blue-600'
-          icon={<Truck className='w-5 h-5 text-blue-500' />}
+          icon={<Truck className='w-6 h-6 text-green-500' />}
         />
         <StatCard
-          title='Penjemputan Sedang Berlangsung'
+          title='Sedang Berlangsung'
           value={stats.sedangBerlangsung}
-          color='text-yellow-600'
-          icon={<Truck className='w-5 h-5 text-yellow-500' />}
+          icon={<Truck className='w-6 h-6 text-green-500' />}
         />
       </div>
 
-      {/* 🔹 Riwayat Penjemputan */}
-      <div
-        className={`shadow rounded-lg p-6 ${
-          isDarkMode ? 'bg-slate-800 text-slate-100' : 'bg-white text-gray-900'
-        }`}
+      {/* 🔹 Riwayat */}
+      <Card
+        className={`${
+          isDarkMode
+            ? 'bg-slate-800 border-slate-700'
+            : 'bg-white border-slate-200'
+        } border`}
       >
-        <h2 className='text-lg font-semibold mb-4'>Riwayat Penjemputan</h2>
+        <div className='p-4 md:p-6 space-y-6'>
+          <div className='flex justify-between items-center'>
+            <h2
+              className={`text-lg font-semibold ${
+                isDarkMode ? 'text-white' : 'text-slate-900'
+              }`}
+            >
+              Riwayat Penjemputan Terbaru
+            </h2>
+            <Link
+              to='/dashboard/masyarakat/riwayat'
+              className='text-sm font-medium text-green-600 hover:underline'
+            >
+              Lihat Semua
+            </Link>
+          </div>
 
-        <div className='overflow-x-auto'>
-          <table className='min-w-full border-collapse'>
-            <thead>
-              <tr
-                className={`text-left text-sm font-medium ${
-                  isDarkMode
-                    ? 'bg-slate-700 text-slate-200'
-                    : 'bg-gray-100 text-gray-700'
-                }`}
-              >
-                <th className='p-3 border-b'>Tanggal</th>
-                <th className='p-3 border-b'>Jenis Sampah</th>
-                <th className='p-3 border-b'>Status</th>
-                <th className='p-3 border-b text-right'>Poin</th>
-              </tr>
-            </thead>
-            <tbody>
-              {riwayat.length > 0 ? (
-                riwayat.map((item) => (
-                  <tr
-                    key={item.id}
-                    className={`text-sm ${
-                      isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-gray-50'
-                    }`}
-                  >
-                    <td className='p-3 border-b'>{item.tanggal}</td>
-                    <td className='p-3 border-b'>{item.jenis}</td>
-                    <td className='p-3 border-b'>
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-medium
-                          ${
-                            item.status === 'Selesai'
-                              ? 'bg-green-100 text-green-700'
-                              : 'bg-yellow-100 text-yellow-700'
-                          }`}
-                      >
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className='p-3 border-b text-right font-semibold'>
-                      {item.poin}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={4}
-                    className='p-4 text-center text-sm text-gray-500'
-                  >
-                    Belum ada riwayat penjemputan
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          {requests.length > 0 ? (
+            <div className='grid gap-4'>
+              {requests.slice(0, 3).map((req) => (
+                <RiwayatCard key={req.kodePenjemputan} data={req} />
+              ))}
+            </div>
+          ) : (
+            <p
+              className={`text-sm text-center ${
+                isDarkMode ? 'text-gray-400' : 'text-gray-500'
+              }`}
+            >
+              Belum ada riwayat penjemputan
+            </p>
+          )}
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

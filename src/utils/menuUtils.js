@@ -1,24 +1,43 @@
-import { Database, History, Home, Plus, Search, User } from 'lucide-react';
+import {
+  BookA,
+  BookUp2Icon,
+  Database,
+  History,
+  Home,
+  Plus,
+  Search,
+  User,
+} from 'lucide-react';
 
 // Sidebar menu (desktop)
 export const menuItemsByRole = {
   admin: [
     { title: 'Dashboard', icon: Home, path: '/dashboard/admin' },
     {
+      title: 'Verifikasi Akun',
+      icon: User,
+      path: '/dashboard/admin/verifikasi-akun',
+    },
+    {
       title: 'Data Master',
       icon: Database,
       path: '/dashboard/admin/data-master',
+    },
+    {
+      title: 'Kelola Edukasi',
+      icon: BookUp2Icon,
+      path: '/dashboard/admin/kelola-edukasi',
     },
     { title: 'Transaksi', icon: History, path: '/dashboard/admin/transaksi' },
   ],
   'mitra-kurir': [
     { title: 'Dashboard', icon: Home, path: '/dashboard/mitra-kurir' },
-    { title: 'Riwayat', icon: History, path: '/dashboard/mitra-kurir/riwayat' },
     {
-      title: 'Dokumen',
-      icon: Plus,
-      path: '/dashboard/mitra-kurir/unggah-dokumen',
+      title: 'Daftar Permintaan',
+      icon: BookA,
+      path: '/dashboard/mitra-kurir/daftar-permintaan',
     },
+    { title: 'Riwayat', icon: History, path: '/dashboard/mitra-kurir/riwayat' },
   ],
   masyarakat: [
     { title: 'Dashboard', icon: Home, path: '/dashboard/masyarakat' },
@@ -40,25 +59,38 @@ export const menuItemsByRole = {
 export const bottomMenuItemsByRole = {
   admin: [
     { title: 'Dashboard', icon: Home, path: '/dashboard/admin' },
+    {
+      title: 'VerifikasiAkun',
+      icon: User,
+      path: '/dashboard/admin/verifikasi-akun',
+    },
+    {
+      title: 'KelolaEdukasi',
+      icon: BookUp2Icon,
+      path: '/dashboard/admin/kelola-edukasi',
+    },
+
     { title: 'Data', icon: Database, path: '/dashboard/admin/data-master' },
     { title: 'Transaksi', icon: History, path: '/dashboard/admin/transaksi' },
-    { title: 'Profil', icon: User, path: '/dashboard/admin/profil' },
   ],
   'mitra-kurir': [
     { title: 'Dashboard', icon: Home, path: '/dashboard/mitra-kurir' },
+    {
+      title: 'DaftarPermintaan',
+      icon: BookA,
+      path: '/dashboard/mitra-kurir/daftar-permintaan',
+    },
     { title: 'Riwayat', icon: History, path: '/dashboard/mitra-kurir/riwayat' },
     {
       title: 'Dokumen',
       icon: Plus,
       path: '/dashboard/mitra-kurir/unggah-dokumen',
     },
-    { title: 'Profil', icon: User, path: '/dashboard/mitra-kurir/profil' },
   ],
   masyarakat: [
     { title: 'Dashboard', icon: Home, path: '/dashboard/masyarakat' },
     { title: 'Buat', icon: Plus, path: '/dashboard/masyarakat/penjemputan' },
     { title: 'Lacak', icon: Search, path: '/dashboard/masyarakat/lacak' },
     { title: 'Riwayat', icon: History, path: '/dashboard/masyarakat/riwayat' },
-    { title: 'Profil', icon: User, path: '/dashboard/masyarakat/profil' },
   ],
 };

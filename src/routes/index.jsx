@@ -31,8 +31,20 @@ const AdminKelolaDropboxView = lazy(() =>
 const AdminKelolaEdukasiView = lazy(() =>
   import('../pages/dashboard/admin/AdminKelolaEdukasiView')
 );
+const AdminKelolaKategoriView = lazy(() =>
+  import('../pages/dashboard/admin/AdminKelolaKategoriView')
+);
 const AdminKelolaJenisView = lazy(() =>
   import('../pages/dashboard/admin/AdminKelolaJenisView')
+);
+const AdminKelolaKonversiPoinView = lazy(() =>
+  import('../pages/dashboard/admin/AdminKelolaKonversiPoinView')
+);
+const AdminVerifikasiView = lazy(() =>
+  import('../pages/dashboard/admin/AdminVerifikasiView')
+);
+const AdminTransaksiView = lazy(() =>
+  import('../pages/dashboard/admin/AdminTransaksiView')
 );
 
 // ================= Masyarakat Pages =================
@@ -133,10 +145,42 @@ const AppRouter = () => {
           }
         />
         <Route
+          path='/dashboard/admin/kelola-kategori'
+          element={
+            <DashboardLayout>
+              <AdminKelolaKategoriView />
+            </DashboardLayout>
+          }
+        />
+        <Route
           path='/dashboard/admin/kelola-jenis'
           element={
             <DashboardLayout>
               <AdminKelolaJenisView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/admin/kelola-konversi-poin'
+          element={
+            <DashboardLayout>
+              <AdminKelolaKonversiPoinView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/admin/verifikasi-akun'
+          element={
+            <DashboardLayout>
+              <AdminVerifikasiView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/admin/transaksi'
+          element={
+            <DashboardLayout>
+              <AdminTransaksiView />
             </DashboardLayout>
           }
         />

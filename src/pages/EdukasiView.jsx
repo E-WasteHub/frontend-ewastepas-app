@@ -95,7 +95,7 @@ const EdukasiView = () => {
                   className='block h-full'
                 >
                   <article
-                    className={`p-6 text-center border rounded-xl hover:border-green-500 hover:shadow-lg transition-all duration-300 h-full ${
+                    className={`border w-full rounded-xl overflow-hidden hover:border-green-500 hover:shadow-lg transition-all duration-300 h-full flex flex-col ${
                       isDarkMode
                         ? 'bg-slate-800 border-slate-700'
                         : 'bg-white border-slate-200'
@@ -103,57 +103,60 @@ const EdukasiView = () => {
                   >
                     {/* Thumbnail */}
                     {topic.gambar && (
-                      <div className='mb-4'>
+                      <div className='w-full h-48'>
                         <img
                           src={topic.gambar}
                           alt={topic.judul_konten}
-                          className='w-full h-40 object-cover rounded-md'
+                          className='w-full h-full object-cover'
                         />
                       </div>
                     )}
 
-                    {/* Title */}
-                    <h3
-                      className={`text-lg font-semibold mb-3 ${
-                        isDarkMode ? 'text-white' : 'text-slate-900'
-                      }`}
-                    >
-                      {topic.judul_konten}
-                    </h3>
-
-                    {/* Description Preview */}
-                    <p
-                      className={`text-sm leading-relaxed mb-4 line-clamp-4 ${
-                        isDarkMode ? 'text-slate-400' : 'text-slate-600'
-                      }`}
-                    >
-                      {topic.isi_konten.substring(0, 150)}...
-                    </p>
-
-                    {/* Footer */}
-                    <div className='flex items-center justify-end text-sm'>
-                      <span
-                        className={`font-medium ${
-                          isDarkMode ? 'text-green-400' : 'text-green-600'
+                    {/* Body konten */}
+                    <div className='flex flex-col text-center flex-1 p-6'>
+                      {/* Title */}
+                      <h3
+                        className={`text-lg font-semibold mb-3 ${
+                          isDarkMode ? 'text-white' : 'text-slate-900'
                         }`}
                       >
-                        <span className='flex items-center gap-1'>
-                          Baca selengkapnya
-                          <svg
-                            className='w-4 h-4'
-                            fill='none'
-                            stroke='currentColor'
-                            viewBox='0 0 24 24'
-                          >
-                            <path
-                              strokeLinecap='round'
-                              strokeLinejoin='round'
-                              strokeWidth={2}
-                              d='M9 5l7 7-7 7'
-                            />
-                          </svg>
+                        {topic.judul_konten}
+                      </h3>
+
+                      {/* Description Preview */}
+                      <p
+                        className={`text-sm leading-relaxed mb-4 line-clamp-4 flex-grow ${
+                          isDarkMode ? 'text-slate-400' : 'text-slate-600'
+                        }`}
+                      >
+                        {topic.isi_konten.substring(0, 150)}...
+                      </p>
+
+                      {/* Footer (selalu di bawah) */}
+                      <div className='flex items-center justify-end text-sm mt-auto'>
+                        <span
+                          className={`font-medium ${
+                            isDarkMode ? 'text-green-400' : 'text-green-600'
+                          }`}
+                        >
+                          <span className='flex items-center gap-1'>
+                            Baca selengkapnya
+                            <svg
+                              className='w-4 h-4'
+                              fill='none'
+                              stroke='currentColor'
+                              viewBox='0 0 24 24'
+                            >
+                              <path
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                strokeWidth={2}
+                                d='M9 5l7 7-7 7'
+                              />
+                            </svg>
+                          </span>
                         </span>
-                      </span>
+                      </div>
                     </div>
                   </article>
                 </Link>

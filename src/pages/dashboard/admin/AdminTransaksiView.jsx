@@ -3,12 +3,10 @@ import {
   CheckCircle,
   Clock,
   DollarSign,
-  Download,
   Eye,
   Filter,
   MapPin,
   Package,
-  RefreshCw,
   Search,
   TrendingUp,
   Truck,
@@ -219,7 +217,9 @@ const AdminTransaksiView = () => {
 
   return (
     <div
-      className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}
+      className={`max-w-7xl mx-auto ${
+        isDarkMode ? 'bg-gray-900' : 'bg-gray-50'
+      }`}
     >
       <div className='space-y-6'>
         {/* Header */}
@@ -239,17 +239,6 @@ const AdminTransaksiView = () => {
             >
               Monitor dan kelola semua transaksi dalam sistem
             </p>
-          </div>
-
-          <div className='flex space-x-3'>
-            <Button variant='outline' className='flex items-center space-x-2'>
-              <Download className='h-4 w-4' />
-              <span>Export</span>
-            </Button>
-            <Button variant='primary' className='flex items-center space-x-2'>
-              <RefreshCw className='h-4 w-4' />
-              <span>Refresh</span>
-            </Button>
           </div>
         </div>
 

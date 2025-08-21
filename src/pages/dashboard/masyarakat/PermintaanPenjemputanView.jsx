@@ -1,9 +1,12 @@
+// src/views/Masyarakat/PermintaanPenjemputanView.jsx
+
 import { useState } from 'react';
-import FormPenjemputan from '../../../components/fragments/forms/FormPenjemputan';
+import { AlertModal, FormPenjemputan } from '../../../components/fragments';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 
 const PermintaanPenjemputanView = () => {
   useDocumentTitle('Permintaan Penjemputan');
+
   const [formData, setFormData] = useState({
     waktu_dijemput: '',
     alamat_jemput: '',
@@ -11,27 +14,42 @@ const PermintaanPenjemputanView = () => {
   });
 
   const [daftarSampah, setDaftarSampah] = useState([]);
-  const [photos, setPhotos] = useState([]); // langsung array of File
+  const [photos, setPhotos] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // perubahan input text/textarea
+  // 🔹 state alert modal
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({
+    title: '',
+    message: '',
+    type: 'info',
+  });
+
+  const showAlert = (title, message, type = 'info') => {
+    setAlertConfig({ title, message, type });
+    setAlertOpen(true);
+  };
+
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validasi sederhana
     if (daftarSampah.length === 0) {
-      alert('Pilih minimal satu jenis sampah');
+      showAlert(
+        'Validasi Gagal',
+        'Pilih minimal satu jenis sampah.',
+        'warning'
+      );
       setIsSubmitting(false);
       return;
     }
+
     if (!formData.waktu_dijemput || !formData.alamat_jemput) {
-      alert('Lengkapi semua field wajib');
+      showAlert('Validasi Gagal', 'Lengkapi semua field wajib.', 'warning');
       setIsSubmitting(false);
       return;
     }
@@ -40,34 +58,51 @@ const PermintaanPenjemputanView = () => {
       const payload = {
         ...formData,
         daftarSampah,
-        photos, // langsung array File
+        photos,
       };
 
       console.log('Submit:', payload);
 
-      // TODO: kirim ke API pakai fetch/axios
-      alert('Form penjemputan terkirim!');
+      showAlert('Berhasil', 'Form penjemputan berhasil dikirim!', 'success');
     } catch (err) {
       console.error(err);
-      alert('Terjadi kesalahan saat mengirim form.');
+      showAlert('Error', 'Terjadi kesalahan saat mengirim form.', 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <FormPenjemputan
-        formData={formData}
-        onInputChange={handleInputChange}
-        daftarSampah={daftarSampah}
-        onSampahChange={setDaftarSampah}
-        photos={photos}
-        setPhotos={setPhotos}
-        isSubmitting={isSubmitting}
-        onCancel={() => console.log('batal')}
+    <>
+      <form onSubmit={handleSubmit}>
+        <FormPenjemputan
+          formData={formData}
+          onInputChange={handleInputChange}
+          daftarSampah={daftarSampah}
+          onSampahChange={setDaftarSampah}
+          photos={photos}
+          setPhotos={setPhotos}
+          isSubmitting={isSubmitting}
+          onCancel={() =>
+            showAlert(
+              'Dibatalkan',
+              'Permintaan penjemputan dibatalkan.',
+              'info'
+            )
+          }
+          showAlert={showAlert}
+        />
+      </form>
+
+      {/* 🔹 AlertModal universal (final clean) */}
+      <AlertModal
+        isOpen={alertOpen}
+        onClose={() => setAlertOpen(false)}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
       />
-    </form>
+    </>
   );
 };
 

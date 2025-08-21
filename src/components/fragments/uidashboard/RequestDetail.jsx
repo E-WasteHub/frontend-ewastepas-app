@@ -1,8 +1,21 @@
+import { useState } from 'react';
 import useDarkMode from '../../../hooks/useDarkMode';
+import { Button, Modal } from '../../elements';
 import Timeline from './Timeline';
 
-const RequestDetail = ({ request }) => {
+const RequestDetail = ({ request, role = 'masyarakat' }) => {
   const { isDarkMode } = useDarkMode();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleCancelRequest = () => {
+    console.log('Penjemputan dibatalkan:', request.id);
+    setIsModalOpen(false);
+  };
+
+  const handleTakeRequest = () => {
+    console.log('Penjemputan diambil:', request.id);
+    setIsModalOpen(false);
+  };
 
   return (
     <div
@@ -94,73 +107,83 @@ const RequestDetail = ({ request }) => {
         </div>
       )}
 
-      {/* Daftar Sampah */}
-      {request.items && request.items.length > 0 && (
-        <div className='mb-4'>
-          <p
-            className={
-              isDarkMode
-                ? 'text-white font-medium mb-2'
-                : 'text-gray-900 font-medium mb-2'
-            }
+      {/* Role-based Action */}
+      <div className='mt-4 flex justify-end'>
+        {role === 'masyarakat' &&
+          request.status !== 'Selesai' &&
+          request.status !== 'Dibatalkan' && (
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              className='bg-red-500 hover:bg-red-600 text-white'
+            >
+              Batalkan Penjemputan
+            </Button>
+          )}
+
+        {role === 'mitra-kurir' && request.status === 'Menunggu Kurir' && (
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            className='bg-green-600 hover:bg-green-700 text-white'
           >
-            Daftar Sampah
+            Ambil Penjemputan
+          </Button>
+        )}
+      </div>
+
+      {/* Modal Konfirmasi Batalkan */}
+      {role === 'masyarakat' && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title='Konfirmasi Pembatalan'
+        >
+          <p className='mb-4'>
+            Apakah Anda yakin ingin membatalkan penjemputan{' '}
+            <span className='font-semibold'>{request.id}</span>?
           </p>
-          <div className='space-y-2'>
-            {request.items.map((item, i) => (
-              <div
-                key={i}
-                className={`p-2 rounded flex justify-between ${
-                  isDarkMode ? 'bg-gray-700/30' : 'bg-gray-100'
-                }`}
-              >
-                <div>
-                  <p
-                    className={
-                      isDarkMode
-                        ? 'text-white font-medium'
-                        : 'text-gray-900 font-medium'
-                    }
-                  >
-                    {item.nama}
-                  </p>
-                  <p
-                    className={`${
-                      isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                    } text-xs`}
-                  >
-                    {item.kategori}
-                  </p>
-                </div>
-                <p className='text-yellow-500 text-sm'>⭐ {item.poin}</p>
-              </div>
-            ))}
+          <div className='flex justify-end gap-2'>
+            <Button
+              onClick={() => setIsModalOpen(false)}
+              className='!bg-gray-300 hover:bg-gray-500 !text-gray-800'
+            >
+              Tidak
+            </Button>
+            <Button
+              onClick={handleCancelRequest}
+              className='bg-red-500 hover:bg-red-600 text-white'
+            >
+              Ya, Batalkan
+            </Button>
           </div>
-        </div>
+        </Modal>
       )}
 
-      {/* Feedback */}
-      {request.feedback && (
-        <div>
-          <p
-            className={
-              isDarkMode
-                ? 'text-white font-medium mb-2'
-                : 'text-gray-900 font-medium mb-2'
-            }
-          >
-            Feedback
+      {/* Modal Konfirmasi Ambil (Mitra Kurir) */}
+      {role === 'mitra-kurir' && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title='Konfirmasi Pengambilan'
+        >
+          <p className='mb-4'>
+            Apakah Anda yakin ingin mengambil penjemputan{' '}
+            <span className='font-semibold'>{request.id}</span>?
           </p>
-          <div
-            className={`p-2 rounded ${
-              isDarkMode
-                ? 'bg-gray-700/30 text-gray-300'
-                : 'bg-gray-100 text-gray-700'
-            }`}
-          >
-            {request.feedback}
+          <div className='flex justify-end gap-2'>
+            <Button
+              onClick={() => setIsModalOpen(false)}
+              className='!bg-gray-300 hover:bg-gray-500 !text-gray-800'
+            >
+              Tidak
+            </Button>
+            <Button
+              onClick={handleTakeRequest}
+              className='bg-green-600 hover:bg-green-700 text-white'
+            >
+              Ya, Ambil
+            </Button>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );
