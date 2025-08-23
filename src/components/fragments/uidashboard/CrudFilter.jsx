@@ -2,14 +2,20 @@
 import { Search } from 'lucide-react';
 import useDarkMode from '../../../hooks/useDarkMode';
 
-const CrudFilter = ({ searchTerm, onSearch, filterStatus, onFilterChange }) => {
+const CrudFilter = ({
+  searchTerm,
+  onSearch,
+  filterStatus,
+  onFilterChange,
+  statusOptions = [], // 🔹 daftar status dinamis
+}) => {
   const { isDarkMode } = useDarkMode();
 
   return (
     <div
       className={`p-4 rounded-lg shadow-sm flex items-center gap-2 ${
         isDarkMode ? 'bg-gray-800' : 'bg-white'
-      } `}
+      }`}
     >
       {/* Search Input */}
       <div className='relative flex-1'>
@@ -19,9 +25,9 @@ const CrudFilter = ({ searchTerm, onSearch, filterStatus, onFilterChange }) => {
         />
         <input
           type='text'
-          value={searchTerm} // <- penting
-          onChange={(e) => onSearch(e.target.value)} // <- penting
-          placeholder='Cari...'
+          value={searchTerm}
+          onChange={(e) => onSearch(e.target.value)}
+          placeholder='Cari nama atau email...'
           className={`pl-10 pr-4 py-2 w-full rounded-lg border
             ${
               isDarkMode
@@ -43,8 +49,11 @@ const CrudFilter = ({ searchTerm, onSearch, filterStatus, onFilterChange }) => {
           }`}
       >
         <option value='all'>Semua</option>
-        <option value='aktif'>Aktif</option>
-        <option value='nonaktif'>Nonaktif</option>
+        {statusOptions.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
       </select>
     </div>
   );

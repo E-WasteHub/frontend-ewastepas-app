@@ -1,18 +1,35 @@
+// src/components/fragments/uidashboard/RequestList.jsx
 import useDarkMode from '../../../hooks/useDarkMode';
 import RequestDetail from './RequestDetail';
 
-const RequestList = ({ requests, onSelect, selectedId, role }) => {
+const RequestList = ({
+  requests,
+  onSelect,
+  selectedId,
+  role,
+  onUpdateStatus,
+}) => {
   const { isDarkMode } = useDarkMode();
 
+  // 🔹 Filter khusus kurir → cuma 1 ongoing job
+  const activeForKurir =
+    role === 'mitra-kurir'
+      ? requests.find((r) =>
+          ['Dijemput Kurir', 'Diantar Kurir ke Dropbox'].includes(r.status)
+        )
+      : null;
+
+  const visibleRequests = activeForKurir ? [activeForKurir] : requests;
+
   return (
-    <div className='space-y-4'>
-      {requests.slice(0, 3).map((req) => {
-        // ✅ hanya ambil 3 terbaru
+    <div className='space-y-5'>
+      {visibleRequests.map((req) => {
         const isSelected = selectedId === req.id;
+
         return (
           <div
             key={req.id}
-            className={`rounded-lg border transition ${
+            className={`rounded-lg border transition overflow-hidden shadow-sm ${
               isSelected
                 ? isDarkMode
                   ? 'border-green-500 bg-slate-800/60'
@@ -23,42 +40,58 @@ const RequestList = ({ requests, onSelect, selectedId, role }) => {
             }`}
           >
             {/* Ringkasan */}
-            <div className='flex justify-between items-start p-4'>
-              <div>
+            <div className='flex flex-col sm:flex-row justify-between gap-4 p-5'>
+              {/* Info kiri */}
+              <div className='space-y-2 text-sm'>
                 <p
-                  className={`font-semibold ${
+                  className={`font-semibold text-base ${
                     isDarkMode ? 'text-white' : 'text-gray-900'
                   }`}
                 >
-                  {req.id}
+                  Kode Penjemputan:{' '}
+                  <span className='text-green-500'>{req.id}</span>
                 </p>
                 <p
                   className={`${
                     isDarkMode ? 'text-gray-400' : 'text-gray-600'
                   } text-xs`}
                 >
-                  {req.tanggal}
+                  Tanggal Penjemputan: {req.tanggal}
                 </p>
+
                 <p
-                  className={`mt-1 text-sm ${
+                  className={`${
                     isDarkMode ? 'text-gray-200' : 'text-gray-800'
-                  }`}
+                  } text-sm`}
                 >
-                  Kurir: <span className='font-medium'>{req.kurir}</span>
+                  {role === 'masyarakat' ? (
+                    <>
+                      Kurir:{' '}
+                      <span className='font-medium'>{req.kurir || '-'}</span>
+                    </>
+                  ) : (
+                    <>
+                      Masyarakat:{' '}
+                      <span className='font-medium'>
+                        {req.masyarakat || '-'}
+                      </span>
+                    </>
+                  )}
                 </p>
+
                 <p
-                  className={
-                    isDarkMode
-                      ? 'text-gray-200 text-sm'
-                      : 'text-gray-800 text-sm'
-                  }
+                  className={`line-clamp-2 ${
+                    isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                  } text-sm`}
                 >
-                  Lokasi: {req.lokasi}
+                  Alamat: {req.lokasi}
                 </p>
               </div>
-              <div className='text-right'>
+
+              {/* Info kanan */}
+              <div className='text-right space-y-2 sm:min-w-[130px]'>
                 <span
-                  className={`text-xs px-2 py-1 rounded ${
+                  className={`inline-block text-xs px-3 py-1 rounded-md font-medium ${
                     req.status === 'Selesai'
                       ? isDarkMode
                         ? 'bg-green-900/70 text-green-400'
@@ -67,6 +100,12 @@ const RequestList = ({ requests, onSelect, selectedId, role }) => {
                       ? isDarkMode
                         ? 'bg-red-900/30 text-red-400'
                         : 'bg-red-100 text-red-700'
+                      : req.status === 'Menunggu Kurir'
+                      ? 'bg-blue-100 text-blue-600'
+                      : req.status === 'Dijemput Kurir'
+                      ? 'bg-orange-100 text-orange-600'
+                      : req.status === 'Diantar Kurir ke Dropbox'
+                      ? 'bg-purple-100 text-purple-600'
                       : isDarkMode
                       ? 'bg-yellow-900/30 text-yellow-400'
                       : 'bg-yellow-100 text-yellow-700'
@@ -74,27 +113,32 @@ const RequestList = ({ requests, onSelect, selectedId, role }) => {
                 >
                   {req.status}
                 </span>
-                <p className='text-xs mt-1 text-yellow-500'>
-                  ⭐ {req.poin} poin
+                <p className='text-sm text-green-500 font-semibold'>
+                  {req.poin} poin
                 </p>
               </div>
             </div>
 
-            {/* Tombol toggle detail */}
+            {/* Toggle detail */}
             <button
               onClick={() => onSelect(isSelected ? null : req)}
-              className={`w-full px-4 py-2 border-t flex items-center justify-end text-sm ${
+              className={`w-full px-5 py-3 text-xs sm:text-sm border-t flex items-center justify-center sm:justify-end gap-2 font-medium ${
                 isDarkMode
                   ? 'border-gray-700 text-green-400 hover:bg-gray-700/30'
                   : 'border-gray-200 text-green-700 hover:bg-green-50'
               }`}
             >
               {isSelected ? 'Tutup Detail' : 'Lihat Detail'}
-              <span className='px-2'>{isSelected ? '▲' : '▼'}</span>
+              <span className='text-xs'>{isSelected ? '▲' : '▼'}</span>
             </button>
 
-            {/* Detail expand */}
-            {isSelected && <RequestDetail request={req} role={role} />}
+            {isSelected && (
+              <RequestDetail
+                request={req}
+                role={role}
+                onUpdateStatus={onUpdateStatus}
+              />
+            )}
           </div>
         );
       })}

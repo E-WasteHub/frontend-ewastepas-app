@@ -19,7 +19,7 @@ const Select = ({
     base: `
       w-full rounded-lg border transition
       text-base sm:text-sm
-      px-3 sm:px-4 py-3 sm:py-2
+      px-3 sm:px-4 py-2 sm:py-3
       focus:outline-none focus:ring-2
       appearance-auto sm:appearance-none
     `,

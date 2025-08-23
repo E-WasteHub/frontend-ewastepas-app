@@ -37,7 +37,11 @@ export const menuItemsByRole = {
       icon: BookA,
       path: '/dashboard/mitra-kurir/daftar-permintaan',
     },
-    { title: 'Riwayat', icon: History, path: '/dashboard/mitra-kurir/riwayat' },
+    {
+      title: 'Riwayat Penjemputan',
+      icon: History,
+      path: '/dashboard/mitra-kurir/riwayat',
+    },
   ],
   masyarakat: [
     { title: 'Dashboard', icon: Home, path: '/dashboard/masyarakat' },
@@ -51,7 +55,11 @@ export const menuItemsByRole = {
       icon: Search,
       path: '/dashboard/masyarakat/lacak',
     },
-    { title: 'Riwayat', icon: History, path: '/dashboard/masyarakat/riwayat' },
+    {
+      title: 'Riwayat Penjemputan',
+      icon: History,
+      path: '/dashboard/masyarakat/riwayat',
+    },
   ],
 };
 
@@ -80,11 +88,10 @@ export const bottomMenuItemsByRole = {
       icon: BookA,
       path: '/dashboard/mitra-kurir/daftar-permintaan',
     },
-    { title: 'Riwayat', icon: History, path: '/dashboard/mitra-kurir/riwayat' },
     {
-      title: 'Dokumen',
-      icon: Plus,
-      path: '/dashboard/mitra-kurir/unggah-dokumen',
+      title: 'Riwayat',
+      icon: History,
+      path: '/dashboard/mitra-kurir/riwayat',
     },
   ],
   masyarakat: [

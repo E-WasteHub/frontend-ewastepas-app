@@ -21,6 +21,7 @@ import {
   CrudFilter,
   CrudHeader,
   CrudModal,
+  CrudStats,
   CrudTable,
 } from '../../../components/fragments/uidashboard';
 
@@ -35,7 +36,7 @@ const AdminVerifikasiView = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  // Data
+  // Data dummy
   const [verifikasiData, setVerifikasiData] = useState([
     {
       id: 1,
@@ -67,6 +68,38 @@ const AdminVerifikasiView = () => {
     const matchStatus = filterStatus === 'all' || item.status === filterStatus;
     return matchSearch && matchStatus;
   });
+
+  // 🔹 Stats summary
+  const stats = [
+    {
+      title: 'Total Pengguna',
+      value: verifikasiData.length,
+      icon: User,
+      color: 'text-blue-500',
+      onClick: () => setFilterStatus('all'),
+    },
+    {
+      title: 'Pending',
+      value: verifikasiData.filter((u) => u.status === 'pending').length,
+      icon: Clock,
+      color: 'text-yellow-500',
+      onClick: () => setFilterStatus('pending'),
+    },
+    {
+      title: 'Disetujui',
+      value: verifikasiData.filter((u) => u.status === 'approved').length,
+      icon: CheckCircle,
+      color: 'text-green-500',
+      onClick: () => setFilterStatus('approved'),
+    },
+    {
+      title: 'Ditolak',
+      value: verifikasiData.filter((u) => u.status === 'rejected').length,
+      icon: XCircle,
+      color: 'text-red-500',
+      onClick: () => setFilterStatus('rejected'),
+    },
+  ];
 
   // Status Badge
   const getStatusBadge = (status) => {
@@ -131,6 +164,9 @@ const AdminVerifikasiView = () => {
         description='Semua permintaan verifikasi akun mitra kurir'
       />
 
+      {/* 🔹 Stat Cards */}
+      <CrudStats stats={stats} />
+
       {/* Filter + Tambah */}
       <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
         <div className='flex-1 w-full'>
@@ -139,6 +175,11 @@ const AdminVerifikasiView = () => {
             onSearch={setSearchTerm}
             filterStatus={filterStatus}
             onFilterChange={setFilterStatus}
+            statusOptions={[
+              { value: 'pending', label: 'Pending' },
+              { value: 'approved', label: 'Disetujui' },
+              { value: 'rejected', label: 'Ditolak' },
+            ]}
           />
         </div>
         <Button

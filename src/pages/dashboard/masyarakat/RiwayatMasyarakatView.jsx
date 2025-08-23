@@ -1,3 +1,4 @@
+// src/views/masyarakat/RiwayatMasyarakatView.jsx
 import { useState } from 'react';
 import Card from '../../../components/elements/Card';
 import Pagination from '../../../components/elements/Pagination';
@@ -14,7 +15,7 @@ const RiwayatMasyarakatView = () => {
 
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 3;
+  const pageSize = 2;
 
   // Dummy data contoh
   const requests = [
@@ -25,21 +26,8 @@ const RiwayatMasyarakatView = () => {
       lokasi: 'Jl. Merdeka No. 123, Jakarta Pusat',
       status: 'Menunggu Kurir',
       poin: 25,
-      timeline: [
-        { deskripsi: 'Dijemput', waktu: '09.00', warna: 'bg-blue-400' },
-        {
-          deskripsi: 'Diantar ke Dropbox',
-          waktu: '11.30',
-          lokasi: 'Dropbox Mall Central Jakarta',
-          warna: 'bg-green-400',
-        },
-      ],
-      items: [
-        { nama: 'Laptop Bekas', kategori: 'Komputer', poin: 15 },
-        { nama: 'Mouse Wireless', kategori: 'Periferal', poin: 5 },
-        { nama: 'Kabel USB', kategori: 'Aksesoris', poin: 5 },
-      ],
-      feedback: 'Kurir sangat profesional dan tepat waktu',
+      timeline: [],
+      items: [],
     },
     {
       id: 'EWH-002',
@@ -48,8 +36,8 @@ const RiwayatMasyarakatView = () => {
       lokasi: 'Jl. Sudirman No. 456, Jakarta Selatan',
       status: 'Dibatalkan',
       poin: 0,
-      items: [],
       timeline: [],
+      items: [],
     },
     {
       id: 'EWH-003',
@@ -58,21 +46,8 @@ const RiwayatMasyarakatView = () => {
       lokasi: 'Jl. Merdeka No. 123, Jakarta Pusat',
       status: 'Selesai',
       poin: 25,
-      timeline: [
-        { deskripsi: 'Dijemput', waktu: '09.00', warna: 'bg-blue-400' },
-        {
-          deskripsi: 'Diantar ke Dropbox',
-          waktu: '11.30',
-          lokasi: 'Dropbox Mall Central Jakarta',
-          warna: 'bg-green-400',
-        },
-      ],
-      items: [
-        { nama: 'Laptop Bekas', kategori: 'Komputer', poin: 15 },
-        { nama: 'Mouse Wireless', kategori: 'Periferal', poin: 5 },
-        { nama: 'Kabel USB', kategori: 'Aksesoris', poin: 5 },
-      ],
-      feedback: 'Kurir sangat profesional dan tepat waktu',
+      timeline: [],
+      items: [],
     },
     {
       id: 'EWH-004',
@@ -81,21 +56,8 @@ const RiwayatMasyarakatView = () => {
       lokasi: 'Jl. Merdeka No. 123, Jakarta Pusat',
       status: 'Selesai',
       poin: 25,
-      timeline: [
-        { deskripsi: 'Dijemput', waktu: '09.00', warna: 'bg-blue-400' },
-        {
-          deskripsi: 'Diantar ke Dropbox',
-          waktu: '11.30',
-          lokasi: 'Dropbox Mall Central Jakarta',
-          warna: 'bg-green-400',
-        },
-      ],
-      items: [
-        { nama: 'Laptop Bekas', kategori: 'Komputer', poin: 15 },
-        { nama: 'Mouse Wireless', kategori: 'Periferal', poin: 5 },
-        { nama: 'Kabel USB', kategori: 'Aksesoris', poin: 5 },
-      ],
-      feedback: 'Kurir sangat profesional dan tepat waktu',
+      timeline: [],
+      items: [],
     },
   ];
 
@@ -107,9 +69,9 @@ const RiwayatMasyarakatView = () => {
   );
 
   return (
-    <div className='max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-4'>
+    <div className='max-w-7xl mx-auto'>
       {/* Header */}
-      <div className='lg:col-span-4 mb-4'>
+      <div className='mb-4'>
         <h2
           className={`text-2xl font-bold mb-1 ${
             isDarkMode ? 'text-white' : 'text-gray-900'
@@ -126,46 +88,62 @@ const RiwayatMasyarakatView = () => {
         </p>
       </div>
 
-      {/* Sidebar kiri */}
-      <div className='lg:col-span-1'>
-        <FilterCard />
-      </div>
+      {/* Kontainer utama */}
+      <div className='flex flex-1 gap-4 overflow-hidden'>
+        {/* Sidebar kiri */}
+        <div className='w-1/4'>
+          <FilterCard />
+        </div>
 
-      {/* Konten kanan */}
-      <div className='lg:col-span-3'>
-        <Card className='p-6'>
-          <h3
-            className={`text-lg font-semibold mb-1 ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`}
+        {/* Konten kanan */}
+        <div className='flex-1 flex flex-col'>
+          <Card
+            className={`flex flex-col flex-1 ${
+              isDarkMode
+                ? 'bg-gray-800 border-gray-700'
+                : 'bg-white border-slate-200'
+            } rounded-lg shadow-md overflow-hidden`}
           >
-            Daftar Riwayat
-          </h3>
-          <p
-            className={`text-sm mb-4 ${
-              isDarkMode ? 'text-gray-400' : 'text-gray-600'
-            }`}
-          >
-            Menampilkan semua riwayat penjemputan Anda
-          </p>
+            <div className='p-3 sm:p-4'>
+              <h3
+                className={`text-lg font-semibold mb-1 ${
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                }`}
+              >
+                Daftar Riwayat
+              </h3>
+              <p
+                className={`text-sm ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                }`}
+              >
+                Menampilkan semua riwayat penjemputan Anda
+              </p>
+            </div>
 
-          <RequestList
-            requests={paginatedRequests}
-            onSelect={setSelectedRequest}
-            selectedId={selectedRequest?.id}
-            role='masyarakat'
-          />
+            {/* List dengan scroll internal */}
+            <div className='flex-1 overflow-y-auto px-3 sm:px-4 pb-3'>
+              <RequestList
+                requests={paginatedRequests}
+                onSelect={setSelectedRequest}
+                selectedId={selectedRequest?.id}
+                role='masyarakat'
+              />
+            </div>
 
-          {/* Pagination */}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(page) => {
-              setSelectedRequest(null);
-              setCurrentPage(page);
-            }}
-          />
-        </Card>
+            {/* Pagination tetap di bawah */}
+            <div className='px-3 sm:px-4 py-2'>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => {
+                  setSelectedRequest(null);
+                  setCurrentPage(page);
+                }}
+              />
+            </div>
+          </Card>
+        </div>
       </div>
     </div>
   );

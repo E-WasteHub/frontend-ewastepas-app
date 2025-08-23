@@ -1,9 +1,10 @@
+// src/views/dashboard/mitra-kurir/DashboardMitraKurirView.jsx
 import { ArrowRight, Package, Star, Truck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Alert, Card, SapaanDashboard } from '../../../components/elements';
 import {
-  RequestList,
+  RiwayatCard,
   StatCard,
 } from '../../../components/fragments/uidashboard';
 import useDarkMode from '../../../hooks/useDarkMode';
@@ -15,7 +16,6 @@ const DashboardMitraKurirView = ({ userProfile }) => {
 
   const [namaKurir, setNamaKurir] = useState('');
   const [daftarPermintaan, setDaftarPermintaan] = useState([]);
-  const [selectedRequest, setSelectedRequest] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [statistikKurir, setStatistikKurir] = useState({
@@ -51,27 +51,33 @@ const DashboardMitraKurirView = ({ userProfile }) => {
       const mockPermintaan = [
         {
           id: 'EW-001',
+          kodePenjemputan: 'EW-001',
           tanggal: '15 Agustus 2024',
-          lokasi: 'Jl. Merdeka No. 123, Jakarta Pusat',
+          alamat: 'Jl. Merdeka No. 123, Jakarta Pusat',
           status: 'Menunggu Kurir',
           poin: 250,
-          items: [
-            { nama: 'Laptop', kategori: 'Komputer', poin: 150 },
-            { nama: 'Smartphone', kategori: 'Elektronik', poin: 100 },
-          ],
-          timeline: [],
+          jenisSampah: ['Laptop', 'Smartphone'],
+          kurir: 'Belum ditentukan',
         },
         {
           id: 'EW-002',
+          kodePenjemputan: 'EW-002',
           tanggal: '15 Agustus 2024',
-          lokasi: 'Jl. Sudirman No. 456, Jakarta Selatan',
+          alamat: 'Jl. Sudirman No. 456, Jakarta Selatan',
           status: 'Menunggu Kurir',
           poin: 400,
-          items: [
-            { nama: 'TV LED', kategori: 'Elektronik', poin: 250 },
-            { nama: 'Rice Cooker', kategori: 'Elektronik', poin: 150 },
-          ],
-          timeline: [],
+          jenisSampah: ['TV LED', 'Rice Cooker'],
+          kurir: 'Belum ditentukan',
+        },
+        {
+          id: 'EW-003',
+          kodePenjemputan: 'EW-003',
+          tanggal: '15 Agustus 2024',
+          alamat: 'Jl. Sudirman No. 456, Jakarta Selatan',
+          status: 'Menunggu Kurir',
+          poin: 400,
+          jenisSampah: ['TV LED', 'Rice Cooker'],
+          kurir: 'Belum ditentukan',
         },
       ];
       setDaftarPermintaan(mockPermintaan);
@@ -85,22 +91,9 @@ const DashboardMitraKurirView = ({ userProfile }) => {
     muatDaftarPermintaan();
   }, []);
 
-  if (isLoading) {
-    return (
-      <div className='flex items-center justify-center h-full'>
-        <div className='text-center'>
-          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4'></div>
-          <p className={isDarkMode ? 'text-slate-300' : 'text-slate-600'}>
-            Memuat dashboard...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div
-      className={`max-w-7xl mx-auto min-h-screen ${
+      className={`max-w-7xl mx-auto px-4 md:px-6 lg:px-8 ${
         isDarkMode ? 'bg-slate-900' : 'bg-slate-50'
       } space-y-6`}
     >
@@ -119,9 +112,9 @@ const DashboardMitraKurirView = ({ userProfile }) => {
       {error && <Alert type='error' message={error} />}
 
       {/* Quick Stats */}
-      <div className='grid grid-cols-2 lg:grid-cols-4 gap-4'>
+      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
         <StatCard
-          title='Penjemputan Minggu ini'
+          title='Rating'
           value={statistikKurir.rating}
           icon={<Star className='w-6 h-6 text-green-500' />}
         />
@@ -146,7 +139,7 @@ const DashboardMitraKurirView = ({ userProfile }) => {
         } border`}
       >
         <div className='p-6'>
-          <div className='flex items-center justify-between mb-6'>
+          <div className='flex items-center justify-between mb-3'>
             <h2
               className={`text-lg font-medium ${
                 isDarkMode ? 'text-white' : 'text-slate-900'
@@ -179,12 +172,11 @@ const DashboardMitraKurirView = ({ userProfile }) => {
               </p>
             </div>
           ) : (
-            <RequestList
-              requests={daftarPermintaan.slice(0, 2)}
-              onSelect={setSelectedRequest}
-              selectedId={selectedRequest?.id}
-              role='mitra-kurir'
-            />
+            <div className='grid gap-4'>
+              {daftarPermintaan.slice(0, 3).map((permintaan) => (
+                <RiwayatCard key={permintaan.id} data={permintaan} />
+              ))}
+            </div>
           )}
         </div>
       </Card>

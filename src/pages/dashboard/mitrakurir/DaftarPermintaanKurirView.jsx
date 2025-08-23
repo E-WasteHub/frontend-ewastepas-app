@@ -1,6 +1,6 @@
+// src/views/kurir/DaftarPermintaanKurirView.jsx
 import { useEffect, useState } from 'react';
 import { Alert, Card, Pagination } from '../../../components/elements';
-import { FilterCard } from '../../../components/fragments';
 import { RequestList } from '../../../components/fragments/uidashboard';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
@@ -12,274 +12,213 @@ const DaftarPermintaanKurirView = () => {
   const [daftarPermintaan, setDaftarPermintaan] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [currentPage, setCurrentPage] = useState(1);
   const [selectedRequest, setSelectedRequest] = useState(null);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
+  // Dummy data
   const mockPermintaan = [
     {
-      id: 1,
-      kodePenjemputan: 'EW-001',
-      namaPemesan: 'Budi Santoso',
-      telepon: '081234567890',
-      alamat: 'Jl. Merdeka No. 123, Jakarta Pusat',
-      waktuPenjemputan: '2024-08-15 09:00',
-      jenisSampah: ['Laptop', 'Smartphone'],
-      estimasiPoin: 250,
-      jarak: '2.5 km',
-      status: 'menunggu',
-      tanggalDibuat: '2024-08-14 10:30',
+      id: 'EW-001',
+      tanggal: '15 Agustus 2024 09:00',
+      masyarakat: 'Budi Santoso',
+      lokasi: 'Jl. Merdeka No. 123, Jakarta Pusat',
+      status: 'Menunggu Kurir',
+      poin: 250,
+      items: [{ nama: 'Laptop', kategori: 'Elektronik', poin: 150 }],
+      timeline: [
+        { status: 'Menunggu Kurir', desc: 'Permintaan dibuat', time: '08:00' },
+      ],
     },
     {
-      id: 2,
-      kodePenjemputan: 'EW-002',
-      namaPemesan: 'Sari Dewi',
-      telepon: '081234567891',
-      alamat: 'Jl. Sudirman No. 456, Jakarta Selatan',
-      waktuPenjemputan: '2024-08-15 14:00',
-      jenisSampah: ['TV LED', 'Rice Cooker'],
-      estimasiPoin: 400,
-      jarak: '1.8 km',
-      status: 'menunggu',
-      tanggalDibuat: '2024-08-14 11:15',
+      id: 'EW-002',
+      tanggal: '15 Agustus 2024 14:00',
+      masyarakat: 'Sari Dewi',
+      lokasi: 'Jl. Sudirman No. 456, Jakarta Selatan',
+      status: 'Menunggu Kurir',
+      poin: 400,
+      items: [{ nama: 'TV LED', kategori: 'Elektronik', poin: 200 }],
+      timeline: [
+        { status: 'Menunggu Kurir', desc: 'Permintaan dibuat', time: '13:00' },
+      ],
     },
     {
-      id: 3,
-      kodePenjemputan: 'EW-003',
-      namaPemesan: 'Riko Pratama',
-      telepon: '081234567892',
-      alamat: 'Jl. Gatot Subroto No. 789, Jakarta Barat',
-      waktuPenjemputan: '2024-08-15 16:30',
-      jenisSampah: ['Printer', 'Monitor'],
-      estimasiPoin: 180,
-      jarak: '3.2 km',
-      status: 'menunggu',
-      tanggalDibuat: '2024-08-14 12:00',
+      id: 'EW-003',
+      tanggal: '15 Agustus 2024 16:30',
+      masyarakat: 'Riko Pratama',
+      lokasi: 'Jl. Gatot Subroto No. 789, Jakarta Barat',
+      status: 'Menunggu Kurir',
+      poin: 180,
+      items: [{ nama: 'Printer', kategori: 'Elektronik', poin: 90 }],
+      timeline: [
+        { status: 'Menunggu Kurir', desc: 'Permintaan dibuat', time: '12:00' },
+      ],
     },
     {
-      id: 4,
-      kodePenjemputan: 'EW-004',
-      namaPemesan: 'Maya Kusuma',
-      telepon: '081234567893',
-      alamat: 'Jl. Thamrin No. 321, Jakarta Pusat',
-      waktuPenjemputan: '2024-08-15 10:30',
-      jenisSampah: ['Keyboard', 'Mouse', 'Speaker'],
-      estimasiPoin: 120,
-      jarak: '1.2 km',
-      status: 'diambil',
-      tanggalDibuat: '2024-08-14 09:45',
-    },
-    {
-      id: 5,
-      kodePenjemputan: 'EW-005',
-      namaPemesan: 'Andi Setiawan',
-      telepon: '081234567894',
-      alamat: 'Jl. Kuningan No. 654, Jakarta Selatan',
-      waktuPenjemputan: '2024-08-16 08:00',
-      jenisSampah: ['Handphone', 'Charger'],
-      estimasiPoin: 80,
-      jarak: '4.1 km',
-      status: 'menunggu',
-      tanggalDibuat: '2024-08-14 13:20',
-    },
-    {
-      id: 6,
-      kodePenjemputan: 'EW-006',
-      namaPemesan: 'Lisa Permata',
-      telepon: '081234567895',
-      alamat: 'Jl. Kemang No. 987, Jakarta Selatan',
-      waktuPenjemputan: '2024-08-16 11:00',
-      jenisSampah: ['Tablet', 'Power Bank'],
-      estimasiPoin: 150,
-      jarak: '2.8 km',
-      status: 'menunggu',
-      tanggalDibuat: '2024-08-14 14:10',
-    },
-    {
-      id: 7,
-      kodePenjemputan: 'EW-007',
-      namaPemesan: 'Deni Rahmat',
-      telepon: '081234567896',
-      alamat: 'Jl. Senayan No. 147, Jakarta Pusat',
-      waktuPenjemputan: '2024-08-16 15:00',
-      jenisSampah: ['CPU', 'Monitor CRT'],
-      estimasiPoin: 320,
-      jarak: '3.5 km',
-      status: 'selesai',
-      tanggalDibuat: '2024-08-13 16:30',
-    },
-    {
-      id: 8,
-      kodePenjemputan: 'EW-008',
-      namaPemesan: 'Nina Sari',
-      telepon: '081234567897',
-      alamat: 'Jl. Menteng No. 258, Jakarta Pusat',
-      waktuPenjemputan: '2024-08-16 13:30',
-      jenisSampah: ['Router', 'Modem'],
-      estimasiPoin: 90,
-      jarak: '1.9 km',
-      status: 'menunggu',
-      tanggalDibuat: '2024-08-14 15:45',
-    },
-    {
-      id: 9,
-      kodePenjemputan: 'EW-009',
-      namaPemesan: 'Agus Mulyana',
-      telepon: '081234567898',
-      alamat: 'Jl. Pancoran No. 369, Jakarta Selatan',
-      waktuPenjemputan: '2024-08-17 09:30',
-      jenisSampah: ['Washing Machine Controller', 'Microwave'],
-      estimasiPoin: 280,
-      jarak: '5.2 km',
-      status: 'menunggu',
-      tanggalDibuat: '2024-08-15 08:20',
-    },
-    {
-      id: 10,
-      kodePenjemputan: 'EW-010',
-      namaPemesan: 'Fitri Handayani',
-      telepon: '081234567899',
-      alamat: 'Jl. Cikini No. 741, Jakarta Pusat',
-      waktuPenjemputan: '2024-08-17 14:00',
-      jenisSampah: ['Iron', 'Hair Dryer'],
-      estimasiPoin: 110,
-      jarak: '2.1 km',
-      status: 'dibatalkan',
-      tanggalDibuat: '2024-08-15 10:15',
+      id: 'EW-004',
+      tanggal: '16 Agustus 2024 10:00',
+      masyarakat: 'Maya Kusuma',
+      lokasi: 'Jl. Thamrin No. 321, Jakarta Pusat',
+      status: 'Menunggu Kurir',
+      poin: 120,
+      items: [{ nama: 'Keyboard', kategori: 'Elektronik', poin: 60 }],
+      timeline: [
+        { status: 'Menunggu Kurir', desc: 'Permintaan dibuat', time: '09:30' },
+      ],
     },
   ];
 
+  // Simulasi fetch
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        setIsLoading(true);
-        await new Promise((r) => setTimeout(r, 800));
-        setDaftarPermintaan(mockPermintaan);
-      } catch (err) {
-        setError('Gagal memuat daftar permintaan');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadData();
+    setIsLoading(true);
+    setTimeout(() => {
+      setDaftarPermintaan(mockPermintaan);
+      setIsLoading(false);
+    }, 500);
   }, []);
 
-  // Filter
-  const filteredData = daftarPermintaan.filter((item) => {
-    const matchesSearch =
-      item.kodePenjemputan.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.namaPemesan.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.alamat.toLowerCase().includes(searchTerm.toLowerCase());
+  // Ambil penjemputan
+  const handleTakeRequest = (id) => {
+    setDaftarPermintaan((prev) =>
+      prev.map((req) =>
+        req.id === id
+          ? {
+              ...req,
+              status: 'Dijemput Kurir',
+              timeline: [
+                ...req.timeline,
+                {
+                  status: 'Dijemput Kurir',
+                  desc: 'Kurir mengambil barang',
+                  time: new Date().toLocaleTimeString(),
+                },
+              ],
+            }
+          : req
+      )
+    );
+  };
 
-    const matchesStatus =
-      statusFilter === 'all'
-        ? true
-        : statusFilter === 'active'
-        ? item.status === 'menunggu' || item.status === 'diambil'
-        : statusFilter === 'completed'
-        ? item.status === 'selesai'
-        : true;
+  // Update timeline ke tahap berikutnya
+  const handleUpdateTimeline = (id, nextStatus) => {
+    const mapping = {
+      'Diantar Kurir ke Dropbox': { desc: 'Barang diantar ke dropbox' },
+      Selesai: { desc: 'Penjemputan selesai' },
+    };
 
-    return matchesSearch && matchesStatus;
-  });
+    setDaftarPermintaan((prev) =>
+      prev.map((req) =>
+        req.id === id
+          ? {
+              ...req,
+              status: nextStatus,
+              timeline: [
+                ...req.timeline,
+                {
+                  status: nextStatus,
+                  desc: mapping[nextStatus].desc,
+                  time: new Date().toLocaleTimeString(),
+                },
+              ],
+            }
+          : req
+      )
+    );
+  };
 
-  // Pagination
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  // Cek apakah ada penjemputan aktif
+  const activeRequest = daftarPermintaan.find(
+    (req) =>
+      req.status === 'Dijemput Kurir' ||
+      req.status === 'Diantar Kurir ke Dropbox'
+  );
+
+  // Pagination data (jika tidak ada active request)
+  const totalPages = Math.ceil(daftarPermintaan.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedData = filteredData.slice(
+  const paginatedData = daftarPermintaan.slice(
     startIndex,
     startIndex + itemsPerPage
   );
 
   if (isLoading) {
-    return (
-      <div className='flex items-center justify-center h-full'>
-        <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>
-          Memuat daftar permintaan...
-        </p>
-      </div>
-    );
+    return <p className='text-center py-10'>Memuat data...</p>;
   }
 
   return (
-    <div className='max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-4'>
+    <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-4'>
       {/* Header */}
-      <div className='lg:col-span-4 mb-2'>
-        <h1
-          className={`text-2xl font-bold ${
+      <div className='mb-2'>
+        <h2
+          className={`text-xl sm:text-2xl font-bold mb-1 ${
             isDarkMode ? 'text-white' : 'text-gray-900'
           }`}
         >
           Daftar Permintaan Penjemputan
-        </h1>
+        </h2>
         <p
           className={`text-sm ${
             isDarkMode ? 'text-gray-400' : 'text-gray-600'
           }`}
         >
-          Kelola dan ambil permintaan penjemputan yang tersedia
+          Lihat semua permintaan penjemputan yang tersedia
         </p>
       </div>
 
-      {/* Sidebar kiri */}
-      <div className='lg:col-span-1'>
-        <FilterCard
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          daftarPermintaan={daftarPermintaan}
-        />
-      </div>
+      {error && <Alert type='error' message={error} />}
 
-      {/* Konten kanan */}
-      <div className='lg:col-span-3'>
-        {error && <Alert type='error' message={error} />}
-        <Card
-          className={`${
-            isDarkMode
-              ? 'bg-gray-800 border-gray-700'
-              : 'bg-white border-gray-200'
-          } border p-6`}
-        >
-          <h3
-            className={`text-lg font-semibold mb-2 ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`}
-          >
-            Permintaan Tersedia
-          </h3>
-          <p
-            className={`text-sm mb-4 ${
-              isDarkMode ? 'text-gray-400' : 'text-gray-600'
-            }`}
-          >
-            Menampilkan daftar permintaan penjemputan
-          </p>
+      <Card
+        className={`border${
+          isDarkMode
+            ? 'bg-gray-800 border-gray-700'
+            : 'bg-white border-gray-200'
+        }`}
+      >
+        <div className='mx-auto px-8'>
+          {activeRequest ? (
+            <>
+              <h3 className='font-semibold mb-3'>🚚 Penjemputan Aktif</h3>
+              <RequestList
+                requests={[activeRequest]}
+                onSelect={setSelectedRequest}
+                selectedId={selectedRequest?.id}
+                role='mitra-kurir'
+                onTake={handleTakeRequest}
+                onUpdateTimeline={handleUpdateTimeline}
+              />
+            </>
+          ) : (
+            <>
+              <h3 className='font-semibold my-3'>Permintaan Tersedia</h3>
+              <RequestList
+                requests={paginatedData}
+                onSelect={setSelectedRequest}
+                selectedId={selectedRequest?.id}
+                role='mitra-kurir'
+                onTake={handleTakeRequest}
+                onUpdateTimeline={handleUpdateTimeline}
+              />
 
-          <RequestList
-            requests={paginatedData}
-            onSelect={setSelectedRequest}
-            selectedId={selectedRequest?.id}
-            role='mitra-kurir'
-          />
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={(page) => {
-                setSelectedRequest(null);
-                setCurrentPage(page);
-              }}
-              isDarkMode={isDarkMode}
-            />
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className='mb-4'>
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={(page) => {
+                      setSelectedRequest(null);
+                      setCurrentPage(page);
+                    }}
+                    isDarkMode={isDarkMode}
+                  />
+                </div>
+              )}
+            </>
           )}
-        </Card>
-      </div>
+        </div>
+      </Card>
     </div>
   );
 };

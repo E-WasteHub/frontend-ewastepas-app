@@ -40,7 +40,7 @@ const ProfilView = () => {
     { key: 'profil', label: 'Data Profil' },
     { key: 'password', label: 'Ubah Password' },
     ...(role === 'mitra-kurir'
-      ? [{ key: 'dokumen', label: 'Upload Dokumen' }]
+      ? [{ key: 'dokumen', label: 'Unggah Dokumen' }]
       : []),
   ];
 

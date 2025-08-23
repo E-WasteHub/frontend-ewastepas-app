@@ -68,9 +68,6 @@ const DashboardKurirView = lazy(() =>
 const DaftarPermintaanKurirView = lazy(() =>
   import('../pages/dashboard/mitrakurir/DaftarPermintaanKurirView')
 );
-const DetailPermintaanKurirView = lazy(() =>
-  import('../pages/dashboard/mitrakurir/DetailPermintaanKurirView')
-);
 const UnggahDokumenView = lazy(() =>
   import('../pages/dashboard/mitrakurir/UnggahDokumenView')
 );
@@ -249,14 +246,6 @@ const AppRouter = () => {
           element={
             <DashboardLayout>
               <DaftarPermintaanKurirView />
-            </DashboardLayout>
-          }
-        />
-        <Route
-          path='/dashboard/mitra-kurir/detail-permintaan/:id'
-          element={
-            <DashboardLayout>
-              <DetailPermintaanKurirView />
             </DashboardLayout>
           }
         />

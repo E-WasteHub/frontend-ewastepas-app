@@ -1,3 +1,4 @@
+// src/components/elements/Modal.jsx
 import { X } from 'lucide-react';
 import useDarkMode from '../../../hooks/useDarkMode';
 
@@ -8,12 +9,11 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 
   return (
     <div
-      className='fixed inset-0 z-50 flex items-center justify-center bg-black/50'
-      onClick={onClose} // klik overlay untuk close
+      className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-2 sm:px-4'
+      onClick={onClose}
     >
-      {/* Modal Box */}
       <div
-        className={`rounded-lg shadow-lg w-full max-w-md p-6 relative
+        className={`rounded-lg shadow-lg w-full max-w-md relative m-3 sm:m-6
           ${
             isDarkMode
               ? 'bg-slate-800 text-slate-100'
@@ -23,8 +23,10 @@ const Modal = ({ isOpen, onClose, title, children }) => {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className='flex justify-between items-center mb-4'>
-          {title && <h2 className='text-lg font-semibold'>{title}</h2>}
+        <div className='flex justify-between items-center px-3 py-2 sm:px-4 sm:py-3 border-b border-gray-700/30'>
+          {title && (
+            <h2 className='text-base sm:text-lg font-semibold'>{title}</h2>
+          )}
           <button
             onClick={onClose}
             aria-label='Close modal'
@@ -37,7 +39,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
         </div>
 
         {/* Content */}
-        <div>{children}</div>
+        <div className='p-3 sm:p-6'>{children}</div>
       </div>
     </div>
   );

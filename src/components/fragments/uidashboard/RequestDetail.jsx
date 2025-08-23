@@ -1,190 +1,236 @@
+// src/components/fragments/uidashboard/RequestDetail.jsx
 import { useState } from 'react';
 import useDarkMode from '../../../hooks/useDarkMode';
-import { Button, Modal } from '../../elements';
-import Timeline from './Timeline';
+import { Button } from '../../elements';
+import { AlertModal, ConfirmDialog, Timeline } from '../../fragments';
 
-const RequestDetail = ({ request, role = 'masyarakat' }) => {
+const RequestDetail = ({ request, role = 'masyarakat', onUpdateStatus }) => {
   const { isDarkMode } = useDarkMode();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dialog, setDialog] = useState({ open: false, action: null });
+  const [alert, setAlert] = useState({
+    open: false,
+    title: '',
+    message: '',
+    type: '',
+  });
 
-  const handleCancelRequest = () => {
-    console.log('Penjemputan dibatalkan:', request.id);
-    setIsModalOpen(false);
+  // 🔹 Mapping status kurir → aksi selanjutnya
+  const nextStatusMap = {
+    'Menunggu Kurir': {
+      label: 'Ambil Penjemputan',
+      next: 'Dijemput Kurir',
+      desc: 'Kurir sudah mengambil barang',
+      color: 'bg-green-600 hover:bg-green-700 text-white',
+    },
+    'Dijemput Kurir': {
+      label: 'Antar ke Dropbox',
+      next: 'Diantar Kurir ke Dropbox',
+      desc: 'Barang diantar ke dropbox',
+      color: 'bg-blue-600 hover:bg-blue-700 text-white',
+    },
+    'Diantar Kurir ke Dropbox': {
+      label: 'Selesaikan Penjemputan',
+      next: 'Selesai',
+      desc: 'Penjemputan selesai',
+      color: 'bg-purple-600 hover:bg-purple-700 text-white',
+    },
   };
 
-  const handleTakeRequest = () => {
-    console.log('Penjemputan diambil:', request.id);
-    setIsModalOpen(false);
+  // 🔹 Handler konfirmasi
+  const handleConfirm = () => {
+    if (dialog.action === 'cancel') {
+      // Case masyarakat membatalkan
+      const updated = {
+        ...request,
+        status: 'Dibatalkan',
+        timeline: [
+          ...(request.timeline || []),
+          {
+            status: 'Dibatalkan',
+            desc: 'Penjemputan dibatalkan oleh masyarakat',
+            time: new Date().toLocaleTimeString(),
+          },
+        ],
+      };
+      onUpdateStatus?.(updated);
+      setDialog({ open: false, action: null });
+      setAlert({
+        open: true,
+        title: 'Dibatalkan',
+        message: `Penjemputan ${request.id} berhasil dibatalkan.`,
+        type: 'error',
+      });
+      return;
+    }
+
+    // Case kurir melanjutkan ke tahap berikutnya
+    const next = nextStatusMap[request.status];
+    if (!next) {
+      setDialog({ open: false, action: null });
+      return;
+    }
+
+    const updated = {
+      ...request,
+      status: next.next,
+      timeline: [
+        ...(request.timeline || []),
+        {
+          status: next.next,
+          desc: next.desc,
+          time: new Date().toLocaleTimeString(),
+        },
+      ],
+    };
+
+    onUpdateStatus?.(updated);
+    setDialog({ open: false, action: null });
+    setAlert({
+      open: true,
+      title: 'Berhasil',
+      message: `Status penjemputan ${request.id} diperbarui menjadi "${next.next}".`,
+      type: 'success',
+    });
   };
 
   return (
     <div
-      className={`px-4 py-3 border-t text-sm ${
+      className={`px-4 py-5 border-t ${
         isDarkMode ? 'border-gray-700' : 'border-gray-200'
       }`}
     >
-      {/* Informasi Detail */}
-      <div className='grid grid-cols-2 gap-4 mb-4'>
-        <div>
-          <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            Kode Penjemputan
-          </p>
-          <p
-            className={
-              isDarkMode
-                ? 'text-white font-medium'
-                : 'text-gray-900 font-medium'
-            }
-          >
-            {request.id}
-          </p>
-        </div>
-        <div>
-          <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            Status
-          </p>
-          <span
-            className={`inline-block mt-1 px-2 py-1 rounded text-xs ${
-              request.status === 'Selesai'
-                ? isDarkMode
-                  ? 'bg-green-900/30 text-green-400'
-                  : 'bg-green-100 text-green-700'
-                : request.status === 'Dibatalkan'
-                ? isDarkMode
-                  ? 'bg-red-900/30 text-red-400'
-                  : 'bg-red-100 text-red-700'
-                : isDarkMode
-                ? 'bg-yellow-900/30 text-yellow-400'
-                : 'bg-yellow-100 text-yellow-700'
-            }`}
-          >
-            {request.status}
-          </span>
-        </div>
-        <div>
-          <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            Tanggal Permintaan
-          </p>
-          <p className={isDarkMode ? 'text-gray-200' : 'text-gray-800'}>
-            {request.tanggal}
-          </p>
-        </div>
-        <div>
-          <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            Total Poin
-          </p>
-          <p className='text-yellow-500 font-medium'>⭐ {request.poin}</p>
-        </div>
-      </div>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+        {/* Kiri */}
+        <div className='space-y-5'>
+          {/* Daftar Sampah */}
+          <div>
+            <p
+              className={`font-medium mb-2 ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              } text-base`}
+            >
+              Daftar Sampah
+            </p>
+            {request.items?.length > 0 ? (
+              <ul className='list-disc list-inside space-y-1 text-sm'>
+                {request.items.map((item, idx) => (
+                  <li
+                    key={idx}
+                    className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}
+                  >
+                    {item.nama} ({item.kategori}) - {item.poin} poin
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className={isDarkMode ? 'text-gray-500' : 'text-gray-400'}>
+                Tidak ada sampah tercatat
+              </p>
+            )}
+          </div>
 
-      {/* Alamat */}
-      <div className='mb-4'>
-        <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-          Alamat Penjemputan
-        </p>
-        <p
-          className={
-            isDarkMode ? 'text-white font-medium' : 'text-gray-900 font-medium'
-          }
-        >
-          {request.lokasi}
-        </p>
-      </div>
+          {/* Waktu */}
+          <div>
+            <p
+              className={`font-medium mb-1 ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              } text-base`}
+            >
+              Waktu Penjemputan
+            </p>
+            <p className={isDarkMode ? 'text-gray-200' : 'text-gray-800'}>
+              {request.tanggal}
+            </p>
+          </div>
 
-      {/* Timeline */}
-      {request.timeline && (
-        <div className='mb-4'>
+          {/* Catatan Kurir */}
+          {request.feedback && (
+            <div>
+              <p
+                className={`font-medium mb-1 ${
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                } text-base`}
+              >
+                Catatan Kurir
+              </p>
+              <p
+                className={`italic text-sm ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                }`}
+              >
+                "{request.feedback}"
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Timeline */}
+        <div>
           <p
-            className={
-              isDarkMode
-                ? 'text-white font-medium mb-2'
-                : 'text-gray-900 font-medium mb-2'
-            }
+            className={`font-medium mb-2 ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            } text-base`}
           >
             Timeline Penjemputan
           </p>
-          <Timeline steps={request.timeline} />
+          <Timeline currentStatus={request.status} steps={request.timeline} />
         </div>
-      )}
+      </div>
 
-      {/* Role-based Action */}
-      <div className='mt-4 flex justify-end'>
+      {/* Tombol aksi */}
+      <div className='mt-6 flex justify-end gap-3'>
+        {role === 'mitra-kurir' && nextStatusMap[request.status] && (
+          <Button
+            onClick={() => setDialog({ open: true, action: request.status })}
+            className={nextStatusMap[request.status].color}
+          >
+            {nextStatusMap[request.status].label}
+          </Button>
+        )}
+
         {role === 'masyarakat' &&
           request.status !== 'Selesai' &&
           request.status !== 'Dibatalkan' && (
             <Button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => setDialog({ open: true, action: 'cancel' })}
               className='bg-red-500 hover:bg-red-600 text-white'
             >
               Batalkan Penjemputan
             </Button>
           )}
-
-        {role === 'mitra-kurir' && request.status === 'Menunggu Kurir' && (
-          <Button
-            onClick={() => setIsModalOpen(true)}
-            className='bg-green-600 hover:bg-green-700 text-white'
-          >
-            Ambil Penjemputan
-          </Button>
-        )}
       </div>
 
-      {/* Modal Konfirmasi Batalkan */}
-      {role === 'masyarakat' && (
-        <Modal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          title='Konfirmasi Pembatalan'
-        >
-          <p className='mb-4'>
-            Apakah Anda yakin ingin membatalkan penjemputan{' '}
-            <span className='font-semibold'>{request.id}</span>?
-          </p>
-          <div className='flex justify-end gap-2'>
-            <Button
-              onClick={() => setIsModalOpen(false)}
-              className='!bg-gray-300 hover:bg-gray-500 !text-gray-800'
-            >
-              Tidak
-            </Button>
-            <Button
-              onClick={handleCancelRequest}
-              className='bg-red-500 hover:bg-red-600 text-white'
-            >
-              Ya, Batalkan
-            </Button>
-          </div>
-        </Modal>
-      )}
+      {/* Confirm dialog */}
+      <ConfirmDialog
+        isOpen={dialog.open}
+        onClose={() => setDialog({ open: false, action: null })}
+        onConfirm={handleConfirm}
+        title='Konfirmasi'
+        message={
+          dialog.action === 'cancel'
+            ? `Apakah Anda yakin ingin membatalkan penjemputan ${request.id}?`
+            : `Apakah Anda yakin ingin melanjutkan ke tahap berikutnya untuk ${request.id}?`
+        }
+        confirmText={
+          dialog.action === 'cancel' ? 'Ya, Batalkan' : 'Ya, Lanjutkan'
+        }
+        confirmColor={
+          dialog.action === 'cancel'
+            ? 'bg-red-500 hover:bg-red-600 text-white'
+            : nextStatusMap[request.status]?.color || 'bg-green-600 text-white'
+        }
+      />
 
-      {/* Modal Konfirmasi Ambil (Mitra Kurir) */}
-      {role === 'mitra-kurir' && (
-        <Modal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          title='Konfirmasi Pengambilan'
-        >
-          <p className='mb-4'>
-            Apakah Anda yakin ingin mengambil penjemputan{' '}
-            <span className='font-semibold'>{request.id}</span>?
-          </p>
-          <div className='flex justify-end gap-2'>
-            <Button
-              onClick={() => setIsModalOpen(false)}
-              className='!bg-gray-300 hover:bg-gray-500 !text-gray-800'
-            >
-              Tidak
-            </Button>
-            <Button
-              onClick={handleTakeRequest}
-              className='bg-green-600 hover:bg-green-700 text-white'
-            >
-              Ya, Ambil
-            </Button>
-          </div>
-        </Modal>
-      )}
+      {/* Alert modal */}
+      <AlertModal
+        isOpen={alert.open}
+        onClose={() =>
+          setAlert({ open: false, title: '', message: '', type: '' })
+        }
+        title={alert.title}
+        message={alert.message}
+        type={alert.type}
+      />
     </div>
   );
 };

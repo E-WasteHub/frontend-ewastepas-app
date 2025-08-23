@@ -4,6 +4,7 @@ import { jenisSampahDummy, kategoriSampahDummy } from '../../../../data/index';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import { Button, Card } from '../../../elements';
 import { Input, Label, Select, Textarea } from '../../../elements/Form';
+import SampahConfirmDialogForm from './SampahConfirmDialogForm';
 import SampahList from './SampahList';
 
 const FormPenjemputan = ({
@@ -18,8 +19,8 @@ const FormPenjemputan = ({
   const { isDarkMode } = useDarkMode();
   const [selectedKategori, setSelectedKategori] = useState('');
   const [selectedSampah, setSelectedSampah] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Ambil jenis sampah dari kategori terpilih
   const getAvailableSampah = () => {
     if (!selectedKategori) return [];
     return jenisSampahDummy.filter(
@@ -29,47 +30,48 @@ const FormPenjemputan = ({
 
   const handleTambahSampah = () => {
     if (selectedKategori && selectedSampah) {
-      const kategori = kategoriSampahDummy.find(
-        (k) => k.id_kategori_sampah === Number(selectedKategori)
+      setDialogOpen(true);
+    } else {
+      showAlert?.(
+        'Peringatan',
+        'Pilih kategori & jenis sampah terlebih dahulu.',
+        'warning'
       );
-      const jenis = jenisSampahDummy.find(
-        (j) => j.id_jenis_sampah === Number(selectedSampah)
-      );
-
-      if (kategori && jenis) {
-        const exists = daftarSampah.find(
-          (s) => s.id_jenis_sampah === jenis.id_jenis_sampah
-        );
-
-        if (exists) {
-          showAlert?.(
-            'Peringatan',
-            'Jenis sampah ini sudah ditambahkan.',
-            'warning'
-          );
-          return;
-        }
-
-        const newSampah = {
-          id: Date.now() + Math.random(),
-          id_kategori_sampah: kategori.id_kategori_sampah,
-          nama_kategori_sampah: kategori.nama_kategori_sampah,
-          poin_per_kg: kategori.poin_kategori_sampah,
-          id_jenis_sampah: jenis.id_jenis_sampah,
-          nama_jenis_sampah: jenis.nama_jenis_sampah,
-          deskripsi_jenis_sampah: jenis.deskripsi_jenis_sampah,
-          berat: 1,
-        };
-
-        onSampahChange([...daftarSampah, newSampah]);
-        setSelectedSampah('');
-        showAlert?.(
-          'Berhasil',
-          `Sampah "${jenis.nama_jenis_sampah}" berhasil ditambahkan.`,
-          'success'
-        );
-      }
     }
+  };
+
+  const handleConfirmTambah = (data) => {
+    const kategori = kategoriSampahDummy.find(
+      (k) => k.id_kategori_sampah === Number(selectedKategori)
+    );
+    const jenis = jenisSampahDummy.find(
+      (j) => j.id_jenis_sampah === Number(selectedSampah)
+    );
+
+    if (!kategori || !jenis) return;
+
+    const newSampah = {
+      id: Date.now() + Math.random(),
+      id_kategori_sampah: kategori.id_kategori_sampah,
+      nama_kategori_sampah: kategori.nama_kategori_sampah,
+      poin_per_unit: kategori.poin_kategori_sampah,
+      id_jenis_sampah: jenis.id_jenis_sampah,
+      nama_jenis_sampah: jenis.nama_jenis_sampah,
+      deskripsi_jenis_sampah: jenis.deskripsi_jenis_sampah,
+      jumlah: data.jumlah,
+      catatan: data.catatan,
+      foto: data.foto,
+      previewUrl: data.foto ? URL.createObjectURL(data.foto) : null,
+    };
+
+    onSampahChange([...daftarSampah, newSampah]);
+    showAlert?.(
+      'Berhasil',
+      `Sampah "${jenis.nama_jenis_sampah}" ditambahkan.`,
+      'success'
+    );
+    setDialogOpen(false);
+    setSelectedSampah('');
   };
 
   return (
@@ -88,16 +90,16 @@ const FormPenjemputan = ({
             isDarkMode ? 'text-gray-400' : 'text-gray-600'
           }`}
         >
-          Form permintaan untuk permintaan penjemputan sampah elektronik
+          Form permintaan untuk penjemputan sampah elektronik
         </p>
       </div>
 
       <Card>
         <Card.Body className='p-8'>
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-            {/* Left Column */}
+            {/* Kolom kiri → info permintaan */}
             <div className='space-y-6'>
-              {/* Kategori */}
+              {/* Pilih kategori & jenis sampah */}
               <div>
                 <Label required>Pilih Kategori Sampah</Label>
                 <Select
@@ -109,15 +111,14 @@ const FormPenjemputan = ({
                   placeholder='Pilih kategori...'
                   options={kategoriSampahDummy.map((kategori) => ({
                     value: kategori.id_kategori_sampah,
-                    label: `${kategori.nama_kategori_sampah} (${kategori.poin_kategori_sampah} poin/kg)`,
+                    label: `${kategori.nama_kategori_sampah} (${kategori.poin_kategori_sampah} poin/unit)`,
                   }))}
                   className='w-full'
                 />
               </div>
 
-              {/* Sampah */}
               <div>
-                <Label required>Pilih Sampah</Label>
+                <Label required>Pilih Jenis Sampah</Label>
                 <div className='flex gap-2'>
                   <Select
                     value={selectedSampah}
@@ -125,8 +126,8 @@ const FormPenjemputan = ({
                     disabled={!selectedKategori}
                     placeholder={
                       selectedKategori
-                        ? 'Pilih jenis sampah...'
-                        : 'Pilih kategori terlebih dahulu'
+                        ? 'Pilih sampah elektronik...'
+                        : 'Pilih kategori dulu'
                     }
                     options={getAvailableSampah().map((item) => ({
                       value: item.id_jenis_sampah,
@@ -138,25 +139,27 @@ const FormPenjemputan = ({
                     type='button'
                     onClick={handleTambahSampah}
                     disabled={!selectedSampah}
-                    className='!h-10 !py-1.5 !px-4 shrink-0'
+                    className='!py-2'
                   >
                     Tambah
                   </Button>
                 </div>
               </div>
 
-              {/* Input lainnya */}
+              {/* Waktu operasional */}
               <div>
-                <Label required>Tanggal dan Waktu Penjemputan</Label>
+                <Label required>Waktu Operasional</Label>
                 <Input
                   type='datetime-local'
                   value={formData.waktu_dijemput}
                   onChange={(e) =>
                     onInputChange('waktu_dijemput', e.target.value)
                   }
+                  className='w-full'
                 />
               </div>
 
+              {/* Alamat penjemputan */}
               <div>
                 <Label required>Alamat Penjemputan</Label>
                 <Textarea
@@ -169,17 +172,19 @@ const FormPenjemputan = ({
                 />
               </div>
 
+              {/* Catatan untuk kurir */}
               <div>
-                <Label>Catatan</Label>
+                <Label>Catatan untuk Kurir</Label>
                 <Textarea
                   rows={3}
                   value={formData.catatan}
+                  placeholder='Misalnya: Rumah cat hijau, pagar besi hitam'
                   onChange={(e) => onInputChange('catatan', e.target.value)}
                 />
               </div>
             </div>
 
-            {/* Right Column */}
+            {/* Kolom kanan → daftar sampah */}
             <div className='space-y-6'>
               <SampahList
                 daftarSampah={daftarSampah}
@@ -209,6 +214,13 @@ const FormPenjemputan = ({
           </div>
         </Card.Body>
       </Card>
+
+      {/* Dialog form sebelum masuk list */}
+      <SampahConfirmDialogForm
+        isOpen={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onConfirm={handleConfirmTambah}
+      />
     </div>
   );
 };
