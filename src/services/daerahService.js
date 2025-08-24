@@ -1,81 +1,58 @@
 // src/services/daerahService.js
 
-// import api from './api';
+import api from './api';
 
-// =======================
-// AMBIL SEMUA DAERAH
-// =======================
-export const indexDaerah = () => {
-  return Promise.resolve({
-    data: [
-      { id_daerah: 1, nama_daerah: 'Bandung' },
-      { id_daerah: 2, nama_daerah: 'Cimahi' },
-      { id_daerah: 3, nama_daerah: 'Sumedang' },
-    ],
-  });
-
-  // versi backend asli
-  // return api.get("/daerah");
+// Ambil semua daerah
+export const indexDaerah = async () => {
+  try {
+    const response = await api.get('/daerah');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching all daerah:', error);
+    throw error;
+  }
 };
 
-// =======================
-// TAMBAH DAERAH
-// =======================
-export const createDaerah = (payload) => {
-  return Promise.resolve({
-    data: {
-      message: 'Daerah berhasil ditambahkan (dummy)',
-      daerah: {
-        id_daerah: Date.now(), // id dummy
-        ...payload,
-      },
-    },
-  });
-
-  // versi backend asli
-  // return api.post("/daerah", payload);
+// Tambah daerah baru
+export const createDaerah = async (payload) => {
+  try {
+    const response = await api.post('/daerah', payload);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating daerah:', error);
+    throw error;
+  }
 };
 
-// =======================
-// UPDATE DAERAH
-// =======================
-export const updateDaerah = (id_daerah, payload) => {
-  return Promise.resolve({
-    data: {
-      message: `Daerah ${id_daerah} berhasil diubah (dummy)`,
-      daerah: { id_daerah, ...payload },
-    },
-  });
-
-  // versi backend asli
-  // return api.put(`/daerah/${id_daerah}`, payload);
+// Update daerah
+export const updateDaerah = async (id_daerah, payload) => {
+  try {
+    const response = await api.put(`/daerah/${id_daerah}`, payload);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating daerah:', error);
+    throw error;
+  }
 };
 
-// =======================
-// HAPUS DAERAH
-// =======================
-export const deleteDaerah = (id_daerah) => {
-  return Promise.resolve({
-    data: {
-      message: `Daerah ${id_daerah} berhasil dihapus (dummy)`,
-    },
-  });
-
-  // versi backend asli
-  // return api.delete(`/daerah/${id_daerah}`);
+// Hapus daerah
+export const deleteDaerah = async (id_daerah) => {
+  try {
+    const response = await api.delete(`/daerah/${id_daerah}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting daerah:', error);
+    throw error;
+  }
 };
 
-// =======================
-// AMBIL 1 DAERAH
-// =======================
-export const selectDaerah = (id_daerah) => {
-  return Promise.resolve({
-    data: {
-      id_daerah,
-      nama_daerah: 'Bandung',
-    },
-  });
-
-  // versi backend asli
-  // return api.get(`/daerah/${id_daerah}`);
+// Ambil 1 daerah
+export const selectDaerah = async (id_daerah) => {
+  try {
+    const response = await api.get(`/daerah/${id_daerah}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching single daerah:', error);
+    throw error;
+  }
 };

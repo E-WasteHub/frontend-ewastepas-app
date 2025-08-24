@@ -1,117 +1,58 @@
 // src/services/jenisService.js
 
-// import api from './api';
+import api from './api';
 
-// =======================
-// AMBIL SEMUA JENIS
-// =======================
-export const indexJenis = () => {
-  return Promise.resolve({
-    data: [
-      {
-        id_jenis_sampah: 1,
-        nama_jenis_sampah: 'Kulkas 2 Pintu',
-        deskripsi_jenis_sampah: 'Peralatan pendingin besar',
-        id_kategori_sampah: 1,
-      },
-      {
-        id_jenis_sampah: 2,
-        nama_jenis_sampah: 'TV LED 32 inch',
-        deskripsi_jenis_sampah: 'Layar dengan permukaan lebih dari 100 cm²',
-        id_kategori_sampah: 2,
-      },
-      {
-        id_jenis_sampah: 3,
-        nama_jenis_sampah: 'Lampu LED',
-        deskripsi_jenis_sampah: 'Sumber cahaya hemat energi',
-        id_kategori_sampah: 3,
-      },
-      {
-        id_jenis_sampah: 4,
-        nama_jenis_sampah: 'Mesin Cuci',
-        deskripsi_jenis_sampah: 'Peralatan rumah tangga untuk mencuci pakaian',
-        id_kategori_sampah: 4,
-      },
-      {
-        id_jenis_sampah: 5,
-        nama_jenis_sampah: 'Blender',
-        deskripsi_jenis_sampah: 'Peralatan dapur untuk menghaluskan makanan',
-        id_kategori_sampah: 5,
-      },
-      {
-        id_jenis_sampah: 6,
-        nama_jenis_sampah: 'Laptop',
-        deskripsi_jenis_sampah: 'Perangkat komputer portabel',
-        id_kategori_sampah: 6,
-      },
-    ],
-  });
-
-  // versi backend asli
-  // return api.get("/jenis");
+// Ambil semua jenis sampah
+export const indexJenis = async () => {
+  try {
+    const response = await api.get('/jenis-sampah');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching all jenis:', error);
+    throw error;
+  }
 };
 
-// =======================
-// TAMBAH JENIS BARU
-// =======================
-export const createJenis = (payload) => {
-  return Promise.resolve({
-    data: {
-      message: 'Jenis berhasil ditambahkan (dummy)',
-      jenis: {
-        id_jenis_sampah: Date.now(), // id dummy
-        ...payload,
-      },
-    },
-  });
-
-  // versi backend asli
-  // return api.post("/jenis", payload);
+// Tambah jenis sampah baru
+export const createJenis = async (payload) => {
+  try {
+    const response = await api.post('/jenis-sampah', payload);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating jenis:', error);
+    throw error;
+  }
 };
 
-// =======================
-// UPDATE JENIS
-// =======================
-export const updateJenis = (id_jenis_sampah, payload) => {
-  return Promise.resolve({
-    data: {
-      message: `Jenis ${id_jenis_sampah} berhasil diubah (dummy)`,
-      jenis: { id_jenis_sampah, ...payload },
-    },
-  });
-
-  // versi backend asli
-  // return api.put(`/jenis/${id_jenis_sampah}`, payload);
+// Update jenis sampah
+export const updateJenis = async (id_jenis_sampah, payload) => {
+  try {
+    const response = await api.put(`/jenis-sampah/${id_jenis_sampah}`, payload);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating jenis:', error);
+    throw error;
+  }
 };
 
-// =======================
-// HAPUS JENIS
-// =======================
-export const deleteJenis = (id_jenis_sampah) => {
-  return Promise.resolve({
-    data: {
-      message: `Jenis ${id_jenis_sampah} berhasil dihapus (dummy)`,
-    },
-  });
-
-  // versi backend asli
-  // return api.delete(`/jenis/${id_jenis_sampah}`);
+// Hapus jenis sampah
+export const deleteJenis = async (id_jenis_sampah) => {
+  try {
+    const response = await api.delete(`/jenis-sampah/${id_jenis_sampah}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting jenis:', error);
+    throw error;
+  }
 };
 
-// =======================
-// AMBIL 1 JENIS
-// =======================
-export const selectJenis = (id_jenis_sampah) => {
-  return Promise.resolve({
-    data: {
-      id_jenis_sampah,
-      nama_jenis_sampah: 'Handphone',
-      deskripsi_jenis_sampah:
-        'Sampah elektronik berupa handphone dan sejenisnya',
-      id_kategori_sampah: 1,
-    },
-  });
-
-  // versi backend asli
-  // return api.get(`/jenis/${id_jenis_sampah}`);
+// Ambil 1 jenis sampah
+export const selectJenis = async (id_jenis_sampah) => {
+  try {
+    const response = await api.get(`/jenis-sampah/${id_jenis_sampah}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching single jenis:', error);
+    throw error;
+  }
 };

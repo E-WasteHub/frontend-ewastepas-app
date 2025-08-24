@@ -1,12 +1,23 @@
+// src/sections/EdukasiSection.jsx
 import { Sparkles } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { kontenEdukasiDummy } from '../../../data';
 import useDarkMode from '../../../hooks/useDarkMode';
+import useEdukasiStore from '../../../store/edukasiStore';
 import { Badge } from '../../elements';
 
 const EdukasiSection = () => {
   const { isDarkMode } = useDarkMode();
+  const { data, isLoading, error, fetchEdukasi } = useEdukasiStore();
+
+  // Ambil data edukasi saat mount
+  useEffect(() => {
+    fetchEdukasi();
+  }, [fetchEdukasi]);
+
+  // Ambil hanya 4 edukasi terbaru
+  const edukasiPreview = data.slice(0, 4);
 
   return (
     <section
@@ -47,74 +58,80 @@ const EdukasiSection = () => {
         </Motion.div>
 
         {/* Grid Edukasi */}
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-12'>
-          {kontenEdukasiDummy.slice(0, 4).map((item, index) => (
-            <Motion.div
-              key={item.id_konten}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              className='group'
-            >
-              <Link to={`/edukasi/${item.id_konten}`} className='block h-full'>
-                <div
-                  className={`border w-full rounded-xl overflow-hidden hover:border-green-500 hover:shadow-lg transition-all duration-300 h-full ${
-                    isDarkMode
-                      ? 'bg-slate-800 border-slate-700'
-                      : 'bg-white border-slate-200'
-                  }`}
+        {isLoading ? (
+          <p className='text-center text-slate-500'>Memuat edukasi...</p>
+        ) : error ? (
+          <p className='text-center text-red-500'>{error}</p>
+        ) : (
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-12'>
+            {edukasiPreview.map((item, index) => (
+              <Motion.div
+                key={item.id_konten}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className='group'
+              >
+                <Link
+                  to={`/edukasi/${item.id_konten}`}
+                  className='block h-full'
                 >
-                  {/* Gambar Thumbnail (header card) */}
-                  {item.gambar && (
-                    <div className='w-full aspect-[16/9]'>
-                      <img
-                        src={item.gambar}
-                        alt={item.judul_konten}
-                        className='w-full h-full object-cover'
-                      />
-                    </div>
-                  )}
+                  <div
+                    className={`border w-full rounded-xl overflow-hidden hover:border-green-500 hover:shadow-lg transition-all duration-300 h-full ${
+                      isDarkMode
+                        ? 'bg-slate-800 border-slate-700'
+                        : 'bg-white border-slate-200'
+                    }`}
+                  >
+                    {/* Gambar Thumbnail */}
+                    {item.gambar && (
+                      <div className='w-full aspect-[16/9]'>
+                        <img
+                          src={item.gambar}
+                          alt={item.judul_konten}
+                          className='w-full h-full object-cover'
+                        />
+                      </div>
+                    )}
 
-                  {/* Konten dalam card */}
-                  <div className='p-6 text-center'>
-                    {/* Judul */}
-                    <h3
-                      className={`text-lg font-semibold mb-3 ${
-                        isDarkMode ? 'text-white' : 'text-slate-900'
-                      }`}
-                    >
-                      {item.judul_konten}
-                    </h3>
+                    {/* Konten dalam card */}
+                    <div className='p-6 text-center'>
+                      <h3
+                        className={`text-lg font-semibold mb-3 ${
+                          isDarkMode ? 'text-white' : 'text-slate-900'
+                        }`}
+                      >
+                        {item.judul_konten}
+                      </h3>
 
-                    {/* Deskripsi singkat */}
-                    <p
-                      className={`text-sm leading-relaxed mb-4 line-clamp-3 ${
-                        isDarkMode ? 'text-slate-400' : 'text-slate-600'
-                      }`}
-                    >
-                      {item.isi_konten}
-                    </p>
+                      <p
+                        className={`text-sm leading-relaxed mb-4 line-clamp-3 ${
+                          isDarkMode ? 'text-slate-400' : 'text-slate-600'
+                        }`}
+                      >
+                        {item.isi_konten.substring(0, 100)}...
+                      </p>
 
-                    {/* Read More */}
-                    <div
-                      className={`text-xs font-medium ${
-                        isDarkMode ? 'text-green-400' : 'text-green-600'
-                      }`}
-                    >
-                      <span className='flex items-center justify-center gap-1'>
-                        Baca selengkapnya
-                      </span>
+                      <div
+                        className={`text-xs font-medium ${
+                          isDarkMode ? 'text-green-400' : 'text-green-600'
+                        }`}
+                      >
+                        <span className='flex items-center justify-center gap-1'>
+                          Baca selengkapnya
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            </Motion.div>
-          ))}
-        </div>
+                </Link>
+              </Motion.div>
+            ))}
+          </div>
+        )}
 
         {/* Tombol Lihat Semua */}
-        {kontenEdukasiDummy.length > 4 && (
+        {data.length > 4 && (
           <Motion.div
             className='text-end'
             initial={{ opacity: 0, y: 20 }}

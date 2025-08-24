@@ -1,101 +1,55 @@
+// src/hooks/useLupaPasswordForm.js
 import { useState } from 'react';
+import useAuthStore from '../store/authStore';
 
 export const useLupaPasswordForm = () => {
-  // State sesuai dengan identifikasi atribut LupaPasswordView
-  const [email, setEmail] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [error, setError] = useState('');
+  const handleSendResetLinkStore = useAuthStore(
+    (state) => state.handleSendResetLink
+  );
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const error = useAuthStore((state) => state.error); // 🔹 error global (backend)
+  const successMessage = useAuthStore((state) => state.successMessage);
 
-  // Fungsi sesuai dengan identifikasi fungsi LupaPasswordView
-  const tanganiInputEmail = (e) => {
+  const [email, setEmail] = useState('');
+  const [errorField, setErrorField] = useState(''); // 🔹 khusus validasi frontend
+
+  // Handle input email
+  const handleInputEmail = (e) => {
     setEmail(e.target.value);
-    // Clear error dan success message saat user mulai mengetik
-    if (error) setError('');
-    if (successMessage) setSuccessMessage('');
+    setErrorField(''); // reset error input tiap user ngetik
   };
 
-  const tanganiSubmitReset = async (e) => {
+  // Handle submit lupa password
+  const handleSubmitReset = async (e) => {
     e.preventDefault();
 
-    // Validasi format email
+    // Validasi input
     if (!email) {
-      setError('Email wajib diisi');
+      setErrorField('Email wajib diisi');
       return;
     }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError('Format email tidak valid');
+      setErrorField('Format email tidak valid');
       return;
     }
 
-    setIsLoading(true);
-    setError('');
-    setSuccessMessage('');
+    // Panggil store untuk kirim reset link
+    await handleSendResetLinkStore(email);
 
-    try {
-      await kirimTautanReset();
-    } catch {
-      // Error handling sudah dilakukan di fungsi kirimTautanReset
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const kirimTautanReset = async () => {
-    try {
-      // TODO: Implementasi AuthController.lupaPassword()
-      // Sementara ini hanya simulasi
-      console.log('Mengirim tautan reset ke email:', email);
-
-      // Simulasi delay API
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Simulasi random success/error untuk testing
-      const isSuccess = Math.random() > 0.3; // 70% success rate
-
-      if (isSuccess) {
-        tampilkanPesanSukses();
-      } else {
-        tampilkanError('Email tidak ditemukan dalam sistem');
-      }
-    } catch {
-      tampilkanError(
-        'Terjadi kesalahan saat mengirim email. Silakan coba lagi.'
-      );
-    }
-  };
-
-  const tampilkanPesanSukses = () => {
-    setSuccessMessage(
-      'Tautan reset kata sandi telah dikirim ke email Anda. Silakan periksa kotak masuk dan folder spam.'
-    );
-    setEmail(''); // Clear email setelah berhasil
-  };
-
-  const tampilkanError = (pesanError) => {
-    setError(pesanError);
-  };
-
-  const resetForm = () => {
+    // Kosongkan email setelah sukses
     setEmail('');
-    setError('');
-    setSuccessMessage('');
   };
 
   return {
     // State
     email,
     isLoading,
-    successMessage,
     error,
+    errorField,
+    successMessage,
     // Actions
-    tanganiInputEmail,
-    tanganiSubmitReset,
-    kirimTautanReset,
-    tampilkanPesanSukses,
-    tampilkanError,
-    resetForm,
+    handleInputEmail,
+    handleSubmitReset,
   };
 };

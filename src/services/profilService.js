@@ -1,63 +1,47 @@
 // src/services/profilService.js
 
-// import api from './api'; // axios instance
+import api from './api';
 
-// =======================
-// UPDATE PROFIL
-// =======================
-export const updateProfil = (id_pengguna, payload) => {
-  // payload bisa berisi: { nama_lengkap, email, no_telepon, alamat_pengguna, gambar_pengguna }
-  return Promise.resolve({
-    data: {
-      message: 'Profil berhasil diperbarui (dummy)',
-      user: {
-        id_pengguna,
-        ...payload,
-        waktu_diubah: new Date(),
-      },
-    },
-  });
-
-  // versi backend asli
-  // return api.put(`/profil/${id_pengguna}`, payload);
+// Select Profil
+export const selectProfil = async () => {
+  try {
+    const response = await api.get(`/akun`);
+    return response.data;
+  } catch (error) {
+    console.error('Error selecting profil:', error);
+    throw error;
+  }
 };
 
-// =======================
-// CHANGE PASSWORD
-// =======================
-export const changePassword = (id_pengguna, payload) => {
-  // payload: { passwordLama, passwordBaru }
-  return Promise.resolve({
-    data: {
-      message: 'Password berhasil diubah (dummy)',
-      id_pengguna,
-    },
-  });
-
-  // versi backend asli
-  // return api.put(`/profil/${id_pengguna}/password`, payload);
+// Update Profil
+export const updateProfil = async (payload) => {
+  try {
+    const response = await api.put(`/akun`, payload);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating profil:', error);
+    throw error;
+  }
 };
 
-// =======================
-// UPLOAD DOKUMEN (KTP/SIM)
-// =======================
-export const uploadDokumen = (id_pengguna, formData) => {
-  // formData: { dokumen: File, id_jenis_dokumen }
-  return Promise.resolve({
-    data: {
-      message: 'Dokumen berhasil diunggah (dummy)',
-      dokumen: {
-        id_dokumen: Date.now(),
-        id_pengguna,
-        id_jenis_dokumen: formData.id_jenis_dokumen,
-        nama_file: formData.dokumen?.name || 'dummy.pdf',
-        waktu_dibuat: new Date(),
-      },
-    },
-  });
+// Ubah Kata Sandi
+export const changePassword = async (payload) => {
+  try {
+    const response = await api.put(`/akun/kata-sandi`, payload);
+    return response.data;
+  } catch (error) {
+    console.error('Error changing password:', error);
+    throw error;
+  }
+};
 
-  // versi backend asli
-  // return api.post(`/profil/${id_pengguna}/dokumen`, formData, {
-  //   headers: { "Content-Type": "multipart/form-data" }
-  // });
+// Unggah Dokumen
+export const uploadDokumen = async (payload) => {
+  try {
+    const response = await api.post(`/akun/unggah-dokumen`, payload);
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading document:', error);
+    throw error;
+  }
 };

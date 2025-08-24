@@ -104,7 +104,7 @@ const RiwayatMitraKurirView = () => {
   });
 
   // ✅ Pagination
-  const itemsPerPage = 5;
+  const itemsPerPage = 2;
   const totalPages = Math.ceil(filteredData.length / itemsPerPage) || 1;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedRequests = filteredData.slice(
@@ -145,13 +145,10 @@ const RiwayatMitraKurirView = () => {
         </p>
       </div>
 
-      {/* Sidebar kiri */}
+      {/* Kontainer utama */}
       <div className='lg:col-span-1'>
-        <FilterCard
-          role='mitra-kurir'
-          onFilterChange={setFilter}
-          onSearchChange={setSearch}
-        />
+        {/* Sidebar kiri */}
+        <FilterCard />
       </div>
 
       {/* Konten kanan */}

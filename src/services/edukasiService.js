@@ -1,81 +1,58 @@
 // src/services/edukasiService.js
 
-// import api from './api';
+import api from './api';
 
-// =======================
-// AMBIL SEMUA EDUKASI
-// =======================
-export const indexEdukasi = () => {
-  return Promise.resolve({
-    data: [
-      {
-        id_konten: 1,
-        judul_konten: 'Bahaya E-Waste Bagi Kesehatan',
-        isi_konten:
-          'Sampah elektronik dapat mengandung bahan berbahaya seperti merkuri, timbal, dan kadmium...',
-        gambar: '/images/edukasi/ewaste1.png',
-      },
-      {
-        id_konten: 2,
-        judul_konten: 'Cara Daur Ulang Sampah Elektronik',
-        isi_konten:
-          'E-waste bisa didaur ulang dengan cara dipilah, diambil komponennya, dan digunakan kembali...',
-        gambar: '/images/edukasi/ewaste2.png',
-      },
-    ],
-  });
-
-  // versi backend asli
-  // return api.get("/edukasi");
+// Ambil semua edukasi
+export const indexEdukasi = async () => {
+  try {
+    const response = await api.get('/konten-edukasi');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching edukasi:', error);
+    throw error;
+  }
 };
 
-// =======================
-// TAMBAH EDUKASI
-// =======================
-export const createEdukasi = (payload) => {
-  return Promise.resolve({
-    data: {
-      message: 'Edukasi berhasil ditambahkan (dummy)',
-      edukasi: {
-        id_konten: Date.now(),
-        ...payload,
-      },
-    },
-  });
-
-  // versi backend asli
-  // return api.post("/edukasi", payload);
+// Tambah edukasi
+export const createEdukasi = async (payload) => {
+  try {
+    const response = await api.post('/konten-edukasi', payload);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating edukasi:', error);
+    throw error;
+  }
 };
 
-// =======================
-// UPDATE EDUKASI
-// =======================
-export const updateEdukasi = (id, payload) => {
-  return Promise.resolve({
-    data: {
-      message: `Edukasi dengan ID ${id} berhasil diperbarui (dummy)`,
-      edukasi: {
-        id_konten: id,
-        ...payload,
-      },
-    },
-  });
-
-  // versi backend asli
-  // return api.put(`/edukasi/${id}`, payload);
+// Update edukasi
+export const updateEdukasi = async (id, payload) => {
+  try {
+    const response = await api.put(`/konten-edukasi/${id}`, payload);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating edukasi:', error);
+    throw error;
+  }
 };
 
-// =======================
-// HAPUS EDUKASI
-// =======================
-export const deleteEdukasi = (id) => {
-  return Promise.resolve({
-    data: {
-      message: `Edukasi dengan ID ${id} berhasil dihapus (dummy)`,
-      id_konten: id,
-    },
-  });
+// Hapus edukasi
+export const deleteEdukasi = async (id) => {
+  try {
+    const response = await api.delete(`/konten-edukasi/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting edukasi:', error);
+    throw error;
+  }
+};
 
-  // versi backend asli
-  // return api.delete(`/edukasi/${id}`);
+// Detail edukasi
+export const showEdukasi = async (id) => {
+  try {
+    const response = await api.get(`/konten-edukasi/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching edukasi detail:', error);
+    throw error;
+  }
 };

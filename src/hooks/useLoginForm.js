@@ -1,15 +1,22 @@
 import { useEffect, useState } from 'react';
+import useAuthStore from '../store/authStore';
 
 export const useLoginForm = () => {
-  // State sesuai dengan identifikasi atribut LoginView
+  const handleLoginSubmitStore = useAuthStore(
+    (state) => state.handleLoginSubmit
+  );
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const error = useAuthStore((state) => state.error); // error global (API)
+
+  // state lokal untuk form input
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [kata_sandi, setKataSandi] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
-  // Load remembered email saat component mount
+  // field-level error (frontend validation)
+  const [errorField, setErrorField] = useState({});
+
+  // load remembered email saat pertama kali render
   useEffect(() => {
     const rememberedEmail = localStorage.getItem('rememberedEmail');
     if (rememberedEmail) {
@@ -18,78 +25,58 @@ export const useLoginForm = () => {
     }
   }, []);
 
-  // Fungsi sesuai dengan identifikasi fungsi LoginView
+  // handle perubahan input
   const handleInputChange = (e) => {
     const { name, value, checked } = e.target;
+    if (name === 'email') setEmail(value);
+    if (name === 'kata_sandi') setKataSandi(value);
+    if (name === 'rememberMe') setRememberMe(checked);
 
-    // Clear error saat user mulai mengetik
-    if (error) setError('');
-
-    if (name === 'email') {
-      setEmail(value);
-    } else if (name === 'password') {
-      setPassword(value);
-    } else if (name === 'rememberMe') {
-      setRememberMe(checked);
-    }
+    // clear error per field kalau diubah
+    setErrorField((prev) => ({ ...prev, [name]: '' }));
   };
 
+  // validasi frontend
+  const validateForm = () => {
+    const newErrors = {};
+    if (!email) {
+      newErrors.email = 'Email wajib diisi';
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = 'Format email tidak valid';
+    }
+    if (!kata_sandi) {
+      newErrors.kata_sandi = 'Kata sandi wajib diisi';
+    } else if (kata_sandi.length < 6) {
+      newErrors.kata_sandi = 'Kata sandi minimal 6 karakter';
+    }
+    setErrorField(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // handle submit form login
   const handleLoginSubmit = async () => {
-    // Validasi input
-    if (!email || !password) {
-      setError('Email dan password wajib diisi');
-      return;
+    if (!validateForm()) return; // stop kalau validasi gagal
+
+    await handleLoginSubmitStore({ email, kata_sandi });
+
+    // simpan email kalau "ingat saya"
+    if (rememberMe) {
+      localStorage.setItem('rememberedEmail', email);
+    } else {
+      localStorage.removeItem('rememberedEmail');
     }
-
-    // Validasi format email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError('Format email tidak valid');
-      return;
-    }
-
-    setIsLoading(true);
-    setError('');
-
-    try {
-      // TODO: Implementasi AuthController.login()
-      // Sementara ini hanya simulasi
-      console.log('Data login:', { email, password, rememberMe });
-
-      // Simpan email jika "Ingat Saya" dicentang
-      if (rememberMe) {
-        localStorage.setItem('rememberedEmail', email);
-      } else {
-        localStorage.removeItem('rememberedEmail');
-      }
-
-      // Simulasi delay API
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // TODO: Redirect berdasarkan peran pengguna setelah login berhasil
-      console.log('Login berhasil');
-    } catch {
-      setError('Email atau kata sandi salah');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
   };
 
   return {
     // State
     email,
-    password,
-    isLoading,
-    error,
-    showPassword,
+    kata_sandi,
     rememberMe,
+    isLoading,
+    error, // global error dari backend
+    errorField, // field-level errors
     // Actions
     handleInputChange,
     handleLoginSubmit,
-    toggleShowPassword,
   };
 };

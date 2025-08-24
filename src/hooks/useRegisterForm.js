@@ -1,132 +1,109 @@
+// src/hooks/useRegisterForm.js
 import { useState } from 'react';
+import useAuthStore from '../store/authStore';
 
 export const useRegisterForm = () => {
   const [formData, setFormData] = useState({
-    nama: '',
+    nama_lengkap: '',
     email: '',
-    password: '',
-    confirmPassword: '',
-    role: '',
+    kata_sandi: '',
+    konfirmasi_kata_sandi: '',
   });
 
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState('');
-  const [submitSuccess, setSubmitSuccess] = useState('');
+  // ✅ nilai awal kosong
+  const [peran, setPeran] = useState('');
 
-  // Input change handler
+  // state untuk validasi field
+  const [errorField, setErrorField] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  // state global dari store
+  const error = useAuthStore((state) => state.error); // global error dari backend
+  const successMessage = useAuthStore((state) => state.successMessage);
+
+  // handle perubahan input teks
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
 
-    // Clear error untuk field yang sedang diubah
-    if (errors[name]) {
-      setErrors((prev) => ({
+    // clear error field yang sedang diubah
+    if (errorField[name]) {
+      setErrorField((prev) => ({
         ...prev,
         [name]: '',
       }));
     }
-
-    // Clear submit errors
-    if (submitError) setSubmitError('');
   };
 
-  // Validation function
+  // handle perubahan peran
+  const handlePeranSelect = (peranValue) => {
+    setPeran(peranValue);
+    setErrorField((prev) => ({ ...prev, peran: '' }));
+  };
+
+  // validasi frontend
   const validateForm = () => {
     const newErrors = {};
+    if (!peran) newErrors.peran = 'Silakan pilih peran Anda';
 
-    // Validasi nama
-    if (!formData.nama.trim()) {
-      newErrors.nama = 'Nama lengkap harus diisi';
-    } else if (formData.nama.trim().length < 2) {
-      newErrors.nama = 'Nama lengkap minimal 2 karakter';
+    if (!formData.nama_lengkap.trim()) {
+      newErrors.nama_lengkap = 'Nama wajib diisi';
     }
 
-    // Validasi email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email harus diisi';
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Format email tidak valid';
+    if (!formData.email) {
+      newErrors.email = 'Email wajib diisi';
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        newErrors.email = 'Format email tidak valid';
+      }
     }
 
-    // Validasi password
-    if (!formData.password) {
-      newErrors.password = 'Password harus diisi';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password minimal 8 karakter';
+    if (!formData.kata_sandi) {
+      newErrors.kata_sandi = 'Kata sandi wajib diisi';
+    } else if (formData.kata_sandi.length < 6) {
+      newErrors.kata_sandi = 'Kata sandi minimal 6 karakter';
     }
 
-    // Validasi confirm password
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Konfirmasi password harus diisi';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Password tidak cocok';
+    if (!formData.konfirmasi_kata_sandi) {
+      newErrors.konfirmasi_kata_sandi = 'Konfirmasi kata sandi wajib diisi';
+    } else if (formData.kata_sandi !== formData.konfirmasi_kata_sandi) {
+      newErrors.konfirmasi_kata_sandi = 'Konfirmasi kata sandi tidak cocok';
     }
 
-    // Validasi role
-    if (!formData.role) {
-      newErrors.role = 'Silakan pilih peran Anda';
-    }
-
-    setErrors(newErrors);
+    setErrorField(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Submit handler
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    setSubmitError('');
-    setSubmitSuccess('');
+  // submit ke store -> backend
+  const handleRegisterSubmit = async () => {
+    if (!validateForm()) return;
 
     try {
-      // Simulasi API call - ganti dengan service yang sebenarnya
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Log data yang akan dikirim
-      console.log('Data registrasi:', {
-        nama: formData.nama,
-        email: formData.email,
-        password: formData.password,
-        peran: formData.role,
+      setIsLoading(true);
+      await useAuthStore.getState().handleRegisterSubmit({
+        ...formData,
+        id_peran: peran, // backend butuh `id_peran`
       });
-
-      setSubmitSuccess(
-        'Registrasi berhasil! Silakan cek email untuk verifikasi.'
-      );
-
-      // Reset form setelah berhasil
-      setFormData({
-        nama: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        role: '',
-      });
-    } catch (error) {
-      console.error('Error registrasi:', error);
-      setSubmitError('Terjadi kesalahan saat mendaftar. Silakan coba lagi.');
+    } catch (err) {
+      console.error('Register error:', err);
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
   return {
     formData,
-    errors,
-    isSubmitting,
-    submitError,
-    submitSuccess,
+    peran,
+    isLoading,
+    errorField,
+    error,
+    successMessage,
     handleInputChange,
-    handleSubmit,
-    validateForm,
+    handlePeranSelect,
+    handleRegisterSubmit,
   };
 };

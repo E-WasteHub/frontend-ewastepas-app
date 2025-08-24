@@ -69,9 +69,9 @@ const RiwayatMasyarakatView = () => {
   );
 
   return (
-    <div className='max-w-7xl mx-auto'>
+    <div className='max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-4'>
       {/* Header */}
-      <div className='mb-4'>
+      <div className='lg:col-span-4 mb-4'>
         <h2
           className={`text-2xl font-bold mb-1 ${
             isDarkMode ? 'text-white' : 'text-gray-900'
@@ -89,61 +89,49 @@ const RiwayatMasyarakatView = () => {
       </div>
 
       {/* Kontainer utama */}
-      <div className='flex flex-1 gap-4 overflow-hidden'>
+      <div className='lg:col-span-1'>
         {/* Sidebar kiri */}
-        <div className='w-1/4'>
-          <FilterCard />
-        </div>
+        <FilterCard />
+      </div>
 
-        {/* Konten kanan */}
-        <div className='flex-1 flex flex-col'>
-          <Card
-            className={`flex flex-col flex-1 ${
-              isDarkMode
-                ? 'bg-gray-800 border-gray-700'
-                : 'bg-white border-slate-200'
-            } rounded-lg shadow-md overflow-hidden`}
-          >
-            <div className='p-3 sm:p-4'>
-              <h3
-                className={`text-lg font-semibold mb-1 ${
-                  isDarkMode ? 'text-white' : 'text-gray-900'
-                }`}
-              >
-                Daftar Riwayat
-              </h3>
-              <p
-                className={`text-sm ${
-                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                }`}
-              >
-                Menampilkan semua riwayat penjemputan Anda
-              </p>
-            </div>
+      {/* Konten kanan */}
+      <div className='lg:col-span-3 space-y-6'>
+        <Card className='p-6 space-y-6'>
+          <div>
+            <h3
+              className={`text-lg font-semibold mb-1 ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}
+            >
+              Daftar Riwayat
+            </h3>
+            <p
+              className={`text-sm mb-4 ${
+                isDarkMode ? 'text-gray-400' : 'text-gray-600'
+              }`}
+            >
+              Menampilkan semua riwayat penjemputan anda
+            </p>
+          </div>
 
-            {/* List dengan scroll internal */}
-            <div className='flex-1 overflow-y-auto px-3 sm:px-4 pb-3'>
-              <RequestList
-                requests={paginatedRequests}
-                onSelect={setSelectedRequest}
-                selectedId={selectedRequest?.id}
-                role='masyarakat'
-              />
-            </div>
+          {/* List dengan scroll internal */}
+          <RequestList
+            requests={paginatedRequests}
+            onSelect={setSelectedRequest}
+            selectedId={selectedRequest?.id}
+            role='masyarakat'
+          />
 
-            {/* Pagination tetap di bawah */}
-            <div className='px-3 sm:px-4 py-2'>
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={(page) => {
-                  setSelectedRequest(null);
-                  setCurrentPage(page);
-                }}
-              />
-            </div>
-          </Card>
-        </div>
+          {/* Pagination tetap di bawah */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => {
+              setSelectedRequest(null);
+              setCurrentPage(page);
+            }}
+          />
+        </Card>
       </div>
     </div>
   );

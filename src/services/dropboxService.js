@@ -1,95 +1,58 @@
 // src/services/dropboxService.js
 
-// import api from './api';
+import api from './api';
 
-// =======================
-// AMBIL SEMUA DROPBOX
-// =======================
-export const indexDropbox = () => {
-  return Promise.resolve({
-    data: [
-      {
-        id_dropbox: 1,
-        nama_dropbox: 'Dropbox A',
-        longitude: 107.6191,
-        latitude: -6.9175,
-        id_daerah: 1,
-      },
-      {
-        id_dropbox: 2,
-        nama_dropbox: 'Dropbox B',
-        longitude: 107.6205,
-        latitude: -6.9182,
-        id_daerah: 2,
-      },
-    ],
-  });
-
-  // versi backend asli
-  // return api.get("/dropbox");
+// Ambil semua dropbox
+export const indexDropbox = async () => {
+  try {
+    const response = await api.get('/dropbox');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching all dropbox:', error);
+    throw error;
+  }
 };
 
-// =======================
-// TAMBAH DROPBOX BARU
-// =======================
-export const createDropbox = (payload) => {
-  return Promise.resolve({
-    data: {
-      message: 'Dropbox berhasil ditambahkan (dummy)',
-      dropbox: {
-        id_dropbox: Date.now(), // id dummy
-        ...payload,
-      },
-    },
-  });
-
-  // versi backend asli
-  // return api.post("/dropbox", payload);
+// Tambah dropbox baru
+export const createDropbox = async (payload) => {
+  try {
+    const response = await api.post('/dropbox', payload);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating dropbox:', error);
+    throw error;
+  }
 };
 
-// =======================
-// UPDATE DROPBOX
-// =======================
-export const updateDropbox = (id_dropbox, payload) => {
-  return Promise.resolve({
-    data: {
-      message: `Dropbox ${id_dropbox} berhasil diubah (dummy)`,
-      dropbox: { id_dropbox, ...payload },
-    },
-  });
-
-  // versi backend asli
-  // return api.put(`/dropbox/${id_dropbox}`, payload);
+// Update dropbox
+export const updateDropbox = async (id_dropbox, payload) => {
+  try {
+    const response = await api.put(`/dropbox/${id_dropbox}`, payload);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating dropbox:', error);
+    throw error;
+  }
 };
 
-// =======================
-// HAPUS DROPBOX
-// =======================
-export const deleteDropbox = (id_dropbox) => {
-  return Promise.resolve({
-    data: {
-      message: `Dropbox ${id_dropbox} berhasil dihapus (dummy)`,
-    },
-  });
-
-  // versi backend asli
-  // return api.delete(`/dropbox/${id_dropbox}`);
+// Hapus dropbox
+export const deleteDropbox = async (id_dropbox) => {
+  try {
+    const response = await api.delete(`/dropbox/${id_dropbox}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting dropbox:', error);
+    throw error;
+  }
 };
 
-// =======================
-// AMBIL 1 DROPBOX
-// =======================
-export const selectDropbox = (id_dropbox) => {
-  return Promise.resolve({
-    data: {
-      id_dropbox,
-      nama_dropbox: 'Dropbox A',
-      longitude: 107.6191,
-      latitude: -6.9175,
-      id_daerah: 1,
-    },
-  });
-
-  // versi backend asli
-  // return api.get(`/dropbox/${id_dropbox}`);
+// Ambil 1 dropbox
+export const selectDropbox = async (id_dropbox) => {
+  try {
+    const response = await api.get(`/dropbox/${id_dropbox}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching single dropbox:', error);
+    throw error;
+  }
 };

@@ -1,88 +1,75 @@
 // src/services/authService.js
+import api from './api';
 
-// import api from './api'; // <-- ganti dengan axios instance jika sudah ada
-
-// =======================
-// REGISTER
-// =======================
-export const register = (payload) => {
-  // payload harus sesuai entity Pengguna (tanpa id karena auto increment)
-  // contoh: { nama_lengkap, email, kata_sandi, no_telepon, alamat_pengguna, id_peran }
-  return Promise.resolve({
-    data: {
-      message: 'Registrasi berhasil (dummy)',
-      user: {
-        id_pengguna: Date.now(),
-        ...payload,
-        poin_pengguna: 0,
-        gambar_pengguna: null,
-        kode_otp: '123456',
-        kadaluarsa_otp: new Date(Date.now() + 5 * 60000), // 5 menit
-        waktu_dibuat: new Date(),
-      },
-    },
-  });
-
-  // versi backend asli
-  // return api.post("/auth/register", payload);
+// Registrasi
+export const register = async (payload) => {
+  try {
+    const response = await api.post('/akun/daftar', {
+      nama_lengkap: payload.nama_lengkap,
+      email: payload.email,
+      kata_sandi: payload.kata_sandi,
+      konfirmasi_kata_sandi: payload.konfirmasi_kata_sandi,
+      id_peran: payload.id_peran,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Registrasi gagal' };
+  }
 };
 
-// =======================
-// LOGIN
-// =======================
-export const login = (payload) => {
-  // payload: { email, kata_sandi }
-  return Promise.resolve({
-    data: {
-      token: 'dummy-token',
-      user: {
-        id_pengguna: 1,
-        nama_lengkap: 'Dummy User',
-        email: payload.email,
-        id_peran: 2, // contoh: masyarakat
-      },
-    },
-  });
-
-  // versi backend asli
-  // return api.post("/auth/login", payload);
+// Login
+export const login = async (payload) => {
+  try {
+    const response = await api.post('/masuk', {
+      email: payload.email,
+      kata_sandi: payload.kata_sandi,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Login gagal' };
+  }
 };
 
-// =======================
-// LOGOUT
-// =======================
-export const logout = () => {
-  return Promise.resolve({
-    data: { message: 'Logout berhasil (dummy)' },
-  });
-
-  // versi backend asli
-  // return api.post("/auth/logout");
+// Logout
+export const logout = async () => {
+  try {
+    const response = await api.post('/keluar');
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Logout gagal' };
+  }
 };
 
-// =======================
-// VERIFY OTP
-// =======================
-export const verifyOtp = (otp) => {
-  return Promise.resolve({
-    data: {
-      message: 'OTP valid (dummy)',
-      kode_otp: otp,
-    },
-  });
-
-  // versi backend asli
-  // return api.post("/auth/verify-otp", { kode_otp: otp });
+// Verifikasi OTP
+export const verifyOtp = async (payload) => {
+  try {
+    const response = await api.post('/akun/verifikasi', payload);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Verifikasi OTP gagal' };
+  }
 };
 
-// =======================
-// SEND RESET LINK
-// =======================
-export const sendResetLink = (email) => {
-  return Promise.resolve({
-    data: { message: `Link reset dikirim ke ${email}` },
-  });
+// Kirim link reset kata sandi
+export const sendResetLink = async (email) => {
+  try {
+    const response = await api.post('/pemulihan/kirim-otp', { email });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Gagal mengirim reset link' };
+  }
+};
 
-  // versi backend asli
-  // return api.post("/auth/send-reset-link", { email });
+// Reset kata sandi
+export const resetPassword = async (payload) => {
+  try {
+    const response = await api.post('/pemulihan/reset-kata-sandi', {
+      email: payload.email,
+      kata_sandi: payload.kata_sandi,
+      konfirmasi_kata_sandi: payload.konfirmasi_kata_sandi,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Reset kata sandi gagal' };
+  }
 };

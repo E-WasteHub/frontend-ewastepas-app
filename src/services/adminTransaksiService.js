@@ -1,6 +1,7 @@
 // src/services/adminTransaksiService.js
 
-// import api from './api';
+// import { a } from "motion/react-client";
+import api from './api';
 
 // =======================
 // AMBIL SEMUA TRANSAKSI
@@ -47,4 +48,34 @@ export const createTransaksi = (payload) => {
 
   // versi backend asli
   // return api.post("/admin/transaksi", payload);
+};
+
+export const updateStatusProfil = async (id_pengguna) => {
+  try {
+    const response = await api.put(`/akun/${id_pengguna}/status`);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating profil status:', error);
+    throw error;
+  }
+};
+
+export const indexUnverifyProfil = async () => {
+  try {
+    const response = await api.put(`/akun/belum-verifikasi`);
+    return response.data;
+  } catch (error) {
+    console.error('Error unverify profil:', error);
+    throw error;
+  }
+};
+
+export const selectUnverifyProfil = async (id_pengguna) => {
+  try {
+    const response = await api.get(`/akun/${id_pengguna}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error selecting unverify profil:', error);
+    throw error;
+  }
 };

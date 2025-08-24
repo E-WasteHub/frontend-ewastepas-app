@@ -1,86 +1,52 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
-import Alert from '../../../elements/Alert';
-import Button from '../../../elements/Button';
-import { Input } from '../../../elements/Form';
+import { useRegisterForm } from '../../../../hooks/useRegisterForm';
+import useAuthStore from '../../../../store/authStore';
+import { Alert, Button, Input, Label } from '../../../elements';
 import FormHeader from '../FormHeader';
 
 const FormRegister = () => {
   const { isDarkMode } = useDarkMode();
   const [searchParams] = useSearchParams();
 
-  const [selectedRole, setSelectedRole] = useState('');
-  const [formData, setFormData] = useState({
-    nama: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
+  const {
+    formData,
+    peran,
+    isLoading,
+    errorField,
+    error,
+    successMessage,
+    handleInputChange,
+    handlePeranSelect,
+    handleRegisterSubmit,
+  } = useRegisterForm();
 
-  const [error, setError] = useState('');
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const clearError = useAuthStore((state) => state.clearError);
 
-  const roles = [
+  // Bersihkan error global tiap kali halaman dimount
+  useEffect(() => {
+    clearError();
+  }, [clearError]);
+
+  // Auto set peran via query params
+  useEffect(() => {
+    const peranParam = searchParams.get('peran');
+    const validPerans = ['masyarakat', 'mitra-kurir'];
+    if (peranParam && validPerans.includes(peranParam)) {
+      handlePeranSelect(peranParam);
+    }
+  }, [searchParams, handlePeranSelect]);
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    handleRegisterSubmit();
+  };
+
+  const perans = [
     { value: 'masyarakat', label: 'Masyarakat' },
     { value: 'mitra-kurir', label: 'Mitra Kurir' },
   ];
-
-  // Atur role berdasarkan query param (?role=mitra-kurir)
-  useEffect(() => {
-    const roleParam = searchParams.get('role');
-    const validRoles = ['masyarakat', 'mitra-kurir'];
-    if (roleParam && validRoles.includes(roleParam)) {
-      setSelectedRole(roleParam);
-    }
-  }, [searchParams]);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleRoleSelect = (roleValue) => {
-    setSelectedRole(roleValue);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Validasi
-    if (!selectedRole) {
-      setError('Silakan pilih peran Anda');
-      return;
-    }
-    if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      setError('Format email tidak valid');
-      return;
-    }
-    if (formData.password.length < 6) {
-      setError('Kata sandi minimal 6 karakter');
-      return;
-    }
-    if (formData.password !== formData.confirmPassword) {
-      setError('Konfirmasi kata sandi tidak cocok');
-      return;
-    }
-
-    // Reset error dan mulai proses
-    setError('');
-    setIsSuccess(false);
-    setIsLoading(true);
-
-    // Simulasi proses register (API call)
-    console.log('Registration data:', { ...formData, role: selectedRole });
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsSuccess(true);
-    }, 2000);
-  };
 
   return (
     <div className='w-full max-w-lg mx-auto mt-4'>
@@ -99,60 +65,62 @@ const FormRegister = () => {
           className='mb-6'
         />
 
-        {/* Error / Success Alert */}
-        {error && <Alert type='error' message={error} className='mb-4' />}
-        {isSuccess && (
+        {/* Global Alert */}
+        {error && (
           <Alert
-            type='success'
-            message='Pendaftaran berhasil! Silakan login.'
-            className='mb-4'
+            type='error'
+            message={error}
+            className='my-3'
+            onClose={() => clearError()}
           />
+        )}
+        {successMessage && (
+          <Alert type='success' message={successMessage} className='my-3' />
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className='space-y-4'>
-          {/* Role Selector */}
+        <form onSubmit={onSubmit} className='space-y-4'>
+          {/* Peran Selector */}
           <div>
-            <label
-              className={`block text-sm font-medium mb-2 ${
-                isDarkMode ? 'text-slate-200' : 'text-gray-700'
-              }`}
-            >
+            <Label htmlFor='peran' error={errorField.peran}>
               Pilih Peran
-            </label>
+            </Label>
             <div className='flex gap-2'>
-              {roles.map((role) => (
+              {perans.map((p) => (
                 <button
-                  key={role.value}
+                  key={p.value}
                   type='button'
-                  onClick={() => handleRoleSelect(role.value)}
+                  onClick={() => handlePeranSelect(p.value)}
                   disabled={isLoading}
                   className={`flex-1 py-2 px-4 text-sm font-medium rounded-md border transition-colors ${
-                    selectedRole === role.value
+                    peran === p.value
                       ? 'bg-green-600 text-white border-green-600'
                       : isDarkMode
                       ? 'bg-slate-700 text-slate-200 border-slate-600 hover:bg-slate-600'
                       : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
-                  {role.label}
+                  {p.label}
                 </button>
               ))}
             </div>
+            {errorField.peran && (
+              <p className='text-sm text-red-500 mt-1'>{errorField.peran}</p>
+            )}
           </div>
 
           {/* Nama Lengkap */}
           <Input
             type='text'
             label='Nama Lengkap'
-            name='nama'
-            id='nama'
+            name='nama_lengkap'
             placeholder='Masukkan nama lengkap Anda'
-            value={formData.nama}
+            value={formData.nama_lengkap}
             onChange={handleInputChange}
             disabled={isLoading}
             required
             autoComplete='name'
+            error={errorField.nama_lengkap}
             className='text-sm'
           />
 
@@ -161,45 +129,45 @@ const FormRegister = () => {
             type='email'
             label='Email'
             name='email'
-            id='email'
             placeholder='Masukkan email Anda'
             value={formData.email}
             onChange={handleInputChange}
             disabled={isLoading}
             required
             autoComplete='email'
+            error={errorField.email}
             className='text-sm'
           />
 
-          {/* Password */}
+          {/* Kata Sandi */}
           <Input
             type='password'
             label='Kata Sandi'
-            name='password'
-            id='password'
+            name='kata_sandi'
             placeholder='Masukkan kata sandi'
-            value={formData.password}
+            value={formData.kata_sandi}
             onChange={handleInputChange}
             disabled={isLoading}
             required
             showPasswordToggle={true}
             autoComplete='new-password'
+            error={errorField.kata_sandi}
             className='text-sm'
           />
 
-          {/* Confirm Password */}
+          {/* Konfirmasi Kata Sandi */}
           <Input
             type='password'
             label='Konfirmasi Kata Sandi'
-            name='confirmPassword'
-            id='confirmPassword'
+            name='konfirmasi_kata_sandi'
             placeholder='Konfirmasi kata sandi'
-            value={formData.confirmPassword}
+            value={formData.konfirmasi_kata_sandi}
             onChange={handleInputChange}
             disabled={isLoading}
             required
             showPasswordToggle={true}
             autoComplete='new-password'
+            error={errorField.konfirmasi_kata_sandi}
             className='text-sm'
           />
 

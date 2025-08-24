@@ -1,52 +1,38 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
-import Alert from '../../../elements/Alert';
-import Button from '../../../elements/Button';
-import { Input } from '../../../elements/Form';
+import { useLupaPasswordForm } from '../../../../hooks/useLupaPasswordForm';
+import useAuthStore from '../../../../store/authStore';
+import { Alert, Button, Input } from '../../../elements';
 import FormHeader from '../FormHeader';
 
 const FormLupaPassword = () => {
   const { isDarkMode } = useDarkMode();
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const {
+    email,
+    isLoading,
+    error,
+    errorField,
+    successMessage,
+    handleInputEmail,
+    handleSubmitReset,
+  } = useLupaPasswordForm();
 
-  const handleInputChange = (e) => {
-    setEmail(e.target.value);
-    setError('');
-  };
+  const clearError = useAuthStore((state) => state.clearError);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!email) return setError('Email wajib diisi');
-    if (!/\S+@\S+\.\S+/.test(email))
-      return setError('Format email tidak valid');
-
-    setError('');
-    setIsLoading(true);
-
-    // TODO: Implement forgot password logic
-    console.log('Reset password for:', email);
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsSuccess(true);
-    }, 2000);
-  };
+  // Bersihkan error tiap kali halaman dimount
+  useEffect(() => {
+    clearError();
+  }, [clearError]);
 
   return (
     <div className='w-full max-w-md mx-auto'>
       <div
-        className={`
-          ${
-            isDarkMode
-              ? 'bg-slate-800 border-slate-700'
-              : 'bg-white border-gray-200'
-          }
-          rounded-2xl border shadow-lg p-8
-        `}
+        className={`${
+          isDarkMode
+            ? 'bg-slate-800 border-slate-700'
+            : 'bg-white border-gray-200'
+        } rounded-2xl border shadow-lg p-8`}
       >
         {/* Header */}
         <FormHeader
@@ -66,26 +52,30 @@ const FormLupaPassword = () => {
         </p>
 
         {/* Success & Error Alert */}
-        {isSuccess && (
+        {successMessage && (
+          <Alert type='success' message={successMessage} className='mb-4' />
+        )}
+        {error && (
           <Alert
-            type='success'
-            message='Link reset kata sandi telah dikirim ke email Anda'
+            type='error'
+            message={error}
             className='mb-4'
+            onClose={() => clearError()}
           />
         )}
-        {error && <Alert type='error' message={error} className='mb-4' />}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className='space-y-4'>
+        <form onSubmit={handleSubmitReset} className='space-y-4'>
           <Input
             type='email'
             label='Email'
             name='email'
             placeholder='Masukkan email Anda'
             value={email}
-            onChange={handleInputChange}
-            disabled={isLoading || isSuccess}
+            onChange={handleInputEmail}
+            disabled={isLoading}
             required
+            error={errorField}
             className='text-sm'
           />
 
@@ -94,32 +84,27 @@ const FormLupaPassword = () => {
             variant='primary'
             isLoading={isLoading}
             loadingText='Mengirim...'
-            disabled={isSuccess}
             className='w-full mt-6'
           >
-            {isSuccess ? 'Link Terkirim' : 'Kirim Link Reset'}
+            Kirim Link Reset
           </Button>
         </form>
 
         {/* Footer */}
         <div
-          className={`
-            text-center text-sm mt-6 pt-4 border-t
-            ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}
-          `}
+          className={`text-center text-sm mt-6 pt-4 border-t ${
+            isDarkMode ? 'border-slate-700' : 'border-gray-200'
+          }`}
         >
           <p className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>
             Ingat kata sandi?{' '}
             <Link
               to='/login'
-              className={`
-                ${
-                  isDarkMode
-                    ? 'text-green-400 hover:text-green-300'
-                    : 'text-green-600 hover:text-green-500'
-                }
-                font-medium transition-colors
-              `}
+              className={`${
+                isDarkMode
+                  ? 'text-green-400 hover:text-green-300'
+                  : 'text-green-600 hover:text-green-500'
+              } font-medium transition-colors`}
             >
               Kembali ke halaman masuk
             </Link>

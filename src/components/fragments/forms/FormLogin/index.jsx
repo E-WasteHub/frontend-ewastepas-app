@@ -1,22 +1,30 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import { useLoginForm } from '../../../../hooks/useLoginForm';
-import Alert from '../../../elements/Alert';
-import Button from '../../../elements/Button';
-import { Checkbox, Input } from '../../../elements/Form';
+import useAuthStore from '../../../../store/authStore';
+import { Alert, Button, Checkbox, Input } from '../../../elements';
 import FormHeader from '../FormHeader';
 
 const FormLogin = () => {
   const { isDarkMode } = useDarkMode();
   const {
     email,
-    password,
+    kata_sandi,
     isLoading,
+    errorField,
     error,
     rememberMe,
     handleInputChange,
     handleLoginSubmit,
   } = useLoginForm();
+
+  const clearError = useAuthStore((state) => state.clearError);
+
+  // ✅ Bersihkan error tiap kali halaman Login di-mount
+  useEffect(() => {
+    clearError();
+  }, [clearError]);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -26,14 +34,11 @@ const FormLogin = () => {
   return (
     <div className='w-full max-w-md mx-auto'>
       <div
-        className={`
-          ${
-            isDarkMode
-              ? 'bg-slate-800 border-slate-700'
-              : 'bg-white border-gray-200'
-          }
-          rounded-2xl border shadow-lg p-8
-        `}
+        className={`${
+          isDarkMode
+            ? 'bg-slate-800 border-slate-700'
+            : 'bg-white border-gray-200'
+        } rounded-2xl border shadow-lg p-8`}
       >
         {/* Header */}
         <FormHeader
@@ -43,33 +48,44 @@ const FormLogin = () => {
           className='mb-6'
         />
 
-        {/* Error Alert */}
-        {error && <Alert type='error' message={error} className='mb-4' />}
+        {/* Error Alert (global) */}
+        {error && (
+          <Alert
+            type='error'
+            message={error}
+            className='my-3'
+            onClose={() => clearError()}
+          />
+        )}
 
         {/* Form */}
         <form onSubmit={onSubmit} className='space-y-4'>
+          {/* Email */}
           <Input
             type='email'
-            label='Email'
             name='email'
+            label='Email'
             placeholder='Masukkan email Anda'
             value={email}
             onChange={handleInputChange}
             disabled={isLoading}
             required
+            error={errorField?.email} // ✅ khusus error field-level
             className='text-sm'
           />
 
+          {/* Kata Sandi */}
           <Input
             type='password'
-            label='Kata sandi'
-            name='password'
+            name='kata_sandi'
+            label='Kata Sandi'
             placeholder='Masukkan kata sandi Anda'
-            value={password}
+            value={kata_sandi}
             onChange={handleInputChange}
             disabled={isLoading}
             required
             showPasswordToggle
+            error={errorField?.kata_sandi} // ✅ khusus error field-level
             className='text-sm'
           />
 
@@ -89,14 +105,11 @@ const FormLogin = () => {
 
             <Link
               to='/lupa-password'
-              className={`
-                ${
-                  isDarkMode
-                    ? 'text-green-400 hover:text-green-300'
-                    : 'text-green-600 hover:text-green-500'
-                }
-                transition-colors
-              `}
+              className={`${
+                isDarkMode
+                  ? 'text-green-400 hover:text-green-300'
+                  : 'text-green-600 hover:text-green-500'
+              } transition-colors`}
             >
               Lupa kata sandi?
             </Link>
@@ -116,23 +129,19 @@ const FormLogin = () => {
 
         {/* Footer */}
         <div
-          className={`
-            text-center text-sm mt-6 pt-4 border-t
-            ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}
-          `}
+          className={`text-center text-sm mt-6 pt-4 border-t ${
+            isDarkMode ? 'border-slate-700' : 'border-gray-200'
+          }`}
         >
           <p className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>
             Belum punya akun?{' '}
             <Link
               to='/register'
-              className={`
-                ${
-                  isDarkMode
-                    ? 'text-green-400 hover:text-green-300'
-                    : 'text-green-600 hover:text-green-500'
-                }
-                font-semibold transition-colors
-              `}
+              className={`${
+                isDarkMode
+                  ? 'text-green-400 hover:text-green-300'
+                  : 'text-green-600 hover:text-green-500'
+              } font-semibold transition-colors`}
             >
               Daftar di sini
             </Link>
