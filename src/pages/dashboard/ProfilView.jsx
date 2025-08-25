@@ -1,10 +1,12 @@
-import { useState } from 'react';
+// src/views/ProfilView.jsx
+import { useEffect, useState } from 'react';
 import {
   FormChangePassword,
   FormProfilData,
   FormUploadDokumen,
 } from '../../components/fragments/forms';
 import useDarkMode from '../../hooks/useDarkMode';
+import * as profilService from '../../services/profilService';
 import { detectRoleFromPath } from '../../utils/peranUtils';
 
 const ProfilView = () => {
@@ -12,28 +14,111 @@ const ProfilView = () => {
 
   // ✅ state form data profil
   const [form, setForm] = useState({
-    nama: '',
+    nama_lengkap: '',
     email: '',
-    alamat: '',
-    gambarProfil: null,
+    no_telepon: '',
+    alamat_pengguna: '',
+    gambar_pengguna: null,
   });
 
-  // ✅ state dokumen KTP/SIM
   const [files, setFiles] = useState({ ktp: null, sim: null });
   const [activeTab, setActiveTab] = useState('profil');
   const { isDarkMode } = useDarkMode();
+  const [role, setRole] = useState(null);
 
-  const role = detectRoleFromPath(window.location.pathname);
+  // 🔑 Ambil data pengguna dari backend saat mount
+  useEffect(() => {
+    fetchProfil();
+  }, []);
 
-  const handleSave = (formName, data) => {
-    setIsLoading(true);
-    console.log('Simpan:', formName, data);
+  const fetchProfil = async () => {
+    try {
+      setIsLoading(true);
+      const data = await profilService.selectProfil();
+      setForm({
+        nama_lengkap: data.data.nama_lengkap || '',
+        email: data.data.email || '',
+        no_telepon: data.data.no_telepon || '',
+        alamat_pengguna: data.data.alamat_pengguna || '',
+        gambar_pengguna: data.data.gambar_pengguna || null,
+      });
 
-    // simulasi request
-    setTimeout(() => {
+      setRole(data.data.peran || detectRoleFromPath(window.location.pathname));
+
+      // sinkronkan juga ke localStorage
+      localStorage.setItem('pengguna', JSON.stringify(data.data));
+      localStorage.setItem('peran', data.data.nama_peran);
+    } catch (err) {
+      console.error('Gagal ambil profil:', err);
+    } finally {
       setIsLoading(false);
-      alert(`${formName} berhasil disimpan!`);
-    }, 1500);
+    }
+  };
+
+  // ✅ Simpan perubahan profil
+  const handleSaveProfil = async () => {
+    try {
+      setIsLoading(true);
+      const res = await profilService.updateProfil({
+        nama_lengkap: form.nama_lengkap,
+        email: form.email,
+        no_telepon: form.no_telepon,
+        alamat_pengguna: form.alamat_pengguna,
+        gambar_pengguna: form.gambar_pengguna,
+      });
+      // update state & localStorage
+      setForm({
+        nama_lengkap: res.data.nama_lengkap || '',
+        email: res.data.email || '',
+        no_telepon: res.data.no_telepon || '',
+        alamat_pengguna: res.data.alamat_pengguna || '',
+        gambar_pengguna: res.data.gambar_pengguna || null,
+      });
+      localStorage.setItem('pengguna', JSON.stringify(res.data));
+      localStorage.setItem('peran', res.data.nama_peran);
+
+      alert('Profil berhasil diperbarui!');
+      window.location.reload();
+    } catch (err) {
+      alert(err.message || 'Gagal memperbarui profil');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // ✅ Ubah Kata sandi
+  const handleUbahKataSandi = async (data) => {
+    try {
+      setIsLoading(true);
+      await profilService.ubahKataSandi(data);
+
+      alert('Kata sandi berhasil diubah!');
+      window.location.reload();
+    } catch (err) {
+      alert(err.message || 'Gagal mengubah kata sandi');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // ✅ Unggah dokumen
+  const handleUploadDokumen = async () => {
+    try {
+      setIsLoading(true);
+
+      const payload = {
+        nama_dokumen_ktp: files.ktp ? files.ktp.name : null,
+        nama_dokumen_sim: files.sim ? files.sim.name : null,
+      };
+
+      await profilService.uploadDokumen(payload);
+      alert('Nama dokumen berhasil dikirim!');
+      setFiles({ ktp: null, sim: null }); // reset
+    } catch (err) {
+      alert(err.message || 'Gagal mengunggah nama dokumen');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const menuItems = [
@@ -46,7 +131,7 @@ const ProfilView = () => {
 
   return (
     <div className='max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 p-6'>
-      {/* Sidebar Menu */}
+      {/* Sidebar */}
       <div className='md:col-span-1'>
         <div
           className={`shadow rounded-lg p-4 space-y-2 ${
@@ -93,24 +178,25 @@ const ProfilView = () => {
 
           {activeTab === 'profil' && (
             <FormProfilData
-              nama={form.nama}
+              nama_lengkap={form.nama_lengkap}
               email={form.email}
-              alamat={form.alamat}
-              gambarProfil={form.gambarProfil}
+              no_telepon={form.no_telepon}
+              alamat_pengguna={form.alamat_pengguna}
+              gambar_pengguna={form.gambar_pengguna}
               isLoading={isLoading}
               onChange={(field, value) =>
                 setForm((prev) => ({ ...prev, [field]: value }))
               }
               onPhotoChange={(file) =>
-                setForm((prev) => ({ ...prev, gambarProfil: file }))
+                setForm((prev) => ({ ...prev, gambar_pengguna: file }))
               }
-              onSave={() => handleSave('Profil', form)}
+              onSave={handleSaveProfil}
             />
           )}
 
           {activeTab === 'password' && (
             <FormChangePassword
-              onSave={(data) => handleSave('Password', data)}
+              onSave={handleUbahKataSandi}
               isLoading={isLoading}
             />
           )}
@@ -121,7 +207,7 @@ const ProfilView = () => {
               onFileChange={(key, file) =>
                 setFiles((prev) => ({ ...prev, [key]: file }))
               }
-              onSave={() => handleSave('Dokumen', files)}
+              onSave={handleUploadDokumen}
               isLoading={isLoading}
             />
           )}

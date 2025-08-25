@@ -1,22 +1,39 @@
 // src/sections/EdukasiSection.jsx
 import { Sparkles } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
-import useEdukasiStore from '../../../store/edukasiStore';
+import { indexEdukasi } from '../../../services/edukasiService'; // ✅ pakai indexEdukasi
 import { Badge } from '../../elements';
 
 const EdukasiSection = () => {
   const { isDarkMode } = useDarkMode();
-  const { data, isLoading, error, fetchEdukasi } = useEdukasiStore();
 
-  // Ambil data edukasi saat mount
+  // state lokal
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // ambil data edukasi saat mount
   useEffect(() => {
-    fetchEdukasi();
-  }, [fetchEdukasi]);
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        setError('');
+        const res = await indexEdukasi(); // ✅ ambil dari service
+        setData(res.data || []); // asumsi respons punya { data: [...] }
+      } catch (err) {
+        setError(err.message || 'Gagal memuat data edukasi');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  // Ambil hanya 4 edukasi terbaru
+    fetchData();
+  }, []);
+
+  // hanya ambil 4 edukasi terbaru
   const edukasiPreview = data.slice(0, 4);
 
   return (

@@ -1,14 +1,15 @@
+// src/components/auth/FormRegister.jsx
 import { useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import { useRegisterForm } from '../../../../hooks/useRegisterForm';
-import useAuthStore from '../../../../store/authStore';
 import { Alert, Button, Input, Label } from '../../../elements';
 import FormHeader from '../FormHeader';
 
 const FormRegister = () => {
   const { isDarkMode } = useDarkMode();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const {
     formData,
@@ -17,19 +18,20 @@ const FormRegister = () => {
     errorField,
     error,
     successMessage,
+    setError, // ditambahkan untuk clear manual
+    setSuccessMessage, // ditambahkan untuk clear manual
     handleInputChange,
     handlePeranSelect,
     handleRegisterSubmit,
   } = useRegisterForm();
 
-  const clearError = useAuthStore((state) => state.clearError);
-
-  // Bersihkan error global tiap kali halaman dimount
+  // Bersihkan error tiap kali halaman dimount
   useEffect(() => {
-    clearError();
-  }, [clearError]);
+    setError('');
+    setSuccessMessage('');
+  }, [setError, setSuccessMessage]);
 
-  // Auto set peran via query params
+  // Auto set peran via query params (?peran=masyarakat)
   useEffect(() => {
     const peranParam = searchParams.get('peran');
     const validPerans = ['masyarakat', 'mitra-kurir'];
@@ -38,14 +40,27 @@ const FormRegister = () => {
     }
   }, [searchParams, handlePeranSelect]);
 
-  const onSubmit = (e) => {
+  // Submit handler
+  const onSubmit = async (e) => {
     e.preventDefault();
-    handleRegisterSubmit();
+    const res = await handleRegisterSubmit();
+
+    if (res?.data?.id_pengguna) {
+      setTimeout(() => {
+        console.log('Redirecting to OTP with userId:', res.data.id_pengguna);
+
+        // simpan ke localStorage
+        localStorage.setItem('userId', res.data.id_pengguna);
+
+        navigate('/verifikasi-otp');
+        setSuccessMessage('');
+      }, 2000);
+    }
   };
 
   const perans = [
-    { value: 'masyarakat', label: 'Masyarakat' },
-    { value: 'mitra-kurir', label: 'Mitra Kurir' },
+    { value: 1, label: 'Masyarakat' },
+    { value: 2, label: 'Mitra Kurir' },
   ];
 
   return (
@@ -61,17 +76,17 @@ const FormRegister = () => {
         <FormHeader
           title='EWasteHub'
           subtitle='Buat Akun Baru'
-          showLogo={true}
+          showLogo
           className='mb-6'
         />
 
-        {/* Global Alert */}
+        {/* Alerts */}
         {error && (
           <Alert
             type='error'
             message={error}
             className='my-3'
-            onClose={() => clearError()}
+            onClose={() => setError('')}
           />
         )}
         {successMessage && (
@@ -80,7 +95,7 @@ const FormRegister = () => {
 
         {/* Form */}
         <form onSubmit={onSubmit} className='space-y-4'>
-          {/* Peran Selector */}
+          {/* Pilih Peran */}
           <div>
             <Label htmlFor='peran' error={errorField.peran}>
               Pilih Peran
@@ -109,7 +124,7 @@ const FormRegister = () => {
             )}
           </div>
 
-          {/* Nama Lengkap */}
+          {/* Input Nama */}
           <Input
             type='text'
             label='Nama Lengkap'
@@ -124,7 +139,7 @@ const FormRegister = () => {
             className='text-sm'
           />
 
-          {/* Email */}
+          {/* Input Email */}
           <Input
             type='email'
             label='Email'
@@ -139,7 +154,7 @@ const FormRegister = () => {
             className='text-sm'
           />
 
-          {/* Kata Sandi */}
+          {/* Input Kata Sandi */}
           <Input
             type='password'
             label='Kata Sandi'
@@ -149,13 +164,13 @@ const FormRegister = () => {
             onChange={handleInputChange}
             disabled={isLoading}
             required
-            showPasswordToggle={true}
+            showPasswordToggle
             autoComplete='new-password'
             error={errorField.kata_sandi}
             className='text-sm'
           />
 
-          {/* Konfirmasi Kata Sandi */}
+          {/* Konfirmasi Sandi */}
           <Input
             type='password'
             label='Konfirmasi Kata Sandi'
@@ -165,19 +180,19 @@ const FormRegister = () => {
             onChange={handleInputChange}
             disabled={isLoading}
             required
-            showPasswordToggle={true}
+            showPasswordToggle
             autoComplete='new-password'
             error={errorField.konfirmasi_kata_sandi}
             className='text-sm'
           />
 
-          {/* Submit Button */}
+          {/* Tombol Submit */}
           <Button
             type='submit'
             variant='primary'
             isLoading={isLoading}
             loadingText='Mendaftar...'
-            className='w-full mt-6'
+            className='w-full'
           >
             Daftar
           </Button>

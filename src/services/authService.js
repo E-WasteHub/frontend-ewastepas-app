@@ -63,8 +63,8 @@ export const sendResetLink = async (email) => {
 // Reset kata sandi
 export const resetPassword = async (payload) => {
   try {
-    const response = await api.post('/pemulihan/reset-kata-sandi', {
-      email: payload.email,
+    const response = await api.put('/pemulihan/reset-kata-sandi', {
+      otp: payload.otp,
       kata_sandi: payload.kata_sandi,
       konfirmasi_kata_sandi: payload.konfirmasi_kata_sandi,
     });

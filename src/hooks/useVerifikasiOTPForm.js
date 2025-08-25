@@ -1,20 +1,16 @@
-// src/hooks/useVerifikasiOTPForm.js
 import { useCallback, useEffect, useState } from 'react';
-import useAuthStore from '../store/authStore';
+import * as authService from '../services/authService';
 
 export const useVerifikasiOTPForm = () => {
-  const handleVerifyOtpStore = useAuthStore((state) => state.handleVerifyOtp);
-  const handleResendOtpStore = useAuthStore((state) => state.handleResendOtp);
-  const isLoading = useAuthStore((state) => state.isLoading);
-  const error = useAuthStore((state) => state.error);
-  const successMessage = useAuthStore((state) => state.successMessage);
-
-  // State lokal
+  const [userId, setUserId] = useState(null); // ✅ simpan id_pengguna
   const [kodeOTP, setKodeOTP] = useState('');
   const [errorField, setErrorField] = useState('');
-  const [timer, setTimer] = useState(300); // 5 menit
+  const [timer, setTimer] = useState(300);
   const [isTimerActive, setIsTimerActive] = useState(true);
   const [canResend, setCanResend] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Input OTP
   const handleInputOTP = (value) => {
@@ -26,35 +22,44 @@ export const useVerifikasiOTPForm = () => {
   // Submit OTP
   const handleSubmitOTP = async (e) => {
     e.preventDefault();
+    if (!kodeOTP) return setErrorField('Kode OTP wajib diisi');
+    if (kodeOTP.length !== 6) return setErrorField('Kode OTP harus 6 digit');
+    if (timer <= 0) return setErrorField('Kode OTP sudah kadaluarsa');
+    if (!userId) return setErrorField('User tidak ditemukan, daftar ulang');
 
-    if (!kodeOTP) {
-      setErrorField('Kode OTP wajib diisi');
-      return;
+    try {
+      setIsLoading(true);
+      const res = await authService.verifyOtp({
+        id_pengguna: userId,
+        kode_otp: kodeOTP,
+      });
+      setSuccessMessage(res.message || 'Verifikasi berhasil');
+    } catch (err) {
+      setError(err.message || 'Verifikasi OTP gagal');
+    } finally {
+      setIsLoading(false);
     }
-    if (kodeOTP.length !== 6) {
-      setErrorField('Kode OTP harus 6 digit');
-      return;
-    }
-    if (timer <= 0) {
-      setErrorField('Kode OTP sudah kadaluarsa. Silakan kirim ulang OTP.');
-      return;
-    }
-
-    await handleVerifyOtpStore({ kode_otp: kodeOTP });
   };
 
-  // Kirim ulang OTP
+  // Resend OTP
   const handleResendOTP = async () => {
-    await handleResendOtpStore();
-    // reset timer & input
-    setTimer(300);
-    setIsTimerActive(true);
-    setCanResend(false);
-    setKodeOTP('');
-    setErrorField('');
+    if (!userId) {
+      setErrorField('User tidak ditemukan untuk resend OTP');
+      return;
+    }
+    try {
+      await authService.resendOtp(userId);
+      setTimer(300);
+      setIsTimerActive(true);
+      setCanResend(false);
+      setKodeOTP('');
+      setError('');
+    } catch (err) {
+      setError(err.message || 'Gagal mengirim ulang OTP');
+    }
   };
 
-  // Timer countdown
+  // Timer
   const jalankanTimer = useCallback(() => {
     if (timer > 0 && isTimerActive) {
       const intervalId = setInterval(() => {
@@ -76,7 +81,6 @@ export const useVerifikasiOTPForm = () => {
     return cleanup;
   }, [jalankanTimer]);
 
-  // Format waktu MM:SS
   const formatTimer = () => {
     const minutes = Math.floor(timer / 60);
     const seconds = timer % 60;
@@ -86,7 +90,7 @@ export const useVerifikasiOTPForm = () => {
   };
 
   return {
-    // State
+    // state
     kodeOTP,
     timer,
     isLoading,
@@ -95,7 +99,9 @@ export const useVerifikasiOTPForm = () => {
     successMessage,
     isTimerActive,
     canResend,
-    // Actions
+    userId,
+    setUserId, // expose setter
+    // action
     handleInputOTP,
     handleSubmitOTP,
     handleResendOTP,

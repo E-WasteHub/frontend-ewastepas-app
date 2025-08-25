@@ -1,8 +1,8 @@
+// src/components/auth/FormLupaPassword.jsx
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import { useLupaPasswordForm } from '../../../../hooks/useLupaPasswordForm';
-import useAuthStore from '../../../../store/authStore';
 import { Alert, Button, Input } from '../../../elements';
 import FormHeader from '../FormHeader';
 
@@ -16,14 +16,28 @@ const FormLupaPassword = () => {
     successMessage,
     handleInputEmail,
     handleSubmitReset,
+    setError, // dari hook
+    setSuccessMessage, // dari hook
   } = useLupaPasswordForm();
 
-  const clearError = useAuthStore((state) => state.clearError);
+  const navigate = useNavigate();
 
-  // Bersihkan error tiap kali halaman dimount
+  // Bersihkan error saat mount
   useEffect(() => {
-    clearError();
-  }, [clearError]);
+    setError('');
+    setSuccessMessage('');
+  }, [setError, setSuccessMessage]);
+
+  // Redirect user setelah berhasil kirim link reset
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage(''); // biar pesan tidak kebawa
+        navigate('/reset-kata-sandi');
+      }, 2000); // delay 2 detik
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage, navigate, setSuccessMessage]);
 
   return (
     <div className='w-full max-w-md mx-auto'>
@@ -51,7 +65,7 @@ const FormLupaPassword = () => {
           Masukkan email Anda untuk menerima link reset kata sandi
         </p>
 
-        {/* Success & Error Alert */}
+        {/* Alerts */}
         {successMessage && (
           <Alert type='success' message={successMessage} className='mb-4' />
         )}
@@ -60,8 +74,11 @@ const FormLupaPassword = () => {
             type='error'
             message={error}
             className='mb-4'
-            onClose={() => clearError()}
+            onClose={() => setError('')}
           />
+        )}
+        {errorField && (
+          <Alert type='error' message={errorField} className='mb-4' />
         )}
 
         {/* Form */}

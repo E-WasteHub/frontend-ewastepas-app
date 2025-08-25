@@ -10,7 +10,24 @@ const FileUploadSingle = ({ label, file, onFileChange, accept }) => {
 
   const handleSelect = (e) => {
     const selected = e.target.files[0];
-    if (selected) onFileChange(selected);
+    if (!selected) return;
+
+    // ✅ validasi ukuran (max 5MB)
+    if (selected.size > 5 * 1024 * 1024) {
+      alert('Ukuran file maksimal 5MB');
+      return;
+    }
+
+    // ✅ validasi tipe file
+    if (!selected.type.startsWith('image/')) {
+      alert('Hanya mendukung file gambar (JPEG/PNG)');
+      return;
+    }
+
+    // ✅ teruskan ke parent state
+    onFileChange(selected);
+
+    // reset input supaya bisa upload ulang file dengan nama sama
     e.target.value = '';
   };
 
@@ -50,7 +67,7 @@ const FileUploadSingle = ({ label, file, onFileChange, accept }) => {
           </div>
         </div>
       ) : (
-        // Sudah ada file → tampilkan preview
+        // Preview file
         <div className='relative w-full'>
           <img
             src={URL.createObjectURL(file)}

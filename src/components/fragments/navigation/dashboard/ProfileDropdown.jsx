@@ -1,5 +1,6 @@
+// src/components/layouts/navbar/ProfileDropdown.jsx
 import { ChevronDown, LogOut, User } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import {
@@ -7,12 +8,25 @@ import {
   getRoleDisplayName,
 } from '../../../../utils/peranUtils';
 
-const ProfileDropdown = ({ user, role, onLogout }) => {
+const ProfileDropdown = ({ onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [pengguna, setPengguna] = useState(null);
+  const [peran, setPeran] = useState(null);
+
   const navigate = useNavigate();
   const { isDarkMode } = useDarkMode();
 
-  const profilePath = getProfilePathByRole(role);
+  // Ambil data pengguna & peran dari localStorage
+  useEffect(() => {
+    const savedPengguna = localStorage.getItem('pengguna');
+    const savedPeran = localStorage.getItem('peran');
+    if (savedPengguna) setPengguna(JSON.parse(savedPengguna));
+    if (savedPeran) setPeran(savedPeran);
+  }, []);
+
+  const profilePath = getProfilePathByRole(peran);
+
+  if (!pengguna) return null; // kalau belum login, jangan render
 
   return (
     <div className='relative'>
@@ -25,10 +39,10 @@ const ProfileDropdown = ({ user, role, onLogout }) => {
             : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
         }`}
       >
-        {user.avatar ? (
+        {pengguna.avatar ? (
           <img
-            src={user.avatar}
-            alt={user.name}
+            src={pengguna.avatar}
+            alt={pengguna.nama_lengkap}
             className='h-8 w-8 rounded-full object-cover'
           />
         ) : (
@@ -46,14 +60,14 @@ const ProfileDropdown = ({ user, role, onLogout }) => {
               isDarkMode ? 'text-white' : 'text-gray-900'
             }`}
           >
-            {user.name}
+            {pengguna.nama_lengkap || 'Pengguna'}
           </p>
           <p
             className={`text-xs ${
               isDarkMode ? 'text-gray-400' : 'text-gray-500'
             }`}
           >
-            {getRoleDisplayName(role)}
+            {getRoleDisplayName(peran)}
           </p>
         </div>
         <ChevronDown
@@ -90,7 +104,14 @@ const ProfileDropdown = ({ user, role, onLogout }) => {
 
           {/* Keluar */}
           <button
-            onClick={onLogout}
+            onClick={() => {
+              // hapus data dari localStorage
+              localStorage.removeItem('token');
+              localStorage.removeItem('pengguna');
+              localStorage.removeItem('peran');
+              if (onLogout) onLogout();
+              navigate('/login');
+            }}
             className={`flex items-center w-full px-4 py-2 text-sm transition-colors ${
               isDarkMode
                 ? 'text-red-400 hover:bg-gray-700 hover:text-red-300'

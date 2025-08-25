@@ -1,20 +1,15 @@
+// src/hooks/useLoginForm.js
 import { useEffect, useState } from 'react';
-import useAuthStore from '../store/authStore';
+import * as authService from '../services/authService';
 
 export const useLoginForm = () => {
-  const handleLoginSubmitStore = useAuthStore(
-    (state) => state.handleLoginSubmit
-  );
-  const isLoading = useAuthStore((state) => state.isLoading);
-  const error = useAuthStore((state) => state.error); // error global (API)
-
-  // state lokal untuk form input
   const [email, setEmail] = useState('');
   const [kata_sandi, setKataSandi] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
-  // field-level error (frontend validation)
-  const [errorField, setErrorField] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(''); // error global dari API
+  const [errorField, setErrorField] = useState({}); // error per field
 
   // load remembered email saat pertama kali render
   useEffect(() => {
@@ -32,8 +27,9 @@ export const useLoginForm = () => {
     if (name === 'kata_sandi') setKataSandi(value);
     if (name === 'rememberMe') setRememberMe(checked);
 
-    // clear error per field kalau diubah
+    // clear error field kalau diubah
     setErrorField((prev) => ({ ...prev, [name]: '' }));
+    setError('');
   };
 
   // validasi frontend
@@ -41,29 +37,57 @@ export const useLoginForm = () => {
     const newErrors = {};
     if (!email) {
       newErrors.email = 'Email wajib diisi';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newErrors.email = 'Format email tidak valid';
     }
+
     if (!kata_sandi) {
       newErrors.kata_sandi = 'Kata sandi wajib diisi';
     } else if (kata_sandi.length < 6) {
       newErrors.kata_sandi = 'Kata sandi minimal 6 karakter';
     }
+
     setErrorField(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   // handle submit form login
-  const handleLoginSubmit = async () => {
-    if (!validateForm()) return; // stop kalau validasi gagal
+  const handleLoginSubmit = async (e) => {
+    if (e) e.preventDefault();
+    if (!validateForm()) return;
 
-    await handleLoginSubmitStore({ email, kata_sandi });
+    try {
+      setIsLoading(true);
+      setError('');
 
-    // simpan email kalau "ingat saya"
-    if (rememberMe) {
-      localStorage.setItem('rememberedEmail', email);
-    } else {
-      localStorage.removeItem('rememberedEmail');
+      // 🔑 Hapus semua data lama (misalnya token hasil register sebelum verifikasi)
+      localStorage.clear();
+
+      const res = await authService.login({ email, kata_sandi });
+
+      // kalau berhasil → simpan token baru di localStorage
+      if (res?.token) {
+        localStorage.setItem('token', res.token);
+
+        // simpan pengguna & peran dari backend
+        if (res.data) {
+          localStorage.setItem('pengguna', JSON.stringify(res.data));
+          localStorage.setItem('peran', res.data.nama_peran);
+        }
+      }
+
+      // simpan email kalau centang "ingat saya"
+      if (rememberMe) {
+        localStorage.setItem('rememberedEmail', email);
+      } else {
+        localStorage.removeItem('rememberedEmail');
+      }
+
+      return res; // biar bisa dipakai di view
+    } catch (err) {
+      setError(err.message || 'Login gagal');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -73,8 +97,8 @@ export const useLoginForm = () => {
     kata_sandi,
     rememberMe,
     isLoading,
-    error, // global error dari backend
-    errorField, // field-level errors
+    error,
+    errorField,
     // Actions
     handleInputChange,
     handleLoginSubmit,

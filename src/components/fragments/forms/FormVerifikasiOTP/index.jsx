@@ -1,5 +1,6 @@
-import { useRef } from 'react';
-import { Link } from 'react-router-dom';
+// src/components/auth/FormVerifikasiOTP.jsx
+import { useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import { useVerifikasiOTPForm } from '../../../../hooks/useVerifikasiOTPForm';
 import { Alert, Button } from '../../../elements';
@@ -7,6 +8,9 @@ import FormHeader from '../FormHeader';
 
 const FormVerifikasiOTP = () => {
   const { isDarkMode } = useDarkMode();
+  const navigate = useNavigate();
+  const inputRefs = useRef([]);
+
   const {
     kodeOTP,
     isLoading,
@@ -19,17 +23,37 @@ const FormVerifikasiOTP = () => {
     handleSubmitOTP,
     handleResendOTP,
     formatTimer,
+    setUserId,
   } = useVerifikasiOTPForm();
 
-  const inputRefs = useRef([]);
+  // ambil userId dari localStorage kalau ada
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('userId');
+    if (!storedUserId) {
+      navigate('/register'); // kalau tidak ada, paksa balik register
+    } else {
+      setUserId(storedUserId); // simpan ke hook untuk dipakai verifikasi
+    }
+  }, [navigate, setUserId]);
 
+  // Redirect ke login kalau verifikasi berhasil
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        localStorage.removeItem('userId'); // hapus setelah berhasil
+        navigate('/login');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage, navigate]);
+
+  // Input OTP per digit
   const handleInputChange = (index, value) => {
     if (!/^\d*$/.test(value)) return; // hanya angka
     const newOtp = kodeOTP.split('');
     newOtp[index] = value;
     handleInputOTP(newOtp.join(''));
 
-    // auto fokus ke input berikutnya
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -64,7 +88,7 @@ const FormVerifikasiOTP = () => {
         <FormHeader
           title='EWasteHub'
           subtitle='Verifikasi OTP'
-          showLogo={true}
+          showLogo
           className='mb-6'
         />
 

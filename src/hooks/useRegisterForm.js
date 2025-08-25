@@ -1,6 +1,6 @@
 // src/hooks/useRegisterForm.js
 import { useState } from 'react';
-import useAuthStore from '../store/authStore';
+import * as authService from '../services/authService'; // langsung panggil service
 
 export const useRegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -10,16 +10,11 @@ export const useRegisterForm = () => {
     konfirmasi_kata_sandi: '',
   });
 
-  // ✅ nilai awal kosong
   const [peran, setPeran] = useState('');
-
-  // state untuk validasi field
   const [errorField, setErrorField] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-
-  // state global dari store
-  const error = useAuthStore((state) => state.error); // global error dari backend
-  const successMessage = useAuthStore((state) => state.successMessage);
+  const [error, setError] = useState(''); // error global
+  const [successMessage, setSuccessMessage] = useState(''); // pesan sukses
 
   // handle perubahan input teks
   const handleInputChange = (e) => {
@@ -78,30 +73,42 @@ export const useRegisterForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // submit ke store -> backend
+  // submit langsung ke backend
   const handleRegisterSubmit = async () => {
-    if (!validateForm()) return;
+    if (!validateForm()) return null;
 
     try {
       setIsLoading(true);
-      await useAuthStore.getState().handleRegisterSubmit({
+      setError('');
+      setSuccessMessage('');
+
+      const res = await authService.register({
         ...formData,
-        id_peran: peran, // backend butuh `id_peran`
+        id_peran: peran,
       });
+
+      setSuccessMessage(res.message || 'Registrasi berhasil');
+      return res; // biar bisa dipakai di FormRegister
     } catch (err) {
       console.error('Register error:', err);
+      setError(err.message || 'Registrasi gagal');
+      return null;
     } finally {
       setIsLoading(false);
     }
   };
 
   return {
+    // State
     formData,
     peran,
     isLoading,
     errorField,
     error,
     successMessage,
+    setError,
+    setSuccessMessage,
+    // Action
     handleInputChange,
     handlePeranSelect,
     handleRegisterSubmit,

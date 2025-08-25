@@ -1,24 +1,39 @@
 // src/views/EdukasiDetailView.jsx
 import { ArrowLeft, BookOpen } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import MainLayout from '../components/layouts/MainLayout';
 import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-import useEdukasiStore from '../store/edukasiStore';
+import { showEdukasi } from '../services/edukasiService'; // ✅ langsung pakai service
 
 const EdukasiDetailView = () => {
   const { id } = useParams();
   const { isDarkMode } = useDarkMode();
-  const { detail, isLoading, error, fetchEdukasiDetail } = useEdukasiStore();
 
-  useDocumentTitle(
-    detail ? `${detail.judul_konten} | E-wasteHub` : 'Edukasi | E-wasteHub'
-  );
+  // state lokal
+  const [artikel, setArtikel] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useDocumentTitle('Detail Edukasi | EwasteHub');
 
   useEffect(() => {
-    fetchEdukasiDetail(id);
-  }, [id, fetchEdukasiDetail]);
+    const fetchDetail = async () => {
+      try {
+        setIsLoading(true);
+        setError('');
+        const res = await showEdukasi(id); // ✅ ambil dari API
+        setArtikel(res.data || res); // tergantung format respons API kamu
+      } catch (err) {
+        setError(err.message || 'Gagal memuat detail edukasi');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (id) fetchDetail();
+  }, [id]);
 
   if (isLoading) {
     return <p className='text-center py-10'>Loading artikel...</p>;
@@ -28,7 +43,7 @@ const EdukasiDetailView = () => {
     return <p className='text-center text-red-500 py-10'>{error}</p>;
   }
 
-  if (!detail) {
+  if (!artikel) {
     return (
       <p className='text-center text-slate-500 py-10'>
         Artikel tidak ditemukan
@@ -63,15 +78,15 @@ const EdukasiDetailView = () => {
               isDarkMode ? 'text-white' : 'text-slate-900'
             }`}
           >
-            {detail.judul_konten}
+            {artikel.judul_konten}
           </h1>
 
           {/* Thumbnail */}
-          {detail.gambar && (
+          {artikel.gambar && (
             <div className='mb-6'>
               <img
-                src={detail.gambar}
-                alt={detail.judul_konten}
+                src={artikel.gambar}
+                alt={artikel.judul_konten}
                 className='w-full h-64 object-cover rounded-lg'
               />
             </div>
@@ -82,7 +97,7 @@ const EdukasiDetailView = () => {
             className={`prose max-w-none ${
               isDarkMode ? 'prose-invert text-slate-300' : 'text-slate-700'
             }`}
-            dangerouslySetInnerHTML={{ __html: detail.isi_konten }}
+            dangerouslySetInnerHTML={{ __html: artikel.isi_konten }}
           />
 
           {/* Footer */}

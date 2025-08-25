@@ -25,7 +25,7 @@ export const updateProfil = async (payload) => {
 };
 
 // Ubah Kata Sandi
-export const changePassword = async (payload) => {
+export const ubahKataSandi = async (payload) => {
   try {
     const response = await api.put(`/akun/kata-sandi`, payload);
     return response.data;

@@ -1,10 +1,8 @@
-import { bottomMenuItemsByRole } from './menuUtils';
-
 export const normalizeRole = (role) => {
   if (!role) return 'masyarakat';
   const normalizedRole = role.toLowerCase();
   if (['mitra kurir', 'mitrakurir', 'mitra-kurir'].includes(normalizedRole)) {
-    return 'mitra-kurir';
+    return 'mitra kurir';
   }
   return normalizedRole;
 };
@@ -20,7 +18,7 @@ export const getRoleDisplayName = (role) => {
   switch (normalizeRole(role)) {
     case 'admin':
       return 'Admin';
-    case 'mitra-kurir':
+    case 'mitra kurir':
       return 'Mitra Kurir';
     case 'masyarakat':
     default:
@@ -33,9 +31,13 @@ export const getRoleDisplayName = (role) => {
  */
 export const getProfilePathByRole = (role) => {
   const normalizedRole = normalizeRole(role);
-  return (
-    bottomMenuItemsByRole[normalizedRole]?.find(
-      (item) => item.title.toLowerCase() === 'profil'
-    )?.path || '/dashboard/masyarakat/profil'
-  );
+  switch (normalizedRole) {
+    case 'admin':
+      return '/dashboard/admin/profil';
+    case 'mitra kurir':
+      return '/dashboard/mitra-kurir/profil';
+    case 'masyarakat':
+    default:
+      return '/dashboard/masyarakat/profil';
+  }
 };

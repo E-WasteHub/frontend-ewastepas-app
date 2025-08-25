@@ -1,48 +1,54 @@
+// src/components/layouts/navbar/NavbarDashboard.jsx
 import { Moon, Sun } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import useDarkMode from '../../../../hooks/useDarkMode';
-import useAuthStore from '../../../../store/authStore';
-import {
-  detectRoleFromPath,
-  normalizeRole,
-} from '../../../../utils/peranUtils';
 import Button from '../../../elements/Button';
 import NotificationDropdown from './NotificationDropdown';
 import ProfileDropdown from './ProfileDropdown';
 
 const NavbarDashboard = () => {
   const { isDarkMode, toggleTheme } = useDarkMode();
-  const { user, logout } = useAuthStore();
-  const location = useLocation();
 
-  // Tentukan role (utamakan dari user, fallback ke path)
-  const currentRole = user?.role
-    ? normalizeRole(user.role)
-    : detectRoleFromPath(location.pathname);
+  const [notifications, setNotifications] = useState([]);
+  const [pengguna, setPengguna] = useState(null);
+  const [peran, setPeran] = useState(null);
 
-  // Data user (fallback untuk demo)
-  const userData = {
-    name: user?.name || 'User Demo',
-    role: currentRole,
-    email: user?.email || 'user@example.com',
-    avatar: user?.avatar || null,
-  };
+  useEffect(() => {
+    console.log(localStorage);
+    const savedPengguna = localStorage.getItem('pengguna');
+    const savedPeran = localStorage.getItem('peran');
+    if (savedPengguna) setPengguna(JSON.parse(savedPengguna));
+    if (savedPeran) setPeran(savedPeran);
+  }, []);
 
-  // Dummy notifikasi
-  const dummyNotifications = [
-    {
-      id: 1,
-      title: 'Halo 👋',
-      message: 'Selamat datang di dashboard',
-      isRead: false,
-    },
-    {
-      id: 2,
-      title: 'Update',
-      message: 'Ada fitur baru yang bisa dicoba',
-      isRead: true,
-    },
-  ];
+  // Ambil notifikasi dari backend
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        // sementara masih dummy → kalau sudah ada API ganti ke:
+        // const res = await notificationService.getAll();
+        // setNotifications(res.data);
+        setNotifications([
+          {
+            id: 1,
+            title: 'Halo 👋',
+            message: 'Selamat datang di dashboard',
+            isRead: false,
+          },
+          {
+            id: 2,
+            title: 'Update',
+            message: 'Ada fitur baru yang bisa dicoba',
+            isRead: true,
+          },
+        ]);
+      } catch (err) {
+        console.error('Gagal ambil notifikasi:', err);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
 
   return (
     <nav
@@ -69,14 +75,21 @@ const NavbarDashboard = () => {
             </Button>
 
             {/* Notifications */}
-            <NotificationDropdown notifications={dummyNotifications} />
+            <NotificationDropdown notifications={notifications} />
 
-            {/* Profile */}
-            <ProfileDropdown
-              user={userData}
-              role={userData.role}
-              onLogout={logout}
-            />
+            {/* Profile → lempar data dari backend */}
+            {pengguna && (
+              <ProfileDropdown
+                pengguna={pengguna}
+                peran={peran}
+                onLogout={() => {
+                  localStorage.removeItem('token');
+                  localStorage.removeItem('pengguna');
+                  localStorage.removeItem('peran');
+                  window.location.href = '/login';
+                }}
+              />
+            )}
           </div>
         </div>
       </div>

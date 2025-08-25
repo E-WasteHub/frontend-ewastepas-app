@@ -1,13 +1,15 @@
-import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+// src/components/auth/FormLogin.jsx
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import { useLoginForm } from '../../../../hooks/useLoginForm';
-import useAuthStore from '../../../../store/authStore';
 import { Alert, Button, Checkbox, Input } from '../../../elements';
 import FormHeader from '../FormHeader';
 
 const FormLogin = () => {
   const { isDarkMode } = useDarkMode();
+  const navigate = useNavigate();
+
   const {
     email,
     kata_sandi,
@@ -19,17 +21,39 @@ const FormLogin = () => {
     handleLoginSubmit,
   } = useLoginForm();
 
-  const clearError = useAuthStore((state) => state.clearError);
+  // ✅ state tambahan untuk pesan sukses
+  const [successMessage, setSuccessMessage] = useState('');
 
-  // ✅ Bersihkan error tiap kali halaman Login di-mount
-  useEffect(() => {
-    clearError();
-  }, [clearError]);
-
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    handleLoginSubmit();
+    const res = await handleLoginSubmit(e);
+
+    if (res?.data?.nama_peran) {
+      setSuccessMessage('Login berhasil! Mengarahkan ke dashboard...');
+
+      // redirect sesuai peran setelah delay biar user lihat pesan
+      setTimeout(() => {
+        switch (res.data.nama_peran.toLowerCase()) {
+          case 'masyarakat':
+            navigate('/dashboard/masyarakat');
+            break;
+          case 'mitra kurir':
+            navigate('/dashboard/mitra-kurir');
+            break;
+          case 'admin':
+            navigate('/dashboard/admin');
+            break;
+          default:
+            navigate('/');
+        }
+      }, 2000);
+    }
   };
+
+  // Bersihkan pesan sukses saat pindah halaman / unmount
+  useEffect(() => {
+    return () => setSuccessMessage('');
+  }, []);
 
   return (
     <div className='w-full max-w-md mx-auto'>
@@ -49,13 +73,11 @@ const FormLogin = () => {
         />
 
         {/* Error Alert (global) */}
-        {error && (
-          <Alert
-            type='error'
-            message={error}
-            className='my-3'
-            onClose={() => clearError()}
-          />
+        {error && <Alert type='error' message={error} className='my-3' />}
+
+        {/* Success Alert */}
+        {successMessage && (
+          <Alert type='success' message={successMessage} className='my-3' />
         )}
 
         {/* Form */}
@@ -70,7 +92,7 @@ const FormLogin = () => {
             onChange={handleInputChange}
             disabled={isLoading}
             required
-            error={errorField?.email} // ✅ khusus error field-level
+            error={errorField?.email}
             className='text-sm'
           />
 
@@ -85,7 +107,7 @@ const FormLogin = () => {
             disabled={isLoading}
             required
             showPasswordToggle
-            error={errorField?.kata_sandi} // ✅ khusus error field-level
+            error={errorField?.kata_sandi}
             className='text-sm'
           />
 

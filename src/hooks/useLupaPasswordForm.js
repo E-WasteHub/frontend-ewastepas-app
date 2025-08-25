@@ -1,22 +1,28 @@
 // src/hooks/useLupaPasswordForm.js
 import { useState } from 'react';
-import useAuthStore from '../store/authStore';
+import * as authService from '../services/authService';
 
 export const useLupaPasswordForm = () => {
-  const handleSendResetLinkStore = useAuthStore(
-    (state) => state.handleSendResetLink
-  );
-  const isLoading = useAuthStore((state) => state.isLoading);
-  const error = useAuthStore((state) => state.error); // 🔹 error global (backend)
-  const successMessage = useAuthStore((state) => state.successMessage);
-
   const [email, setEmail] = useState('');
-  const [errorField, setErrorField] = useState(''); // 🔹 khusus validasi frontend
+  const [errorField, setErrorField] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Handle input email
   const handleInputEmail = (e) => {
     setEmail(e.target.value);
-    setErrorField(''); // reset error input tiap user ngetik
+    if (errorField) setErrorField('');
+    if (error) setError('');
+    if (successMessage) setSuccessMessage('');
+  };
+
+  // Validasi email
+  const validateEmail = (value) => {
+    if (!value) return 'Email wajib diisi';
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) return 'Format email tidak valid';
+    return '';
   };
 
   // Handle submit lupa password
@@ -24,21 +30,26 @@ export const useLupaPasswordForm = () => {
     e.preventDefault();
 
     // Validasi input
-    if (!email) {
-      setErrorField('Email wajib diisi');
-      return;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setErrorField('Format email tidak valid');
+    const validationError = validateEmail(email);
+    if (validationError) {
+      setErrorField(validationError);
       return;
     }
 
-    // Panggil store untuk kirim reset link
-    await handleSendResetLinkStore(email);
+    try {
+      setIsLoading(true);
+      setError('');
+      setSuccessMessage('');
 
-    // Kosongkan email setelah sukses
-    setEmail('');
+      const res = await authService.sendResetLink(email);
+
+      setSuccessMessage(res.message || 'Link reset berhasil dikirim');
+      setEmail('');
+    } catch (err) {
+      setError(err.message || 'Gagal mengirim link reset');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return {
@@ -51,5 +62,7 @@ export const useLupaPasswordForm = () => {
     // Actions
     handleInputEmail,
     handleSubmitReset,
+    setError, // biar bisa clearError dari view
+    setSuccessMessage, // biar bisa clearSuccess dari view
   };
 };

@@ -1,13 +1,13 @@
-import { Save } from 'lucide-react';
 import { AvatarUpload, Input, Label, Textarea } from '../../../elements';
 import Button from '../../../elements/Button';
 import { Loading } from '../../../elements/Loading';
 
 const FormProfilData = ({
-  nama,
+  nama_lengkap,
   email,
-  alamat,
-  gambarProfil,
+  no_telepon,
+  alamat_pengguna,
+  gambar_pengguna,
   isLoading,
   onChange,
   onPhotoChange,
@@ -23,22 +23,20 @@ const FormProfilData = ({
         </p>
       </div>
 
-      {/* Foto Profil pakai AvatarUpload */}
-      <AvatarUpload
-        file={gambarProfil}
-        onFileChange={onPhotoChange} // 🔹 sekarang aman
-      />
+      {/* Foto Profil */}
+      <AvatarUpload file={gambar_pengguna} onFileChange={onPhotoChange} />
 
-      {/* Input pakai elements */}
+      {/* Nama Lengkap */}
       <Input
         label='Nama Lengkap'
         name='nama'
         placeholder='Masukkan nama lengkap'
-        value={nama}
-        onChange={(e) => onChange('nama', e.target.value)}
+        value={nama_lengkap}
+        onChange={(e) => onChange('nama_lengkap', e.target.value)}
         required
       />
 
+      {/* Email */}
       <Input
         label='Email'
         type='email'
@@ -49,12 +47,24 @@ const FormProfilData = ({
         required
       />
 
+      {/* No Telepon */}
+      <Input
+        label='No. Telepon'
+        type='tel'
+        name='no_telepon'
+        placeholder='Masukkan nomor telepon'
+        value={no_telepon}
+        onChange={(e) => onChange('no_telepon', e.target.value)}
+        required
+      />
+
+      {/* Alamat */}
       <Textarea
         label='Alamat'
         name='alamat'
         placeholder='Masukkan alamat lengkap'
-        value={alamat}
-        onChange={(e) => onChange('alamat', e.target.value)}
+        value={alamat_pengguna}
+        onChange={(e) => onChange('alamat_pengguna', e.target.value)}
         rows={4}
       />
 
@@ -62,16 +72,14 @@ const FormProfilData = ({
       <Button
         onClick={onSave}
         disabled={isLoading}
-        className='w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2'
+        className='w-full text-white flex items-center justify-center gap-2'
       >
         {isLoading ? (
           <>
             <Loading size='sm' /> Menyimpan...
           </>
         ) : (
-          <>
-            <Save className='w-4 h-4' /> Simpan Perubahan
-          </>
+          <>Simpan Perubahan</>
         )}
       </Button>
     </div>

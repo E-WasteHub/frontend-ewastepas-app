@@ -1,25 +1,43 @@
 import { Lock } from 'lucide-react';
+import { useState } from 'react';
 import { Button, Input } from '../../../elements';
 
-const FormChangePassword = ({
-  currentPassword,
-  newPassword,
-  confirmPassword,
-  isLoading,
-  onChange,
-  onSave,
-}) => {
+const FormChangePassword = ({ isLoading, onSave }) => {
+  // ✅ State lokal untuk input password
+  const [form, setForm] = useState({
+    kata_sandi_lama: '',
+    kata_sandi_baru: '',
+    konfirmasi_kata_sandi: '',
+  });
+
+  // handle perubahan input
+  const handleChange = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // handle submit
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (onSave) {
+      onSave({
+        kata_sandi_lama: form.kata_sandi_lama,
+        kata_sandi_baru: form.kata_sandi_baru,
+        konfirmasi_kata_sandi: form.konfirmasi_kata_sandi,
+      });
+    }
+  };
+
   return (
-    <div className='space-y-6'>
+    <form onSubmit={handleSubmit} className='space-y-6'>
       <h2 className='text-xl font-semibold'>Ubah Password</h2>
 
       <Input
         label='Password Saat Ini'
         type='password'
-        name='currentPassword'
+        name='kata_sandi_lama'
         placeholder='Masukkan password lama'
-        value={currentPassword}
-        onChange={(e) => onChange('currentPassword', e.target.value)}
+        value={form.kata_sandi_lama}
+        onChange={(e) => handleChange('kata_sandi_lama', e.target.value)}
         required
         showPasswordToggle
       />
@@ -27,10 +45,10 @@ const FormChangePassword = ({
       <Input
         label='Password Baru'
         type='password'
-        name='newPassword'
+        name='kata_sandi_baru'
         placeholder='Masukkan password baru'
-        value={newPassword}
-        onChange={(e) => onChange('newPassword', e.target.value)}
+        value={form.kata_sandi_baru}
+        onChange={(e) => handleChange('kata_sandi_baru', e.target.value)}
         required
         showPasswordToggle
       />
@@ -38,16 +56,16 @@ const FormChangePassword = ({
       <Input
         label='Konfirmasi Password Baru'
         type='password'
-        name='confirmPassword'
+        name='konfirmasi_kata_sandi'
         placeholder='Ulangi password baru'
-        value={confirmPassword}
-        onChange={(e) => onChange('confirmPassword', e.target.value)}
+        value={form.konfirmasi_kata_sandi}
+        onChange={(e) => handleChange('konfirmasi_kata_sandi', e.target.value)}
         required
         showPasswordToggle
       />
 
       <Button
-        onClick={onSave}
+        type='submit'
         disabled={isLoading}
         className='w-full bg-green-600 hover:bg-green-700 text-white flex items-center justify-center gap-2'
       >
@@ -58,7 +76,7 @@ const FormChangePassword = ({
         )}
         {isLoading ? 'Menyimpan...' : 'Simpan Password'}
       </Button>
-    </div>
+    </form>
   );
 };
 
