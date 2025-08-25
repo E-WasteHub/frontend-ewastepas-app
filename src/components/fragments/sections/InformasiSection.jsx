@@ -55,7 +55,7 @@ const InformasiSection = () => {
             viewport={{ once: true }}
             className='group w-full'
           >
-            <Link to='/register?role=masyarakat' className='block h-full'>
+            <Link to='/register?peran=masyarakat' className='block h-full'>
               <div
                 className={`p-6 border rounded-xl hover:border-green-500 hover:shadow-lg transition-all duration-300 h-full text-center ${
                   isDarkMode
@@ -94,7 +94,7 @@ const InformasiSection = () => {
             viewport={{ once: true }}
             className='group w-full'
           >
-            <Link to='/register?role=mitra-kurir' className='block h-full'>
+            <Link to='/register?peran=mitra-kurir' className='block h-full'>
               <div
                 className={`p-6 border rounded-xl hover:border-green-500 hover:shadow-lg transition-all duration-300 h-full text-center ${
                   isDarkMode

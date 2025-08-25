@@ -8,8 +8,8 @@ import FormHeader from '../FormHeader';
 
 const FormRegister = () => {
   const { isDarkMode } = useDarkMode();
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const {
     formData,
@@ -31,14 +31,18 @@ const FormRegister = () => {
     setSuccessMessage('');
   }, [setError, setSuccessMessage]);
 
-  // Auto set peran via query params (?peran=masyarakat)
   useEffect(() => {
     const peranParam = searchParams.get('peran');
-    const validPerans = ['masyarakat', 'mitra-kurir'];
-    if (peranParam && validPerans.includes(peranParam)) {
-      handlePeranSelect(peranParam);
+    const mapping = {
+      masyarakat: 1,
+      'mitra-kurir': 2,
+    };
+
+    if (peranParam && mapping[peranParam]) {
+      handlePeranSelect(mapping[peranParam]);
     }
-  }, [searchParams, handlePeranSelect]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Submit handler
   const onSubmit = async (e) => {

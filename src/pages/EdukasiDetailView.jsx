@@ -72,15 +72,6 @@ const EdukasiDetailView = () => {
             Kembali ke Edukasi
           </Link>
 
-          {/* Judul */}
-          <h1
-            className={`text-3xl md:text-4xl font-bold mb-6 ${
-              isDarkMode ? 'text-white' : 'text-slate-900'
-            }`}
-          >
-            {artikel.judul_konten}
-          </h1>
-
           {/* Thumbnail */}
           {artikel.gambar && (
             <div className='mb-6'>
@@ -91,6 +82,14 @@ const EdukasiDetailView = () => {
               />
             </div>
           )}
+          {/* Judul */}
+          <h1
+            className={`text-3xl md:text-4xl font-bold mb-6 ${
+              isDarkMode ? 'text-white' : 'text-slate-900'
+            }`}
+          >
+            {artikel.judul_konten}
+          </h1>
 
           {/* Isi konten */}
           <div

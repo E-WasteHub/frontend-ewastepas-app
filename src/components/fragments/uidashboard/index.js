@@ -15,14 +15,6 @@ export { default as Timeline } from './Timeline';
 // Detail UI Dashboard
 export { default as RequestDetail } from './RequestDetail';
 
-// CRUD UI Dashboard
-export { default as CrudFilter } from './CrudFilter';
-export { default as CrudForm } from './CrudForm';
-export { default as CrudHeader } from './CrudHeader';
-export { default as CrudModal } from './CrudModal';
-export { default as CrudStats } from './CrudStats';
-export { default as CrudTable } from './CrudTable';
-
 // Modal UI Dashboard
 export { default as AlertModal } from './AlertModal';
 export { default as ConfirmDialog } from './ConfirmDialog';

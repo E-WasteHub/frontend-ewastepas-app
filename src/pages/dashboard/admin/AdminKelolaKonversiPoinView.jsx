@@ -1,41 +1,18 @@
-import {
-  BarChart3,
-  Edit,
-  Eye,
-  Gift,
-  Layers,
-  Package,
-  Plus,
-  Trash2,
-} from 'lucide-react';
-import { useState } from 'react';
-import { Badge, Button } from '../../../components/elements';
-import {
-  CrudFilter,
-  CrudHeader,
-  CrudModal,
-  CrudStats,
-  CrudTable,
-} from '../../../components/fragments/uidashboard';
-import ConfirmDialog from '../../../components/fragments/uidashboard/ConfirmDialog';
-import CrudForm from '../../../components/fragments/uidashboard/CrudForm';
+import { Edit, Eye, Plus, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import DataTable from 'react-data-table-component';
+import { Button } from '../../../components/elements';
 import useDarkMode from '../../../hooks/useDarkMode';
+import * as konversiService from '../../../services/konversiService';
 
 const AdminKelolaKonversiPoinView = () => {
   const { isDarkMode } = useDarkMode();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [rewards, setRewards] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // modal states
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState('add');
-  const [selectedItem, setSelectedItem] = useState(null);
-
-  // confirm dialog
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [deleteId, setDeleteId] = useState(null);
-
-  // form state
+  const [selected, setSelected] = useState(null);
   const [formData, setFormData] = useState({
     reward: '',
     kategori: '',
@@ -44,266 +21,206 @@ const AdminKelolaKonversiPoinView = () => {
     status: 'aktif',
   });
 
-  // dummy data
-  const [rewardData, setRewardData] = useState([
-    {
-      id: 1,
-      reward: 'Voucher Belanja Rp50.000',
-      kategori: 'Voucher',
-      poin: 500,
-      stok: 20,
-      status: 'aktif',
-      terakhir_diupdate: '2024-01-15',
-    },
-    {
-      id: 2,
-      reward: 'Tumbler Eksklusif',
-      kategori: 'Merchandise',
-      poin: 1000,
-      stok: 5,
-      status: 'aktif',
-      terakhir_diupdate: '2024-01-12',
-    },
-  ]);
+  // ✅ Fetch dari backend
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const res = await konversiService.indexRewards();
+        setRewards(res.data); // asumsi backend kirim { data: [...] }
+      } catch (err) {
+        console.error('Gagal ambil rewards:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
-  // filter
-  const filteredData = rewardData.filter((item) => {
-    const matchSearch =
-      item.reward.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.kategori.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchStatus = filterStatus === 'all' || item.status === filterStatus;
-    return matchSearch && matchStatus;
-  });
+  const handleSubmit = async () => {
+    try {
+      if (modalMode === 'add') {
+        await konversiService.createReward(formData);
+      } else if (modalMode === 'edit' && selected) {
+        await konversiService.updateReward(selected.id, formData);
+      }
+      setShowModal(false);
 
-  // stats
-  const stats = [
+      const res = await konversiService.indexRewards();
+      setRewards(res.data);
+    } catch (err) {
+      console.error('Gagal simpan reward:', err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await konversiService.deleteReward(id);
+      setRewards(rewards.filter((r) => r.id !== id));
+    } catch (err) {
+      console.error('Gagal hapus reward:', err);
+    }
+  };
+
+  const columns = [
+    { name: 'Reward', selector: (row) => row.reward, sortable: true },
+    { name: 'Kategori', selector: (row) => row.kategori },
+    { name: 'Poin Dibutuhkan', selector: (row) => row.poin },
+    { name: 'Stok', selector: (row) => row.stok },
+    { name: 'Status', selector: (row) => row.status },
     {
-      title: 'Total Reward',
-      value: rewardData.length,
-      desc: `${rewardData.filter((i) => i.status === 'aktif').length} aktif`,
-      icon: Gift,
-      color: 'text-blue-500',
-    },
-    {
-      title: 'Total Stok',
-      value: rewardData.reduce((acc, i) => acc + i.stok, 0),
-      desc: 'semua reward',
-      icon: Package,
-      color: 'text-green-500',
-    },
-    {
-      title: 'Total Poin Dibutuhkan',
-      value: rewardData.reduce((acc, i) => acc + i.poin, 0),
-      desc: 'akumulasi poin',
-      icon: BarChart3,
-      color: 'text-purple-500',
-    },
-    {
-      title: 'Kategori Reward',
-      value: new Set(rewardData.map((i) => i.kategori)).size,
-      desc: 'kategori tersedia',
-      icon: Layers,
-      color: 'text-orange-500',
+      name: 'Aksi',
+      cell: (row) => (
+        <div className='flex gap-2'>
+          <Button
+            size='sm'
+            variant='outline'
+            onClick={() => {
+              setModalMode('view');
+              setSelected(row);
+              setFormData(row);
+              setShowModal(true);
+            }}
+          >
+            <Eye className='h-4 w-4' />
+          </Button>
+          <Button
+            size='sm'
+            variant='outline'
+            onClick={() => {
+              setModalMode('edit');
+              setSelected(row);
+              setFormData(row);
+              setShowModal(true);
+            }}
+          >
+            <Edit className='h-4 w-4' />
+          </Button>
+          <Button
+            size='sm'
+            variant='danger'
+            onClick={() => handleDelete(row.id)}
+          >
+            <Trash2 className='h-4 w-4' />
+          </Button>
+        </div>
+      ),
     },
   ];
 
-  // handlers
-  const handleAdd = () => {
-    setModalMode('add');
-    setFormData({
-      reward: '',
-      kategori: '',
-      poin: '',
-      stok: '',
-      status: 'aktif',
-    });
-    setShowModal(true);
-  };
-
-  const handleEdit = (item) => {
-    setModalMode('edit');
-    setSelectedItem(item);
-    setFormData(item);
-    setShowModal(true);
-  };
-
-  const handleView = (item) => {
-    setModalMode('view');
-    setSelectedItem(item);
-    setFormData(item);
-    setShowModal(true);
-  };
-
-  const handleDelete = (id) => {
-    setDeleteId(id);
-    setConfirmOpen(true);
-  };
-
-  const confirmDelete = () => {
-    setRewardData(rewardData.filter((i) => i.id !== deleteId));
-    setConfirmOpen(false);
-  };
-
   return (
-    <div
-      className={`max-w-7xl mx-auto ${
-        isDarkMode ? 'bg-gray-900' : 'bg-gray-50'
-      }`}
-    >
-      <div className='space-y-6'>
-        {/* Header */}
-        <CrudHeader
-          title='Kelola Konversi Poin'
-          description='Atur reward yang bisa ditukar dengan poin'
-          showExport
-          showImport
-        />
-
-        {/* Stats */}
-        <CrudStats stats={stats} />
-
-        {/* Filter + Add */}
-        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-          <div className='flex-1 w-full'>
-            <CrudFilter
-              searchTerm={searchTerm}
-              onSearch={setSearchTerm}
-              filterStatus={filterStatus}
-              onFilterChange={setFilterStatus}
-            />
-          </div>
-          <Button
-            size='sm'
-            variant='primary'
-            onClick={handleAdd}
-            className='flex items-center gap-2'
-          >
-            <Plus className='h-4 w-4' />
-            Tambah Reward
-          </Button>
-        </div>
-
-        {/* Table */}
-        <CrudTable
-          columns={[
-            { key: 'reward', label: 'Reward' },
-            { key: 'kategori', label: 'Kategori' },
-            { key: 'poin', label: 'Poin Dibutuhkan' },
-            { key: 'stok', label: 'Stok' },
-            { key: 'status', label: 'Status' },
-            { key: 'terakhir_diupdate', label: 'Terakhir Update' },
-            { key: 'aksi', label: 'Aksi' },
-          ]}
-          data={filteredData}
-          renderRow={(item) => (
-            <>
-              <td className='px-6 py-4'>{item.reward}</td>
-              <td className='px-6 py-4'>{item.kategori}</td>
-              <td className='px-6 py-4'>{item.poin}</td>
-              <td className='px-6 py-4'>{item.stok}</td>
-              <td className='px-6 py-4'>
-                <Badge
-                  variant={item.status === 'aktif' ? 'success' : 'secondary'}
-                >
-                  {item.status}
-                </Badge>
-              </td>
-              <td className='px-6 py-4'>
-                {new Date(item.terakhir_diupdate).toLocaleDateString('id-ID')}
-              </td>
-              <td className='px-6 py-4 flex gap-2'>
-                <Button
-                  size='sm'
-                  variant='outline'
-                  onClick={() => handleView(item)}
-                >
-                  <Eye className='h-4 w-4' />
-                </Button>
-                <Button
-                  size='sm'
-                  variant='outline'
-                  onClick={() => handleEdit(item)}
-                >
-                  <Edit className='h-4 w-4' />
-                </Button>
-                <Button
-                  size='sm'
-                  variant='danger'
-                  onClick={() => handleDelete(item.id)}
-                >
-                  <Trash2 className='h-4 w-4' />
-                </Button>
-              </td>
-            </>
-          )}
-        />
-
-        {/* Modal Form */}
-        <CrudModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          title={
-            modalMode === 'add'
-              ? 'Tambah Reward'
-              : modalMode === 'edit'
-              ? 'Edit Reward'
-              : 'Detail Reward'
-          }
-          onSubmit={
-            modalMode === 'view'
-              ? null
-              : () => {
-                  if (modalMode === 'add') {
-                    setRewardData([
-                      ...rewardData,
-                      { id: rewardData.length + 1, ...formData },
-                    ]);
-                  } else if (modalMode === 'edit') {
-                    setRewardData(
-                      rewardData.map((i) =>
-                        i.id === selectedItem.id ? { ...i, ...formData } : i
-                      )
-                    );
-                  }
-                  setShowModal(false);
-                }
-          }
+    <div className='p-6'>
+      <div className='flex justify-between items-center mb-4'>
+        <h1 className='text-xl font-bold'>Kelola Konversi Poin</h1>
+        <Button
+          onClick={() => {
+            setModalMode('add');
+            setFormData({
+              reward: '',
+              kategori: '',
+              poin: '',
+              stok: '',
+              status: 'aktif',
+            });
+            setShowModal(true);
+          }}
+          className='flex items-center gap-2'
         >
-          <CrudForm
-            fields={[
-              { name: 'reward', label: 'Reward', placeholder: 'Nama reward' },
-              {
-                name: 'kategori',
-                label: 'Kategori',
-                placeholder: 'Kategori reward',
-              },
-              { name: 'poin', label: 'Poin Dibutuhkan', type: 'number' },
-              { name: 'stok', label: 'Stok', type: 'number' },
-              {
-                name: 'status',
-                label: 'Status',
-                type: 'select',
-                options: [
-                  { value: 'aktif', label: 'Aktif' },
-                  { value: 'nonaktif', label: 'Nonaktif' },
-                  { value: 'habis', label: 'Habis' },
-                ],
-              },
-            ]}
-            values={formData}
-            setValues={setFormData}
-          />
-        </CrudModal>
-
-        {/* Confirm Dialog */}
-        <ConfirmDialog
-          isOpen={confirmOpen}
-          onClose={() => setConfirmOpen(false)}
-          onConfirm={confirmDelete}
-          title='Hapus Reward'
-          message='Apakah Anda yakin ingin menghapus reward ini?'
-        />
+          <Plus className='h-4 w-4' /> Tambah Reward
+        </Button>
       </div>
+
+      <DataTable
+        columns={columns}
+        data={rewards}
+        progressPending={loading}
+        pagination
+        highlightOnHover
+        noDataComponent='Belum ada data reward'
+      />
+
+      {/* Modal sederhana */}
+      {showModal && (
+        <div className='fixed inset-0 bg-black/50 flex items-center justify-center'>
+          <div
+            className={`p-6 rounded-md w-96 ${
+              isDarkMode ? 'bg-slate-800 text-white' : 'bg-white text-black'
+            }`}
+          >
+            <h2 className='text-lg font-semibold mb-4'>
+              {modalMode === 'add'
+                ? 'Tambah Reward'
+                : modalMode === 'edit'
+                ? 'Edit Reward'
+                : 'Detail Reward'}
+            </h2>
+
+            <div className='space-y-2'>
+              <input
+                className='w-full border p-2 rounded'
+                placeholder='Reward'
+                value={formData.reward}
+                onChange={(e) =>
+                  setFormData({ ...formData, reward: e.target.value })
+                }
+                disabled={modalMode === 'view'}
+              />
+              <input
+                className='w-full border p-2 rounded'
+                placeholder='Kategori'
+                value={formData.kategori}
+                onChange={(e) =>
+                  setFormData({ ...formData, kategori: e.target.value })
+                }
+                disabled={modalMode === 'view'}
+              />
+              <input
+                type='number'
+                className='w-full border p-2 rounded'
+                placeholder='Poin'
+                value={formData.poin}
+                onChange={(e) =>
+                  setFormData({ ...formData, poin: e.target.value })
+                }
+                disabled={modalMode === 'view'}
+              />
+              <input
+                type='number'
+                className='w-full border p-2 rounded'
+                placeholder='Stok'
+                value={formData.stok}
+                onChange={(e) =>
+                  setFormData({ ...formData, stok: e.target.value })
+                }
+                disabled={modalMode === 'view'}
+              />
+              <select
+                className='w-full border p-2 rounded'
+                value={formData.status}
+                onChange={(e) =>
+                  setFormData({ ...formData, status: e.target.value })
+                }
+                disabled={modalMode === 'view'}
+              >
+                <option value='aktif'>Aktif</option>
+                <option value='nonaktif'>Nonaktif</option>
+                <option value='habis'>Habis</option>
+              </select>
+            </div>
+
+            <div className='flex justify-end gap-2 mt-4'>
+              <Button variant='secondary' onClick={() => setShowModal(false)}>
+                Tutup
+              </Button>
+              {modalMode !== 'view' && (
+                <Button variant='primary' onClick={handleSubmit}>
+                  Simpan
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

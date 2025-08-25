@@ -14,7 +14,6 @@ const NavbarDashboard = () => {
   const [peran, setPeran] = useState(null);
 
   useEffect(() => {
-    console.log(localStorage);
     const savedPengguna = localStorage.getItem('pengguna');
     const savedPeran = localStorage.getItem('peran');
     if (savedPengguna) setPengguna(JSON.parse(savedPengguna));

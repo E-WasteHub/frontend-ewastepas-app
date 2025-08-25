@@ -1,10 +1,22 @@
+// src/components/layouts/navbar/Navbar.jsx
+import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
-import LogoApp from '../../elements/Icon/LogoApp';
-import ThemeSelector from '../../elements/ThemeSelector';
+import { LogoApp, ThemeSelector } from '../../elements/';
+import { ProfileDropdown } from '../../fragments';
 
 const Navbar = () => {
   const { isDarkMode } = useDarkMode();
+  const [pengguna, setPengguna] = useState(null);
+  const [peran, setPeran] = useState(null);
+
+  // 🔑 ambil data dari localStorage
+  useEffect(() => {
+    const savedPengguna = localStorage.getItem('pengguna');
+    const savedPeran = localStorage.getItem('peran');
+    if (savedPengguna) setPengguna(JSON.parse(savedPengguna));
+    if (savedPeran) setPeran(savedPeran);
+  }, []);
 
   const navLinks = [
     { to: '/', text: 'Beranda' },
@@ -32,19 +44,14 @@ const Navbar = () => {
       }`}
     >
       <div className='flex items-center justify-between px-4 py-3 mx-auto max-w-7xl'>
-        {/* Logo + Mobile Theme Selector */}
-        <div className='flex items-center justify-between w-full lg:w-auto'>
+        {/* Logo */}
+        <div className='flex items-center'>
           <Link to='/' className='flex items-center'>
             <LogoApp size='xl' withText={true} textSize='2xl' />
           </Link>
-
-          {/* Theme Selector - MOBILE ONLY */}
-          <div className='block lg:hidden ml-2'>
-            <ThemeSelector />
-          </div>
         </div>
 
-        {/* Navigation Links */}
+        {/* Navigation Links (Desktop only) */}
         <nav className='items-center hidden space-x-4 lg:flex'>
           {navLinks.map((link) => (
             <NavLink
@@ -57,36 +64,84 @@ const Navbar = () => {
             </NavLink>
           ))}
 
-          {/* Auth Buttons & Theme Selector */}
+          {/* Auth / Profile & Theme Selector (Desktop) */}
           <div className='flex items-center text-sm gap-4 ml-2'>
-            {/* Theme Selector - DESKTOP */}
             <ThemeSelector />
-
-            <NavLink
-              to='/login'
-              className={({ isActive }) =>
-                `px-4 py-2 rounded-md font-medium transition-colors duration-200 ${
-                  isActive
-                    ? isDarkMode
-                      ? 'text-emerald-400 underline decoration-2 underline-offset-4'
-                      : 'text-emerald-600 underline decoration-2 underline-offset-4'
-                    : isDarkMode
-                    ? 'text-slate-300 hover:text-slate-100 hover:bg-slate-800/50'
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
-                }`
-              }
-            >
-              Masuk
-            </NavLink>
-
-            <NavLink
-              to='/register'
-              className='px-4 py-2 rounded-md font-medium transition-colors duration-200 bg-emerald-600 text-white hover:bg-emerald-700'
-            >
-              Daftar
-            </NavLink>
+            {pengguna ? (
+              <ProfileDropdown
+                pengguna={pengguna}
+                peran={peran}
+                onLogout={() => {
+                  localStorage.removeItem('token');
+                  localStorage.removeItem('pengguna');
+                  localStorage.removeItem('peran');
+                  window.location.href = '/login';
+                }}
+              />
+            ) : (
+              <>
+                <NavLink
+                  to='/login'
+                  className={({ isActive }) =>
+                    `px-4 py-2 rounded-md font-medium transition-colors duration-200 ${
+                      isActive
+                        ? isDarkMode
+                          ? 'text-emerald-400 underline decoration-2 underline-offset-4'
+                          : 'text-emerald-600 underline decoration-2 underline-offset-4'
+                        : isDarkMode
+                        ? 'text-slate-300 hover:text-slate-100 hover:bg-slate-800/50'
+                        : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+                    }`
+                  }
+                >
+                  Masuk
+                </NavLink>
+                <NavLink
+                  to='/register'
+                  className='px-4 py-2 rounded-md font-medium transition-colors duration-200 bg-emerald-600 text-white hover:bg-emerald-700'
+                >
+                  Daftar
+                </NavLink>
+              </>
+            )}
           </div>
         </nav>
+
+        {/* Right section (Mobile only) */}
+        <div className='flex items-center gap-2 lg:hidden'>
+          <ThemeSelector />
+          {pengguna ? (
+            <ProfileDropdown
+              pengguna={pengguna}
+              peran={peran}
+              onLogout={() => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('pengguna');
+                localStorage.removeItem('peran');
+                window.location.href = '/login';
+              }}
+            />
+          ) : (
+            <>
+              <NavLink
+                to='/login'
+                className={`px-3 py-1.5 rounded-md text-sm font-medium ${
+                  isDarkMode
+                    ? 'text-slate-300 hover:text-slate-100 hover:bg-slate-800/50'
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+                }`}
+              >
+                Masuk
+              </NavLink>
+              <NavLink
+                to='/register'
+                className='px-3 py-1.5 rounded-md text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700'
+              >
+                Daftar
+              </NavLink>
+            </>
+          )}
+        </div>
       </div>
     </header>
   );

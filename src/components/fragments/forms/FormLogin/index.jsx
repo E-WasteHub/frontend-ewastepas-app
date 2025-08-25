@@ -41,7 +41,7 @@ const FormLogin = () => {
             navigate('/dashboard/mitra-kurir');
             break;
           case 'admin':
-            navigate('/dashboard/admin');
+            navigate('/login');
             break;
           default:
             navigate('/');

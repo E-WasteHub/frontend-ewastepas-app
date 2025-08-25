@@ -1,6 +1,16 @@
 // src/services/authService.js
 import api from './api';
 
+// Verify Admin
+export const verifikasiAdmin = async (kode_otp) => {
+  try {
+    const response = await api.post(`/masuk/${kode_otp}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Verifikasi admin gagal' };
+  }
+};
+
 // Registrasi
 export const register = async (payload) => {
   try {
@@ -71,5 +81,19 @@ export const resetPassword = async (payload) => {
     return response.data;
   } catch (error) {
     throw error.response?.data || { message: 'Reset kata sandi gagal' };
+  }
+};
+
+// Ambil semua data verifikasi pengguna untuk admin
+export const indexVerifikasiPengguna = async () => {
+  try {
+    const response = await api.get('/akun/belum-verifikasi');
+    return response.data;
+  } catch (error) {
+    throw (
+      error.response?.data || {
+        message: 'Gagal mengambil data verifikasi pengguna',
+      }
+    );
   }
 };

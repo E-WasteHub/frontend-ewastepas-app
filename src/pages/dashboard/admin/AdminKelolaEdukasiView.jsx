@@ -1,377 +1,211 @@
-import {
-  BarChart3,
-  BookOpen,
-  Edit,
-  Eye,
-  FileText,
-  Plus,
-  Trash2,
-  User,
-} from 'lucide-react';
-import { useState } from 'react';
-import { Badge, Button } from '../../../components/elements';
-import {
-  ConfirmDialog,
-  CrudFilter,
-  CrudForm,
-  CrudHeader,
-  CrudModal,
-  CrudStats,
-  CrudTable,
-} from '../../../components/fragments/uidashboard';
+// src/views/admin/AdminKelolaEdukasiView.jsx
+import { Edit, Eye, Plus, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import DataTable from 'react-data-table-component';
+import { Button } from '../../../components/elements';
 import useDarkMode from '../../../hooks/useDarkMode';
+import * as edukasiService from '../../../services/edukasiService';
 
 const AdminKelolaEdukasiView = () => {
   const { isDarkMode } = useDarkMode();
+  const [edukasi, setEdukasi] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterKategori, setFilterKategori] = useState('all');
-  const [filterStatus, setFilterStatus] = useState('all');
-
-  // modal state
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState('add');
-  const [selectedItem, setSelectedItem] = useState(null);
-
-  // confirm dialog state
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [deleteId, setDeleteId] = useState(null);
-
-  // form state
+  const [selected, setSelected] = useState(null);
   const [formData, setFormData] = useState({
-    judul: '',
-    deskripsi: '',
-    konten: '',
-    kategori: '',
+    judul_konten: '',
+    isi_konten: '',
     gambar: '',
-    penulis: '',
-    estimasi_baca: '',
-    tags: '',
-    status: 'draft',
   });
 
-  // dummy data
-  const [edukasiData, setEdukasiData] = useState([
-    {
-      id: 1,
-      judul: 'Cara Memilah Sampah Elektronik dengan Benar',
-      deskripsi:
-        'Panduan lengkap untuk memilah berbagai jenis sampah elektronik sebelum didaur ulang.',
-      konten: 'Konten edukasi lengkap tentang pemilahan sampah elektronik...',
-      kategori: 'Panduan',
-      gambar: '/images/edukasi/pemilahan-sampah.jpg',
-      penulis: 'Tim E-WasteHub',
-      estimasi_baca: 5,
-      tags: 'pemilahan, sampah elektronik, daur ulang',
-      status: 'published',
-      tanggal_dibuat: '2024-01-10',
-      tanggal_publish: '2024-01-12',
-      views: 1250,
-      likes: 89,
-    },
-  ]);
+  // ✅ Ambil data dari backend
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const res = await edukasiService.indexEdukasi();
+        console.log('📌 Response Backend Edukasi:', res);
+        setEdukasi(res.data || []);
+      } catch (err) {
+        console.error('Gagal ambil edukasi:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
-  const kategoriList = [
-    'Panduan',
-    'Lingkungan',
-    'Teknologi',
-    'Tips',
-    'Ekonomi',
-    'Kesehatan',
-  ];
+  // ✅ Handle Submit
+  const handleSubmit = async () => {
+    try {
+      if (modalMode === 'add') {
+        await edukasiService.createEdukasi(formData);
+      } else if (modalMode === 'edit' && selected) {
+        await edukasiService.updateEdukasi(selected.id_konten, formData);
+      }
+      setShowModal(false);
 
-  // filter data
-  const filteredData = edukasiData.filter((item) => {
-    const matchSearch =
-      item.judul.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.penulis.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.tags.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchKategori =
-      filterKategori === 'all' || item.kategori === filterKategori;
-    const matchStatus = filterStatus === 'all' || item.status === filterStatus;
-    return matchSearch && matchKategori && matchStatus;
-  });
-
-  // stats
-  const stats = [
-    {
-      title: 'Total Artikel',
-      value: edukasiData.length,
-      desc: `${
-        edukasiData.filter((i) => i.status === 'published').length
-      } dipublikasikan`,
-      icon: BookOpen,
-      color: 'text-blue-500',
-    },
-    {
-      title: 'Total Views',
-      value: edukasiData.reduce((acc, i) => acc + i.views, 0),
-      desc: 'dilihat pengguna',
-      icon: Eye,
-      color: 'text-green-500',
-    },
-    {
-      title: 'Total Likes',
-      value: edukasiData.reduce((acc, i) => acc + i.likes, 0),
-      desc: 'disukai pengguna',
-      icon: FileText,
-      color: 'text-purple-500',
-    },
-    {
-      title: 'Perlu Review',
-      value: edukasiData.filter((i) => i.status !== 'published').length,
-      desc: 'belum publish',
-      icon: BarChart3,
-      color: 'text-orange-500',
-    },
-  ];
-
-  // handlers
-  const handleAdd = () => {
-    setModalMode('add');
-    setFormData({
-      judul: '',
-      deskripsi: '',
-      konten: '',
-      kategori: '',
-      gambar: '',
-      penulis: '',
-      estimasi_baca: '',
-      tags: '',
-      status: 'draft',
-    });
-    setShowModal(true);
+      const res = await edukasiService.indexEdukasi();
+      setEdukasi(res.data);
+    } catch (err) {
+      console.error('Gagal simpan edukasi:', err);
+    }
   };
 
-  const handleEdit = (item) => {
-    setModalMode('edit');
-    setSelectedItem(item);
-    setFormData(item);
-    setShowModal(true);
+  // ✅ Handle Delete
+  const handleDelete = async (id) => {
+    try {
+      await edukasiService.deleteEdukasi(id);
+      setEdukasi(edukasi.filter((e) => e.id_konten !== id));
+    } catch (err) {
+      console.error('Gagal hapus edukasi:', err);
+    }
   };
 
-  const handleView = (item) => {
-    setModalMode('view');
-    setSelectedItem(item);
-    setFormData(item);
-    setShowModal(true);
-  };
-
-  const handleDelete = (id) => {
-    setDeleteId(id);
-    setConfirmOpen(true);
-  };
-
-  const confirmDelete = () => {
-    setEdukasiData(edukasiData.filter((i) => i.id !== deleteId));
-    setConfirmOpen(false);
-  };
-
-  return (
-    <div
-      className={`max-w-7xl mx-auto ${
-        isDarkMode ? 'bg-gray-900' : 'bg-gray-50'
-      }`}
-    >
-      <div className='space-y-6'>
-        {/* Header */}
-        <CrudHeader
-          title='Kelola Edukasi'
-          description='Kelola konten edukasi untuk pengguna E-WasteHub'
-          showExport
-          showImport
-        />
-
-        {/* Stats */}
-        <CrudStats stats={stats} />
-
-        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-          {/* Filter Input */}
-          <div className='flex-1 w-full'>
-            <CrudFilter
-              searchTerm={searchTerm}
-              onSearch={setSearchTerm}
-              filterStatus={filterStatus}
-              onFilterChange={setFilterStatus}
-              extraFilter={
-                <select
-                  value={filterKategori}
-                  onChange={(e) => setFilterKategori(e.target.value)}
-                  className='border rounded px-2 py-1'
-                >
-                  <option value='all'>Semua Kategori</option>
-                  {kategoriList.map((k) => (
-                    <option key={k} value={k}>
-                      {k}
-                    </option>
-                  ))}
-                </select>
-              }
-            />
-          </div>
-
-          {/* Tombol tambah */}
+  // ✅ Kolom Tabel
+  const columns = [
+    { name: 'Judul', selector: (row) => row.judul_konten, sortable: true },
+    { name: 'Konten', selector: (row) => row.isi_konten?.slice(0, 50) + '...' },
+    {
+      name: 'Gambar',
+      selector: (row) => row.gambar,
+      cell: (row) =>
+        row.gambar ? (
+          <img
+            src={row.gambar}
+            alt={row.judul_konten}
+            className='h-12 w-20 object-cover rounded'
+          />
+        ) : (
+          <span className='text-gray-400 italic'>Tidak ada</span>
+        ),
+    },
+    {
+      name: 'Aksi',
+      cell: (row) => (
+        <div className='flex gap-2'>
           <Button
             size='sm'
-            variant='primary'
-            onClick={handleAdd}
-            className='flex items-center gap-2'
+            variant='outline'
+            onClick={() => {
+              setModalMode('view');
+              setSelected(row);
+              setFormData(row);
+              setShowModal(true);
+            }}
           >
-            <Plus className='h-4 w-4' />
-            Tambah Artikel
+            <Eye className='h-4 w-4' />
+          </Button>
+          <Button
+            size='sm'
+            variant='outline'
+            onClick={() => {
+              setModalMode('edit');
+              setSelected(row);
+              setFormData(row);
+              setShowModal(true);
+            }}
+          >
+            <Edit className='h-4 w-4' />
+          </Button>
+          <Button
+            size='sm'
+            variant='danger'
+            onClick={() => handleDelete(row.id_konten)}
+          >
+            <Trash2 className='h-4 w-4' />
           </Button>
         </div>
+      ),
+    },
+  ];
 
-        {/* Table */}
-        <CrudTable
-          columns={[
-            { key: 'judul', label: 'Judul' },
-            { key: 'kategori', label: 'Kategori' },
-            { key: 'penulis', label: 'Penulis' },
-            { key: 'status', label: 'Status' },
-            { key: 'statistik', label: 'Statistik' },
-            { key: 'tanggal', label: 'Tanggal' },
-            { key: 'aksi', label: 'Aksi' },
-          ]}
-          data={filteredData}
-          renderRow={(item) => (
-            <>
-              <td className='px-6 py-4'>{item.judul}</td>
-              <td className='px-6 py-4'>{item.kategori}</td>
-              <td className='px-6 py-4 flex items-center'>
-                <User className='h-4 w-4 mr-2' /> {item.penulis}
-              </td>
-              <td className='px-6 py-4'>
-                <Badge
-                  variant={
-                    item.status === 'published'
-                      ? 'success'
-                      : item.status === 'review'
-                      ? 'warning'
-                      : 'secondary'
-                  }
-                >
-                  {item.status}
-                </Badge>
-              </td>
-              <td className='px-6 py-4'>
-                {item.views} views • {item.likes} likes
-              </td>
-              <td className='px-6 py-4'>
-                {new Date(item.tanggal_dibuat).toLocaleDateString('id-ID')}
-              </td>
-              <td className='px-6 py-4 flex gap-2'>
-                <Button
-                  size='sm'
-                  variant='outline'
-                  onClick={() => handleView(item)}
-                >
-                  <Eye className='h-4 w-4' />
-                </Button>
-                <Button
-                  size='sm'
-                  variant='outline'
-                  onClick={() => handleEdit(item)}
-                >
-                  <Edit className='h-4 w-4' />
-                </Button>
-                <Button
-                  size='sm'
-                  variant='danger'
-                  onClick={() => handleDelete(item.id)}
-                >
-                  <Trash2 className='h-4 w-4' />
-                </Button>
-              </td>
-            </>
-          )}
-        />
-
-        {/* Modal Form */}
-        <CrudModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          title={
-            modalMode === 'add'
-              ? 'Tambah Artikel'
-              : modalMode === 'edit'
-              ? 'Edit Artikel'
-              : 'Detail Artikel'
-          }
-          onSubmit={
-            modalMode === 'view'
-              ? null
-              : () => {
-                  if (modalMode === 'add') {
-                    setEdukasiData([
-                      ...edukasiData,
-                      { id: edukasiData.length + 1, ...formData },
-                    ]);
-                  } else if (modalMode === 'edit') {
-                    setEdukasiData(
-                      edukasiData.map((i) =>
-                        i.id === selectedItem.id ? { ...i, ...formData } : i
-                      )
-                    );
-                  }
-                  setShowModal(false);
-                }
-          }
+  return (
+    <div className='max-w-7xl mx-auto p-6'>
+      <div className='flex justify-between items-center mb-4'>
+        <h1 className='text-xl font-bold'>Kelola Edukasi</h1>
+        <Button
+          onClick={() => {
+            setModalMode('add');
+            setFormData({ judul_konten: '', isi_konten: '', gambar: '' });
+            setShowModal(true);
+          }}
+          className='flex items-center gap-2'
         >
-          <CrudForm
-            fields={[
-              {
-                name: 'judul',
-                label: 'Judul Artikel',
-                placeholder: 'Masukkan judul artikel',
-              },
-              {
-                name: 'deskripsi',
-                label: 'Deskripsi',
-                placeholder: 'Deskripsi singkat',
-              },
-              {
-                name: 'konten',
-                label: 'Konten',
-                type: 'textarea',
-                placeholder: 'Konten lengkap',
-              },
-              {
-                name: 'penulis',
-                label: 'Penulis',
-                placeholder: 'Nama penulis',
-              },
-              {
-                name: 'estimasi_baca',
-                label: 'Estimasi Baca (menit)',
-                type: 'number',
-              },
-              {
-                name: 'status',
-                label: 'Status',
-                type: 'select',
-                options: [
-                  { label: 'Draft', value: 'draft' },
-                  { label: 'Review', value: 'review' },
-                  { label: 'Published', value: 'published' },
-                ],
-              },
-            ]}
-            values={formData}
-            setValues={setFormData}
-          />
-        </CrudModal>
-
-        {/* Confirm Dialog */}
-        <ConfirmDialog
-          isOpen={confirmOpen}
-          onClose={() => setConfirmOpen(false)}
-          onConfirm={confirmDelete}
-          title='Hapus Artikel'
-          message='Apakah Anda yakin ingin menghapus artikel ini?'
-        />
+          <Plus className='h-4 w-4' /> Tambah Artikel
+        </Button>
       </div>
+
+      <DataTable
+        columns={columns}
+        data={edukasi}
+        progressPending={loading}
+        pagination
+        highlightOnHover
+        noDataComponent='Belum ada artikel edukasi'
+      />
+
+      {/* Modal sederhana */}
+      {showModal && (
+        <div className='fixed inset-0 bg-black/50 flex items-center justify-center'>
+          <div
+            className={`p-6 rounded-md w-96 ${
+              isDarkMode ? 'bg-slate-800 text-white' : 'bg-white text-black'
+            }`}
+          >
+            <h2 className='text-lg font-semibold mb-4'>
+              {modalMode === 'add'
+                ? 'Tambah Artikel'
+                : modalMode === 'edit'
+                ? 'Edit Artikel'
+                : 'Detail Artikel'}
+            </h2>
+
+            <div className='space-y-2'>
+              <input
+                className='w-full border p-2 rounded'
+                placeholder='Judul Artikel'
+                value={formData.judul_konten}
+                onChange={(e) =>
+                  setFormData({ ...formData, judul_konten: e.target.value })
+                }
+                disabled={modalMode === 'view'}
+              />
+              <textarea
+                className='w-full border p-2 rounded'
+                placeholder='Isi Konten'
+                value={formData.isi_konten}
+                onChange={(e) =>
+                  setFormData({ ...formData, isi_konten: e.target.value })
+                }
+                disabled={modalMode === 'view'}
+              />
+              <input
+                className='w-full border p-2 rounded'
+                placeholder='URL Gambar'
+                value={formData.gambar}
+                onChange={(e) =>
+                  setFormData({ ...formData, gambar: e.target.value })
+                }
+                disabled={modalMode === 'view'}
+              />
+            </div>
+
+            <div className='flex justify-end gap-2 mt-4'>
+              <Button variant='secondary' onClick={() => setShowModal(false)}>
+                Tutup
+              </Button>
+              {modalMode !== 'view' && (
+                <Button variant='primary' onClick={handleSubmit}>
+                  Simpan
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

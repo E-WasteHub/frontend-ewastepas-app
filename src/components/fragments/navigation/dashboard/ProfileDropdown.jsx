@@ -1,11 +1,12 @@
 // src/components/layouts/navbar/ProfileDropdown.jsx
-import { ChevronDown, LogOut, User } from 'lucide-react';
+import { ChevronDown, Home, LayoutDashboard, LogOut, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import {
   getProfilePathByRole,
   getRoleDisplayName,
+  normalizeRole,
 } from '../../../../utils/peranUtils';
 
 const ProfileDropdown = ({ onLogout }) => {
@@ -14,6 +15,7 @@ const ProfileDropdown = ({ onLogout }) => {
   const [peran, setPeran] = useState(null);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { isDarkMode } = useDarkMode();
 
   // Ambil data pengguna & peran dari localStorage
@@ -21,12 +23,28 @@ const ProfileDropdown = ({ onLogout }) => {
     const savedPengguna = localStorage.getItem('pengguna');
     const savedPeran = localStorage.getItem('peran');
     if (savedPengguna) setPengguna(JSON.parse(savedPengguna));
-    if (savedPeran) setPeran(savedPeran);
+    if (savedPeran) setPeran(normalizeRole(savedPeran));
   }, []);
 
   const profilePath = getProfilePathByRole(peran);
 
-  if (!pengguna) return null; // kalau belum login, jangan render
+  const getDashboardPath = (role) => {
+    const r = normalizeRole(role);
+    switch (r) {
+      case 'admin':
+        return '/dashboard/admin';
+      case 'mitra kurir':
+        return '/dashboard/mitra-kurir';
+      case 'masyarakat':
+      default:
+        return '/dashboard/masyarakat';
+    }
+  };
+
+  if (!pengguna) return null;
+
+  // 🔑 Tentukan apakah sedang di dashboard atau home
+  const isInDashboard = location.pathname.startsWith('/dashboard');
 
   return (
     <div className='relative'>
@@ -86,6 +104,35 @@ const ProfileDropdown = ({ onLogout }) => {
               : 'bg-white border-gray-200'
           }`}
         >
+          {/* Dashboard / Home */}
+          <button
+            onClick={() => {
+              if (isInDashboard) {
+                navigate('/'); // kalau lagi di dashboard → ke Home
+              } else {
+                navigate(getDashboardPath(peran)); // kalau di luar → ke Dashboard sesuai role
+              }
+              setIsOpen(false);
+            }}
+            className={`flex items-center w-full px-4 py-2 text-sm transition-colors ${
+              isDarkMode
+                ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            {isInDashboard ? (
+              <>
+                <Home className='mr-2 h-4 w-4' />
+                Home
+              </>
+            ) : (
+              <>
+                <LayoutDashboard className='mr-2 h-4 w-4' />
+                Dashboard
+              </>
+            )}
+          </button>
+
           {/* Profil Saya */}
           <button
             onClick={() => {
@@ -105,7 +152,6 @@ const ProfileDropdown = ({ onLogout }) => {
           {/* Keluar */}
           <button
             onClick={() => {
-              // hapus data dari localStorage
               localStorage.removeItem('token');
               localStorage.removeItem('pengguna');
               localStorage.removeItem('peran');

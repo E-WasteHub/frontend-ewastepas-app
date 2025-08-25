@@ -14,6 +14,7 @@ import LoginView from '../pages/auth/LoginView';
 import LupaPasswordView from '../pages/auth/LupaPasswordView';
 import RegisterView from '../pages/auth/RegisterView';
 import ResetKataSandiView from '../pages/auth/ResetKataSandiView';
+import VerifikasiAdmin from '../pages/auth/VerifikasiAdmin';
 import VerifikasiOTPView from '../pages/auth/VerifikasiOTPView';
 
 // ================= Admin Pages =================
@@ -101,6 +102,7 @@ const AppRouter = () => {
         <Route path='/lupa-password' element={<LupaPasswordView />} />
         <Route path='/verifikasi-otp' element={<VerifikasiOTPView />} />
         <Route path='/reset-kata-sandi' element={<ResetKataSandiView />} />
+        <Route path='/verifikasi-admin' element={<VerifikasiAdmin />} />
 
         {/* ========= Dashboard - Admin ========= */}
         <Route

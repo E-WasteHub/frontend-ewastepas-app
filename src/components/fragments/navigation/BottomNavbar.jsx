@@ -1,16 +1,51 @@
-import { BookOpen, FileText, Home, User } from 'lucide-react';
+// src/components/layouts/navbar/BottomNavbar.jsx
+import {
+  BookOpen,
+  FileText,
+  Home,
+  LayoutDashboardIcon,
+  User,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
-
-const navItems = [
-  { to: '/', label: 'Beranda', Icon: Home },
-  { to: '/edukasi', label: 'Edukasi', Icon: BookOpen },
-  { to: '/panduan-aplikasi', label: 'Panduan', Icon: FileText },
-  { to: '/login', label: 'Profil', Icon: User },
-];
+import { normalizeRole } from '../../../utils/peranUtils';
 
 const BottomNavbar = () => {
   const { isDarkMode } = useDarkMode();
+  const [pengguna, setPengguna] = useState(null);
+  const [peran, setPeran] = useState(null);
+
+  // 🔑 ambil data dari localStorage
+  useEffect(() => {
+    const savedPengguna = localStorage.getItem('pengguna');
+    const savedPeran = localStorage.getItem('peran');
+    if (savedPengguna) setPengguna(JSON.parse(savedPengguna));
+    if (savedPeran) setPeran(normalizeRole(savedPeran));
+  }, []);
+
+  // base navItems
+  const navItems = [
+    { to: '/', label: 'Beranda', Icon: Home },
+    { to: '/edukasi', label: 'Edukasi', Icon: BookOpen },
+    { to: '/panduan-aplikasi', label: 'Panduan', Icon: FileText },
+  ];
+
+  // 🔹 Kalau sudah login → ganti Login jadi Dashboard sesuai peran
+  if (pengguna && peran) {
+    navItems.push({
+      to:
+        peran === 'admin'
+          ? '/dashboard/admin'
+          : peran === 'mitra kurir'
+          ? '/dashboard/mitra-kurir'
+          : '/dashboard/masyarakat',
+      label: 'Dashboard',
+      Icon: LayoutDashboardIcon,
+    });
+  } else {
+    navItems.push({ to: '/login', label: 'Login', Icon: User });
+  }
 
   return (
     <nav
@@ -21,11 +56,11 @@ const BottomNavbar = () => {
       }`}
     >
       <div className='flex h-16 items-center px-2'>
-        {navItems.map(({ to, label, Icon }) => (
+        {navItems.map((item) => (
           <NavLink
-            key={to}
-            to={to}
-            end={to === '/'}
+            key={item.to}
+            to={item.to}
+            end={item.to === '/'}
             className={({ isActive }) =>
               `flex flex-col items-center justify-center flex-1 py-2 px-1 mx-1 rounded-lg transition-all duration-200
               ${
@@ -41,7 +76,7 @@ const BottomNavbar = () => {
           >
             {({ isActive }) => (
               <>
-                <Icon
+                <item.Icon
                   className={`w-5 h-5 mb-1 transition-transform ${
                     isActive ? 'scale-110' : 'scale-100'
                   }`}
@@ -52,7 +87,7 @@ const BottomNavbar = () => {
                     isActive ? 'font-semibold' : 'font-normal'
                   }`}
                 >
-                  {label}
+                  {item.label}
                 </span>
               </>
             )}
