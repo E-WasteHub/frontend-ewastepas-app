@@ -1,23 +1,19 @@
-// src/views/Masyarakat/PermintaanPenjemputanView.jsx
-
 import { useState } from 'react';
-import { AlertModal, FormPenjemputan } from '../../../components/fragments';
+import { AlertModal } from '../../../components/fragments';
+import FormPenjemputan from '../../../components/fragments/forms/FormPenjemputan';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
+import { createPermintaan } from '../../../services/penjemputanService';
 
 const PermintaanPenjemputanView = () => {
   useDocumentTitle('Permintaan Penjemputan');
 
   const [formData, setFormData] = useState({
-    waktu_dijemput: '',
+    id_waktu_operasional: '',
     alamat_jemput: '',
     catatan: '',
   });
 
-  const [daftarSampah, setDaftarSampah] = useState([]);
-  const [photos, setPhotos] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // 🔹 state alert modal
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertConfig, setAlertConfig] = useState({
     title: '',
@@ -34,38 +30,45 @@ const PermintaanPenjemputanView = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (daftarSampah) => {
     setIsSubmitting(true);
 
-    if (daftarSampah.length === 0) {
-      showAlert(
-        'Validasi Gagal',
-        'Pilih minimal satu jenis sampah.',
-        'warning'
-      );
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!formData.waktu_dijemput || !formData.alamat_jemput) {
-      showAlert('Validasi Gagal', 'Lengkapi semua field wajib.', 'warning');
-      setIsSubmitting(false);
-      return;
-    }
-
     try {
-      const payload = {
-        ...formData,
-        daftarSampah,
-        photos,
-      };
+      const formPayload = new FormData();
+      formPayload.append('id_waktu_operasional', formData.id_waktu_operasional);
+      formPayload.append('alamat_jemput', formData.alamat_jemput);
+      formPayload.append('catatan', formData.catatan);
 
-      console.log('Submit:', payload);
+      daftarSampah.forEach((s, idx) => {
+        formPayload.append(`sampah[${idx}][id_kategori]`, s.id_kategori);
+        formPayload.append(`sampah[${idx}][id_jenis]`, s.id_jenis);
+        formPayload.append(`sampah[${idx}][jumlah_sampah]`, s.jumlah_sampah);
+        formPayload.append(
+          `sampah[${idx}][catatan_sampah]`,
+          s.catatan_sampah || ''
+        );
+        if (s.gambar) {
+          formPayload.append(`sampah[${idx}][gambar]`, s.gambar);
+        }
+      });
 
+      // Debug payload
+      for (let [k, v] of formPayload.entries()) {
+        console.log(k, v);
+      }
+
+      const res = await createPermintaan(formPayload);
       showAlert('Berhasil', 'Form penjemputan berhasil dikirim!', 'success');
+      console.log('✅ Response:', res);
+
+      // reset
+      setFormData({
+        id_waktu_operasional: '',
+        alamat_jemput: '',
+        catatan: '',
+      });
     } catch (err) {
-      console.error(err);
+      console.error('❌ Error submit:', err);
       showAlert('Error', 'Terjadi kesalahan saat mengirim form.', 'error');
     } finally {
       setIsSubmitting(false);
@@ -74,27 +77,17 @@ const PermintaanPenjemputanView = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <FormPenjemputan
-          formData={formData}
-          onInputChange={handleInputChange}
-          daftarSampah={daftarSampah}
-          onSampahChange={setDaftarSampah}
-          photos={photos}
-          setPhotos={setPhotos}
-          isSubmitting={isSubmitting}
-          onCancel={() =>
-            showAlert(
-              'Dibatalkan',
-              'Permintaan penjemputan dibatalkan.',
-              'info'
-            )
-          }
-          showAlert={showAlert}
-        />
-      </form>
+      <FormPenjemputan
+        formData={formData}
+        onInputChange={handleInputChange}
+        isSubmitting={isSubmitting}
+        onCancel={() =>
+          showAlert('Dibatalkan', 'Permintaan penjemputan dibatalkan.', 'info')
+        }
+        showAlert={showAlert}
+        onSubmit={handleSubmit}
+      />
 
-      {/* 🔹 AlertModal universal (final clean) */}
       <AlertModal
         isOpen={alertOpen}
         onClose={() => setAlertOpen(false)}

@@ -1,78 +1,54 @@
 // src/services/penjemputanService.js
 
-// import api from './api';
+import api from './api';
 
-// =======================
-// CREATE PERMINTAAN PENJEMPUTAN
-// =======================
-export const createPermintaan = (payload) => {
-  // payload: { alamat_jemput, jadwal, catatan, id_dropbox, id_waktu_operasional, jenisSampahDipilih: [] }
-  return Promise.resolve({
-    data: {
-      message: 'Permintaan penjemputan berhasil dibuat (dummy)',
-      permintaan: {
-        id_penjemputan: Date.now(),
-        kode_penjemputan: `PJ-${Math.floor(Math.random() * 10000)}`,
-        ...payload,
-        status: 'Menunggu Kurir',
-        waktu_ditambah: new Date(),
-      },
-    },
-  });
-
-  // versi backend asli
-  // return api.post("/penjemputan", payload);
+// ambil daftar penjemputan
+export const getDaftarPenjemputan = async (id_kategori = null) => {
+  try {
+    if (id_kategori !== null) {
+      const response = await api.get(
+        `/penjemputan/data?id_kategori=${id_kategori}`
+      );
+      return response.data;
+    } else {
+      const response = await api.get('/penjemputan/data');
+      return response.data;
+    }
+  } catch (error) {
+    console.error('❌ Error fetching daftar penjemputan:', error);
+    throw error;
+  }
 };
 
-// =======================
-// LACAK STATUS PENJEMPUTAN
-// =======================
-export const getLacakStatus = (id_penjemputan) => {
-  return Promise.resolve({
-    data: {
-      id_penjemputan,
-      kode_penjemputan: 'PJ-1234',
-      detailPermintaan: {
-        alamat_jemput: 'Jl. Raya No. 1',
-        jadwal: '2025-08-18T10:00:00Z',
-        catatan: 'Harap hubungi sebelum tiba',
-      },
-      statusProgres: [
-        { tahap: 'Dibuat', waktu: '2025-08-18 09:00' },
-        { tahap: 'Kurir Menuju Lokasi', waktu: null },
-        { tahap: 'Sampah Diambil', waktu: null },
-        { tahap: 'Sampah Sampai Dropbox', waktu: null },
-      ],
-    },
-  });
-
-  // versi backend asli
-  // return api.get(`/penjemputan/${id_penjemputan}/status`);
+// Create penjemputan
+export const createPermintaan = async (payload) => {
+  try {
+    const response = await api.post('/penjemputan', payload);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating permintaan:', error);
+    throw error;
+  }
 };
 
-// =======================
-// RIWAYAT PENJEMPUTAN
-// =======================
-export const getRiwayat = (id_pengguna) => {
-  return Promise.resolve({
-    data: [
-      {
-        id_penjemputan: 1,
-        kode_penjemputan: 'PJ-1001',
-        tanggal: '2025-08-15',
-        status: 'Selesai',
-        poin_didapat: 50,
-      },
-      {
-        id_penjemputan: 2,
-        kode_penjemputan: 'PJ-1002',
-        tanggal: '2025-08-16',
-        status: 'Dibatalkan',
-        poin_didapat: 0,
-      },
-    ],
-  });
+// Lacak penjemputan
+export const getLacakStatus = async (id_penjemputan) => {
+  try {
+    const response = await api.get(`/penjemputan/${id_penjemputan}/status`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching lacak status:', error);
+    throw error;
+  }
+};
 
-  // versi backend asli
-  // return api.get(`/penjemputan/riwayat/${id_pengguna}`);
+// Riwayat Penjemputan Masyarakat
+export const getRiwayat = async (id_pengguna) => {
+  try {
+    const response = await api.get(`/penjemputan/riwayat/${id_pengguna}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching riwayat penjemputan:', error);
+    throw error;
+  }
 };
