@@ -1,7 +1,7 @@
 // src/services/adminTransaksiService.js
-
-// import { a } from "motion/react-client";
 import api from './api';
+
+//
 
 // =======================
 // AMBIL SEMUA TRANSAKSI

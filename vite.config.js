@@ -7,13 +7,14 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  // server: {
-  //   port: 5173,
-  //   host: true,
-  //   hmr: {
-  //     host: ngrokHost,
-  //     protocol: 'wss',
-  //   },
-  //   allowedHosts: [ngrokHost],
-  // },
+  server: {
+    port: 5173,
+    host: true,
+    //   hmr: {
+    //     host: ngrokHost,
+    //     protocol: 'wss',
+    //   },
+    //   allowedHosts: [ngrokHost],
+    // },
+  },
 });

@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Card, Pagination } from '../../../components/elements';
-import {
-  FilterCard,
-  RequestList,
-} from '../../../components/fragments/uidashboard';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 
@@ -13,9 +9,6 @@ const RiwayatMitraKurirView = () => {
 
   const [daftarRiwayat, setDaftarRiwayat] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [filter, setFilter] = useState('semua');
-  const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRiwayat, setSelectedRiwayat] = useState(null);
 
@@ -82,9 +75,7 @@ const RiwayatMitraKurirView = () => {
         ];
 
         setDaftarRiwayat(mockRiwayat);
-        setError('');
       } catch (err) {
-        setError('Gagal memuat data riwayat');
         console.error('Error loading history:', err);
       } finally {
         setIsLoading(false);
@@ -94,20 +85,11 @@ const RiwayatMitraKurirView = () => {
     muatDaftarRiwayat();
   }, []);
 
-  // ✅ Filter dan pencarian
-  const filteredData = daftarRiwayat.filter((item) => {
-    const matchStatus = filter === 'semua' || item.status === filter;
-    const matchSearch =
-      item.kodePenjemputan.toLowerCase().includes(search.toLowerCase()) ||
-      item.namaPemesan.toLowerCase().includes(search.toLowerCase());
-    return matchStatus && matchSearch;
-  });
-
   // ✅ Pagination
   const itemsPerPage = 2;
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage) || 1;
+  const totalPages = Math.ceil(daftarRiwayat.length / itemsPerPage) || 1;
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedRequests = filteredData.slice(
+  const paginatedRequests = daftarRiwayat.slice(
     startIndex,
     startIndex + itemsPerPage
   );
@@ -147,8 +129,49 @@ const RiwayatMitraKurirView = () => {
 
       {/* Kontainer utama */}
       <div className='lg:col-span-1'>
-        {/* Sidebar kiri */}
-        <FilterCard />
+        {/* Sidebar kiri - Filter */}
+        <Card className='p-6'>
+          <h3
+            className={`text-lg font-semibold mb-4 ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}
+          >
+            Cari & Filter
+          </h3>
+
+          <input
+            type='text'
+            placeholder='Cari kode atau alamat...'
+            className={`w-full px-3 py-2 border rounded-md ${
+              isDarkMode
+                ? 'bg-gray-700 border-gray-600 text-white'
+                : 'bg-white border-gray-300'
+            }`}
+          />
+
+          <div className='mt-4'>
+            <p
+              className={`text-sm font-medium mb-2 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}
+            >
+              Filter Status:
+            </p>
+            <div className='space-y-1 text-sm'>
+              <div className='cursor-pointer p-2 rounded bg-green-100 text-green-700'>
+                Semua Status ({daftarRiwayat.length})
+              </div>
+              <div className='cursor-pointer p-2 rounded hover:text-orange-600'>
+                Sedang Proses (
+                {daftarRiwayat.filter((r) => r.status !== 'selesai').length})
+              </div>
+              <div className='cursor-pointer p-2 rounded hover:text-green-600'>
+                Selesai (
+                {daftarRiwayat.filter((r) => r.status === 'selesai').length})
+              </div>
+            </div>
+          </div>
+        </Card>
       </div>
 
       {/* Konten kanan */}
@@ -169,12 +192,134 @@ const RiwayatMitraKurirView = () => {
             Menampilkan semua riwayat penjemputan kurir
           </p>
 
-          <RequestList
-            requests={paginatedRequests}
-            onSelect={setSelectedRiwayat}
-            selectedId={selectedRiwayat?.id}
-            role='mitra-kurir'
-          />
+          {/* Request List */}
+          <div className='space-y-5'>
+            {paginatedRequests.map((req) => {
+              const isSelected = selectedRiwayat?.id === req.id;
+
+              return (
+                <div
+                  key={req.id}
+                  className={`rounded-lg border transition overflow-hidden shadow-sm ${
+                    isSelected
+                      ? isDarkMode
+                        ? 'border-green-500 bg-slate-800/60'
+                        : 'border-green-400 bg-slate-50'
+                      : isDarkMode
+                      ? 'bg-gray-800/40 border-gray-700'
+                      : 'bg-white border-gray-200'
+                  }`}
+                >
+                  {/* Ringkasan */}
+                  <div className='flex flex-col sm:flex-row justify-between gap-4 p-5'>
+                    {/* Info kiri */}
+                    <div className='space-y-2 text-sm'>
+                      <p
+                        className={`font-semibold text-base ${
+                          isDarkMode ? 'text-white' : 'text-gray-900'
+                        }`}
+                      >
+                        Kode Penjemputan:{' '}
+                        <span className='text-green-500'>
+                          {req.kodePenjemputan}
+                        </span>
+                      </p>
+                      <p
+                        className={`${
+                          isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                        } text-xs`}
+                      >
+                        Tanggal Penjemputan: {req.tanggalPenjemputan}
+                      </p>
+
+                      <p
+                        className={`${
+                          isDarkMode ? 'text-gray-200' : 'text-gray-800'
+                        } text-sm`}
+                      >
+                        Masyarakat:{' '}
+                        <span className='font-medium'>
+                          {req.namaPemesan || '-'}
+                        </span>
+                      </p>
+
+                      <p
+                        className={`line-clamp-2 ${
+                          isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                        } text-sm`}
+                      >
+                        Alamat: {req.alamat}
+                      </p>
+                    </div>
+
+                    {/* Info kanan */}
+                    <div className='text-right space-y-2 sm:min-w-[130px]'>
+                      <span
+                        className={`inline-block text-xs px-3 py-1 rounded-md font-medium ${
+                          req.status === 'selesai'
+                            ? isDarkMode
+                              ? 'bg-green-900/70 text-green-400'
+                              : 'bg-green-100 text-green-700'
+                            : req.status === 'dibatalkan'
+                            ? isDarkMode
+                              ? 'bg-red-900/30 text-red-400'
+                              : 'bg-red-100 text-red-700'
+                            : isDarkMode
+                            ? 'bg-yellow-900/30 text-yellow-400'
+                            : 'bg-yellow-100 text-yellow-700'
+                        }`}
+                      >
+                        {req.status}
+                      </span>
+                      <p className='text-sm text-green-500 font-semibold'>
+                        {req.totalPoin} poin
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Toggle detail */}
+                  <button
+                    onClick={() => setSelectedRiwayat(isSelected ? null : req)}
+                    className={`w-full px-5 py-3 text-xs sm:text-sm border-t flex items-center justify-center sm:justify-end gap-2 font-medium ${
+                      isDarkMode
+                        ? 'border-gray-700 text-green-400 hover:bg-gray-700/30'
+                        : 'border-gray-200 text-green-700 hover:bg-green-50'
+                    }`}
+                  >
+                    {isSelected ? 'Tutup Detail' : 'Lihat Detail'}
+                    <span className='text-xs'>{isSelected ? '▲' : '▼'}</span>
+                  </button>
+
+                  {isSelected && (
+                    <div
+                      className={`px-4 py-5 border-t ${
+                        isDarkMode ? 'border-gray-700' : 'border-gray-200'
+                      }`}
+                    >
+                      <div className='space-y-3 text-sm'>
+                        <p
+                          className={
+                            isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                          }
+                        >
+                          <span className='font-medium'>Catatan:</span>{' '}
+                          {req.catatan}
+                        </p>
+                        <p
+                          className={
+                            isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                          }
+                        >
+                          <span className='font-medium'>Pendapatan:</span> Rp{' '}
+                          {req.pendapatan?.toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
 
           <Pagination
             currentPage={currentPage}

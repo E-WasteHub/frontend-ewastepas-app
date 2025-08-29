@@ -1,54 +1,114 @@
 // src/services/penjemputanService.js
-
 import api from './api';
 
-// ambil daftar penjemputan
-export const getDaftarPenjemputan = async (id_kategori = null) => {
+/* ===============================
+   📌 READ / GET
+================================= */
+
+// Ambil semua kategori & jenis sampah
+export const ambilJenisByKategori = async (id_kategori = null) => {
   try {
-    if (id_kategori !== null) {
-      const response = await api.get(
-        `/penjemputan/data?id_kategori=${id_kategori}`
-      );
-      return response.data;
-    } else {
-      const response = await api.get('/penjemputan/data');
-      return response.data;
-    }
+    const url = id_kategori
+      ? `/penjemputan/data?id_kategori=${id_kategori}`
+      : '/penjemputan/data';
+    const response = await api.get(url);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error fetching jenis by kategori:', error);
+    throw error;
+  }
+};
+
+// Ambil daftar permintaan penjemputan (list untuk kurir)
+export const ambilDaftarPenjemputan = async () => {
+  try {
+    const response = await api.get('/penjemputan');
+    return response.data;
   } catch (error) {
     console.error('❌ Error fetching daftar penjemputan:', error);
     throw error;
   }
 };
 
-// Create penjemputan
-export const createPermintaan = async (payload) => {
+// Ambil detail penjemputan + pelacakan
+export const ambilDetailPenjemputan = async (id_penjemputan) => {
+  try {
+    const response = await api.get(`/penjemputan/${id_penjemputan}/pelacakan`);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error fetching detail penjemputan:', error);
+    throw error;
+  }
+};
+
+// Ambil riwayat penjemputan (masyarakat/kurir)
+export const ambilRiwayatPenjemputan = async () => {
+  try {
+    const response = await api.get('/penjemputan/riwayat');
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error fetching riwayat penjemputan:', error);
+    throw error;
+  }
+};
+
+/* ===============================
+   📌 CREATE
+================================= */
+
+// Buat permintaan penjemputan (masyarakat)
+export const buatPenjemputan = async (payload) => {
   try {
     const response = await api.post('/penjemputan', payload);
     return response.data;
   } catch (error) {
-    console.error('Error creating permintaan:', error);
+    console.error('❌ Error creating permintaan:', error);
     throw error;
   }
 };
 
-// Lacak penjemputan
-export const getLacakStatus = async (id_penjemputan) => {
+/* ===============================
+   📌 UPDATE / ACTION
+================================= */
+
+// Update status penjemputan (dipakai kurir/masyarakat/admin)
+export const updatePenjemputan = async (id_penjemputan, payload) => {
   try {
-    const response = await api.get(`/penjemputan/${id_penjemputan}/status`);
+    const response = await api.put(
+      `/penjemputan/${id_penjemputan}/status`,
+      payload
+    );
     return response.data;
   } catch (error) {
-    console.error('Error fetching lacak status:', error);
+    console.error('❌ Error updating penjemputan:', error);
     throw error;
   }
 };
 
-// Riwayat Penjemputan Masyarakat
-export const getRiwayat = async (id_pengguna) => {
+// Ambil penjemputan oleh kurir (alias "terima permintaan")
+export const ambilPenjemputan = async (id_penjemputan, payload) => {
   try {
-    const response = await api.get(`/penjemputan/riwayat/${id_pengguna}`);
+    const response = await api.put(
+      `/penjemputan/${id_penjemputan}/status`,
+      payload
+    );
     return response.data;
   } catch (error) {
-    console.error('Error fetching riwayat penjemputan:', error);
+    console.error('❌ Error ambil penjemputan:', error);
+    throw error;
+  }
+};
+
+// Batalkan penjemputan (oleh masyarakat/kurir/admin)
+export const batalPenjemputan = async (id_penjemputan, payload) => {
+  try {
+    const response = await api.put(
+      `/penjemputan/${id_penjemputan}/status`,
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error cancelling penjemputan:', error);
     throw error;
   }
 };

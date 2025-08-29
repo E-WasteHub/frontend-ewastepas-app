@@ -1,6 +1,7 @@
 // src/hooks/useLoginForm.js
 import { useEffect, useState } from 'react';
 import * as authService from '../services/authService';
+import { setTokenWithExpiry } from '../utils/authExpiry';
 
 export const useLoginForm = () => {
   const [email, setEmail] = useState('');
@@ -59,15 +60,16 @@ export const useLoginForm = () => {
     try {
       setIsLoading(true);
       setError('');
-
       // 🔑 Hapus semua data lama (misalnya token hasil register sebelum verifikasi)
       localStorage.clear();
 
       const res = await authService.login({ email, kata_sandi });
 
-      // kalau berhasil → simpan token baru di localStorage
+      // kalau berhasil → simpan token baru beserta expiry di localStorage
       if (res?.token) {
-        localStorage.setItem('token', res.token);
+        // set token expiry ke 12 jam (43200 detik) supaya user otomatis logout.
+        const DEFAULT_TTL = 12 * 60 * 60;
+        setTokenWithExpiry(res.token, DEFAULT_TTL);
 
         // simpan pengguna & peran dari backend
         if (res.data) {

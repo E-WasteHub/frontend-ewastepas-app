@@ -8,7 +8,6 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card, SapaanDashboard } from '../../../components/elements';
-import { StatCard } from '../../../components/fragments/uidashboard';
 import useDarkMode from '../../../hooks/useDarkMode';
 
 const AdminDashboardView = ({ userProfile }) => {
@@ -77,29 +76,121 @@ const AdminDashboardView = ({ userProfile }) => {
 
         {/* Statistics Cards */}
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-          <StatCard
-            title='Total Pengguna'
-            value={statistikPengguna.totalPengguna.toLocaleString()}
-            icon={<Users className='w-6 h-6 text-green-500' />}
-          />
+          {/* Total Pengguna Card */}
+          <div
+            className={`px-6 py-6 rounded-lg shadow-md ${
+              isDarkMode ? 'bg-gray-800' : 'bg-white'
+            }`}
+          >
+            <div className='flex items-center justify-between'>
+              <div className='flex-1 text-center'>
+                <p
+                  className={`text-md ${
+                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                  }`}
+                >
+                  Total Pengguna
+                </p>
+                <p className='text-2xl font-bold text-green-500'>
+                  {statistikPengguna.totalPengguna.toLocaleString()}
+                </p>
+              </div>
+              <div
+                className={`ml-4 p-3 rounded-lg ${
+                  isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+                }`}
+              >
+                <Users className='w-6 h-6 text-green-500' />
+              </div>
+            </div>
+          </div>
 
-          <StatCard
-            title='Pengguna Aktif'
-            value={statistikPengguna.penggunaAktif.toLocaleString()}
-            icon={<Activity className='w-6 h-6 text-green-500' />}
-          />
+          {/* Pengguna Aktif Card */}
+          <div
+            className={`px-6 py-6 rounded-lg shadow-md ${
+              isDarkMode ? 'bg-gray-800' : 'bg-white'
+            }`}
+          >
+            <div className='flex items-center justify-between'>
+              <div className='flex-1 text-center'>
+                <p
+                  className={`text-md ${
+                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                  }`}
+                >
+                  Pengguna Aktif
+                </p>
+                <p className='text-2xl font-bold text-green-500'>
+                  {statistikPengguna.penggunaAktif.toLocaleString()}
+                </p>
+              </div>
+              <div
+                className={`ml-4 p-3 rounded-lg ${
+                  isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+                }`}
+              >
+                <Activity className='w-6 h-6 text-green-500' />
+              </div>
+            </div>
+          </div>
 
-          <StatCard
-            title='Total Transaksi'
-            value={statistikTransaksi.totalTransaksi.toLocaleString()}
-            icon={<Package className='w-6 h-6 text-green-500' />}
-          />
+          {/* Total Transaksi Card */}
+          <div
+            className={`px-6 py-6 rounded-lg shadow-md ${
+              isDarkMode ? 'bg-gray-800' : 'bg-white'
+            }`}
+          >
+            <div className='flex items-center justify-between'>
+              <div className='flex-1 text-center'>
+                <p
+                  className={`text-md ${
+                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                  }`}
+                >
+                  Total Transaksi
+                </p>
+                <p className='text-2xl font-bold text-green-500'>
+                  {statistikTransaksi.totalTransaksi.toLocaleString()}
+                </p>
+              </div>
+              <div
+                className={`ml-4 p-3 rounded-lg ${
+                  isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+                }`}
+              >
+                <Package className='w-6 h-6 text-green-500' />
+              </div>
+            </div>
+          </div>
 
-          <StatCard
-            title='Menunggu Verifikasi'
-            value={statistikPengguna.mitraKurir}
-            icon={<Users className='w-6 h-6 text-green-500' />}
-          />
+          {/* Menunggu Verifikasi Card */}
+          <div
+            className={`px-6 py-6 rounded-lg shadow-md ${
+              isDarkMode ? 'bg-gray-800' : 'bg-white'
+            }`}
+          >
+            <div className='flex items-center justify-between'>
+              <div className='flex-1 text-center'>
+                <p
+                  className={`text-md ${
+                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                  }`}
+                >
+                  Menunggu Verifikasi
+                </p>
+                <p className='text-2xl font-bold text-green-500'>
+                  {statistikPengguna.mitraKurir}
+                </p>
+              </div>
+              <div
+                className={`ml-4 p-3 rounded-lg ${
+                  isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+                }`}
+              >
+                <Users className='w-6 h-6 text-green-500' />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Quick Access Section */}

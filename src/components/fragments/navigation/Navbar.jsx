@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
+import { clearAuth } from '../../../utils/authExpiry';
 import { LogoApp, ThemeSelector } from '../../elements/';
 import { ProfileDropdown } from '../../fragments';
 
@@ -72,7 +73,7 @@ const Navbar = () => {
                 pengguna={pengguna}
                 peran={peran}
                 onLogout={() => {
-                  localStorage.removeItem('token');
+                  clearAuth();
                   localStorage.removeItem('pengguna');
                   localStorage.removeItem('peran');
                   window.location.href = '/login';
@@ -115,7 +116,7 @@ const Navbar = () => {
               pengguna={pengguna}
               peran={peran}
               onLogout={() => {
-                localStorage.removeItem('token');
+                clearAuth();
                 localStorage.removeItem('pengguna');
                 localStorage.removeItem('peran');
                 window.location.href = '/login';

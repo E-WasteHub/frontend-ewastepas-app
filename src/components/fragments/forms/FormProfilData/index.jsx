@@ -1,6 +1,11 @@
-import { AvatarUpload, Input, Label, Textarea } from '../../../elements';
-import Button from '../../../elements/Button';
-import { Loading } from '../../../elements/Loading';
+import {
+  AvatarUpload,
+  Button,
+  Input,
+  Label,
+  Loading,
+  Textarea,
+} from '../../../elements';
 
 const FormProfilData = ({
   nama_lengkap,

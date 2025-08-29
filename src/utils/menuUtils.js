@@ -1,6 +1,6 @@
 import {
   BookA,
-  BookUp2Icon,
+  BookAlertIcon,
   Database,
   History,
   Home,
@@ -23,11 +23,6 @@ export const menuItemsByRole = {
       icon: Database,
       path: '/dashboard/admin/data-master',
     },
-    {
-      title: 'Kelola Edukasi',
-      icon: BookUp2Icon,
-      path: '/dashboard/admin/kelola-edukasi',
-    },
     { title: 'Transaksi', icon: History, path: '/dashboard/admin/transaksi' },
   ],
   'mitra-kurir': [
@@ -36,6 +31,11 @@ export const menuItemsByRole = {
       title: 'Daftar Permintaan',
       icon: BookA,
       path: '/dashboard/mitra-kurir/daftar-permintaan',
+    },
+    {
+      title: 'Permintaan Aktif',
+      icon: BookAlertIcon,
+      path: '/dashboard/mitra-kurir/permintaan-aktif',
     },
     {
       title: 'Riwayat Penjemputan',
@@ -72,12 +72,6 @@ export const bottomMenuItemsByRole = {
       icon: User,
       path: '/dashboard/admin/verifikasi-akun',
     },
-    {
-      title: 'KelolaEdukasi',
-      icon: BookUp2Icon,
-      path: '/dashboard/admin/kelola-edukasi',
-    },
-
     { title: 'Data', icon: Database, path: '/dashboard/admin/data-master' },
     { title: 'Transaksi', icon: History, path: '/dashboard/admin/transaksi' },
   ],
@@ -87,6 +81,11 @@ export const bottomMenuItemsByRole = {
       title: 'DaftarPermintaan',
       icon: BookA,
       path: '/dashboard/mitra-kurir/daftar-permintaan',
+    },
+    {
+      title: 'Permintaan Aktif',
+      icon: BookAlertIcon,
+      path: '/dashboard/mitra-kurir/permintaan-aktif',
     },
     {
       title: 'Riwayat',

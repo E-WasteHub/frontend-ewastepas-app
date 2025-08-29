@@ -1,7 +1,7 @@
 import { Camera, User, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import useDarkMode from '../../../hooks/useDarkMode';
-import Modal from '../../elements/Modal';
+import Modal from '../Modal';
 
 const AvatarUpload = ({ file, onFileChange, size = 96 }) => {
   const fileInputRef = useRef(null);

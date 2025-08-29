@@ -1,4 +1,10 @@
-import { Database, FileText, MapPin, Package } from 'lucide-react';
+import {
+  BookCopyIcon,
+  Database,
+  FileText,
+  MapPin,
+  Package,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Button from '../../../components/elements/Button';
 import Card from '../../../components/elements/Card';
@@ -52,15 +58,15 @@ const AdminDataMasterView = () => {
       lastUpdate: '5 jam yang lalu',
     },
     {
-      id: 'konversiPoin',
-      title: 'Kelola Konversi Poin',
+      id: 'edukasi',
+      title: 'Kelola Edukasi',
       description:
-        'Mengelola konversi poin untuk pengguna yang melakukan pengumpulan sampah elektronik.',
-      icon: Database,
-      path: '/dashboard/admin/kelola-konversi-poin',
-      color: 'bg-teal-500',
-      stats: '5 Konversi',
-      lastUpdate: '1 jam yang lalu',
+        'Mengelola semua konten edukasi untuk menambah wawasan masyarakat terkait sampah elektronik.',
+      icon: BookCopyIcon,
+      path: '/dashboard/admin/kelola-edukasi',
+      color: 'bg-emerald-500',
+      stats: '12 Daerah',
+      lastUpdate: '5 jam yang lalu',
     },
   ];
 

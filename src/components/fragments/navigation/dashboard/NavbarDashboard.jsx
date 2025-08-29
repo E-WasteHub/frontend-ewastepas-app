@@ -2,6 +2,7 @@
 import { Moon, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import useDarkMode from '../../../../hooks/useDarkMode';
+import { clearAuth } from '../../../../utils/authExpiry';
 import Button from '../../../elements/Button';
 import NotificationDropdown from './NotificationDropdown';
 import ProfileDropdown from './ProfileDropdown';
@@ -82,7 +83,7 @@ const NavbarDashboard = () => {
                 pengguna={pengguna}
                 peran={peran}
                 onLogout={() => {
-                  localStorage.removeItem('token');
+                  clearAuth();
                   localStorage.removeItem('pengguna');
                   localStorage.removeItem('peran');
                   window.location.href = '/login';

@@ -1,223 +1,390 @@
 // src/views/kurir/DaftarPermintaanKurirView.jsx
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Alert, Card, Pagination } from '../../../components/elements';
-import { RequestList } from '../../../components/fragments/uidashboard';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
+import {
+  ambilDaftarPenjemputan,
+  ambilDetailPenjemputan,
+  ambilPenjemputan,
+} from '../../../services/penjemputanService';
+
+// 🔹 Helper mapping status dari backend
+const mapStatus = (p) => {
+  if (p.waktu_dibatalkan) return 'Dibatalkan';
+  if (p.waktu_sampai) return 'Selesai';
+  if (p.waktu_diantar) return 'Sampai';
+  if (p.waktu_diterima) return 'Dijemput';
+  return 'Menunggu';
+};
 
 const DaftarPermintaanKurirView = () => {
   useDocumentTitle('Daftar Permintaan');
   const { isDarkMode } = useDarkMode();
+  const navigate = useNavigate();
 
-  const [daftarPermintaan, setDaftarPermintaan] = useState([]);
+  const [permintaan, setPermintaan] = useState([]);
+  const [expandedId, setExpandedId] = useState(null);
+  const [details, setDetails] = useState({});
+  const [activeRequestId, setActiveRequestId] = useState(null);
+
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [selectedRequest, setSelectedRequest] = useState(null);
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const pageSize = 3;
 
-  // Dummy data
-  const mockPermintaan = [
-    {
-      id: 'EW-001',
-      tanggal: '15 Agustus 2024 09:00',
-      masyarakat: 'Budi Santoso',
-      lokasi: 'Jl. Merdeka No. 123, Jakarta Pusat',
-      status: 'Menunggu Kurir',
-      poin: 250,
-      items: [{ nama: 'Laptop', kategori: 'Elektronik', poin: 150 }],
-      timeline: [
-        { status: 'Menunggu Kurir', desc: 'Permintaan dibuat', time: '08:00' },
-      ],
-    },
-    {
-      id: 'EW-002',
-      tanggal: '15 Agustus 2024 14:00',
-      masyarakat: 'Sari Dewi',
-      lokasi: 'Jl. Sudirman No. 456, Jakarta Selatan',
-      status: 'Menunggu Kurir',
-      poin: 400,
-      items: [{ nama: 'TV LED', kategori: 'Elektronik', poin: 200 }],
-      timeline: [
-        { status: 'Menunggu Kurir', desc: 'Permintaan dibuat', time: '13:00' },
-      ],
-    },
-    {
-      id: 'EW-003',
-      tanggal: '15 Agustus 2024 16:30',
-      masyarakat: 'Riko Pratama',
-      lokasi: 'Jl. Gatot Subroto No. 789, Jakarta Barat',
-      status: 'Menunggu Kurir',
-      poin: 180,
-      items: [{ nama: 'Printer', kategori: 'Elektronik', poin: 90 }],
-      timeline: [
-        { status: 'Menunggu Kurir', desc: 'Permintaan dibuat', time: '12:00' },
-      ],
-    },
-    {
-      id: 'EW-004',
-      tanggal: '16 Agustus 2024 10:00',
-      masyarakat: 'Maya Kusuma',
-      lokasi: 'Jl. Thamrin No. 321, Jakarta Pusat',
-      status: 'Menunggu Kurir',
-      poin: 120,
-      items: [{ nama: 'Keyboard', kategori: 'Elektronik', poin: 60 }],
-      timeline: [
-        { status: 'Menunggu Kurir', desc: 'Permintaan dibuat', time: '09:30' },
-      ],
-    },
-  ];
+  // 🔹 Fetch daftar penjemputan
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
 
-  // Simulasi fetch
-  useEffect(() => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setDaftarPermintaan(mockPermintaan);
+      const res = await ambilDaftarPenjemputan();
+      console.log('📦 Daftar Penjemputan (raw):', res);
+
+      // handle berbagai kemungkinan struktur response
+      const list = res?.penjemputan || res?.data || res || [];
+      console.log('📋 List final:', list);
+
+      const mapped = list.map((p) => ({ ...p, status: mapStatus(p) }));
+      const visible = mapped.filter((p) => p.status !== 'Dibatalkan');
+
+      setPermintaan(visible);
+
+      // cari request aktif
+      const aktif = visible.find(
+        (p) => p.status === 'Dijemput' || p.status === 'Sampai'
+      );
+      setActiveRequestId(aktif ? aktif.id_penjemputan : null);
+    } catch (err) {
+      console.error('❌ Error fetching daftar:', err);
+      setError('Gagal memuat daftar');
+    } finally {
       setIsLoading(false);
-    }, 500);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
-  // Ambil penjemputan
-  const handleTakeRequest = (id) => {
-    setDaftarPermintaan((prev) =>
-      prev.map((req) =>
-        req.id === id
-          ? {
-              ...req,
-              status: 'Dijemput Kurir',
-              timeline: [
-                ...req.timeline,
+  // 🔹 Expand detail
+  const handleExpand = async (id) => {
+    if (expandedId === id) {
+      return setExpandedId(null);
+    }
+    setExpandedId(id);
+
+    if (details[id]) return;
+
+    try {
+      const res = await ambilDetailPenjemputan(id);
+      const detailData = {
+        namaMasyarakat: res.data.penjemputan.nama_masyarakat,
+        items:
+          res.data.sampah?.map((s) => ({
+            id: s.id_sampah,
+            kategori: s.nama_kategori,
+            jenis: s.nama_jenis,
+            jumlah: s.jumlah_sampah,
+            catatan: s.catatan_sampah,
+          })) || [],
+        catatanMasyarakat: res.data.penjemputan.catatan,
+        waktuOperasional: res.data.penjemputan.waktu_operasional,
+        timeline: [
+          {
+            status: 'Menunggu',
+            desc: 'Permintaan berhasil dibuat',
+            time: res.data.penjemputan.waktu_ditambah,
+          },
+          ...(res.data.penjemputan.waktu_diterima
+            ? [
                 {
-                  status: 'Dijemput Kurir',
+                  status: 'Dijemput',
                   desc: 'Kurir mengambil barang',
-                  time: new Date().toLocaleTimeString(),
+                  time: res.data.penjemputan.waktu_diterima,
                 },
-              ],
-            }
-          : req
-      )
-    );
-  };
-
-  // Update timeline ke tahap berikutnya
-  const handleUpdateTimeline = (id, nextStatus) => {
-    const mapping = {
-      'Diantar Kurir ke Dropbox': { desc: 'Barang diantar ke dropbox' },
-      Selesai: { desc: 'Penjemputan selesai' },
-    };
-
-    setDaftarPermintaan((prev) =>
-      prev.map((req) =>
-        req.id === id
-          ? {
-              ...req,
-              status: nextStatus,
-              timeline: [
-                ...req.timeline,
+              ]
+            : []),
+          ...(res.data.penjemputan.waktu_diantar
+            ? [
                 {
-                  status: nextStatus,
-                  desc: mapping[nextStatus].desc,
-                  time: new Date().toLocaleTimeString(),
+                  status: 'Sampai',
+                  desc: 'Barang diantar ke dropbox',
+                  time: res.data.penjemputan.waktu_diantar,
                 },
-              ],
-            }
-          : req
-      )
-    );
+              ]
+            : []),
+          ...(res.data.penjemputan.waktu_sampai
+            ? [
+                {
+                  status: 'Selesai',
+                  desc: 'Kurir telah setor sampah',
+                  time: res.data.penjemputan.waktu_sampai,
+                },
+              ]
+            : []),
+          ...(res.data.penjemputan.waktu_dibatalkan
+            ? [
+                {
+                  status: 'Dibatalkan',
+                  desc: 'Penjemputan dibatalkan',
+                  time: res.data.penjemputan.waktu_dibatalkan,
+                },
+              ]
+            : []),
+        ],
+      };
+      setDetails((prev) => ({ ...prev, [id]: detailData }));
+    } catch (err) {
+      console.error('❌ gagal ambil detail', err);
+    }
   };
 
-  // Cek apakah ada penjemputan aktif
-  const activeRequest = daftarPermintaan.find(
-    (req) =>
-      req.status === 'Dijemput Kurir' ||
-      req.status === 'Diantar Kurir ke Dropbox'
+  // 🔹 Ambil permintaan
+  const handleTakeRequest = async (id) => {
+    if (activeRequestId) {
+      alert('⚠️ Selesaikan permintaan aktif sebelum ambil yang lain');
+      return;
+    }
+
+    try {
+      const payload = { status: 'Diterima' };
+      await ambilPenjemputan(id, payload);
+
+      const currentTime = new Date().toISOString();
+      setPermintaan((prev) =>
+        prev.map((p) =>
+          p.id_penjemputan === id
+            ? { ...p, status: 'Dijemput', waktu_diterima: currentTime }
+            : p
+        )
+      );
+
+      setActiveRequestId(id);
+      localStorage.setItem('recentlyTakenRequest', id.toString());
+
+      setTimeout(async () => {
+        await fetchData();
+        navigate('/dashboard/mitra-kurir/permintaan-aktif', {
+          state: { fallbackActiveId: id, timestamp: Date.now() },
+        });
+      }, 1500);
+    } catch (err) {
+      console.error('❌ gagal ambil permintaan', err);
+      setError('Gagal mengambil permintaan. Coba lagi atau hubungi admin.');
+    }
+  };
+
+  // Pagination
+  const totalPages = Math.ceil(permintaan.length / pageSize);
+  const paginated = permintaan.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
   );
 
-  // Pagination data (jika tidak ada active request)
-  const totalPages = Math.ceil(daftarPermintaan.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedData = daftarPermintaan.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
-
-  if (isLoading) {
-    return <p className='text-center py-10'>Memuat data...</p>;
-  }
+  if (isLoading) return <p className='text-center py-10'>⏳ Memuat...</p>;
 
   return (
-    <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-4'>
-      {/* Header */}
-      <div className='mb-2'>
-        <h2
-          className={`text-xl sm:text-2xl font-bold mb-1 ${
-            isDarkMode ? 'text-white' : 'text-gray-900'
-          }`}
-        >
-          Daftar Permintaan Penjemputan
-        </h2>
-        <p
-          className={`text-sm ${
-            isDarkMode ? 'text-gray-400' : 'text-gray-600'
-          }`}
-        >
-          Lihat semua permintaan penjemputan yang tersedia
-        </p>
+    <div className='max-w-7xl mx-auto'>
+      <div className='flex justify-between items-center mb-4'>
+        <div>
+          <h2
+            className={`text-2xl font-bold ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}
+          >
+            Daftar Permintaan Penjemputan
+          </h2>
+          <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+            Lihat semua permintaan penjemputan yang tersedia
+          </p>
+        </div>
+        <div className='flex gap-2'>
+          <button
+            onClick={fetchData}
+            disabled={isLoading}
+            className='bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-4 py-2 rounded transition-colors'
+          >
+            {isLoading ? '⏳ Memuat...' : '🔄 Refresh'}
+          </button>
+        </div>
       </div>
 
-      {error && <Alert type='error' message={error} />}
+      <Card className='p-6 space-y-6'>
+        {error && <Alert type='error' message={error} />}
 
-      <Card
-        className={`border${
-          isDarkMode
-            ? 'bg-gray-800 border-gray-700'
-            : 'bg-white border-gray-200'
-        }`}
-      >
-        <div className='mx-auto px-8'>
-          {activeRequest ? (
-            <>
-              <h3 className='font-semibold mb-3'>🚚 Penjemputan Aktif</h3>
-              <RequestList
-                requests={[activeRequest]}
-                onSelect={setSelectedRequest}
-                selectedId={selectedRequest?.id}
-                role='mitra-kurir'
-                onTake={handleTakeRequest}
-                onUpdateTimeline={handleUpdateTimeline}
-              />
-            </>
-          ) : (
-            <>
-              <h3 className='font-semibold my-3'>Permintaan Tersedia</h3>
-              <RequestList
-                requests={paginatedData}
-                onSelect={setSelectedRequest}
-                selectedId={selectedRequest?.id}
-                role='mitra-kurir'
-                onTake={handleTakeRequest}
-                onUpdateTimeline={handleUpdateTimeline}
-              />
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className='mb-4'>
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={(page) => {
-                      setSelectedRequest(null);
-                      setCurrentPage(page);
-                    }}
-                    isDarkMode={isDarkMode}
-                  />
+        {permintaan.length === 0 ? (
+          <p className='text-center text-gray-500'>
+            🚫 Tidak ada daftar permintaan penjemputan.
+          </p>
+        ) : (
+          paginated.map((req) => {
+            const expanded = expandedId === req.id_penjemputan;
+            const detail = details[req.id_penjemputan];
+            return (
+              <div
+                key={req.id_penjemputan}
+                className={`border rounded-lg ${
+                  expanded ? 'border-green-500' : 'border-gray-300'
+                }`}
+              >
+                {/* Ringkasan */}
+                <div className='flex justify-between items-start p-4'>
+                  <div>
+                    <p className='font-semibold'>
+                      Kode:{' '}
+                      <span className='text-green-500'>
+                        {req.kode_penjemputan || req.kode || req.id_penjemputan}
+                      </span>
+                    </p>
+                    <p className='text-xs text-gray-500'>
+                      Dibuat pada:{' '}
+                      {req.waktu_ditambah
+                        ? new Date(req.waktu_ditambah).toLocaleString('id-ID')
+                        : '-'}
+                    </p>
+                    <p>Alamat: {req.alamat_jemput || '-'}</p>
+                  </div>
+                  <div className='text-right'>
+                    <span
+                      className={`block text-sm px-2 py-1 rounded ${
+                        req.status === 'Menunggu'
+                          ? 'bg-yellow-100 text-yellow-700'
+                          : req.status === 'Dijemput'
+                          ? 'bg-blue-100 text-blue-700'
+                          : req.status === 'Sampai'
+                          ? 'bg-orange-100 text-orange-700'
+                          : req.status === 'Selesai'
+                          ? 'bg-green-100 text-green-700'
+                          : req.status === 'Dibatalkan'
+                          ? 'bg-red-100 text-red-700'
+                          : 'bg-gray-100 text-gray-700'
+                      }`}
+                    >
+                      {req.status}
+                    </span>
+                  </div>
                 </div>
-              )}
-            </>
-          )}
-        </div>
+
+                {/* Detail */}
+                {expanded && detail && (
+                  <div className='border-t px-4 py-5'>
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                      {/* Kiri */}
+                      <div className='space-y-3 text-sm'>
+                        <p>
+                          <span className='font-medium'>Nama Masyarakat: </span>
+                          {detail.namaMasyarakat}
+                        </p>
+                        <p>
+                          <span className='font-medium'>
+                            Perkiraan Jemput:{' '}
+                          </span>
+                          {detail.waktuOperasional}
+                        </p>
+                        <div>
+                          <p className='font-medium'>Daftar Sampah:</p>
+                          <ul className='list-disc list-inside space-y-1'>
+                            {detail.items.map((s) => (
+                              <li key={s.id}>
+                                {s.kategori} - {s.jenis} ({s.jumlah})
+                                {s.catatan && (
+                                  <p className='text-xs italic text-gray-500 ml-4'>
+                                    Kondisi: {s.catatan}
+                                  </p>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        {detail.catatanMasyarakat && (
+                          <>
+                            <p className='font-medium'>Catatan Masyarakat:</p>
+                            <p className='italic text-gray-500'>
+                              {detail.catatanMasyarakat}
+                            </p>
+                          </>
+                        )}
+                        {req.status === 'Menunggu' && (
+                          <button
+                            onClick={() =>
+                              handleTakeRequest(req.id_penjemputan)
+                            }
+                            disabled={!!activeRequestId}
+                            className={`mt-3 px-4 py-2 rounded text-white ${
+                              activeRequestId
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : 'bg-green-500 hover:bg-green-600'
+                            }`}
+                          >
+                            {activeRequestId
+                              ? 'Ada Permintaan Aktif'
+                              : 'Ambil Permintaan'}
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Timeline */}
+                      <div className='space-y-3'>
+                        <p className='font-medium'>Timeline Penjemputan:</p>
+                        <ul className='space-y-2 text-sm'>
+                          {detail.timeline.map((t, i) => (
+                            <li key={i} className='flex items-center gap-2'>
+                              <span
+                                className={`w-3 h-3 rounded-full ${
+                                  t.status === req.status
+                                    ? 'bg-green-500'
+                                    : 'bg-gray-400'
+                                }`}
+                              ></span>
+                              <div>
+                                <p
+                                  className={
+                                    t.status === req.status
+                                      ? 'text-green-600 font-medium'
+                                      : 'text-gray-500'
+                                  }
+                                >
+                                  {t.status}
+                                </p>
+                                <p className='text-xs text-gray-400'>
+                                  {t.desc} •{' '}
+                                  {t.time
+                                    ? new Date(t.time).toLocaleString('id-ID')
+                                    : '-'}
+                                </p>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Toggle */}
+                <div className='border-t px-4 py-2 text-end'>
+                  <button
+                    onClick={() => handleExpand(req.id_penjemputan)}
+                    className='text-sm text-green-600 hover:underline'
+                  >
+                    {expanded ? 'Tutup ▲' : 'Detail ▼'}
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
+
+        {permintaan.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(p) => setCurrentPage(p)}
+          />
+        )}
       </Card>
     </div>
   );

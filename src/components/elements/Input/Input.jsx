@@ -1,7 +1,7 @@
 import { Eye, EyeOff } from 'lucide-react';
 import { forwardRef, useState } from 'react';
 import useDarkMode from '../../../hooks/useDarkMode';
-import ErrorMessage from './ErrorMessage';
+import ErrorMessage from '../ErrorMessage';
 import Label from './Label';
 
 const Input = forwardRef(

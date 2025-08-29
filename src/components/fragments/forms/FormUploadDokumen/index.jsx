@@ -1,6 +1,6 @@
 import useDarkMode from '../../../../hooks/useDarkMode';
+import { FileUploadSingle } from '../../../elements';
 import Button from '../../../elements/Button';
-import { FileUploadSingle } from '../../../elements/Form';
 
 const FormUploadDokumen = ({ files, onFileChange, onSave, isLoading }) => {
   const { isDarkMode } = useDarkMode();

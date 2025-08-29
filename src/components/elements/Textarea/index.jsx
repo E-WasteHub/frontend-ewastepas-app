@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 import useDarkMode from '../../../hooks/useDarkMode';
-import ErrorMessage from './ErrorMessage';
-import Label from './Label';
+import ErrorMessage from '../ErrorMessage';
+import Label from '../Input/Label';
 
 const Textarea = forwardRef(
   (

@@ -1,5 +1,4 @@
 // src/main.jsx
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
@@ -8,12 +7,12 @@ import './index.css';
 import RouteScrollManager from './utils/RouteScrollManager';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <DarkModeProvider>
-      <BrowserRouter>
-        <RouteScrollManager />
-        <App />
-      </BrowserRouter>
-    </DarkModeProvider>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <DarkModeProvider>
+    <BrowserRouter>
+      <RouteScrollManager />
+      <App />
+    </BrowserRouter>
+  </DarkModeProvider>
+  // </React.StrictMode>
 );

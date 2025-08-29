@@ -1,6 +1,6 @@
 import { ChevronDown } from 'lucide-react';
 import useDarkMode from '../../../hooks/useDarkMode';
-import Label from './Label';
+import Label from '../Input/Label';
 
 const Select = ({
   label,

@@ -3,8 +3,14 @@ import { X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import * as penjemputanService from '../../../../services/penjemputanService';
-import { Button, Card } from '../../../elements';
-import { Input, Label, Select, Textarea } from '../../../elements/Form';
+import {
+  Button,
+  Card,
+  Input,
+  Label,
+  Select,
+  Textarea,
+} from '../../../elements';
 
 const FormPenjemputan = ({
   formData,
@@ -19,6 +25,7 @@ const FormPenjemputan = ({
   const [jenisData, setJenisData] = useState([]);
   const [waktuOperasional, setWaktuOperasional] = useState([]);
   const [daftarSampah, setDaftarSampah] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [tempSampah, setTempSampah] = useState({
     id_kategori: '',
@@ -35,7 +42,8 @@ const FormPenjemputan = ({
     let isMounted = true;
     const fetchInitialData = async () => {
       try {
-        const res = await penjemputanService.getDaftarPenjemputan();
+        const res = await penjemputanService.ambilJenisByKategori();
+        console.log('📦 Daftar Penjemputan:', res);
         if (!isMounted) return;
         setKategoriData(res?.data?.kategori || []);
         setWaktuOperasional(res?.data?.waktu_operasional || []);
@@ -56,7 +64,7 @@ const FormPenjemputan = ({
     if (!tempSampah.id_kategori) return;
     const fetchJenis = async () => {
       try {
-        const res = await penjemputanService.getDaftarPenjemputan(
+        const res = await penjemputanService.ambilJenisByKategori(
           tempSampah.id_kategori
         );
         setJenisData(res?.data?.jenis || []);
@@ -152,6 +160,20 @@ const FormPenjemputan = ({
     }
 
     onSubmit(daftarSampah);
+
+    // 🔄 reset semua setelah submit
+    setDaftarSampah([]);
+    setTempSampah({
+      id_kategori: '',
+      id_jenis: '',
+      jumlah_sampah: '',
+      catatan_sampah: '',
+      gambar: null,
+      previewUrl: null,
+    });
+    onInputChange('id_waktu_operasional', '');
+    onInputChange('alamat_jemput', '');
+    onInputChange('catatan', '');
   };
 
   const totalJumlah = daftarSampah.reduce(
@@ -188,7 +210,6 @@ const FormPenjemputan = ({
 
       <Card>
         <Card.Body className='p-8'>
-          {/* Grid 2 Kolom */}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
             {/* Kiri: Form Input */}
             <div className='space-y-4'>
@@ -213,77 +234,31 @@ const FormPenjemputan = ({
                 />
               </div>
 
-              <div>
-                <Label required>Jenis Sampah</Label>
-                <Select
-                  value={tempSampah.id_jenis}
-                  onChange={(val) =>
-                    setTempSampah((p) => ({ ...p, id_jenis: val }))
-                  }
-                  disabled={!tempSampah.id_kategori}
-                  placeholder={
-                    tempSampah.id_kategori
-                      ? 'Pilih jenis sampah...'
-                      : 'Pilih kategori dulu'
-                  }
-                  options={jenisData.map((item) => ({
-                    value: item.id_jenis.toString(),
-                    label: item.nama_jenis,
-                  }))}
-                />
-              </div>
-
-              <div>
-                <Label required>Jumlah</Label>
-                <Input
-                  type='number'
-                  min='1'
-                  value={tempSampah.jumlah_sampah}
-                  onChange={(e) =>
-                    setTempSampah((p) => ({
-                      ...p,
-                      jumlah_sampah: e.target.value,
-                    }))
-                  }
-                  placeholder='Masukkan jumlah'
-                />
-              </div>
-
-              <div>
-                <Label>Catatan</Label>
-                <Textarea
-                  rows={2}
-                  value={tempSampah.catatan_sampah}
-                  onChange={(e) =>
-                    setTempSampah((p) => ({
-                      ...p,
-                      catatan_sampah: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-
-              <div>
-                <Label>Foto (opsional)</Label>
-                <Input
-                  type='file'
-                  accept='image/*'
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      setTempSampah((p) => ({
-                        ...p,
-                        gambar: file,
-                        previewUrl: URL.createObjectURL(file),
-                      }));
+              <div className='flex items-end gap-3'>
+                <div className='flex-1'>
+                  <Label required>Jenis Sampah</Label>
+                  <Select
+                    value={tempSampah.id_jenis}
+                    onChange={(val) =>
+                      setTempSampah((p) => ({ ...p, id_jenis: val }))
                     }
-                  }}
-                />
-              </div>
+                    disabled={!tempSampah.id_kategori}
+                    placeholder={
+                      tempSampah.id_kategori
+                        ? 'Pilih jenis sampah...'
+                        : 'Pilih kategori dulu'
+                    }
+                    options={jenisData.map((item) => ({
+                      value: item.id_jenis.toString(),
+                      label: item.nama_jenis,
+                    }))}
+                  />
+                </div>
 
-              <Button type='button' onClick={handleTambahSampah}>
-                Tambah ke Daftar
-              </Button>
+                <Button type='button' onClick={() => setIsModalOpen(true)}>
+                  Tambah
+                </Button>
+              </div>
 
               {/* Waktu operasional & alamat */}
               <div>
@@ -296,7 +271,7 @@ const FormPenjemputan = ({
                   placeholder='Pilih waktu operasional...'
                   options={waktuOperasional.map((w) => ({
                     value: w.id_waktu_operasional.toString(),
-                    label: `${w.nama_operasional} (${w.jam_mulai_operasional} - ${w.jam_selesai_operasional})`,
+                    label: `${w.waktu_operasional}`,
                   }))}
                   className='w-full'
                 />
@@ -321,28 +296,17 @@ const FormPenjemputan = ({
                   onChange={(e) => onInputChange('catatan', e.target.value)}
                 />
               </div>
-
-              {/* Actions */}
-              <div className='flex justify-end gap-4 pt-6'>
-                <Button
-                  type='button'
-                  variant='secondary'
-                  onClick={onCancel}
-                  disabled={isSubmitting}
-                >
-                  Kembali
-                </Button>
-                <Button
-                  type='submit'
-                  disabled={isSubmitting || daftarSampah.length === 0}
-                >
-                  {isSubmitting ? 'Mengirim...' : 'Kirim Permintaan'}
-                </Button>
-              </div>
             </div>
 
             {/* Kanan: Daftar Sampah */}
             <div className='space-y-4'>
+              <div
+                className={`mt-2 text-sm text-right ${
+                  isDarkMode ? 'text-green-400' : 'text-green-600'
+                }`}
+              >
+                Total: {totalJumlah} pcs • Estimasi {estimasiPoin} poin
+              </div>
               <h3 className='font-semibold mb-2'>Daftar Sampah</h3>
               {daftarSampah.length === 0 ? (
                 <p className='text-sm text-gray-500'>
@@ -394,13 +358,99 @@ const FormPenjemputan = ({
                   ))}
                 </div>
               )}
-              <div className='mt-2 text-sm text-right text-green-600 dark:text-green-400'>
-                Total: {totalJumlah} pcs • Estimasi {estimasiPoin} poin
+              {/* Actions */}
+              <div className='flex justify-end gap-4 pt-96'>
+                <Button
+                  type='button'
+                  variant='secondary'
+                  onClick={onCancel}
+                  disabled={isSubmitting}
+                >
+                  Kembali
+                </Button>
+                <Button
+                  type='submit'
+                  disabled={isSubmitting || daftarSampah.length === 0}
+                >
+                  {isSubmitting ? 'Mengirim...' : 'Kirim Permintaan'}
+                </Button>
               </div>
             </div>
           </div>
         </Card.Body>
       </Card>
+
+      {/* Modal Hardcode */}
+      {isModalOpen && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40'>
+          <div className='bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md p-6 relative'>
+            <h3 className='text-lg font-bold mb-4'>Detail Sampah</h3>
+
+            <div className='space-y-3'>
+              <div>
+                <Label required>Jumlah</Label>
+                <Input
+                  type='number'
+                  min='1'
+                  value={tempSampah.jumlah_sampah}
+                  onChange={(e) =>
+                    setTempSampah((p) => ({
+                      ...p,
+                      jumlah_sampah: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+
+              <div>
+                <Label>Catatan Kondisi</Label>
+                <Textarea
+                  rows={2}
+                  value={tempSampah.catatan_sampah}
+                  onChange={(e) =>
+                    setTempSampah((p) => ({
+                      ...p,
+                      catatan_sampah: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+
+              <div>
+                <Label>Foto (opsional)</Label>
+                <Input
+                  type='file'
+                  accept='image/*'
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setTempSampah((p) => ({
+                        ...p,
+                        gambar: file,
+                        previewUrl: URL.createObjectURL(file),
+                      }));
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className='flex justify-end gap-3 mt-6'>
+              <Button variant='secondary' onClick={() => setIsModalOpen(false)}>
+                Batal
+              </Button>
+              <Button
+                onClick={() => {
+                  handleTambahSampah();
+                  setIsModalOpen(false);
+                }}
+              >
+                Simpan
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </form>
   );
 };

@@ -39,9 +39,6 @@ const AdminKelolaKategoriView = lazy(() =>
 const AdminKelolaJenisView = lazy(() =>
   import('../pages/dashboard/admin/AdminKelolaJenisView')
 );
-const AdminKelolaKonversiPoinView = lazy(() =>
-  import('../pages/dashboard/admin/AdminKelolaKonversiPoinView')
-);
 const AdminVerifikasiView = lazy(() =>
   import('../pages/dashboard/admin/AdminVerifikasiView')
 );
@@ -70,8 +67,8 @@ const DashboardKurirView = lazy(() =>
 const DaftarPermintaanKurirView = lazy(() =>
   import('../pages/dashboard/mitrakurir/DaftarPermintaanKurirView')
 );
-const UnggahDokumenView = lazy(() =>
-  import('../pages/dashboard/mitrakurir/UnggahDokumenView')
+const PermintaanAktifKurirView = lazy(() =>
+  import('../pages/dashboard/mitrakurir/PermintaanAktifKurir')
 );
 const RiwayatMitraKurirView = lazy(() =>
   import('../pages/dashboard/mitrakurir/RiwayatMitraKurirView')
@@ -162,14 +159,6 @@ const AppRouter = () => {
           }
         />
         <Route
-          path='/dashboard/admin/kelola-konversi-poin'
-          element={
-            <DashboardLayout>
-              <AdminKelolaKonversiPoinView />
-            </DashboardLayout>
-          }
-        />
-        <Route
           path='/dashboard/admin/verifikasi-akun'
           element={
             <DashboardLayout>
@@ -254,10 +243,10 @@ const AppRouter = () => {
           }
         />
         <Route
-          path='/dashboard/mitra-kurir/unggah-dokumen'
+          path='/dashboard/mitra-kurir/permintaan-aktif'
           element={
             <DashboardLayout>
-              <UnggahDokumenView />
+              <PermintaanAktifKurirView />
             </DashboardLayout>
           }
         />
@@ -282,7 +271,9 @@ const AppRouter = () => {
         <Route
           path='*'
           element={
-            <div className='p-6 text-center'>Halaman tidak ditemukan</div>
+            <div className='p-6 text-center mx-auto flex !px-12 flex-col items-center justify-center min-h-screen'>
+              Halaman tidak ditemukan
+            </div>
           }
         />
       </Routes>

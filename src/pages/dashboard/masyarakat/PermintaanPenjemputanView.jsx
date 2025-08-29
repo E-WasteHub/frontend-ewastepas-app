@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { AlertModal } from '../../../components/fragments';
 import FormPenjemputan from '../../../components/fragments/forms/FormPenjemputan';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
-import { createPermintaan } from '../../../services/penjemputanService';
+import { buatPenjemputan } from '../../../services/penjemputanService';
 
 const PermintaanPenjemputanView = () => {
   useDocumentTitle('Permintaan Penjemputan');
@@ -57,7 +56,7 @@ const PermintaanPenjemputanView = () => {
         console.log(k, v);
       }
 
-      const res = await createPermintaan(formPayload);
+      const res = await buatPenjemputan(formPayload);
       showAlert('Berhasil', 'Form penjemputan berhasil dikirim!', 'success');
       console.log('✅ Response:', res);
 
@@ -88,13 +87,45 @@ const PermintaanPenjemputanView = () => {
         onSubmit={handleSubmit}
       />
 
-      <AlertModal
-        isOpen={alertOpen}
-        onClose={() => setAlertOpen(false)}
-        title={alertConfig.title}
-        message={alertConfig.message}
-        type={alertConfig.type}
-      />
+      {/* Alert Modal */}
+      {alertOpen && (
+        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+          <div className='bg-white p-6 rounded-lg max-w-md w-full mx-4'>
+            <div className='flex justify-between items-center mb-4'>
+              <h3 className='text-lg font-semibold text-gray-900'>
+                {alertConfig.title}
+              </h3>
+              <button
+                onClick={() => setAlertOpen(false)}
+                className='text-gray-400 hover:text-gray-600'
+              >
+                ✕
+              </button>
+            </div>
+            <p
+              className={
+                alertConfig.type === 'success'
+                  ? 'text-green-600'
+                  : alertConfig.type === 'error'
+                  ? 'text-red-600'
+                  : alertConfig.type === 'warning'
+                  ? 'text-yellow-600'
+                  : 'text-gray-700'
+              }
+            >
+              {alertConfig.message}
+            </p>
+            <div className='flex justify-end mt-4'>
+              <button
+                onClick={() => setAlertOpen(false)}
+                className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'
+              >
+                Ok
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
