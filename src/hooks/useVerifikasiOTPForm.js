@@ -2,109 +2,129 @@ import { useCallback, useEffect, useState } from 'react';
 import * as authService from '../services/authService';
 
 export const useVerifikasiOTPForm = () => {
-  const [userId, setUserId] = useState(null); // ✅ simpan id_pengguna
-  const [kodeOTP, setKodeOTP] = useState('');
-  const [errorField, setErrorField] = useState('');
-  const [timer, setTimer] = useState(300);
-  const [isTimerActive, setIsTimerActive] = useState(true);
-  const [canResend, setCanResend] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  /** 🔹 State utama */
+  const [otp, setOtp] = useState(''); // Menyimpan kode OTP (6 digit)
+  const [userId, setUserId] = useState(null); // ID user dari localStorage
 
-  // Input OTP
-  const handleInputOTP = (value) => {
-    const numericValue = value.replace(/\D/g, '').slice(0, 6);
-    setKodeOTP(numericValue);
-    if (errorField) setErrorField('');
+  /** 🔹 State feedback */
+  const [fieldError, setFieldError] = useState(''); // Error khusus input OTP
+  const [globalError, setGlobalError] = useState(''); // Error umum dari backend
+  const [successMessage, setSuccessMessage] = useState(''); // Pesan sukses
+  const [isLoading, setIsLoading] = useState(false);
+
+  /** 🔹 State timer */
+  const [waktuTersisa, setWaktuTersisa] = useState(300); // 5 menit
+  const [isTimerAktif, setIsTimerAktif] = useState(true);
+  const [bisaKirimUlang, setBisaKirimUlang] = useState(false);
+
+  // 📌 Handle perubahan OTP
+  const handleOtpChange = (value) => {
+    const angkaOnly = value.replace(/\D/g, '').slice(0, 6);
+    setOtp(angkaOnly);
+
+    if (fieldError) setFieldError('');
   };
 
-  // Submit OTP
-  const handleSubmitOTP = async (e) => {
-    e.preventDefault();
-    if (!kodeOTP) return setErrorField('Kode OTP wajib diisi');
-    if (kodeOTP.length !== 6) return setErrorField('Kode OTP harus 6 digit');
-    if (timer <= 0) return setErrorField('Kode OTP sudah kadaluarsa');
-    if (!userId) return setErrorField('User tidak ditemukan, daftar ulang');
+  // 📌 Submit OTP ke backend
+  const handleOtpSubmit = async (e) => {
+    if (e) e.preventDefault();
+
+    // Validasi input
+    if (!otp) return setFieldError('Kode OTP wajib diisi');
+    if (otp.length !== 6) return setFieldError('Kode OTP harus 6 digit');
+    if (waktuTersisa <= 0) return setFieldError('Kode OTP sudah kadaluarsa');
+    if (!userId) return setFieldError('User tidak ditemukan, daftar ulang');
 
     try {
       setIsLoading(true);
       const res = await authService.verifyOtp({
         id_pengguna: userId,
-        kode_otp: kodeOTP,
+        kode_otp: otp,
       });
+
       setSuccessMessage(res.message || 'Verifikasi berhasil');
+      return res;
     } catch (err) {
-      setError(err.message || 'Verifikasi OTP gagal');
+      setGlobalError(err.message || 'Verifikasi OTP gagal');
+      return null;
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Resend OTP
-  const handleResendOTP = async () => {
+  // 📌 Kirim ulang OTP
+  const handleKirimUlang = async () => {
     if (!userId) {
-      setErrorField('User tidak ditemukan untuk resend OTP');
+      setFieldError('User tidak ditemukan untuk resend OTP');
       return;
     }
+
     try {
       await authService.resendOtp(userId);
-      setTimer(300);
-      setIsTimerActive(true);
-      setCanResend(false);
-      setKodeOTP('');
-      setError('');
+      setWaktuTersisa(300); // reset 5 menit
+      setIsTimerAktif(true);
+      setBisaKirimUlang(false);
+      setOtp('');
+      setGlobalError('');
     } catch (err) {
-      setError(err.message || 'Gagal mengirim ulang OTP');
+      setGlobalError(err.message || 'Gagal mengirim ulang OTP');
     }
   };
 
-  // Timer
-  const jalankanTimer = useCallback(() => {
-    if (timer > 0 && isTimerActive) {
+  // 📌 Jalankan timer countdown
+  const mulaiTimer = useCallback(() => {
+    if (waktuTersisa > 0 && isTimerAktif) {
       const intervalId = setInterval(() => {
-        setTimer((prev) => {
-          if (prev <= 1) {
-            setIsTimerActive(false);
-            setCanResend(true);
+        setWaktuTersisa((sisa) => {
+          if (sisa <= 1) {
+            setIsTimerAktif(false);
+            setBisaKirimUlang(true);
             return 0;
           }
-          return prev - 1;
+          return sisa - 1;
         });
       }, 1000);
+
       return () => clearInterval(intervalId);
     }
-  }, [timer, isTimerActive]);
+  }, [waktuTersisa, isTimerAktif]);
 
   useEffect(() => {
-    const cleanup = jalankanTimer();
-    return cleanup;
-  }, [jalankanTimer]);
+    const stopTimer = mulaiTimer();
+    return stopTimer;
+  }, [mulaiTimer]);
 
-  const formatTimer = () => {
-    const minutes = Math.floor(timer / 60);
-    const seconds = timer % 60;
-    return `${minutes.toString().padStart(2, '0')}:${seconds
+  // 📌 Format menit:detik
+  const formatWaktu = () => {
+    const menit = Math.floor(waktuTersisa / 60);
+    const detik = waktuTersisa % 60;
+    return `${menit.toString().padStart(2, '0')}:${detik
       .toString()
       .padStart(2, '0')}`;
   };
 
   return {
-    // state
-    kodeOTP,
-    timer,
-    isLoading,
-    error,
-    errorField,
-    successMessage,
-    isTimerActive,
-    canResend,
+    // State
+    otp,
     userId,
-    setUserId, // expose setter
-    // action
-    handleInputOTP,
-    handleSubmitOTP,
-    handleResendOTP,
-    formatTimer,
+    waktuTersisa,
+    isTimerAktif,
+    bisaKirimUlang,
+    isLoading,
+    fieldError,
+    globalError,
+    successMessage,
+
+    // Setters
+    setUserId,
+    setFieldError,
+    setGlobalError,
+    setSuccessMessage,
+
+    // Actions
+    handleOtpChange,
+    handleOtpSubmit,
+    handleKirimUlang,
+    formatWaktu,
   };
 };

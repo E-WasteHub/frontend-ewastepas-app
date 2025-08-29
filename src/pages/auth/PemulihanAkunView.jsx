@@ -1,16 +1,16 @@
 // src/pages/auth/LupaPasswordView.jsx
-import { FormResetKataSandi } from '../../components/fragments';
+import { FormPemulihanAkun } from '../../components/fragments';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 
-const ResetKataSandiView = () => {
+const PemulihanAkunView = () => {
   useDocumentTitle('Reset Kata Sandi - E-WasteHub');
 
   return (
     <AuthLayout namaApp='EwasteHub' maxWidth='max-w-2xl'>
-      <FormResetKataSandi />
+      <FormPemulihanAkun />
     </AuthLayout>
   );
 };
 
-export default ResetKataSandiView;
+export default PemulihanAkunView;

@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import { menuItemsByRole } from '../../../../utils/menuUtils';
 import { detectRoleFromPath } from '../../../../utils/peranUtils';
-import LogoApp from '../../../elements/Icon/LogoApp';
+import { LogoApp } from '../../../elements/';
 
 const SidebarDashboard = ({ userRole = 'masyarakat' }) => {
   const location = useLocation();

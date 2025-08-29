@@ -1,4 +1,3 @@
-// src/components/elements/Modal.jsx
 import { X } from 'lucide-react';
 import useDarkMode from '../../../hooks/useDarkMode';
 
@@ -7,19 +6,18 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 
   if (!isOpen) return null;
 
+  const bgStyle = isDarkMode
+    ? 'bg-slate-800 text-slate-100'
+    : 'bg-white text-gray-800';
+  const closeHover = isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-gray-200';
+
   return (
     <div
       className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-2 sm:px-4'
       onClick={onClose}
     >
       <div
-        className={`rounded-lg shadow-lg w-full max-w-md relative m-3 sm:m-6
-          ${
-            isDarkMode
-              ? 'bg-slate-800 text-slate-100'
-              : 'bg-white text-gray-800'
-          }
-        `}
+        className={`rounded-lg shadow-lg w-full max-w-md relative m-3 sm:m-6 ${bgStyle}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -30,9 +28,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
           <button
             onClick={onClose}
             aria-label='Close modal'
-            className={`p-1 rounded-full transition-colors
-              ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-gray-200'}
-            `}
+            className={`p-1 rounded-full transition-colors ${closeHover}`}
           >
             <X size={20} />
           </button>

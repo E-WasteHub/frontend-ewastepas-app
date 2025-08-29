@@ -1,85 +1,75 @@
-// src/hooks/useRegisterForm.js
-import { useState } from 'react';
-import * as authService from '../services/authService'; // langsung panggil service
+import { useCallback, useState } from 'react';
+import * as authService from '../services/authService';
 
 export const useRegisterForm = () => {
+  /** 🔹 State untuk input form */
   const [formData, setFormData] = useState({
     nama_lengkap: '',
     email: '',
     kata_sandi: '',
     konfirmasi_kata_sandi: '',
   });
-
   const [peran, setPeran] = useState('');
-  const [errorField, setErrorField] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(''); // error global
-  const [successMessage, setSuccessMessage] = useState(''); // pesan sukses
 
-  // handle perubahan input teks
+  /** 🔹 State untuk status & feedback */
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorField, setErrorField] = useState({});
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
+  // 📌 Handle perubahan input teks
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // clear error field yang sedang diubah
+    // Hapus error pada field yang sedang diedit
     if (errorField[name]) {
-      setErrorField((prev) => ({
-        ...prev,
-        [name]: '',
-      }));
+      setErrorField((prev) => ({ ...prev, [name]: '' }));
     }
+    setErrorMessage('');
   };
 
-  // handle perubahan peran
-  const handlePeranSelect = (peranValue) => {
-    setPeran(peranValue);
+  // 📌 Handle pilih peran
+  const handlePeranSelect = (value) => {
+    setPeran(value);
     setErrorField((prev) => ({ ...prev, peran: '' }));
   };
 
-  // validasi frontend
+  // 📌 Validasi input sebelum submit
   const validateForm = () => {
-    const newErrors = {};
-    if (!peran) newErrors.peran = 'Silakan pilih peran Anda';
+    const errors = {};
 
+    if (!peran) errors.peran = 'Silakan pilih peran Anda';
     if (!formData.nama_lengkap.trim()) {
-      newErrors.nama_lengkap = 'Nama wajib diisi';
+      errors.nama_lengkap = 'Nama wajib diisi';
     }
-
     if (!formData.email) {
-      newErrors.email = 'Email wajib diisi';
-    } else {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        newErrors.email = 'Format email tidak valid';
-      }
+      errors.email = 'Email wajib diisi';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = 'Format email tidak valid';
     }
-
     if (!formData.kata_sandi) {
-      newErrors.kata_sandi = 'Kata sandi wajib diisi';
+      errors.kata_sandi = 'Kata sandi wajib diisi';
     } else if (formData.kata_sandi.length < 6) {
-      newErrors.kata_sandi = 'Kata sandi minimal 6 karakter';
+      errors.kata_sandi = 'Kata sandi minimal 6 karakter';
     }
-
     if (!formData.konfirmasi_kata_sandi) {
-      newErrors.konfirmasi_kata_sandi = 'Konfirmasi kata sandi wajib diisi';
+      errors.konfirmasi_kata_sandi = 'Konfirmasi kata sandi wajib diisi';
     } else if (formData.kata_sandi !== formData.konfirmasi_kata_sandi) {
-      newErrors.konfirmasi_kata_sandi = 'Konfirmasi kata sandi tidak cocok';
+      errors.konfirmasi_kata_sandi = 'Konfirmasi kata sandi tidak cocok';
     }
 
-    setErrorField(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setErrorField(errors);
+    return Object.keys(errors).length === 0;
   };
 
-  // submit langsung ke backend
+  // 📌 Submit form ke backend
   const handleRegisterSubmit = async () => {
     if (!validateForm()) return null;
 
     try {
       setIsLoading(true);
-      setError('');
+      setErrorMessage('');
       setSuccessMessage('');
 
       const res = await authService.register({
@@ -88,29 +78,35 @@ export const useRegisterForm = () => {
       });
 
       setSuccessMessage(res.message || 'Registrasi berhasil');
-      return res; // biar bisa dipakai di FormRegister
+      return res;
     } catch (err) {
-      console.error('Register error:', err);
-      setError(err.message || 'Registrasi gagal');
+      setErrorMessage(err.message || 'Registrasi gagal');
       return null;
     } finally {
       setIsLoading(false);
     }
   };
 
+  // 📌 Helper untuk clear pesan
+  const clearError = useCallback(() => setErrorMessage(''), []);
+  const clearSuccess = useCallback(() => setSuccessMessage(''), []);
+
   return {
-    // State
+    // State input
     formData,
     peran,
+
+    // Status & feedback
     isLoading,
     errorField,
-    error,
+    error: errorMessage,
     successMessage,
-    setError,
-    setSuccessMessage,
-    // Action
+
+    // Actions
     handleInputChange,
     handlePeranSelect,
     handleRegisterSubmit,
+    clearError,
+    clearSuccess,
   };
 };

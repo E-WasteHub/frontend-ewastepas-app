@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
-import LogoApp from '../../elements/Icon/LogoApp';
+import { LogoApp } from '../../elements/';
 
 const Footer = () => {
   const { isDarkMode } = useDarkMode();

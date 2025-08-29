@@ -1,6 +1,5 @@
 import { Suspense, lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import LoadingOverlay from '../components/elements/Loading/LoadingOverlay';
 import DashboardLayout from '../components/layouts/DashboardLayout';
 
 // ================= Public Pages =================
@@ -10,11 +9,12 @@ import HomeView from '../pages/HomeView';
 import PanduanAplikasiView from '../pages/PanduanAplikasiView';
 
 // ================= Auth Pages =================
+import { Loader2 } from 'lucide-react';
 import LoginView from '../pages/auth/LoginView';
-import LupaPasswordView from '../pages/auth/LupaPasswordView';
+import PemulihanAkunView from '../pages/auth/PemulihanAkunView';
 import RegisterView from '../pages/auth/RegisterView';
 import ResetKataSandiView from '../pages/auth/ResetKataSandiView';
-import VerifikasiAdmin from '../pages/auth/VerifikasiAdmin';
+import VerifikasiAdminView from '../pages/auth/VerifikasiAdminView';
 import VerifikasiOTPView from '../pages/auth/VerifikasiOTPView';
 
 // ================= Admin Pages =================
@@ -82,7 +82,10 @@ const AppRouter = () => {
     <Suspense
       fallback={
         <div className='flex items-center justify-center min-h-screen'>
-          <LoadingOverlay size='xl' text='Memuat halaman...' />
+          {/* Loading tidak menggunakan komponen */}
+          <div className='flex items-center justify-center min-h-screen'>
+            <Loader2 className='w-12 h-12 animate-spin text-green-600' />
+          </div>
         </div>
       }
     >
@@ -96,10 +99,10 @@ const AppRouter = () => {
         {/* ========= Auth Routes ========= */}
         <Route path='/login' element={<LoginView />} />
         <Route path='/register' element={<RegisterView />} />
-        <Route path='/lupa-password' element={<LupaPasswordView />} />
+        <Route path='/pemulihan-akun' element={<PemulihanAkunView />} />
         <Route path='/verifikasi-otp' element={<VerifikasiOTPView />} />
         <Route path='/reset-kata-sandi' element={<ResetKataSandiView />} />
-        <Route path='/verifikasi-admin' element={<VerifikasiAdmin />} />
+        <Route path='/verifikasi-admin' element={<VerifikasiAdminView />} />
 
         {/* ========= Dashboard - Admin ========= */}
         <Route

@@ -1,18 +1,27 @@
 import useDarkMode from '../../../hooks/useDarkMode';
 
-const SapaanDashboard = ({ userProfile, subtitle }) => {
+const SapaanDashboard = ({ pengguna, subtitle }) => {
   const { isDarkMode } = useDarkMode();
 
   const hour = new Date().getHours();
-  const sapaan =
-    hour < 12 ? 'Selamat Pagi' : hour < 17 ? 'Selamat Siang' : 'Selamat Malam';
+
+  let sapaan = 'Halo';
+  if (hour < 12) {
+    sapaan = 'Selamat Pagi';
+  } else if (hour < 17) {
+    sapaan = 'Selamat Siang';
+  } else {
+    sapaan = 'Selamat Malam';
+  }
+
+  const textColor = isDarkMode ? 'text-white' : 'text-slate-800';
 
   return (
-    <div className={isDarkMode ? 'text-white' : 'text-slate-800'}>
+    <div className={textColor}>
       <h1 className='text-2xl font-bold mb-2'>
-        {sapaan}, {userProfile?.nama_lengkap || 'Pengguna'}!
+        {sapaan}, {pengguna?.nama_lengkap || 'Pengguna'}!
       </h1>
-      <p>{subtitle}</p>
+      {subtitle && <p>{subtitle}</p>}
     </div>
   );
 };

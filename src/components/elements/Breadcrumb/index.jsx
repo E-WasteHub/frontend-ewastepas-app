@@ -1,38 +1,38 @@
 import { Link, useLocation } from 'react-router-dom';
 
-const Breadcrumb = ({ customBreadcrumbs }) => {
+// Ubah teks dari "user-profile" -> "User Profile"
+const formatPathName = (nama) =>
+  nama
+    .replace(/-/g, ' ') // ubah "-" jadi spasi
+    .replace(/\b\w/g, (char) => char.toUpperCase()); // kapital huruf pertama
+
+const Breadcrumb = ({ customItems }) => {
   const location = useLocation();
-  const segments = location.pathname.split('/').filter(Boolean);
+  const pathParts = location.pathname.split('/').filter(Boolean);
 
-  // Kalau ada customBreadcrumbs, pakai itu. Kalau tidak, generate otomatis
-  const breadcrumbs =
-    customBreadcrumbs ||
-    segments.slice(1).map((segment, index) => {
-      const path = '/' + segments.slice(0, index + 2).join('/');
+  // Buat breadcrumb otomatis kalau customItems nggak ada
+  const generatedItems = pathParts.slice(1).map((part, index) => {
+    const fullPath = '/' + pathParts.slice(0, index + 2).join('/');
+    return {
+      label: formatPathName(part),
+      path: fullPath,
+    };
+  });
 
-      // Format label -> capitalize + ganti dash dengan spasi
-      const label = segment
-        .replace(/-/g, ' ')
-        .replace(/\b\w/g, (c) => c.toUpperCase());
-
-      return { label, path };
-    });
+  const breadcrumbItems = customItems || generatedItems;
 
   return (
     <nav className='mb-4 px-8'>
       <ul className='flex items-center gap-2 text-sm'>
-        {breadcrumbs.map((crumb, index) => (
-          <li
-            key={`${index}-${crumb.path}`}
-            className='flex items-center gap-2'
-          >
+        {breadcrumbItems.map((item, index) => (
+          <li key={item.path} className='flex items-center gap-2'>
             <Link
-              to={crumb.path}
+              to={item.path}
               className='text-green-600 hover:underline capitalize'
             >
-              {crumb.label}
+              {item.label}
             </Link>
-            {index < breadcrumbs.length - 1 && <span>/</span>}
+            {index < breadcrumbItems.length - 1 && <span>/</span>}
           </li>
         ))}
       </ul>

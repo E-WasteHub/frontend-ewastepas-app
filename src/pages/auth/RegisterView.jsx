@@ -1,4 +1,4 @@
-import FormRegister from '../../components/fragments/forms/FormRegister';
+import { FormRegister } from '../../components/fragments';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 

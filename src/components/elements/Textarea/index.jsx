@@ -23,7 +23,7 @@ const Textarea = forwardRef(
     const { isDarkMode } = useDarkMode();
 
     const baseStyle =
-      'w-full px-4 py-3 rounded-lg border transition-all duration-200 text-sm focus:outline-none focus:ring-2 resize-vertical';
+      'w-full px-4 py-3 rounded-lg border text-sm transition-all duration-200 focus:outline-none focus:ring-2 resize-vertical';
 
     const colorStyle = isDarkMode
       ? 'bg-slate-800 text-slate-100 placeholder-slate-400'
@@ -67,7 +67,7 @@ const Textarea = forwardRef(
         />
 
         {/* Error */}
-        {error && <ErrorMessage>{error}</ErrorMessage>}
+        <ErrorMessage>{error}</ErrorMessage>
       </div>
     );
   }

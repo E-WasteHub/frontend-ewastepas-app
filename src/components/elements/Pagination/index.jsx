@@ -11,40 +11,34 @@ const Pagination = ({ currentPage = 1, totalPages = 1, onPageChange }) => {
 
   const baseBtn =
     'flex items-center gap-1 px-3 py-2 rounded-lg text-sm transition-colors';
-
   const activeBtn = isDarkMode
     ? 'text-gray-200 hover:bg-gray-700'
     : 'text-gray-700 hover:bg-gray-200';
+  const disabledBtn = 'opacity-50 cursor-not-allowed';
+
+  const textColor = isDarkMode ? 'text-gray-300' : 'text-gray-700';
 
   return (
     <div className='flex items-center justify-center gap-2 mt-8'>
-      {/* Sebelumnya Button */}
+      {/* Tombol Sebelumnya */}
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={!canPrev}
-        className={`${baseBtn} ${
-          canPrev ? activeBtn : 'opacity-50 cursor-not-allowed'
-        }`}
+        className={`${baseBtn} ${canPrev ? activeBtn : disabledBtn}`}
       >
         <ChevronLeft size={16} /> Sebelumnya
       </button>
 
-      {/* Current Page Info */}
-      <span
-        className={`px-4 py-2 text-sm font-medium ${
-          isDarkMode ? 'text-gray-300' : 'text-gray-700'
-        }`}
-      >
+      {/* Info Halaman */}
+      <span className={`px-4 py-2 text-sm font-medium ${textColor}`}>
         {currentPage} / {totalPages}
       </span>
 
-      {/* Selanjutnya Button */}
+      {/* Tombol Selanjutnya */}
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={!canNext}
-        className={`${baseBtn} ${
-          canNext ? activeBtn : 'opacity-50 cursor-not-allowed'
-        }`}
+        className={`${baseBtn} ${canNext ? activeBtn : disabledBtn}`}
       >
         Selanjutnya <ChevronRight size={16} />
       </button>

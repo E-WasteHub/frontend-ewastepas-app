@@ -4,34 +4,32 @@ import { useEffect, useState } from 'react';
 import useDarkMode from '../../../hooks/useDarkMode';
 
 const ScrollToTop = () => {
-  const [isVisible, setIsVisible] = useState(false);
+  const [tombolMuncul, setTombolMuncul] = useState(false);
   const { isDarkMode } = useDarkMode();
 
   // Cek posisi scroll
   useEffect(() => {
-    const onScroll = () => setIsVisible(window.scrollY > 300);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
+    const cekScroll = () => setTombolMuncul(window.scrollY > 300);
+    window.addEventListener('scroll', cekScroll);
+    return () => window.removeEventListener('scroll', cekScroll);
   }, []);
 
   // Scroll ke atas
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  const keAtas = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  const bgColor = isDarkMode ? 'bg-green-500' : 'bg-green-600';
 
   return (
     <AnimatePresence>
-      {isVisible && (
+      {tombolMuncul && (
         <Motion.button
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4, ease: 'easeInOut' }}
-          onClick={scrollToTop}
-          className={`
-            fixed lg:bottom-10 bottom-20 right-6 z-50 p-3 rounded-full shadow-lg text-white
-            transition hover:scale-110 active:scale-95
-            ${isDarkMode ? 'bg-green-500' : 'bg-green-600'}
-          `}
-          aria-label='Scroll to top'
+          onClick={keAtas}
+          aria-label='Scroll ke atas'
+          className={`fixed right-6 bottom-20 lg:bottom-10 z-50 p-3 rounded-full shadow-lg text-white transition hover:scale-110 active:scale-95 ${bgColor}`}
         >
           <ArrowUp className='h-6 w-6' strokeWidth={2.5} />
         </Motion.button>

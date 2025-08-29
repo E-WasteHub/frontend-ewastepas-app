@@ -13,18 +13,18 @@ const Checkbox = ({
 }) => {
   const { isDarkMode } = useDarkMode();
 
-  const handleToggle = () => {
+  const toggleCheckbox = () => {
     if (!disabled && onChange) {
       onChange({ target: { checked: !checked, name } });
     }
   };
 
-  const baseBox =
+  const baseClasses =
     'flex items-center justify-center w-5 h-5 rounded border-2 transition-all';
-  const stateBox = disabled
+  const stateClasses = disabled
     ? 'opacity-50 cursor-not-allowed'
     : 'cursor-pointer hover:scale-105';
-  const colorBox = checked
+  const colorClasses = checked
     ? 'bg-green-600 border-green-600 text-white'
     : isDarkMode
     ? 'bg-slate-800 border-slate-600 hover:border-slate-500'
@@ -32,7 +32,7 @@ const Checkbox = ({
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      {/* Input asli (disembunyikan untuk aksesibilitas) */}
+      {/* Input asli (hidden) */}
       <input
         type='checkbox'
         id={id}
@@ -47,18 +47,18 @@ const Checkbox = ({
       {/* Kotak custom */}
       <button
         type='button'
-        onClick={handleToggle}
+        onClick={toggleCheckbox}
         disabled={disabled}
-        className={`${baseBox} ${stateBox} ${colorBox}`}
+        className={`${baseClasses} ${stateClasses} ${colorClasses}`}
       >
         {checked && <Check className='w-3 h-3' strokeWidth={3} />}
       </button>
 
-      {/* Label di sebelahnya */}
+      {/* Label */}
       {label && (
         <label
           htmlFor={id}
-          onClick={handleToggle}
+          onClick={toggleCheckbox}
           className={`text-sm cursor-pointer ${
             isDarkMode ? 'text-slate-300' : 'text-gray-700'
           }`}

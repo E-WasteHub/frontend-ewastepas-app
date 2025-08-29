@@ -4,15 +4,17 @@ import * as authService from '../services/authService';
 import { setTokenWithExpiry } from '../utils/authExpiry';
 
 export const useLoginForm = () => {
+  // --- State Form ---
   const [email, setEmail] = useState('');
   const [kata_sandi, setKataSandi] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
+  // --- State UI ---
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(''); // error global dari API
-  const [errorField, setErrorField] = useState({}); // error per field
+  const [globalError, setGlobalError] = useState(''); // error global dari API
+  const [fieldErrors, setFieldErrors] = useState({}); // error spesifik per field
 
-  // load remembered email saat pertama kali render
+  // --- Init remembered email ---
   useEffect(() => {
     const rememberedEmail = localStorage.getItem('rememberedEmail');
     if (rememberedEmail) {
@@ -21,73 +23,72 @@ export const useLoginForm = () => {
     }
   }, []);
 
-  // handle perubahan input
+  // --- Handler Input ---
   const handleInputChange = (e) => {
     const { name, value, checked } = e.target;
+
     if (name === 'email') setEmail(value);
     if (name === 'kata_sandi') setKataSandi(value);
     if (name === 'rememberMe') setRememberMe(checked);
 
-    // clear error field kalau diubah
-    setErrorField((prev) => ({ ...prev, [name]: '' }));
-    setError('');
+    // Clear error saat user mengubah field
+    setFieldErrors((prev) => ({ ...prev, [name]: '' }));
+    setGlobalError('');
   };
 
-  // validasi frontend
+  // --- Validasi frontend ---
   const validateForm = () => {
-    const newErrors = {};
+    const errors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!email) {
-      newErrors.email = 'Email wajib diisi';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Format email tidak valid';
+      errors.email = 'Email wajib diisi';
+    } else if (!emailRegex.test(email)) {
+      errors.email = 'Format email tidak valid';
     }
 
     if (!kata_sandi) {
-      newErrors.kata_sandi = 'Kata sandi wajib diisi';
+      errors.kata_sandi = 'Kata sandi wajib diisi';
     } else if (kata_sandi.length < 6) {
-      newErrors.kata_sandi = 'Kata sandi minimal 6 karakter';
+      errors.kata_sandi = 'Kata sandi minimal 6 karakter';
     }
 
-    setErrorField(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
-  // handle submit form login
+  // --- Submit login ---
   const handleLoginSubmit = async (e) => {
     if (e) e.preventDefault();
     if (!validateForm()) return;
 
     try {
       setIsLoading(true);
-      setError('');
-      // 🔑 Hapus semua data lama (misalnya token hasil register sebelum verifikasi)
-      localStorage.clear();
+      setGlobalError('');
+      localStorage.clear(); // hapus token lama (misalnya dari register)
 
       const res = await authService.login({ email, kata_sandi });
 
-      // kalau berhasil → simpan token baru beserta expiry di localStorage
       if (res?.token) {
-        // set token expiry ke 12 jam (43200 detik) supaya user otomatis logout.
-        const DEFAULT_TTL = 12 * 60 * 60;
+        const DEFAULT_TTL = 12 * 60 * 60; // 12 jam
         setTokenWithExpiry(res.token, DEFAULT_TTL);
 
-        // simpan pengguna & peran dari backend
         if (res.data) {
           localStorage.setItem('pengguna', JSON.stringify(res.data));
           localStorage.setItem('peran', res.data.nama_peran);
         }
       }
 
-      // simpan email kalau centang "ingat saya"
+      // "Ingat saya"
       if (rememberMe) {
         localStorage.setItem('rememberedEmail', email);
       } else {
         localStorage.removeItem('rememberedEmail');
       }
 
-      return res; // biar bisa dipakai di view
+      return res;
     } catch (err) {
-      setError(err.message || 'Login gagal');
+      setGlobalError(err.message || 'Login gagal');
     } finally {
       setIsLoading(false);
     }
@@ -99,8 +100,8 @@ export const useLoginForm = () => {
     kata_sandi,
     rememberMe,
     isLoading,
-    error,
-    errorField,
+    error: globalError,
+    errorField: fieldErrors,
     // Actions
     handleInputChange,
     handleLoginSubmit,

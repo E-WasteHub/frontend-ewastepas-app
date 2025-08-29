@@ -6,11 +6,16 @@ const FormHeader = ({ title, subtitle, showLogo = true, center = true }) => {
   const { isDarkMode } = useDarkMode();
   const logo = isDarkMode ? darkLogo : lightLogo;
 
+  const textAlign = center ? 'text-center' : '';
+
   return (
-    <div className={center ? 'text-center' : ''}>
+    <div className={textAlign}>
+      {/* Logo */}
       {showLogo && (
         <img src={logo} alt='EWasteHub' className='h-16 w-auto mx-auto mb-6' />
       )}
+
+      {/* Judul */}
       {title && (
         <h1
           className={`text-2xl font-bold mb-2 ${
@@ -20,6 +25,8 @@ const FormHeader = ({ title, subtitle, showLogo = true, center = true }) => {
           {title}
         </h1>
       )}
+
+      {/* Subjudul */}
       {subtitle && (
         <p
           className={`text-base ${

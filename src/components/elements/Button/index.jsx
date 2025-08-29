@@ -2,7 +2,7 @@ import useDarkMode from '../../../hooks/useDarkMode';
 
 const Button = ({
   children,
-  variant = 'primary',
+  variant = 'primary', // "primary" | "secondary" | "icon"
   disabled = false,
   isLoading = false,
   loadingText = 'Loading...',
@@ -11,10 +11,10 @@ const Button = ({
 }) => {
   const { isDarkMode } = useDarkMode();
 
-  const baseStyle =
+  const baseClasses =
     'px-6 py-3 rounded-lg font-medium transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed';
 
-  const variants = {
+  const variantClasses = {
     primary: isDarkMode
       ? 'bg-green-500 text-white hover:bg-green-600'
       : 'bg-green-600 text-white hover:bg-green-700',
@@ -26,9 +26,11 @@ const Button = ({
       : 'bg-slate-200 border border-slate-300',
   };
 
+  const combinedClasses = `${baseClasses} ${variantClasses[variant]} ${className}`;
+
   return (
     <button
-      className={`${baseStyle} ${variants[variant]} ${className}`}
+      className={combinedClasses}
       disabled={disabled || isLoading}
       {...props}
     >

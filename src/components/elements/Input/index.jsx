@@ -28,6 +28,7 @@ const InputForm = forwardRef(
 
     return (
       <div className='space-y-2'>
+        {/* Label */}
         {label && (
           <Label
             htmlFor={inputId}
@@ -39,6 +40,7 @@ const InputForm = forwardRef(
           </Label>
         )}
 
+        {/* Input */}
         <Input
           ref={ref}
           id={inputId}
@@ -47,7 +49,6 @@ const InputForm = forwardRef(
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          required={required}
           disabled={disabled}
           error={error}
           showPasswordToggle={showPasswordToggle}
@@ -56,6 +57,7 @@ const InputForm = forwardRef(
           {...props}
         />
 
+        {/* Error message */}
         <ErrorMessage>{error}</ErrorMessage>
       </div>
     );

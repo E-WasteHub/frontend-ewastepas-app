@@ -1,73 +1,80 @@
 import useDarkMode from '../../../hooks/useDarkMode';
 
 const Badge = ({
-  variant = 'solid',
-  intent = 'secondary',
-  size = 'md',
+  variant = 'solid', // bentuk: solid, soft, outline
+  intent = 'secondary', // tujuan warna: success, danger, warning, secondary
+  size = 'md', // ukuran: sm, md, lg
   className = '',
   children,
   ...props
 }) => {
   const { isDarkMode } = useDarkMode();
 
-  const sizes = {
+  // ukuran badge
+  const sizeMap = {
     sm: 'px-2 py-0.5 text-xs',
     md: 'px-3 py-1 text-sm',
     lg: 'px-4 py-1.5 text-base',
   };
 
-  const intents = {
+  // warna & tema
+  const colorMap = {
     success: {
-      solid: isDarkMode
-        ? 'bg-green-600/30 text-green-300'
-        : 'bg-green-100 text-green-700',
-      soft: isDarkMode
-        ? 'bg-green-500/10 text-green-400 border border-green-600/30'
-        : 'bg-green-50 text-green-700 border border-green-200',
-      outline: isDarkMode
-        ? 'border border-green-500/50 text-green-300'
-        : 'border border-green-300 text-green-700',
+      light: {
+        solid: 'bg-green-100 text-green-700',
+        soft: 'bg-green-50 text-green-700 border border-green-200',
+        outline: 'border border-green-300 text-green-700',
+      },
+      dark: {
+        solid: 'bg-green-600/30 text-green-300',
+        soft: 'bg-green-500/10 text-green-400 border border-green-600/30',
+        outline: 'border border-green-500/50 text-green-300',
+      },
     },
     danger: {
-      solid: isDarkMode
-        ? 'bg-red-600/30 text-red-300'
-        : 'bg-red-100 text-red-700',
-      soft: isDarkMode
-        ? 'bg-red-500/10 text-red-400 border border-red-600/30'
-        : 'bg-red-50 text-red-700 border border-red-200',
-      outline: isDarkMode
-        ? 'border border-red-500/50 text-red-300'
-        : 'border border-red-300 text-red-700',
+      light: {
+        solid: 'bg-red-100 text-red-700',
+        soft: 'bg-red-50 text-red-700 border border-red-200',
+        outline: 'border border-red-300 text-red-700',
+      },
+      dark: {
+        solid: 'bg-red-600/30 text-red-300',
+        soft: 'bg-red-500/10 text-red-400 border border-red-600/30',
+        outline: 'border border-red-500/50 text-red-300',
+      },
     },
     warning: {
-      solid: isDarkMode
-        ? 'bg-yellow-600/30 text-yellow-300'
-        : 'bg-yellow-100 text-yellow-800',
-      soft: isDarkMode
-        ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-600/30'
-        : 'bg-yellow-50 text-yellow-800 border border-yellow-200',
-      outline: isDarkMode
-        ? 'border border-yellow-500/50 text-yellow-300'
-        : 'border border-yellow-300 text-yellow-800',
+      light: {
+        solid: 'bg-yellow-100 text-yellow-800',
+        soft: 'bg-yellow-50 text-yellow-800 border border-yellow-200',
+        outline: 'border border-yellow-300 text-yellow-800',
+      },
+      dark: {
+        solid: 'bg-yellow-600/30 text-yellow-300',
+        soft: 'bg-yellow-500/10 text-yellow-400 border border-yellow-600/30',
+        outline: 'border border-yellow-500/50 text-yellow-300',
+      },
     },
     secondary: {
-      solid: isDarkMode
-        ? 'bg-slate-700 text-slate-300'
-        : 'bg-gray-200 text-gray-700',
-      soft: isDarkMode
-        ? 'bg-slate-600/20 text-slate-300 border border-slate-600/30'
-        : 'bg-gray-100 text-gray-700 border border-gray-200',
-      outline: isDarkMode
-        ? 'border border-slate-500/50 text-slate-300'
-        : 'border border-gray-400 text-gray-700',
+      light: {
+        solid: 'bg-gray-200 text-gray-700',
+        soft: 'bg-gray-100 text-gray-700 border border-gray-200',
+        outline: 'border border-gray-400 text-gray-700',
+      },
+      dark: {
+        solid: 'bg-slate-700 text-slate-300',
+        soft: 'bg-slate-600/20 text-slate-300 border border-slate-600/30',
+        outline: 'border border-slate-500/50 text-slate-300',
+      },
     },
   };
 
-  const intentStyles = intents[intent]?.[variant] || intents.secondary[variant];
+  const themeMode = isDarkMode ? 'dark' : 'light';
+  const styles = colorMap[intent]?.[themeMode]?.[variant] || '';
 
   return (
     <span
-      className={`inline-flex items-center font-medium rounded-full ${sizes[size]} ${intentStyles} ${className}`}
+      className={`inline-flex items-center font-medium rounded-full ${sizeMap[size]} ${styles} ${className}`}
       {...props}
     >
       {children}

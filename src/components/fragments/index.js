@@ -1,15 +1,30 @@
-// Forms
-export {
-  FormChangePassword,
-  FormHeader,
-  FormLogin,
-  FormLupaPassword,
-  FormPenjemputan,
-  FormProfilData,
-  FormRegister,
-  FormUploadDokumen,
-  FormVerifikasiOTP,
-} from './forms';
+// Reusable Components Form
+export { default as FormHeader } from './forms/FormHeader';
+
+// Reuseble uploads
+export { default as AvatarUpload } from './uploads/AvatarUpload';
+export { default as FileUploadMultiple } from './uploads/FileUploadMultiple';
+export { default as FileUploadSingle } from './uploads/FileUploadSingle';
+
+// Reusable Modals
+export { default as AlertModal } from './modals/AlertModal';
+
+// Forms Auth
+export { default as FormLogin } from './forms/auth/FormLogin';
+export { default as FormPemulihanAkun } from './forms/auth/FormPemulihanAkun';
+export { default as FormRegister } from './forms/auth/FormRegister';
+export { default as FormResetKataSandi } from './forms/auth/FormResetKataSandi';
+export { default as FormVerifikasiOTP } from './forms/auth/FormVerifikasiOTP';
+
+// Form Profil
+export { default as FormProfilData } from './forms/profil/FormProfilData';
+export { default as FormUbahKataSandi } from './forms/profil/FormUbahKataSandi';
+export { default as FormUploadDokumen } from './forms/profil/FormUploadDokumen';
+
+// Form Penjemputan
+export { default as FormPenjemputan } from './forms/penjemputan';
+export { default as DaftarSampah } from './forms/penjemputan/DaftarSampah';
+export { default as ModalTambahSampah } from './forms/penjemputan/ModalTambahSampah';
 
 // Navigation
 export { default as BottomNavbar } from './navigation/BottomNavbar';

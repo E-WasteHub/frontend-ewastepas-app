@@ -1,4 +1,4 @@
-import FormVerifikasiOTP from '../../components/fragments/forms/FormVerifikasiOTP';
+import { FormVerifikasiOTP } from '../../components/fragments';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 

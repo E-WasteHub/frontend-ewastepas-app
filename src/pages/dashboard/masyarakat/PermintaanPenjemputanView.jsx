@@ -1,18 +1,23 @@
+// src/pages/masyarakat/PermintaanPenjemputanView.jsx
 import { useState } from 'react';
-import FormPenjemputan from '../../../components/fragments/forms/FormPenjemputan';
+import { AlertModal, FormPenjemputan } from '../../../components/fragments';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import { buatPenjemputan } from '../../../services/penjemputanService';
 
 const PermintaanPenjemputanView = () => {
   useDocumentTitle('Permintaan Penjemputan');
 
+  // 🔹 state utama untuk form
   const [formData, setFormData] = useState({
     id_waktu_operasional: '',
     alamat_jemput: '',
     catatan: '',
   });
 
+  // 🔹 state loading submit
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // 🔹 state alert modal
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertConfig, setAlertConfig] = useState({
     title: '',
@@ -20,18 +25,20 @@ const PermintaanPenjemputanView = () => {
     type: 'info',
   });
 
+  // show alert reusable
   const showAlert = (title, message, type = 'info') => {
     setAlertConfig({ title, message, type });
     setAlertOpen(true);
   };
 
+  // handle input formData
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  // handle submit ke backend
   const handleSubmit = async (daftarSampah) => {
     setIsSubmitting(true);
-
     try {
       const formPayload = new FormData();
       formPayload.append('id_waktu_operasional', formData.id_waktu_operasional);
@@ -51,16 +58,10 @@ const PermintaanPenjemputanView = () => {
         }
       });
 
-      // Debug payload
-      for (let [k, v] of formPayload.entries()) {
-        console.log(k, v);
-      }
-
-      const res = await buatPenjemputan(formPayload);
+      await buatPenjemputan(formPayload);
       showAlert('Berhasil', 'Form penjemputan berhasil dikirim!', 'success');
-      console.log('✅ Response:', res);
 
-      // reset
+      // reset form
       setFormData({
         id_waktu_operasional: '',
         alamat_jemput: '',
@@ -87,45 +88,13 @@ const PermintaanPenjemputanView = () => {
         onSubmit={handleSubmit}
       />
 
-      {/* Alert Modal */}
-      {alertOpen && (
-        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
-          <div className='bg-white p-6 rounded-lg max-w-md w-full mx-4'>
-            <div className='flex justify-between items-center mb-4'>
-              <h3 className='text-lg font-semibold text-gray-900'>
-                {alertConfig.title}
-              </h3>
-              <button
-                onClick={() => setAlertOpen(false)}
-                className='text-gray-400 hover:text-gray-600'
-              >
-                ✕
-              </button>
-            </div>
-            <p
-              className={
-                alertConfig.type === 'success'
-                  ? 'text-green-600'
-                  : alertConfig.type === 'error'
-                  ? 'text-red-600'
-                  : alertConfig.type === 'warning'
-                  ? 'text-yellow-600'
-                  : 'text-gray-700'
-              }
-            >
-              {alertConfig.message}
-            </p>
-            <div className='flex justify-end mt-4'>
-              <button
-                onClick={() => setAlertOpen(false)}
-                className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'
-              >
-                Ok
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AlertModal
+        isOpen={alertOpen}
+        onClose={() => setAlertOpen(false)}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+      />
     </>
   );
 };
