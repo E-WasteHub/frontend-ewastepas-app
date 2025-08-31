@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import * as authService from '../services/authService';
+import * as authService from '../../services/authService';
 
 export const useRegisterForm = () => {
   /** 🔹 State untuk input form */

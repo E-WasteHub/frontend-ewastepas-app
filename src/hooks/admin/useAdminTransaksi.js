@@ -1,6 +1,6 @@
 // src/hooks/useAdminTransaksi.js
 import { useEffect, useState } from 'react';
-import * as penjemputanService from '../services/penjemputanService';
+import * as penjemputanService from '../../services/penjemputanService';
 
 /**
  * Custom hook untuk mengelola data transaksi di halaman admin.
@@ -26,7 +26,7 @@ const useAdminTransaksi = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await penjemputanService.getRiwayatPenjemputan();
+      const res = await penjemputanService.ambilRiwayatPenjemputan();
       console.log('📌 Riwayat Penjemputan:', res);
 
       setTransaksiData(Array.isArray(res?.data) ? res.data : []);

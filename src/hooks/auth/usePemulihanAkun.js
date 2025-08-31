@@ -1,6 +1,6 @@
 // src/hooks/usePemulihanAkun.js
 import { useState } from 'react';
-import * as authService from '../services/authService';
+import * as authService from '../../services/authService';
 
 export const usePemulihanAkun = () => {
   /** 🔹 State utama */

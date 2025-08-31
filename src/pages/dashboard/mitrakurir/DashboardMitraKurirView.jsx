@@ -1,15 +1,17 @@
 // src/views/dashboard/mitra-kurir/DashboardMitraKurirView.jsx
 import { ArrowRight, Package, Star, Truck } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Alert, Card, SapaanDashboard } from '../../../components/elements';
-import { PermintaanCard } from '../../../components/fragments';
+import { StatCard } from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
+import usePengguna from '../../../hooks/usePengguna';
 
-const DashboardMitraKurirView = ({ userProfile }) => {
+const DashboardMitraKurirView = () => {
   useDocumentTitle('Dashboard Mitra Kurir');
   const { isDarkMode } = useDarkMode();
+  const { pengguna } = usePengguna();
 
   const [daftarPermintaan, setDaftarPermintaan] = useState([]);
   const [error, setError] = useState('');
@@ -17,52 +19,7 @@ const DashboardMitraKurirView = ({ userProfile }) => {
     totalPenjemputan: 127,
     penjemputanBulanIni: 23,
     rating: 4.8,
-    pendapatan: 2450000,
   });
-
-  useEffect(() => {
-    const muatDaftarPermintaan = async () => {
-      try {
-        const mockPermintaan = [
-          {
-            id: 'EW-001',
-            kodePenjemputan: 'EW-001',
-            tanggal: '15 Agustus 2024',
-            alamat: 'Jl. Merdeka No. 123, Jakarta Pusat',
-            status: 'Menunggu Kurir',
-            poin: 250,
-            jenisSampah: ['Laptop', 'Smartphone'],
-            kurir: 'Belum ditentukan',
-          },
-          {
-            id: 'EW-002',
-            kodePenjemputan: 'EW-002',
-            tanggal: '15 Agustus 2024',
-            alamat: 'Jl. Sudirman No. 456, Jakarta Selatan',
-            status: 'Menunggu Kurir',
-            poin: 400,
-            jenisSampah: ['TV LED', 'Rice Cooker'],
-            kurir: 'Belum ditentukan',
-          },
-          {
-            id: 'EW-003',
-            kodePenjemputan: 'EW-003',
-            tanggal: '15 Agustus 2024',
-            alamat: 'Jl. Sudirman No. 456, Jakarta Selatan',
-            status: 'Menunggu Kurir',
-            poin: 400,
-            jenisSampah: ['TV LED', 'Rice Cooker'],
-            kurir: 'Belum ditentukan',
-          },
-        ];
-        setDaftarPermintaan(mockPermintaan);
-      } catch {
-        setError('Gagal memuat daftar permintaan');
-      }
-    };
-
-    muatDaftarPermintaan();
-  }, []);
 
   return (
     <div
@@ -72,7 +29,7 @@ const DashboardMitraKurirView = ({ userProfile }) => {
     >
       {/* Header Sapaan */}
       <SapaanDashboard
-        userProfile={userProfile}
+        pengguna={pengguna}
         subtitle={
           <span>
             Selamat datang di dashboard Mitra Kurir EWasteHub. Semangat bekerja
@@ -87,7 +44,7 @@ const DashboardMitraKurirView = ({ userProfile }) => {
       {/* Quick Stats */}
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
         <StatCard
-          label='Rating'
+          label='Permintaan Aktif'
           value={statistikKurir.rating}
           icon={<Star className='w-6 h-6 text-green-500' />}
           useCard={false}
@@ -149,9 +106,7 @@ const DashboardMitraKurirView = ({ userProfile }) => {
             </div>
           ) : (
             <div className='grid gap-4'>
-              {daftarPermintaan.slice(0, 3).map((permintaan) => (
-                <PermintaanCard key={permintaan.id} permintaan={permintaan} />
-              ))}
+              <h1>KAMU KENA HACK</h1>
             </div>
           )}
         </div>

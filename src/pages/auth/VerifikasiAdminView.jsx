@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import * as authService from '../../services/authService';
-import { setTokenWithExpiry } from '../../utils/authExpiry';
+import { setTokenWithExpiry } from '../../utils/authExpiredUtils';
 
 const VerifikasiAdmin = () => {
   const [status, setStatus] = useState('Memverifikasi...');

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
-import { clearAuth } from '../../../utils/authExpiry';
+import { clearAuth } from '../../../utils/authExpiredUtils';
 import { LogoApp, ThemeSelector } from '../../elements/';
 import { ProfileDropdown } from '../../fragments';
 
@@ -122,26 +122,7 @@ const Navbar = () => {
                 window.location.href = '/login';
               }}
             />
-          ) : (
-            <>
-              <NavLink
-                to='/login'
-                className={`px-3 py-1.5 rounded-md text-sm font-medium ${
-                  isDarkMode
-                    ? 'text-slate-300 hover:text-slate-100 hover:bg-slate-800/50'
-                    : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                Masuk
-              </NavLink>
-              <NavLink
-                to='/register'
-                className='px-3 py-1.5 rounded-md text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700'
-              >
-                Daftar
-              </NavLink>
-            </>
-          )}
+          ) : null}
         </div>
       </div>
     </header>

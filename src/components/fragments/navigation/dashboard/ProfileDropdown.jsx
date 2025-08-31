@@ -3,7 +3,7 @@ import { ChevronDown, Home, LayoutDashboard, LogOut, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
-import { clearAuth } from '../../../../utils/authExpiry';
+import { clearAuth } from '../../../../utils/authExpiredUtils';
 import {
   getProfilePathByRole,
   getRoleDisplayName,

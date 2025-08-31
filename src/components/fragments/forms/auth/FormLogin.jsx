@@ -1,8 +1,8 @@
 // src/components/fragments/forms/FormLogin.jsx
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useLoginForm } from '../../../../hooks/auth/useLoginForm';
 import useDarkMode from '../../../../hooks/useDarkMode';
-import { useLoginForm } from '../../../../hooks/useLoginForm';
 import { Alert, Button, Checkbox, InputForm } from '../../../elements';
 import FormHeader from '../FormHeader';
 
@@ -23,43 +23,40 @@ const FormLogin = () => {
 
   const [successMessage, setSuccessMessage] = useState('');
 
-  // --- Handler Submit ---
+  // Submit handler
   const onSubmit = async (e) => {
     e.preventDefault();
     const res = await handleLoginSubmit(e);
 
-    if (!res?.data?.nama_peran) return;
+    if (res?.data?.peran) {
+      const peran = res.data.peran.toLowerCase();
+      const message = 'Login berhasil! Mengarahkan ke dashboard...';
 
-    const role = res.data.nama_peran.toLowerCase();
+      switch (peran) {
+        case 'masyarakat':
+          setSuccessMessage(message);
+          setTimeout(() => navigate('/dashboard/masyarakat'), 2000);
+          break;
 
-    // Pesan default
-    let message = 'Login berhasil! Mengarahkan ke dashboard...';
+        case 'mitra kurir':
+          setSuccessMessage(message);
+          setTimeout(() => navigate('/dashboard/mitra-kurir'), 2000);
+          break;
 
-    switch (role) {
-      case 'masyarakat':
-        setSuccessMessage(message);
-        setTimeout(() => navigate('/dashboard/masyarakat'), 2000);
-        break;
+        default:
+          setSuccessMessage(message);
+          setTimeout(() => navigate('/'), 2000);
+      }
+    }
 
-      case 'mitra kurir':
-        setSuccessMessage(message);
-        setTimeout(() => navigate('/dashboard/mitra-kurir'), 2000);
-        break;
-
-      case 'admin':
-        // ✅ Admin tidak langsung redirect, pakai OTL
-        setSuccessMessage(
-          'Login berhasil! Silakan cek email Anda untuk melanjutkan.'
-        );
-        break;
-
-      default:
-        setSuccessMessage(message);
-        setTimeout(() => navigate('/'), 2000);
+    // untuk admin menggunakan OTL
+    else if (res?.message) {
+      setSuccessMessage(
+        `${res.message}. Silakan cek email Anda untuk melanjutkan verifikasi OTP.`
+      );
     }
   };
 
-  // Bersihkan pesan saat unmount
   useEffect(() => () => setSuccessMessage(''), []);
 
   return (
@@ -71,7 +68,6 @@ const FormLogin = () => {
             : 'bg-white border-gray-200'
         } rounded-2xl border shadow-lg p-8`}
       >
-        {/* Header */}
         <FormHeader
           title='EWasteHub'
           subtitle='Masuk ke Akun Anda'
@@ -85,7 +81,6 @@ const FormLogin = () => {
           <Alert type='success' message={successMessage} className='my-3' />
         )}
 
-        {/* Form */}
         <form onSubmit={onSubmit} className='space-y-4'>
           <InputForm
             label='Email'
@@ -125,7 +120,6 @@ const FormLogin = () => {
                 Ingat saya
               </span>
             </label>
-
             <Link
               to='/pemulihan-akun'
               className={`${
@@ -149,7 +143,6 @@ const FormLogin = () => {
           </Button>
         </form>
 
-        {/* Footer */}
         <div
           className={`text-center text-sm mt-6 pt-4 border-t ${
             isDarkMode ? 'border-slate-700' : 'border-gray-200'

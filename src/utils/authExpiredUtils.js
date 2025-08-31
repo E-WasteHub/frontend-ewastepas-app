@@ -1,8 +1,7 @@
-// small helper to store token (and expiry timestamp) in localStorage
 const TOKEN_KEY = 'token';
 const TOKEN_EXPIRES_AT = 'token_expires_at';
 
-// Save token and expiry (expirySeconds from now)
+// Simpan token dan expired
 export function setTokenWithExpiry(token, expirySeconds = 12 * 60 * 60) {
   if (!token) return;
   try {

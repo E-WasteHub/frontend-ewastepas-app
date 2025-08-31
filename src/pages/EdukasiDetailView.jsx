@@ -5,7 +5,7 @@ import { Link, useParams } from 'react-router-dom';
 import MainLayout from '../components/layouts/MainLayout';
 import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-import { showEdukasi } from '../services/edukasiService'; // ✅ langsung pakai service
+import { detailEdukasi } from '../services/edukasiService';
 
 const EdukasiDetailView = () => {
   const { id } = useParams();
@@ -23,8 +23,8 @@ const EdukasiDetailView = () => {
       try {
         setIsLoading(true);
         setError('');
-        const res = await showEdukasi(id); // ✅ ambil dari API
-        setArtikel(res.data || res); // tergantung format respons API kamu
+        const res = await detailEdukasi(id);
+        setArtikel(res.data);
       } catch (err) {
         setError(err.message || 'Gagal memuat detail edukasi');
       } finally {

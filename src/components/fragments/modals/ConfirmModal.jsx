@@ -9,7 +9,7 @@ const ConfirmModal = ({
   message = 'Apakah Anda yakin?',
   confirmText = 'Ya',
   cancelText = 'Batal',
-  confirmType = 'danger', // 'primary' | 'danger' | 'warning' | 'success'
+  confirmType = 'danger',
   isLoading = false,
 }) => {
   const { isDarkMode } = useDarkMode();
@@ -30,7 +30,7 @@ const ConfirmModal = ({
         {message}
       </p>
 
-      <div className='flex justify-end gap-3 mt-6'>
+      <div className='flex justify-end gap-3 mt-4'>
         <Button variant='secondary' onClick={onClose} disabled={isLoading}>
           {cancelText}
         </Button>

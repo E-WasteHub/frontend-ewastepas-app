@@ -2,12 +2,10 @@ import useDarkMode from '../../../hooks/useDarkMode';
 import { Card } from '../../elements';
 
 const statusOptions = [
-  { key: 'all', label: 'Semua', color: '' },
-  { key: 'menunggu', label: 'Menunggu Kurir', color: 'text-yellow-600' },
-  { key: 'dijemput', label: 'Dijemput Kurir', color: 'text-blue-600' },
-  { key: 'diantar', label: 'Diantar ke Dropbox', color: 'text-indigo-600' },
-  { key: 'selesai', label: 'Selesai', color: 'text-green-600' },
-  { key: 'dibatalkan', label: 'Dibatalkan', color: 'text-red-600' },
+  { key: 'all', label: 'Semua' },
+  { key: 'aktif', label: 'Aktif' },
+  { key: 'selesai', label: 'Selesai' },
+  { key: 'dibatalkan', label: 'Dibatalkan' },
 ];
 
 const FilterCard = ({ search, setSearch, filter, setFilter }) => {
@@ -20,11 +18,11 @@ const FilterCard = ({ search, setSearch, filter, setFilter }) => {
         type='text'
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder='🔍 Cari kode atau alamat...'
+        placeholder='Cari kode atau alamat...'
         className={`w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 ${
           isDarkMode
             ? 'bg-slate-800 border-slate-600 text-white focus:ring-green-600'
-            : 'bg-white border-gray-300 focus:ring-green-500'
+            : 'bg-white text-slate-800 border-gray-300 focus:ring-green-500'
         }`}
       />
 

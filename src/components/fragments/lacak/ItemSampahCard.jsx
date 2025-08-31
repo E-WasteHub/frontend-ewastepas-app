@@ -1,5 +1,5 @@
 // src/components/fragments/lacak/ItemSampahCard.jsx
-const ItemSampahCard = ({ s, isDarkMode }) => (
+const ItemSampahCard = ({ data, isDarkMode }) => (
   <div
     className={`flex items-start gap-4 p-4 rounded-lg border shadow-sm transition-colors
       ${
@@ -10,10 +10,10 @@ const ItemSampahCard = ({ s, isDarkMode }) => (
     `}
   >
     {/* Foto */}
-    {s.gambar_url ? (
+    {data.gambar_url ? (
       <img
-        src={s.gambar_url}
-        alt={s.nama_jenis}
+        src={data.gambar_url}
+        alt={data.nama_jenis}
         className='w-20 h-20 rounded-lg object-cover shadow-md'
       />
     ) : (
@@ -32,17 +32,17 @@ const ItemSampahCard = ({ s, isDarkMode }) => (
 
     {/* Detail */}
     <div className='flex-1 text-sm'>
-      <p className='font-semibold'>{s.nama_kategori}</p>
+      <p className='font-semibold'>{data.nama_kategori}</p>
       <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>
-        {s.nama_jenis} •{' '}
-        <span className='font-medium'>{s.jumlah_sampah} pcs</span> •{' '}
+        {data.nama_jenis} •{' '}
+        <span className='font-medium'>{data.jumlah_sampah} pcs</span> •{' '}
         <span className='font-medium text-green-500'>
-          {s.poin_sampah || 0} poin
+          {data.poin_sampah || 0} poin
         </span>
       </p>
-      {s.catatan_sampah && (
+      {data.catatan_sampah && (
         <p className='text-xs italic mt-1 text-gray-500'>
-          Catatan: {s.catatan_sampah}
+          Catatan: {data.catatan_sampah}
         </p>
       )}
     </div>

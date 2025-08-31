@@ -1,17 +1,14 @@
-import {
-  Activity,
-  BarChart3,
-  Database,
-  FileText,
-  Package,
-  Users,
-} from 'lucide-react';
-import { Card, SapaanDashboard } from '../../../components/elements';
-import { QuickAccessCard } from '../../../components/fragments';
+import { Activity, Package, Users } from 'lucide-react';
+import { SapaanDashboard } from '../../../components/elements';
+import { StatCard } from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
+import useDocumentTitle from '../../../hooks/useDocumentTitle';
+import usePengguna from '../../../hooks/usePengguna';
 
-const AdminDashboardView = ({ userProfile }) => {
+const AdminDashboardView = () => {
   const { isDarkMode } = useDarkMode();
+  const { pengguna } = usePengguna();
+  useDocumentTitle('Dashboard Admin');
 
   // Sample statistics data
   const statistikPengguna = {
@@ -29,34 +26,6 @@ const AdminDashboardView = ({ userProfile }) => {
     totalPoinTerdistribusi: 125400,
   };
 
-  // Quick access items
-  const aksesSecepatData = [
-    {
-      title: 'Verifikasi Akun',
-      description: 'Verifikasi akun mitra kurir',
-      path: '/dashboard/admin/verifikasi-akun',
-      icon: Users,
-    },
-    {
-      title: 'Data Master',
-      description: 'Kelola data master sistem',
-      path: '/dashboard/admin/data-master',
-      icon: Database,
-    },
-    {
-      title: 'Transaksi',
-      description: 'Monitor semua transaksi',
-      path: '/dashboard/admin/transaksi',
-      icon: BarChart3,
-    },
-    {
-      title: 'Kelola Edukasi',
-      description: 'Manage konten edukasi',
-      path: '/dashboard/admin/kelola-edukasi',
-      icon: FileText,
-    },
-  ];
-
   return (
     <div
       className={`max-w-7xl mx-auto ${
@@ -66,7 +35,7 @@ const AdminDashboardView = ({ userProfile }) => {
       <div className='space-y-6'>
         {/* Header Section */}
         <SapaanDashboard
-          userProfile={userProfile}
+          pengguna={pengguna}
           subtitle={
             <span>
               Selamat datang di dashboard Admin EWasteHub. Selamat bekerja.
@@ -75,7 +44,7 @@ const AdminDashboardView = ({ userProfile }) => {
         />
 
         {/* Statistics Cards */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           <StatCard
             label='Total Pengguna'
             value={statistikPengguna.totalPengguna}
@@ -94,32 +63,6 @@ const AdminDashboardView = ({ userProfile }) => {
             icon={<Package className='w-6 h-6 text-green-500' />}
             useCard={false}
           />
-          <StatCard
-            label='Menunggu Verifikasi'
-            value={statistikPengguna.mitraKurir}
-            icon={<Users className='w-6 h-6 text-green-500' />}
-            useCard={false}
-          />
-        </div>
-
-        {/* Quick Access Section */}
-        <div className='max-w-7xl mx-auto space-y-6'>
-          <div className='lg:col-span-2'>
-            <Card className={`p-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
-              <h3
-                className={`text-lg font-semibold mb-4 ${
-                  isDarkMode ? 'text-white' : 'text-slate-900'
-                }`}
-              >
-                Akses Cepat
-              </h3>
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                {aksesSecepatData.map((item, index) => (
-                  <QuickAccessCard key={index} item={item} />
-                ))}
-              </div>
-            </Card>
-          </div>
         </div>
       </div>
     </div>

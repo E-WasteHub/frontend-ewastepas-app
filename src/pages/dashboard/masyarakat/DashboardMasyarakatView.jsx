@@ -1,16 +1,23 @@
-// src/views/masyarakat/DashboardMasyarakatView.jsx
 import { Gift, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card, SapaanDashboard } from '../../../components/elements';
 import { RiwayatCard, StatCard } from '../../../components/fragments';
+import useDashboardMasyarakat from '../../../hooks/masyarakat/useDashboardMasyarakat';
 import useDarkMode from '../../../hooks/useDarkMode';
-import useDashboardMasyarakat from '../../../hooks/useDashboardMasyarakat';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
+import usePengguna from '../../../hooks/usePengguna';
 
-const DashboardMasyarakatView = ({ userProfile }) => {
+const DashboardMasyarakatView = () => {
   useDocumentTitle('Dashboard Masyarakat');
   const { isDarkMode } = useDarkMode();
   const { stats, requests, loading } = useDashboardMasyarakat();
+  const { pengguna } = usePengguna();
+
+  const safeStats = stats || {
+    totalPoin: 0,
+    totalPenjemputan: 0,
+    sedangBerlangsung: 0,
+  };
 
   return (
     <div
@@ -19,25 +26,25 @@ const DashboardMasyarakatView = ({ userProfile }) => {
       } space-y-3`}
     >
       <SapaanDashboard
-        userProfile={userProfile}
-        subtitle='Selamat datang di EWasteHub. Yuk kelola e-waste kamu!'
+        pengguna={pengguna}
+        subtitle='Selamat datang di EWasteHub. Yuk kelola sampah elektronik kamu!'
       />
 
       {/* Statistik */}
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
         <StatCard
           label='Total Poin'
-          value={stats.totalPoin}
+          value={safeStats.totalPoin}
           icon={<Gift className='w-6 h-6 text-green-500' />}
         />
         <StatCard
           label='Total Penjemputan'
-          value={stats.totalPenjemputan}
+          value={safeStats.totalPenjemputan}
           icon={<Truck className='w-6 h-6 text-green-500' />}
         />
         <StatCard
           label='Sedang Berlangsung'
-          value={stats.sedangBerlangsung}
+          value={safeStats.sedangBerlangsung}
           icon={<Truck className='w-6 h-6 text-green-500' />}
         />
       </div>
@@ -72,7 +79,7 @@ const DashboardMasyarakatView = ({ userProfile }) => {
           ) : requests.length > 0 ? (
             <div className='grid gap-4'>
               {requests.slice(0, 3).map((req) => (
-                <RiwayatCard key={req.kodePenjemputan} req={req} />
+                <RiwayatCard key={req.kodePenjemputan || req.kode} req={req} />
               ))}
             </div>
           ) : (

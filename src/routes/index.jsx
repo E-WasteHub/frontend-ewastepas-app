@@ -62,9 +62,9 @@ const DetailLacakPenjemputanView = lazy(() =>
 const RiwayatMasyarakatView = lazy(() =>
   import('../pages/dashboard/masyarakat/RiwayatMasyarakatView')
 );
-const DetailRiwayatMasyarakatView = lazy(() => {
-  import('../pages/dashboard/masyarakat/DetailRiwayatMasyarakatView');
-});
+const DetailRiwayatMasyarakatView = lazy(() =>
+  import('../pages/dashboard/masyarakat/DetailRiwayatMasyarakatView')
+);
 
 // ================= Mitra Kurir Pages =================
 const DashboardKurirView = lazy(() =>

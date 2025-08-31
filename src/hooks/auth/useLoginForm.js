@@ -1,7 +1,6 @@
-// src/hooks/useLoginForm.js
 import { useEffect, useState } from 'react';
-import * as authService from '../services/authService';
-import { setTokenWithExpiry } from '../utils/authExpiry';
+import * as authService from '../../services/authService';
+import { setTokenWithExpiry } from '../../utils/authExpiredUtils';
 
 export const useLoginForm = () => {
   // --- State Form ---
@@ -11,8 +10,8 @@ export const useLoginForm = () => {
 
   // --- State UI ---
   const [isLoading, setIsLoading] = useState(false);
-  const [globalError, setGlobalError] = useState(''); // error global dari API
-  const [fieldErrors, setFieldErrors] = useState({}); // error spesifik per field
+  const [globalError, setGlobalError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
 
   // --- Init remembered email ---
   useEffect(() => {
@@ -41,17 +40,12 @@ export const useLoginForm = () => {
     const errors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!email) {
-      errors.email = 'Email wajib diisi';
-    } else if (!emailRegex.test(email)) {
-      errors.email = 'Format email tidak valid';
-    }
+    if (!email) errors.email = 'Email wajib diisi';
+    else if (!emailRegex.test(email)) errors.email = 'Format email tidak valid';
 
-    if (!kata_sandi) {
-      errors.kata_sandi = 'Kata sandi wajib diisi';
-    } else if (kata_sandi.length < 6) {
+    if (!kata_sandi) errors.kata_sandi = 'Kata sandi wajib diisi';
+    else if (kata_sandi.length < 6)
       errors.kata_sandi = 'Kata sandi minimal 6 karakter';
-    }
 
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -65,7 +59,7 @@ export const useLoginForm = () => {
     try {
       setIsLoading(true);
       setGlobalError('');
-      localStorage.clear(); // hapus token lama (misalnya dari register)
+      localStorage.clear();
 
       const res = await authService.login({ email, kata_sandi });
 
@@ -75,16 +69,12 @@ export const useLoginForm = () => {
 
         if (res.data) {
           localStorage.setItem('pengguna', JSON.stringify(res.data));
-          localStorage.setItem('peran', res.data.nama_peran);
+          localStorage.setItem('peran', res.data.peran?.trim());
         }
       }
 
-      // "Ingat saya"
-      if (rememberMe) {
-        localStorage.setItem('rememberedEmail', email);
-      } else {
-        localStorage.removeItem('rememberedEmail');
-      }
+      if (rememberMe) localStorage.setItem('rememberedEmail', email);
+      else localStorage.removeItem('rememberedEmail');
 
       return res;
     } catch (err) {
@@ -95,14 +85,12 @@ export const useLoginForm = () => {
   };
 
   return {
-    // State
     email,
     kata_sandi,
     rememberMe,
     isLoading,
     error: globalError,
     errorField: fieldErrors,
-    // Actions
     handleInputChange,
     handleLoginSubmit,
   };

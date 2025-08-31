@@ -1,7 +1,7 @@
 // src/hooks/useAdminDashboard.js
 import { useEffect, useState } from 'react';
-import * as authService from '../services/authService';
-import * as penjemputanService from '../services/penjemputanService';
+import * as authService from '../../services/authService';
+import * as penjemputanService from '../../services/penjemputanService';
 
 /**
  * Custom hook untuk mengelola state & logika dashboard admin.

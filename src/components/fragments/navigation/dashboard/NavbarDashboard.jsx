@@ -2,7 +2,7 @@
 import { Moon, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import useDarkMode from '../../../../hooks/useDarkMode';
-import { clearAuth } from '../../../../utils/authExpiry';
+import { clearAuth } from '../../../../utils/authExpiredUtils';
 import Button from '../../../elements/Button';
 import NotificationDropdown from './NotificationDropdown';
 import ProfileDropdown from './ProfileDropdown';

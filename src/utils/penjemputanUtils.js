@@ -1,47 +1,65 @@
 // src/utils/penjemputanUtils.js
 
-/**
- * Utility functions untuk penjemputan
- */
+export const parseToDate = (value) => {
+  if (!value) return null;
 
-/**
- * Mapping status penjemputan berdasarkan field waktu
- * @param {Object} penjemputan - Data penjemputan
- * @returns {string} Status yang sudah dimapping
- */
-export const mapStatus = (penjemputan) => {
+  // Kalau number → langsung
+  if (typeof value === 'number') {
+    return value.toString().length === 10
+      ? new Date(value * 1000) // detik → ms
+      : new Date(value); // milidetik
+  }
+
+  // Kalau string angka → parse ke int
+  if (typeof value === 'string' && /^\d+$/.test(value)) {
+    return value.length === 10
+      ? new Date(parseInt(value, 10) * 1000)
+      : new Date(parseInt(value, 10));
+  }
+
+  // Kalau string datetime biasa
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? null : d;
+};
+
+// Ubah data penjemputan menjadi status teks
+export const statusPenjemputan = (penjemputan) => {
+  if (!penjemputan) return '-';
   if (penjemputan.waktu_dibatalkan) return 'Dibatalkan';
   if (penjemputan.waktu_sampai) return 'Selesai';
-  if (penjemputan.waktu_diantar) return 'Diantar Kurir ke Dropbox';
+  if (penjemputan.waktu_diantar) return 'Diantar ke Dropbox';
   if (penjemputan.waktu_diterima || penjemputan.waktu_dijemput)
     return 'Dijemput Kurir';
   return 'Menunggu Kurir';
 };
 
-/**
- * Format tanggal untuk tampilan Indonesia
- * @param {string} dateString - String tanggal
- * @returns {string} Tanggal yang sudah diformat
- */
-export const formatTanggalIndonesia = (dateString) => {
-  if (!dateString) return '-';
+// Tentukan langkah aktif pada timeline
+// @returns number (0 = Menunggu, 1 = Dijemput, 2 = Diantar, 3 = Selesai, -1 = Dibatalkan)
+export const langkahStatusPenjemputan = (penjemputan) => {
+  if (!penjemputan) return 0;
+  if (penjemputan.waktu_dibatalkan) return -1;
+  if (penjemputan.waktu_sampai) return 3;
+  if (penjemputan.waktu_diantar) return 2;
+  if (penjemputan.waktu_diterima || penjemputan.waktu_dijemput) return 1;
+  return 0;
+};
 
-  return new Date(dateString).toLocaleDateString('id-ID', {
+// 🔹 Format tanggal (Indonesia, tanpa jam)
+export const formatTanggalID = (tanggal) => {
+  const d = parseToDate(tanggal);
+  if (!d) return '-';
+  return d.toLocaleDateString('id-ID', {
     day: '2-digit',
     month: 'long',
     year: 'numeric',
   });
 };
 
-/**
- * Format tanggal dan waktu untuk tampilan Indonesia
- * @param {string} dateString - String tanggal
- * @returns {string} Tanggal dan waktu yang sudah diformat
- */
-export const formatTanggalWaktuIndonesia = (dateString) => {
-  if (!dateString) return '-';
-
-  return new Date(dateString).toLocaleString('id-ID', {
+// 🔹 Format tanggal + jam (Indonesia)
+export const formatTanggalWaktuID = (tanggal) => {
+  const d = parseToDate(tanggal);
+  if (!d) return '-';
+  return d.toLocaleString('id-ID', {
     day: '2-digit',
     month: 'long',
     year: 'numeric',
@@ -50,84 +68,158 @@ export const formatTanggalWaktuIndonesia = (dateString) => {
   });
 };
 
-/**
- * Hitung total poin dari array sampah
- * @param {Array} sampahArray - Array data sampah
- * @returns {number} Total poin
- */
-export const hitungTotalPoin = (sampahArray) => {
-  if (!Array.isArray(sampahArray)) return 0;
-
-  return sampahArray.reduce((total, sampah) => {
-    return total + (sampah.poin_sampah || 0);
-  }, 0);
+// 🔹 Format khusus waktu saja (jam:menit)
+export const formatWaktuID = (timestamp) => {
+  const d = parseToDate(timestamp);
+  if (!d) return '-';
+  return d.toLocaleTimeString('id-ID', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 };
 
-/**
- * Generate timeline berdasarkan data penjemputan
- * @param {Object} penjemputan - Data penjemputan
- * @returns {Array} Array timeline
- */
-export const generateTimeline = (penjemputan) => {
-  const timeline = [
-    {
-      status: 'Menunggu Kurir',
-      desc: 'Permintaan berhasil dibuat',
-      time: penjemputan.waktu_ditambah,
-      active: true,
-    },
-  ];
+// Hitung total poin dari daftar sampah
+export const hitungTotalPoin = (daftarSampah) => {
+  if (!Array.isArray(daftarSampah)) return 0;
+  return daftarSampah.reduce(
+    (total, item) => total + (item.poin_sampah || 0),
+    0
+  );
+};
 
-  if (penjemputan.waktu_diterima) {
+// Definisi langkah-langkah timeline penjemputan
+export const daftarLangkahStatus = [
+  {
+    key: 'menunggu',
+    label: 'Menunggu Kurir',
+    description: 'Permintaan berhasil dibuat',
+    timeKey: 'waktu_ditambah',
+  },
+  {
+    key: 'dijemput',
+    label: 'Dijemput Kurir',
+    description: 'Kurir mengambil barang',
+    timeKey: 'waktu_dijemput',
+  },
+  {
+    key: 'diantar',
+    label: 'Diantar ke Dropbox',
+    description: 'Barang diantar ke dropbox',
+    timeKey: 'waktu_diantar',
+  },
+  {
+    key: 'selesai',
+    label: 'Selesai',
+    description: 'Penjemputan selesai',
+    timeKey: 'waktu_sampai',
+  },
+  {
+    key: 'dibatalkan',
+    label: 'Dibatalkan',
+    description: 'Penjemputan dibatalkan',
+    timeKey: 'waktu_dibatalkan',
+  },
+];
+
+// Bangun timeline dari data penjemputan
+export const buatTimelinePenjemputan = (penjemputan) => {
+  if (!penjemputan) return [];
+
+  const timeline = [];
+
+  if (penjemputan.waktu_ditambah) {
+    timeline.push({
+      status: 'Menunggu Kurir',
+      deskripsi: 'Permintaan berhasil dibuat',
+      waktu: penjemputan.waktu_ditambah,
+      aktif: true,
+    });
+  }
+
+  if (penjemputan.waktu_diterima || penjemputan.waktu_dijemput) {
     timeline.push({
       status: 'Dijemput Kurir',
-      desc: 'Kurir mengambil barang',
-      time: penjemputan.waktu_diterima,
-      active: true,
+      deskripsi: 'Kurir mengambil barang',
+      waktu: penjemputan.waktu_diterima || penjemputan.waktu_dijemput,
+      aktif: true,
     });
   }
 
   if (penjemputan.waktu_diantar) {
     timeline.push({
-      status: 'Diantar Kurir ke Dropbox',
-      desc: 'Barang diantar ke dropbox',
-      time: penjemputan.waktu_diantar,
-      active: true,
+      status: 'Diantar ke Dropbox',
+      deskripsi: 'Barang diantar ke dropbox',
+      waktu: penjemputan.waktu_diantar,
+      aktif: true,
     });
   }
 
   if (penjemputan.waktu_sampai) {
     timeline.push({
       status: 'Selesai',
-      desc: 'Penjemputan selesai',
-      time: penjemputan.waktu_sampai,
-      active: true,
+      deskripsi: 'Penjemputan selesai',
+      waktu: penjemputan.waktu_sampai,
+      aktif: true,
     });
   }
 
   if (penjemputan.waktu_dibatalkan) {
     timeline.push({
       status: 'Dibatalkan',
-      desc: 'Penjemputan dibatalkan',
-      time: penjemputan.waktu_dibatalkan,
-      active: true,
+      deskripsi: 'Penjemputan dibatalkan',
+      waktu: penjemputan.waktu_dibatalkan,
+      aktif: true,
     });
   }
 
   return timeline;
 };
 
-/**
- * Get status color class untuk badge
- * @param {string} status - Status penjemputan
- * @returns {string} CSS class untuk warna
- */
-export const getStatusColorClass = (status) => {
-  const colorMap = {
+export const mapStatusLabel = (status) => {
+  const s = (status || '').toLowerCase();
+  switch (s) {
+    case 'menunggu':
+      return 'Menunggu Kurir';
+    case 'diproses':
+      return 'Menunggu Kurir'; // mapping ke label frontend
+    case 'diterima':
+      return 'Dijemput Kurir';
+    case 'dijemput':
+      return 'Diantar ke Dropbox';
+    case 'selesai':
+      return 'Selesai';
+    case 'dibatalkan':
+      return 'Dibatalkan';
+    default:
+      return status || '-';
+  }
+};
+
+// Cek status aktif
+export const isStatusAktif = (status) => {
+  const s = (status || '').toLowerCase();
+  return [
+    'menunggu kurir',
+    'dijemput kurir',
+    'diantar ke dropbox',
+    'diproses',
+    'diterima',
+  ].includes(s);
+};
+
+// Cek status final
+export const isStatusFinal = (status) => {
+  const s = (status || '').toLowerCase();
+  return ['selesai', 'dibatalkan'].includes(s);
+};
+
+//  Map status ke class warna untuk badge
+export const warnaStatusBadge = (status) => {
+  const warnaMap = {
     Selesai:
       'bg-green-100 text-green-800 dark:bg-green-800/30 dark:text-green-300',
     Dibatalkan: 'bg-red-100 text-red-800 dark:bg-red-800/30 dark:text-red-300',
-    'Diantar Kurir ke Dropbox':
+    'Diantar ke Dropbox':
       'bg-indigo-100 text-indigo-800 dark:bg-indigo-800/30 dark:text-indigo-300',
     'Dijemput Kurir':
       'bg-blue-100 text-blue-800 dark:bg-blue-800/30 dark:text-blue-300',
@@ -136,38 +228,7 @@ export const getStatusColorClass = (status) => {
   };
 
   return (
-    colorMap[status] ||
+    warnaMap[status] ||
     'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
   );
-};
-
-/**
- * Check apakah tanggal adalah hari ini
- * @param {string} dateString - String tanggal
- * @returns {boolean} True jika hari ini
- */
-export const isToday = (dateString) => {
-  if (!dateString) return false;
-
-  const today = new Date().toDateString();
-  const checkDate = new Date(dateString).toDateString();
-
-  return today === checkDate;
-};
-
-/**
- * Check apakah tanggal dalam rentang hari tertentu
- * @param {string} dateString - String tanggal
- * @param {number} days - Jumlah hari
- * @returns {boolean} True jika dalam rentang
- */
-export const isWithinDays = (dateString, days) => {
-  if (!dateString) return false;
-
-  const checkDate = new Date(dateString);
-  const today = new Date();
-  const diffTime = Math.abs(today - checkDate);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  return diffDays <= days;
 };

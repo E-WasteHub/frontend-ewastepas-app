@@ -10,7 +10,7 @@ const PermintaanPenjemputanView = () => {
   // 🔹 state utama untuk form
   const [formData, setFormData] = useState({
     id_waktu_operasional: '',
-    alamat_jemput: '',
+    alamat_penjemputan: '',
     catatan: '',
   });
 
@@ -42,7 +42,7 @@ const PermintaanPenjemputanView = () => {
     try {
       const formPayload = new FormData();
       formPayload.append('id_waktu_operasional', formData.id_waktu_operasional);
-      formPayload.append('alamat_jemput', formData.alamat_jemput);
+      formPayload.append('alamat_penjemputan', formData.alamat_penjemputan);
       formPayload.append('catatan', formData.catatan);
 
       daftarSampah.forEach((s, idx) => {
@@ -64,7 +64,7 @@ const PermintaanPenjemputanView = () => {
       // reset form
       setFormData({
         id_waktu_operasional: '',
-        alamat_jemput: '',
+        alamat_penjemputan: '',
         catatan: '',
       });
     } catch (err) {

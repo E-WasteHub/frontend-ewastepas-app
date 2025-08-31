@@ -1,8 +1,8 @@
 // src/components/auth/FormResetKataSandi.jsx
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import useResetKataSandi from '../../../../hooks/auth/useResetKataSandi';
 import useDarkMode from '../../../../hooks/useDarkMode';
-import * as authService from '../../../../services/authService';
 import { Alert, Button, InputForm } from '../../../elements';
 import FormHeader from '../FormHeader';
 
@@ -11,84 +11,23 @@ const FormResetKataSandi = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // 🔹 state lokal
-  const [kataSandi, setKataSandi] = useState('');
-  const [konfirmasiKataSandi, setKonfirmasiKataSandi] = useState('');
-  const [errorGlobal, setErrorGlobal] = useState('');
-  const [errorInput, setErrorInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-
-  // ambil OTP dari query
   const otp = searchParams.get('otp');
 
-  // handler input
-  const ubahKataSandi = (e) => {
-    setKataSandi(e.target.value);
-    setErrorGlobal('');
-    setErrorInput('');
-    setSuccessMessage('');
-  };
+  // 🔹 Gunakan custom hook
+  const {
+    kataSandi,
+    konfirmasiKataSandi,
+    isLoading,
+    error,
+    errorField,
+    successMessage,
+    handleInputKataSandi,
+    handleInputKonfirmasiKataSandi,
+    handleSubmitReset,
+    clearError,
+  } = useResetKataSandi();
 
-  const ubahKonfirmasiKataSandi = (e) => {
-    setKonfirmasiKataSandi(e.target.value);
-    setErrorGlobal('');
-    setErrorInput('');
-    setSuccessMessage('');
-  };
-
-  // submit reset
-  const kirimResetKataSandi = async (e) => {
-    e.preventDefault();
-    setErrorGlobal('');
-    setSuccessMessage('');
-
-    // validasi manual
-    if (!kataSandi) {
-      setErrorGlobal('Kata sandi baru wajib diisi');
-      setErrorInput('kataSandi');
-      return;
-    }
-    if (kataSandi.length < 6) {
-      setErrorGlobal('Kata sandi minimal 6 karakter');
-      setErrorInput('kataSandi');
-      return;
-    }
-    if (!konfirmasiKataSandi) {
-      setErrorGlobal('Konfirmasi kata sandi wajib diisi');
-      setErrorInput('konfirmasiKataSandi');
-      return;
-    }
-    if (kataSandi !== konfirmasiKataSandi) {
-      setErrorGlobal('Konfirmasi kata sandi tidak cocok');
-      setErrorInput('konfirmasiKataSandi');
-      return;
-    }
-    if (!otp) {
-      setErrorGlobal(
-        'Kode OTP tidak ditemukan. Silakan coba lagi lewat link baru.'
-      );
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      const res = await authService.resetPassword({
-        otp,
-        kata_sandi: kataSandi,
-        konfirmasi_kata_sandi: konfirmasiKataSandi,
-      });
-      setSuccessMessage(res.message || 'Reset kata sandi berhasil');
-      setKataSandi('');
-      setKonfirmasiKataSandi('');
-    } catch (err) {
-      setErrorGlobal(err.message || 'Reset password gagal');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // redirect ke login kalau sukses
+  // 🔹 Redirect ke login setelah sukses reset
   useEffect(() => {
     if (successMessage) {
       const timer = setTimeout(() => {
@@ -128,27 +67,27 @@ const FormResetKataSandi = () => {
         {successMessage && (
           <Alert type='success' message={successMessage} className='mb-4' />
         )}
-        {errorGlobal && (
+        {error && (
           <Alert
             type='error'
-            message={errorGlobal}
+            message={error}
             className='mb-4'
-            onClose={() => setErrorGlobal('')}
+            onClose={clearError}
           />
         )}
 
         {/* Form */}
-        <form onSubmit={kirimResetKataSandi} className='space-y-4'>
+        <form onSubmit={(e) => handleSubmitReset(e, otp)} className='space-y-4'>
           <InputForm
             type='password'
             label='Kata Sandi Baru'
             name='kataSandi'
             placeholder='Masukkan kata sandi baru'
             value={kataSandi}
-            onChange={ubahKataSandi}
+            onChange={handleInputKataSandi}
             disabled={isLoading}
             required
-            error={errorInput === 'kataSandi' ? errorGlobal : ''}
+            error={errorField === 'kataSandi' ? error : ''}
             showPasswordToggle
             autoComplete='new-password'
             className='text-sm'
@@ -160,10 +99,10 @@ const FormResetKataSandi = () => {
             name='konfirmasiKataSandi'
             placeholder='Konfirmasi kata sandi baru'
             value={konfirmasiKataSandi}
-            onChange={ubahKonfirmasiKataSandi}
+            onChange={handleInputKonfirmasiKataSandi}
             disabled={isLoading}
             required
-            error={errorInput === 'konfirmasiKataSandi' ? errorGlobal : ''}
+            error={errorField === 'konfirmasiKataSandi' ? error : ''}
             showPasswordToggle
             autoComplete='new-password'
             className='text-sm'

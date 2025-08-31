@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Card, Pagination } from '../../../components/elements';
+import { RiwayatKurirCard } from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 

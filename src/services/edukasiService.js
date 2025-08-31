@@ -47,7 +47,7 @@ export const deleteEdukasi = async (id) => {
 };
 
 // Detail edukasi
-export const showEdukasi = async (id) => {
+export const detailEdukasi = async (id) => {
   try {
     const response = await api.get(`/konten-edukasi/${id}`);
     return response.data;

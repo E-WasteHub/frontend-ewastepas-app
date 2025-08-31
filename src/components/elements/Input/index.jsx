@@ -1,5 +1,4 @@
 import { forwardRef } from 'react';
-import ErrorMessage from '../ErrorMessage';
 import Input from './Input';
 import Label from './Label';
 
@@ -56,9 +55,6 @@ const InputForm = forwardRef(
           className={className}
           {...props}
         />
-
-        {/* Error message */}
-        <ErrorMessage>{error}</ErrorMessage>
       </div>
     );
   }

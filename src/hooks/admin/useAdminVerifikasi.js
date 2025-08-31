@@ -1,6 +1,6 @@
 // src/hooks/useAdminVerifikasi.js
 import { useEffect, useState } from 'react';
-import * as authService from '../services/authService';
+import * as authService from '../../services/authService';
 
 /**
  * Custom hook untuk mengelola verifikasi pengguna di halaman admin.

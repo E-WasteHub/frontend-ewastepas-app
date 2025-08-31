@@ -1,6 +1,6 @@
 // src/hooks/useResetKataSandi.js
 import { useState } from 'react';
-import * as authService from '../services/authService';
+import * as authService from '../../services/authService';
 
 const useResetKataSandi = () => {
   const [kataSandi, setKataSandi] = useState('');

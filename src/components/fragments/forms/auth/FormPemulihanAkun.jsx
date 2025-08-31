@@ -1,8 +1,8 @@
 // src/components/fragments/forms/auth/FormPemulihanAkun.jsx
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { usePemulihanAkun } from '../../../../hooks/auth/usePemulihanAkun';
 import useDarkMode from '../../../../hooks/useDarkMode';
-import { usePemulihanAkun } from '../../../../hooks/usePemulihanAkun';
 import { Alert, Button, InputForm } from '../../../elements';
 import FormHeader from '../FormHeader';
 

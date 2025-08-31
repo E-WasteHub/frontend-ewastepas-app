@@ -1,65 +1,61 @@
-// src/components/fragments/dashboard/DataMasterCard.jsx
+import { BookOpen, Box, FolderKanban, ListChecks, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import useDarkMode from '../../../hooks/useDarkMode';
-import { Button, Card } from '../../elements';
+import { Card } from '../../elements';
 
-/**
- * Komponen DataMasterCard
- * ------------------------
- * Menampilkan kartu untuk setiap item data master dengan ikon, deskripsi, dan tombol aksi.
- * Digunakan di AdminDataMasterView.
- *
- * Props:
- * - item (object): Data item master
- *   { id, title, description, icon, path, color, stats, lastUpdate }
- */
-const DataMasterCard = ({ item }) => {
-  const { isDarkMode } = useDarkMode();
-  const IconComponent = item.icon;
+const menus = [
+  {
+    title: 'Kelola Kategori',
+    link: '/dashboard/admin/kelola-kategori',
+    icon: FolderKanban,
+    desc: 'Kelola kategori sampah elektronik',
+  },
+  {
+    title: 'Kelola Jenis',
+    link: '/dashboard/admin/kelola-jenis',
+    icon: ListChecks,
+    desc: 'Definisikan jenis-jenis sampah elektronik',
+  },
+  {
+    title: 'Kelola Daerah',
+    link: '/dashboard/admin/kelola-daerah',
+    icon: MapPin,
+    desc: 'Kelola cakupan wilayah dan area layanan',
+  },
+  {
+    title: 'Kelola Dropbox',
+    link: '/dashboard/admin/kelola-dropbox',
+    icon: Box,
+    desc: 'Atur titik dropbox sampah elektronik',
+  },
+  {
+    title: 'Kelola Edukasi',
+    link: '/dashboard/admin/kelola-edukasi',
+    icon: BookOpen,
+    desc: 'Kelola materi edukasi terkait e-waste',
+  },
+];
 
+const DatamasterCard = () => {
   return (
-    <Card
-      className={`w-full md:w-[48%] lg:w-[31%] flex flex-col text-center p-6 border ${
-        isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-      }`}
-    >
-      <div className='flex flex-col items-center flex-grow'>
-        <div className={`p-3 rounded-lg ${item.color} mb-4`}>
-          <IconComponent className='h-8 w-8 text-white' />
-        </div>
-        <h3
-          className={`text-lg font-semibold mb-2 ${
-            isDarkMode ? 'text-white' : 'text-gray-900'
-          }`}
-        >
-          {item.title}
-        </h3>
-        <p
-          className={`text-sm leading-relaxed ${
-            isDarkMode ? 'text-gray-400' : 'text-gray-600'
-          }`}
-        >
-          {item.description}
-        </p>
-        {item.stats && (
-          <div className='mt-3 text-xs text-gray-500'>
-            <p>{item.stats}</p>
-            {item.lastUpdate && <p>Update: {item.lastUpdate}</p>}
-          </div>
-        )}
-      </div>
-      <div className='mt-6'>
-        <Link to={item.path} className='block'>
-          <Button
-            variant='primary'
-            className='w-full flex items-center justify-center space-x-2 group'
-          >
-            <span>Kelola Data</span>
-          </Button>
-        </Link>
-      </div>
-    </Card>
+    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+      {menus.map((menu, idx) => {
+        const Icon = menu.icon;
+        return (
+          <Link key={idx} to={menu.link} className='block'>
+            <Card className='cursor-pointer hover:shadow-lg transition-shadow duration-300'>
+              <Card.Body className='flex flex-col items-center text-center space-y-2'>
+                <Icon className='w-10 h-10 text-green-600' />
+                <h3 className='text-lg font-semibold'>{menu.title}</h3>
+                <p className='text-sm text-gray-500 dark:text-gray-400'>
+                  {menu.desc}
+                </p>
+              </Card.Body>
+            </Card>
+          </Link>
+        );
+      })}
+    </div>
   );
 };
 
-export default DataMasterCard;
+export default DatamasterCard;

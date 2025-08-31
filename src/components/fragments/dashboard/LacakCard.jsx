@@ -18,9 +18,7 @@ const LacakCard = ({ req, onDetail }) => {
           <p className='font-semibold'>
             Kode: <span className='text-green-500'>{req.kode}</span>
           </p>
-          <p className='text-xs text-gray-400'>
-            Dibuat pada : {new Date(req.waktu).toLocaleString('id-ID')}
-          </p>
+          <p className='text-xs text-gray-400'>Dibuat pada : {req.waktu}</p>
           <p className='text-sm'>Alamat : {req.alamat}</p>
         </div>
         <div className='text-right'>
@@ -37,7 +35,7 @@ const LacakCard = ({ req, onDetail }) => {
         </div>
       </div>
 
-      <div className='border-t p-3 text-right'>
+      <div className='p-3 text-right'>
         <button
           onClick={onDetail}
           className='text-sm text-green-500 hover:underline'
