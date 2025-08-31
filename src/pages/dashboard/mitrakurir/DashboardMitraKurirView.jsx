@@ -3,6 +3,7 @@ import { ArrowRight, Package, Star, Truck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Alert, Card, SapaanDashboard } from '../../../components/elements';
+import { PermintaanCard } from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 
@@ -85,92 +86,24 @@ const DashboardMitraKurirView = ({ userProfile }) => {
 
       {/* Quick Stats */}
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-        {/* Rating Card */}
-        <div
-          className={`px-6 py-6 rounded-lg shadow-md ${
-            isDarkMode ? 'bg-gray-800' : 'bg-white'
-          }`}
-        >
-          <div className='flex items-center justify-between'>
-            <div className='flex-1 text-center'>
-              <p
-                className={`text-md ${
-                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                }`}
-              >
-                Rating
-              </p>
-              <p className='text-2xl font-bold text-green-500'>
-                {statistikKurir.rating}
-              </p>
-            </div>
-            <div
-              className={`ml-4 p-3 rounded-lg ${
-                isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
-              }`}
-            >
-              <Star className='w-6 h-6 text-green-500' />
-            </div>
-          </div>
-        </div>
-
-        {/* Penjemputan Bulan Ini Card */}
-        <div
-          className={`px-6 py-6 rounded-lg shadow-md ${
-            isDarkMode ? 'bg-gray-800' : 'bg-white'
-          }`}
-        >
-          <div className='flex items-center justify-between'>
-            <div className='flex-1 text-center'>
-              <p
-                className={`text-md ${
-                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                }`}
-              >
-                Penjemputan Bulan Ini
-              </p>
-              <p className='text-2xl font-bold text-green-500'>
-                {statistikKurir.penjemputanBulanIni}
-              </p>
-            </div>
-            <div
-              className={`ml-4 p-3 rounded-lg ${
-                isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
-              }`}
-            >
-              <Package className='w-6 h-6 text-green-500' />
-            </div>
-          </div>
-        </div>
-
-        {/* Total Penjemputan Card */}
-        <div
-          className={`px-6 py-6 rounded-lg shadow-md ${
-            isDarkMode ? 'bg-gray-800' : 'bg-white'
-          }`}
-        >
-          <div className='flex items-center justify-between'>
-            <div className='flex-1 text-center'>
-              <p
-                className={`text-md ${
-                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                }`}
-              >
-                Total Penjemputan
-              </p>
-              <p className='text-2xl font-bold text-green-500'>
-                {statistikKurir.totalPenjemputan}
-              </p>
-            </div>
-            <div
-              className={`ml-4 p-3 rounded-lg ${
-                isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
-              }`}
-            >
-              <Package className='w-6 h-6 text-green-500' />
-            </div>
-          </div>
-        </div>
+        <StatCard
+          label='Rating'
+          value={statistikKurir.rating}
+          icon={<Star className='w-6 h-6 text-green-500' />}
+          useCard={false}
+        />
+        <StatCard
+          label='Penjemputan Bulan Ini'
+          value={statistikKurir.penjemputanBulanIni}
+          icon={<Package className='w-6 h-6 text-green-500' />}
+          useCard={false}
+        />
+        <StatCard
+          label='Total Penjemputan'
+          value={statistikKurir.totalPenjemputan}
+          icon={<Package className='w-6 h-6 text-green-500' />}
+          useCard={false}
+        />
       </div>
 
       {/* Main Content */}
@@ -216,92 +149,9 @@ const DashboardMitraKurirView = ({ userProfile }) => {
             </div>
           ) : (
             <div className='grid gap-4'>
-              {daftarPermintaan.slice(0, 3).map((permintaan) => {
-                const statusColor =
-                  permintaan.status === 'Diproses'
-                    ? 'warning'
-                    : permintaan.status === 'Selesai'
-                    ? 'success'
-                    : permintaan.status === 'Dibatalkan'
-                    ? 'danger'
-                    : 'warning';
-
-                return (
-                  <Card
-                    key={permintaan.id}
-                    className={`p-6 md:p-5 rounded-lg border-2 transition hover:shadow ${
-                      isDarkMode
-                        ? 'bg-slate-800 border-slate-700'
-                        : 'bg-white border-slate-200'
-                    }`}
-                  >
-                    {/* Header */}
-                    <div className='flex justify-between items-center mb-4'>
-                      <h4
-                        className={`font-medium text-sm ${
-                          isDarkMode ? 'text-white' : 'text-slate-900'
-                        }`}
-                      >
-                        {permintaan.kodePenjemputan}
-                      </h4>
-                      <span
-                        className={`inline-flex items-center font-medium rounded-full px-2.5 py-0.5 text-xs ${
-                          statusColor === 'success'
-                            ? 'bg-green-100 text-green-800'
-                            : statusColor === 'danger'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}
-                      >
-                        {permintaan.status}
-                      </span>
-                    </div>
-
-                    {/* Body (2 grid) */}
-                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm'>
-                      {/* Kolom 1 */}
-                      <p
-                        className={
-                          isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                        }
-                      >
-                        <span className='font-medium'>Tanggal:</span>{' '}
-                        {permintaan.tanggal}
-                      </p>
-                      <p
-                        className={
-                          isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                        }
-                      >
-                        <span className='font-medium'>Jenis:</span>{' '}
-                        {permintaan.jenisSampah?.join(', ') || '-'}
-                      </p>
-
-                      {/* Kolom 2 */}
-                      <p
-                        className={
-                          isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                        }
-                      >
-                        <span className='font-medium'>Kurir:</span>{' '}
-                        {permintaan.kurir || 'Belum ditentukan'}
-                      </p>
-                      <p className='text-green-600 font-semibold'>
-                        {permintaan.poin} poin
-                      </p>
-
-                      {/* Full width row */}
-                      <p
-                        className={`col-span-1 sm:col-span-2 ${
-                          isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                        } italic`}
-                      >
-                        {permintaan.alamat}
-                      </p>
-                    </div>
-                  </Card>
-                );
-              })}
+              {daftarPermintaan.slice(0, 3).map((permintaan) => (
+                <PermintaanCard key={permintaan.id} permintaan={permintaan} />
+              ))}
             </div>
           )}
         </div>

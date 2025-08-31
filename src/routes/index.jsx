@@ -56,9 +56,15 @@ const PermintaanPenjemputanView = lazy(() =>
 const LacakPenjemputanView = lazy(() =>
   import('../pages/dashboard/masyarakat/LacakPenjemputanView')
 );
+const DetailLacakPenjemputanView = lazy(() =>
+  import('../pages/dashboard/masyarakat/DetailLacakPenjemputanView')
+);
 const RiwayatMasyarakatView = lazy(() =>
   import('../pages/dashboard/masyarakat/RiwayatMasyarakatView')
 );
+const DetailRiwayatMasyarakatView = lazy(() => {
+  import('../pages/dashboard/masyarakat/DetailRiwayatMasyarakatView');
+});
 
 // ================= Mitra Kurir Pages =================
 const DashboardKurirView = lazy(() =>
@@ -212,10 +218,26 @@ const AppRouter = () => {
           }
         />
         <Route
+          path='/dashboard/masyarakat/lacak/:id_penjemputan'
+          element={
+            <DashboardLayout>
+              <DetailLacakPenjemputanView />
+            </DashboardLayout>
+          }
+        />
+        <Route
           path='/dashboard/masyarakat/riwayat'
           element={
             <DashboardLayout>
               <RiwayatMasyarakatView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/masyarakat/riwayat/:id_penjemputan'
+          element={
+            <DashboardLayout>
+              <DetailRiwayatMasyarakatView />
             </DashboardLayout>
           }
         />

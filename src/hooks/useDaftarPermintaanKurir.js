@@ -1,27 +1,20 @@
-// src/views/kurir/DaftarPermintaanKurirView.jsx
+// src/hooks/useDaftarPermintaanKurir.js
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Card, Pagination } from '../../../components/elements';
-import useDarkMode from '../../../hooks/useDarkMode';
-import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import {
   ambilDaftarPenjemputan,
   ambilDetailPenjemputan,
   ambilPenjemputan,
-} from '../../../services/penjemputanService';
+} from '../services/penjemputanService';
 
-// 🔹 Helper mapping status dari backend
-const mapStatus = (p) => {
-  if (p.waktu_dibatalkan) return 'Dibatalkan';
-  if (p.waktu_sampai) return 'Selesai';
-  if (p.waktu_diantar) return 'Sampai';
-  if (p.waktu_diterima) return 'Dijemput';
-  return 'Menunggu';
-};
-
-const DaftarPermintaanKurirView = () => {
-  useDocumentTitle('Daftar Permintaan');
-  const { isDarkMode } = useDarkMode();
+/**
+ * Custom hook untuk mengelola daftar permintaan penjemputan kurir.
+ * - Fetch daftar permintaan yang tersedia
+ * - Handle expand/collapse detail
+ * - Handle ambil permintaan
+ * - Manage pagination
+ */
+const useDaftarPermintaanKurir = () => {
   const navigate = useNavigate();
 
   const [permintaan, setPermintaan] = useState([]);
@@ -35,10 +28,20 @@ const DaftarPermintaanKurirView = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 3;
 
+  // 🔹 Helper mapping status dari backend
+  const mapStatus = (p) => {
+    if (p.waktu_dibatalkan) return 'Dibatalkan';
+    if (p.waktu_sampai) return 'Selesai';
+    if (p.waktu_diantar) return 'Sampai';
+    if (p.waktu_diterima) return 'Dijemput';
+    return 'Menunggu';
+  };
+
   // 🔹 Fetch daftar penjemputan
   const fetchData = async () => {
     try {
       setIsLoading(true);
+      setError('');
 
       const res = await ambilDaftarPenjemputan();
       console.log('📦 Daftar Penjemputan (raw):', res);
@@ -184,69 +187,20 @@ const DaftarPermintaanKurirView = () => {
     currentPage * pageSize
   );
 
-  if (isLoading) return <p className='text-center py-10'>⏳ Memuat...</p>;
-
-  return (
-    <div className='max-w-7xl mx-auto'>
-      <div className='flex justify-between items-center mb-4'>
-        <div>
-          <h2
-            className={`text-2xl font-bold ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`}
-          >
-            Daftar Permintaan Penjemputan
-          </h2>
-          <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
-            Lihat semua permintaan penjemputan yang tersedia
-          </p>
-        </div>
-        <div className='flex gap-2'>
-          <button
-            onClick={fetchData}
-            disabled={isLoading}
-            className='bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-4 py-2 rounded transition-colors'
-          >
-            {isLoading ? '⏳ Memuat...' : '🔄 Refresh'}
-          </button>
-        </div>
-      </div>
-
-      <Card className='p-6 space-y-6'>
-        {error && <Alert type='error' message={error} />}
-
-        {permintaan.length === 0 ? (
-          <p className='text-center text-gray-500'>
-            🚫 Tidak ada daftar permintaan penjemputan.
-          </p>
-        ) : (
-          paginated.map((req) => {
-            const expanded = expandedId === req.id_penjemputan;
-            const detail = details[req.id_penjemputan];
-            return (
-              <PermintaanDetailCard
-                key={req.id_penjemputan}
-                req={req}
-                expanded={expanded}
-                detail={detail}
-                onExpand={handleExpand}
-                onTakeRequest={handleTakeRequest}
-                activeRequestId={activeRequestId}
-              />
-            );
-          })
-        )}
-
-        {permintaan.length > 0 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(p) => setCurrentPage(p)}
-          />
-        )}
-      </Card>
-    </div>
-  );
+  return {
+    permintaan: paginated,
+    totalPages,
+    currentPage,
+    setCurrentPage,
+    expandedId,
+    details,
+    activeRequestId,
+    isLoading,
+    error,
+    handleExpand,
+    handleTakeRequest,
+    refetch: fetchData,
+  };
 };
 
-export default DaftarPermintaanKurirView;
+export default useDaftarPermintaanKurir;

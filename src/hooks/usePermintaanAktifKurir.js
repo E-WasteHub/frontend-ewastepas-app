@@ -1,18 +1,19 @@
-// src/views/kurir/PermintaanAktifKurir.jsx
+// src/hooks/usePermintaanAktifKurir.js
 import { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Alert, Card } from '../../../components/elements';
-import useDarkMode from '../../../hooks/useDarkMode';
-import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import {
   ambilDetailPenjemputan,
   ambilRiwayatPenjemputan,
   updatePenjemputan,
-} from '../../../services/penjemputanService';
+} from '../services/penjemputanService';
 
-const PermintaanAktifKurir = () => {
-  useDocumentTitle('Permintaan Aktif Kurir');
-  const { isDarkMode } = useDarkMode();
+/**
+ * Custom hook untuk mengelola permintaan aktif kurir.
+ * - Fetch permintaan yang sedang aktif
+ * - Handle update status penjemputan
+ * - Manage timeline dan detail permintaan
+ */
+const usePermintaanAktifKurir = () => {
   const location = useLocation();
 
   // State utama
@@ -209,51 +210,14 @@ const PermintaanAktifKurir = () => {
     ambilPermintaanAktif();
   }, [ambilPermintaanAktif]);
 
-  if (sedangMemuat) {
-    return <p className='text-center py-10'>⏳ Memuat data...</p>;
-  }
-
-  return (
-    <div className='max-w-5xl mx-auto'>
-      <div className='flex justify-between items-center mb-4'>
-        <div>
-          <h2
-            className={`text-2xl font-bold ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`}
-          >
-            Permintaan Aktif Penjemputan
-          </h2>
-          <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
-            Detail permintaan penjemputan yang sedang aktif
-          </p>
-        </div>
-        <button
-          onClick={ambilPermintaanAktif}
-          disabled={sedangMemuat}
-          className='bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-4 py-2 rounded transition-colors'
-        >
-          {sedangMemuat ? '⏳ Memuat...' : '🔄 Refresh'}
-        </button>
-      </div>
-
-      {pesanError && <Alert type='error' message={pesanError} />}
-
-      {!permintaanAktif ? (
-        <Card className='p-6 text-center'>
-          <p className='text-gray-500'>
-            🚚 Tidak ada penjemputan aktif saat ini.
-          </p>
-        </Card>
-      ) : (
-        <PermintaanAktifCard
-          permintaanAktif={permintaanAktif}
-          detailPermintaan={detailPermintaan}
-          onUpdateStatus={ubahStatusPenjemputan}
-        />
-      )}
-    </div>
-  );
+  return {
+    permintaanAktif,
+    detailPermintaan,
+    sedangMemuat,
+    pesanError,
+    ubahStatusPenjemputan,
+    refetch: ambilPermintaanAktif,
+  };
 };
 
-export default PermintaanAktifKurir;
+export default usePermintaanAktifKurir;

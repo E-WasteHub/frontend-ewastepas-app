@@ -5,9 +5,6 @@ import {
   MapPin,
   Package,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import Button from '../../../components/elements/Button';
-import Card from '../../../components/elements/Card';
 import useDarkMode from '../../../hooks/useDarkMode';
 
 const AdminDataMasterView = () => {
@@ -93,50 +90,9 @@ const AdminDataMasterView = () => {
 
         {/* Cards Grid */}
         <div className='flex flex-wrap justify-center gap-6'>
-          {dataMasterItems.map((item) => {
-            const IconComponent = item.icon;
-            return (
-              <Card
-                key={item.id}
-                // PERUBAHAN DI SINI: Tambahkan class untuk lebar card
-                className={`w-full md:w-[48%] lg:w-[31%] flex flex-col text-center p-6 border ${
-                  isDarkMode
-                    ? 'bg-gray-800 border-gray-700'
-                    : 'bg-white border-gray-200'
-                }`}
-              >
-                <div className='flex flex-col items-center flex-grow'>
-                  <div className={`p-3 rounded-lg ${item.color} mb-4`}>
-                    <IconComponent className='h-8 w-8 text-white' />
-                  </div>
-                  <h3
-                    className={`text-lg font-semibold mb-2 ${
-                      isDarkMode ? 'text-white' : 'text-gray-900'
-                    }`}
-                  >
-                    {item.title}
-                  </h3>
-                  <p
-                    className={`text-sm leading-relaxed ${
-                      isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                    }`}
-                  >
-                    {item.description}
-                  </p>
-                </div>
-                <div className='mt-6'>
-                  <Link to={item.path} className='block'>
-                    <Button
-                      variant='primary'
-                      className='w-full flex items-center justify-center space-x-2 group'
-                    >
-                      <span>Kelola Data</span>
-                    </Button>
-                  </Link>
-                </div>
-              </Card>
-            );
-          })}
+          {dataMasterItems.map((item) => (
+            <DataMasterCard key={item.id} item={item} />
+          ))}
         </div>
       </div>
     </div>
