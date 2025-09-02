@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useVerifikasiOTPForm } from '../../../../hooks/auth/useVerifikasiOTPForm';
+import useVerifikasiOTPForm from '../../../../hooks/auth/useVerifikasiOTPForm';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import { Alert, Button } from '../../../elements';
 import FormHeader from '../FormHeader';

@@ -3,21 +3,74 @@ import { FileText, Truck } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { Card } from '../../../components/elements';
 import { ItemSampahCard, Timeline } from '../../../components/fragments';
-import useDetailRiwayatMasyarakat from '../../../hooks/masyarakat/useDetailRiwayatMasyarakat';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
-import {
-  daftarLangkahStatus,
-  formatTanggalID,
-} from '../../../utils/penjemputanUtils';
+import { useMasyarakatDetail } from '../../../hooks/useMasyarakat';
+
+// Utility: format tanggal ke bahasa Indonesia
+const formatTanggalID = (tanggal) => {
+  if (!tanggal) return '-';
+  const d = new Date(tanggal);
+  if (isNaN(d.getTime())) return '-';
+  return d.toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  });
+};
+
+// Daftar langkah status
+const daftarLangkahStatus = [
+  {
+    key: 'diproses',
+    label: 'Menunggu Kurir',
+    description: 'Permintaan berhasil dibuat',
+    timeKey: 'waktu_ditambah',
+  },
+  {
+    key: 'diterima',
+    label: 'Diterima',
+    description: 'Kurir menerima permintaan',
+    timeKey: 'waktu_diterima',
+  },
+  {
+    key: 'dijemput',
+    label: 'Dijemput Kurir',
+    description: 'Kurir sampai di lokasi masyarakat',
+    timeKey: 'waktu_dijemput',
+  },
+  {
+    key: 'selesai',
+    label: 'Selesai',
+    description: 'Sampah sudah disetor ke dropbox',
+    timeKey: 'waktu_selesai',
+  },
+  {
+    key: 'dibatalkan',
+    label: 'Dibatalkan',
+    description: 'Penjemputan dibatalkan',
+    timeKey: 'waktu_dibatalkan',
+  },
+];
+
+// Helper: tentukan langkah aktif berdasarkan field waktu
+const getLangkahAktif = (penjemputan) => {
+  if (!penjemputan) return 0;
+  if (penjemputan.waktu_dibatalkan) return -1;
+  if (penjemputan.waktu_selesai) return 3;
+  if (penjemputan.waktu_dijemput) return 2;
+  if (penjemputan.waktu_diterima) return 1;
+  if (penjemputan.waktu_ditambah) return 0;
+  return 0;
+};
 
 const DetailRiwayatMasyarakatView = () => {
   useDocumentTitle('Detail Riwayat Penjemputan');
   const { isDarkMode } = useDarkMode();
   const { id_penjemputan } = useParams();
 
-  const { detailRiwayat, isLoading } =
-    useDetailRiwayatMasyarakat(id_penjemputan);
+  const { detail: detailRiwayat, isLoading } =
+    useMasyarakatDetail(id_penjemputan);
 
   if (isLoading) {
     return (
@@ -29,13 +82,12 @@ const DetailRiwayatMasyarakatView = () => {
 
   if (!detailRiwayat?.penjemputan) {
     return (
-      <p className='p-6 text-center text-red-500'>
-        ❌ Riwayat tidak ditemukan atau masih dalam proses
-      </p>
+      <p className='p-6 text-center text-red-500'>❌ Riwayat tidak ditemukan</p>
     );
   }
 
   const p = detailRiwayat.penjemputan;
+  const langkahAktif = getLangkahAktif(p);
 
   return (
     <div
@@ -57,67 +109,77 @@ const DetailRiwayatMasyarakatView = () => {
         </p>
       </header>
 
-      {/* Card Utama */}
+      {/* Card utama */}
       <Card
         className={`p-6 shadow-md rounded-xl ${
           isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white'
         }`}
       >
-        {/* Informasi Penjemputan */}
+        {/* Info penjemputan */}
         <section className='mb-4'>
-          <h3 className='text-2xl font-bold mb-3'>📋 Informasi Penjemputan</h3>
-
-          <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm'>
-            <p>
-              <span className='font-medium'>Kode:</span> {p.kode_penjemputan}
-            </p>
-            <p>
-              <span className='font-medium'>Tanggal:</span>{' '}
-              {formatTanggalID(p.waktu_ditambah)}
-            </p>
-            <p>
-              <span className='font-medium'>Alamat:</span>{' '}
-              {p.alamat_penjemputan}
-            </p>
-            <p>
-              <span className='font-medium'>Kurir:</span>{' '}
-              {p.nama_kurir || 'Belum ditentukan'}
-            </p>
-            <p>
-              <span className='font-medium'>Waktu Operasional:</span>{' '}
-              {p.waktu_operasional || '-'}
-            </p>
+          <h3 className='text-2xl font-bold mb-3'>Informasi Penjemputan</h3>
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm'>
+            <div>
+              <span className='text-xs font-semibold text-gray-400'>
+                Kode Penjemputan : {''}
+              </span>
+              <span className='block'>{p.kode_penjemputan}</span>
+            </div>
+            <div>
+              <span className='text-xs font-semibold text-gray-400'>
+                Tanggal Dibuat : {''}
+              </span>
+              <span className='block'>{formatTanggalID(p.waktu_ditambah)}</span>
+            </div>
+            <div>
+              <span className='text-xs font-semibold text-gray-400'>
+                Alamat Penjemputan : {''}
+              </span>
+              <span className='block'>{p.alamat_penjemputan}</span>
+            </div>
+            <div>
+              <span className='text-xs font-semibold text-gray-400'>
+                Nama Kurir : {''}
+              </span>
+              <span className='block'>
+                {p.nama_kurir || 'Belum ditentukan'}
+              </span>
+            </div>
+            <div>
+              <span className='text-xs font-semibold text-gray-400'>
+                Waktu Operasional : {''}
+              </span>
+              <span className='block'>{p.waktu_operasional || '-'}</span>
+            </div>
             {p.catatan && (
-              <p className='sm:col-span-2 italic text-gray-500'>
-                <span className='font-medium'>Catatan:</span> {p.catatan}
-              </p>
+              <div className='sm:col-span-2'>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Catatan : {''}
+                </span>
+                <span className='block italic'>{p.catatan}</span>
+              </div>
             )}
           </div>
         </section>
 
-        {/* Grid Status + Detail Sampah */}
+        {/* Status + Detail sampah */}
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
-          {/* Status Penjemputan */}
           <section>
             <h3 className='text-lg font-semibold mb-2 flex items-center gap-2'>
-              <Truck className='w-5 h-5 text-green-500' />
-              Status Penjemputan
+              <Truck className='w-5 h-5 text-green-500' /> Status Penjemputan
             </h3>
             <Timeline
-              steps={daftarLangkahStatus} // ✅ pakai daftarLangkahStatus, sama dengan DetailLacak
-              currentStep={-1} // ✅ karena riwayat (final state)
+              steps={daftarLangkahStatus}
+              currentStep={langkahAktif}
               isDarkMode={isDarkMode}
               detail={p}
             />
           </section>
 
-          {/* Detail Sampah */}
           <section>
             <h3 className='text-lg font-semibold mb-3 flex items-center gap-2'>
-              <FileText className='w-5 h-5 text-green-500' />
-              Detail Sampah
+              <FileText className='w-5 h-5 text-green-500' /> Detail Sampah
             </h3>
-
             {detailRiwayat.sampah?.length > 0 ? (
               <div
                 className={`space-y-3 ${
@@ -129,7 +191,7 @@ const DetailRiwayatMasyarakatView = () => {
                 {detailRiwayat.sampah.map((s) => (
                   <ItemSampahCard
                     key={s.id_sampah}
-                    data={s} // ✅ konsisten dengan ItemSampahCard
+                    data={s}
                     isDarkMode={isDarkMode}
                   />
                 ))}

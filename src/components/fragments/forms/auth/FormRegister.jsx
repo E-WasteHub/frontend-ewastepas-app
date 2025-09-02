@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { useRegisterForm } from '../../../../hooks/auth/useRegisterForm';
+import useRegisterForm from '../../../../hooks/auth/useRegisterForm';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import { Alert, Button, InputForm, Label } from '../../../elements';
 import FormHeader from '../FormHeader';

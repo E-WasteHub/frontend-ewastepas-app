@@ -8,13 +8,57 @@ import {
   ItemSampahCard,
   Timeline,
 } from '../../../components/fragments';
-import useDetailLacakPenjemputan from '../../../hooks/masyarakat/useDetailLacakPenjemputan';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
-import {
-  daftarLangkahStatus,
-  formatTanggalID,
-} from '../../../utils/penjemputanUtils';
+import useMasyarakat, {
+  useMasyarakatDetail,
+} from '../../../hooks/useMasyarakat';
+
+// Utility: format tanggal ke bahasa Indonesia
+const formatTanggalID = (tanggal) => {
+  if (!tanggal) return '-';
+  const d = new Date(tanggal);
+  if (isNaN(d.getTime())) return '-';
+  return d.toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  });
+};
+
+// Daftar step status untuk timeline
+const daftarLangkahStatus = [
+  {
+    key: 'diproses',
+    label: 'Menunggu Kurir',
+    description: 'Permintaan berhasil dibuat',
+    timeKey: 'waktu_ditambah',
+  },
+  {
+    key: 'diterima',
+    label: 'Diterima',
+    description: 'Kurir menerima permintaan',
+    timeKey: 'waktu_diterima',
+  },
+  {
+    key: 'dijemput',
+    label: 'Dijemput Kurir',
+    description: 'Kurir sampai di lokasi masyarakat',
+    timeKey: 'waktu_dijemput',
+  },
+  {
+    key: 'selesai',
+    label: 'Selesai',
+    description: 'Sampah sudah disetor ke dropbox',
+    timeKey: 'waktu_selesai',
+  },
+  {
+    key: 'dibatalkan',
+    label: 'Dibatalkan',
+    description: 'Penjemputan dibatalkan',
+    timeKey: 'waktu_dibatalkan',
+  },
+];
 
 const DetailLacakPenjemputan = () => {
   useDocumentTitle('Detail Penjemputan');
@@ -22,11 +66,23 @@ const DetailLacakPenjemputan = () => {
   const { id_penjemputan } = useParams();
   const navigate = useNavigate();
 
-  // ✅ disamakan dengan return di hook
-  const { detailPenjemputan, isLoading, langkahAktif, batalkanPenjemputan } =
-    useDetailLacakPenjemputan(id_penjemputan);
+  // Ambil detail penjemputan dari hook
+  const { detail: detailPenjemputan, isLoading } =
+    useMasyarakatDetail(id_penjemputan);
+  const { batalkan } = useMasyarakat();
 
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  // Helper untuk menentukan langkah aktif berdasarkan field waktu
+  const getLangkahAktif = (penjemputan) => {
+    if (!penjemputan) return 0;
+    if (penjemputan.waktu_dibatalkan) return -1;
+    if (penjemputan.waktu_selesai) return 3;
+    if (penjemputan.waktu_dijemput) return 2;
+    if (penjemputan.waktu_diterima) return 1;
+    if (penjemputan.waktu_ditambah) return 0;
+    return 0;
+  };
 
   if (isLoading) {
     return (
@@ -45,6 +101,7 @@ const DetailLacakPenjemputan = () => {
   }
 
   const p = detailPenjemputan.penjemputan;
+  const langkahAktif = getLangkahAktif(p);
 
   return (
     <div
@@ -64,43 +121,37 @@ const DetailLacakPenjemputan = () => {
         </p>
       </header>
 
-      {/* Card Utama */}
+      {/* Card utama */}
       <Card
         className={`p-6 shadow-md rounded-xl ${
           isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white'
         }`}
       >
-        {/* Informasi Penjemputan (Full Width) */}
+        {/* Info penjemputan */}
         <section className='mb-4'>
           <h3 className='text-2xl font-bold mb-3'>Informasi Penjemputan</h3>
-
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm'>
-            {/* Kolom Kiri */}
+            {/* Kolom kiri */}
             <div className='flex flex-col gap-4'>
-              {/* Kode */}
-              <div className='flex flex-col'>
-                <span className='text-xs font-semibold tracking-wide text-gray-400'>
-                  Kode Penjemputan
+              <div>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Kode Penjemputan : {''}
                 </span>
                 <span className='text-sm font-medium'>
                   {p.kode_penjemputan}
                 </span>
               </div>
-
-              {/* Tanggal */}
-              <div className='flex flex-col'>
-                <span className='text-xs font-semibold tracking-wide text-gray-400'>
-                  Tanggal Dibuat Permintaan
+              <div>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Tanggal Dibuat : {''}
                 </span>
                 <span className='text-sm font-medium'>
                   {formatTanggalID(p.waktu_ditambah)}
                 </span>
               </div>
-
-              {/* Alamat */}
-              <div className='flex flex-col'>
-                <span className='text-xs font-semibold tracking-wide text-gray-400'>
-                  Alamat Penjemputan
+              <div>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Alamat Penjemputan: {''}
                 </span>
                 <span className='text-sm font-medium'>
                   {p.alamat_penjemputan}
@@ -108,32 +159,27 @@ const DetailLacakPenjemputan = () => {
               </div>
             </div>
 
-            {/* Kolom Kanan */}
+            {/* Kolom kanan */}
             <div className='flex flex-col gap-4'>
-              {/* Kurir */}
-              <div className='flex flex-col'>
-                <span className='text-xs font-semibold tracking-wide text-gray-400'>
-                  Nama Kurir
+              <div>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Nama Kurir : {''}
                 </span>
                 <span className='text-sm font-medium'>
                   {p.nama_kurir || 'Belum ditentukan'}
                 </span>
               </div>
-
-              {/* Waktu Operasional */}
-              <div className='flex flex-col'>
-                <span className='text-xs font-semibold tracking-wide text-gray-400'>
-                  Waktu Operasional
+              <div>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Waktu Operasional : {''}
                 </span>
                 <span className='text-sm font-medium'>
                   {p.waktu_operasional || 'Belum ditentukan'}
                 </span>
               </div>
-
-              {/* Catatan */}
-              <div className='flex flex-col'>
-                <span className='text-xs font-semibold tracking-wide text-gray-400'>
-                  Catatan untuk Kurir
+              <div>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Catatan : {''}
                 </span>
                 <span className='text-sm font-medium'>
                   {p.catatan || 'Tidak ada catatan'}
@@ -143,13 +189,11 @@ const DetailLacakPenjemputan = () => {
           </div>
         </section>
 
-        {/* Grid Status + Detail Sampah */}
+        {/* Status + Detail sampah */}
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
-          {/* Status Penjemputan */}
           <section>
             <h3 className='text-lg font-semibold mb-2 flex items-center gap-2'>
-              <Truck className='w-5 h-5 text-green-500' />
-              Status Penjemputan
+              <Truck className='w-5 h-5 text-green-500' /> Status Penjemputan
             </h3>
             <Timeline
               steps={daftarLangkahStatus}
@@ -159,13 +203,10 @@ const DetailLacakPenjemputan = () => {
             />
           </section>
 
-          {/* Detail Sampah */}
           <section>
             <h3 className='text-lg font-semibold mb-3 flex items-center gap-2'>
-              <FileText className='w-5 h-5 text-green-500' />
-              Detail Sampah
+              <FileText className='w-5 h-5 text-green-500' /> Detail Sampah
             </h3>
-
             {detailPenjemputan.sampah?.length > 0 ? (
               <div
                 className={`space-y-3 ${
@@ -188,7 +229,7 @@ const DetailLacakPenjemputan = () => {
           </section>
         </div>
 
-        {/* Tombol */}
+        {/* Tombol batal */}
         {langkahAktif >= 0 && langkahAktif < 3 && (
           <div className='flex justify-end mt-4'>
             <Button
@@ -202,14 +243,14 @@ const DetailLacakPenjemputan = () => {
         )}
       </Card>
 
-      {/* Modal Konfirmasi */}
+      {/* Modal konfirmasi */}
       <ConfirmModal
         isOpen={confirmOpen}
         title='Batalkan Penjemputan'
         message='Apakah Anda yakin ingin membatalkan penjemputan ini?'
         onClose={() => setConfirmOpen(false)}
         onConfirm={async () => {
-          const success = await batalkanPenjemputan();
+          const success = await batalkan(p.id_penjemputan); // <-- kirim ID
           if (success) {
             setConfirmOpen(false);
             navigate(-1);

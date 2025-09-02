@@ -10,10 +10,10 @@ const ItemSampahCard = ({ data, isDarkMode }) => (
     `}
   >
     {/* Foto */}
-    {data.gambar_url ? (
+    {data.gambar ? (
       <img
-        src={data.gambar_url}
-        alt={data.nama_jenis}
+        src={data.gambar}
+        alt={data.jenis}
         className='w-20 h-20 rounded-lg object-cover shadow-md'
       />
     ) : (

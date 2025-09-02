@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import * as authService from '../../services/authService';
 
-export const useRegisterForm = () => {
+const useRegisterForm = () => {
   /** 🔹 State untuk input form */
   const [formData, setFormData] = useState({
     nama_lengkap: '',
@@ -110,3 +110,5 @@ export const useRegisterForm = () => {
     clearSuccess,
   };
 };
+
+export default useRegisterForm;

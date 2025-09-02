@@ -1,7 +1,7 @@
 // src/components/fragments/forms/FormLogin.jsx
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useLoginForm } from '../../../../hooks/auth/useLoginForm';
+import useLoginForm from '../../../../hooks/auth/useLoginForm';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import { Alert, Button, Checkbox, InputForm } from '../../../elements';
 import FormHeader from '../FormHeader';

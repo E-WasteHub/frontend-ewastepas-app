@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import * as authService from '../../services/authService';
 
-export const useVerifikasiOTPForm = () => {
+const useVerifikasiOTPForm = () => {
   /** 🔹 State utama */
   const [otp, setOtp] = useState(''); // Menyimpan kode OTP (6 digit)
   const [userId, setUserId] = useState(null); // ID user dari localStorage
@@ -128,3 +128,5 @@ export const useVerifikasiOTPForm = () => {
     formatWaktu,
   };
 };
+
+export default useVerifikasiOTPForm;

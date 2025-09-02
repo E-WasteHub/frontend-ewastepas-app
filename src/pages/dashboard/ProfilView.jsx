@@ -1,137 +1,101 @@
 // src/views/ProfilView.jsx
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { Alert } from '../../components/elements';
 import {
-  FormChangePassword,
   FormProfilData,
+  FormUbahKataSandi,
   FormUploadDokumen,
-} from '../../components/fragments/forms';
+} from '../../components/fragments';
 import useDarkMode from '../../hooks/useDarkMode';
-import * as profilService from '../../services/profilService';
-import { detectRoleFromPath } from '../../utils/peranUtils';
+import useDocumentTitle from '../../hooks/useDocumentTitle';
+import useProfil from '../../hooks/useProfil';
 
 const ProfilView = () => {
-  const [isLoading, setIsLoading] = useState(false);
-
-  // ✅ state form data profil
-  const [form, setForm] = useState({
-    nama_lengkap: '',
-    email: '',
-    no_telepon: '',
-    alamat_pengguna: '',
-    gambar_pengguna: null,
-  });
-
-  const [files, setFiles] = useState({ ktp: null, sim: null });
-  const [activeTab, setActiveTab] = useState('profil');
+  useDocumentTitle('Pengaturan Profil');
   const { isDarkMode } = useDarkMode();
-  const [role, setRole] = useState(null);
 
-  // 🔑 Ambil data pengguna dari backend saat mount
-  useEffect(() => {
-    fetchProfil();
-  }, []);
+  // 🔹 Ambil data & actions dari hook profil
+  const {
+    form,
+    setForm,
+    files,
+    setFiles,
+    peran,
+    isLoading,
+    error,
+    updateProfil,
+    ubahPassword,
+    uploadDokumen,
+  } = useProfil();
 
-  const fetchProfil = async () => {
-    try {
-      setIsLoading(true);
-      const data = await profilService.selectProfil();
-      setForm({
-        nama_lengkap: data.data.nama_lengkap || '',
-        email: data.data.email || '',
-        no_telepon: data.data.no_telepon || '',
-        alamat_pengguna: data.data.alamat_pengguna || '',
-        gambar_pengguna: data.data.gambar_pengguna || null,
-      });
+  const [activeTab, setActiveTab] = useState('profil');
+  const [alert, setAlert] = useState({ open: false, type: '', message: '' });
 
-      setRole(data.data.peran || detectRoleFromPath(window.location.pathname));
-
-      // sinkronkan juga ke localStorage
-      localStorage.setItem('pengguna', JSON.stringify(data.data));
-      localStorage.setItem('peran', data.data.nama_peran);
-    } catch (err) {
-      console.error('Gagal ambil profil:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // ✅ Simpan perubahan profil
+  // 🔹 Handler simpan data profil
   const handleSaveProfil = async () => {
-    try {
-      setIsLoading(true);
-      const res = await profilService.updateProfil({
-        nama_lengkap: form.nama_lengkap,
-        email: form.email,
-        no_telepon: form.no_telepon,
-        alamat_pengguna: form.alamat_pengguna,
-        gambar_pengguna: form.gambar_pengguna,
+    const result = await updateProfil();
+    if (result.success) {
+      setAlert({
+        open: true,
+        type: 'success',
+        message: 'Profil berhasil diperbarui ✅',
       });
-      // update state & localStorage
-      setForm({
-        nama_lengkap: res.data.nama_lengkap || '',
-        email: res.data.email || '',
-        no_telepon: res.data.no_telepon || '',
-        alamat_pengguna: res.data.alamat_pengguna || '',
-        gambar_pengguna: res.data.gambar_pengguna || null,
+    } else {
+      setAlert({
+        open: true,
+        type: 'error',
+        message: result.error || 'Gagal memperbarui profil ❌',
       });
-      localStorage.setItem('pengguna', JSON.stringify(res.data));
-      localStorage.setItem('peran', res.data.nama_peran);
-
-      alert('Profil berhasil diperbarui!');
-      window.location.reload();
-    } catch (err) {
-      alert(err.message || 'Gagal memperbarui profil');
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  // ✅ Ubah Kata sandi
-  const handleUbahKataSandi = async (data) => {
-    try {
-      setIsLoading(true);
-      await profilService.ubahKataSandi(data);
-
-      alert('Kata sandi berhasil diubah!');
-      window.location.reload();
-    } catch (err) {
-      alert(err.message || 'Gagal mengubah kata sandi');
-    } finally {
-      setIsLoading(false);
+  // 🔹 Handler ubah password
+  const handleUbahKataSandi = async (payload) => {
+    const result = await ubahPassword(payload);
+    if (result.success) {
+      setAlert({
+        open: true,
+        type: 'success',
+        message: 'Kata sandi berhasil diubah ✅',
+      });
+    } else {
+      setAlert({
+        open: true,
+        type: 'error',
+        message: result.error || 'Gagal mengubah kata sandi ❌',
+      });
     }
   };
 
-  // ✅ Unggah dokumen
+  // 🔹 Handler upload dokumen
   const handleUploadDokumen = async () => {
-    try {
-      setIsLoading(true);
-
-      const payload = {
-        nama_dokumen_ktp: files.ktp ? files.ktp.name : null,
-        nama_dokumen_sim: files.sim ? files.sim.name : null,
-      };
-
-      await profilService.uploadDokumen(payload);
-      alert('Nama dokumen berhasil dikirim!');
-      setFiles({ ktp: null, sim: null }); // reset
-    } catch (err) {
-      alert(err.message || 'Gagal mengunggah nama dokumen');
-    } finally {
-      setIsLoading(false);
+    const result = await uploadDokumen();
+    if (result.success) {
+      setAlert({
+        open: true,
+        type: 'success',
+        message: 'Dokumen berhasil diunggah ✅',
+      });
+    } else {
+      setAlert({
+        open: true,
+        type: 'error',
+        message: result.error || 'Gagal mengunggah dokumen ❌',
+      });
     }
   };
 
   const menuItems = [
     { key: 'profil', label: 'Data Profil' },
     { key: 'password', label: 'Ubah Password' },
-    ...(role === 'mitra-kurir'
+    ...(peran === 'Mitra Kurir'
       ? [{ key: 'dokumen', label: 'Unggah Dokumen' }]
       : []),
   ];
 
   return (
     <div className='max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 p-6'>
-      {/* Sidebar */}
+      {/* Sidebar Menu */}
       <div className='md:col-span-1'>
         <div
           className={`shadow rounded-lg p-4 space-y-2 ${
@@ -165,7 +129,7 @@ const ProfilView = () => {
         </div>
       </div>
 
-      {/* Content */}
+      {/* Main Content */}
       <div className='md:col-span-3'>
         <div
           className={`shadow rounded-lg p-6 ${
@@ -174,7 +138,7 @@ const ProfilView = () => {
               : 'bg-white text-gray-900'
           }`}
         >
-          <h1 className='text-2xl font-bold mb-6'>Pengaturan Profil</h1>
+          {error && <Alert type='error' message={error} />}
 
           {activeTab === 'profil' && (
             <FormProfilData
@@ -195,13 +159,13 @@ const ProfilView = () => {
           )}
 
           {activeTab === 'password' && (
-            <FormChangePassword
+            <FormUbahKataSandi
               onSave={handleUbahKataSandi}
               isLoading={isLoading}
             />
           )}
 
-          {activeTab === 'dokumen' && role === 'mitra-kurir' && (
+          {activeTab === 'dokumen' && peran === 'Mitra Kurir' && (
             <FormUploadDokumen
               files={files}
               onFileChange={(key, file) =>
@@ -213,6 +177,9 @@ const ProfilView = () => {
           )}
         </div>
       </div>
+
+      {/* Alert */}
+      {alert.open && <Alert type={alert.type} message={alert.message} />}
     </div>
   );
 };

@@ -1,65 +1,60 @@
-// src/views/masyarakat/LacakPenjemputanView.jsx
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Pagination } from '../../../components/elements';
-import { LacakCard } from '../../../components/fragments/';
-import FilterCard from '../../../components/fragments/dashboard/FilterCard';
-import useLacakPenjemputan from '../../../hooks/masyarakat/useLacakPenjemputan';
+import {
+  FilterCard,
+  PenjemputanMasyarakatCard,
+} from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
-
-const itemsPerPage = 3;
+import useMasyarakat from '../../../hooks/useMasyarakat';
 
 const LacakPenjemputanView = () => {
   useDocumentTitle('Lacak Penjemputan');
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
-  // pastikan daftarPenjemputan selalu array agar tidak error saat mengakses .length / .slice
-  // hook mengembalikan { daftarPenjemputan, isLoading }
-  const { daftarPenjemputan = [], isLoading } = useLacakPenjemputan();
 
-  // 🔹 State untuk pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  // 🔹 Search + Filter state (used by FilterCard)
+  // 🔹 ambil data dari hook
+  const { daftarPenjemputan, isLoading } = useMasyarakat();
+
+  // 🔹 state untuk filter & search
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
-  // apply search + status filter before pagination
-  const filteredPermintaan = (daftarPenjemputan || []).filter((p) => {
-    const q = search.trim().toLowerCase();
-    const matchesSearch =
-      q === '' ||
-      (p.kode && String(p.kode).toLowerCase().includes(q)) ||
-      (p.alamat && String(p.alamat).toLowerCase().includes(q));
-    const matchesFilter =
-      filter === 'all' ||
-      (filter === 'aktif' &&
-        ['Menunggu Kurir', 'Dijemput Kurir', 'Diantar ke Dropbox'].includes(
-          p.status
-        )) ||
-      (filter === 'selesai' && p.status === 'Selesai') ||
-      (filter === 'dibatalkan' && p.status === 'Dibatalkan');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
 
-    return matchesSearch && matchesFilter;
-  });
+  // 🔹 filter data
+  const filteredData = useMemo(() => {
+    let result = daftarPenjemputan;
 
-  const totalPages = Math.ceil((filteredPermintaan.length || 0) / itemsPerPage);
-
-  // 🔹 Slice data sesuai halaman
-  const startIdx = (currentPage - 1) * itemsPerPage;
-  const currentData = filteredPermintaan.slice(
-    startIdx,
-    startIdx + itemsPerPage
-  );
-
-  // jika data berubah dan currentPage melebihi totalPages, sesuaikan
-  useEffect(() => {
-    if (totalPages > 0 && currentPage > totalPages) {
-      setCurrentPage(totalPages);
+    // filter status
+    if (filter === 'selesai') {
+      result = result.filter((d) => d.status_penjemputan === 'Selesai');
+    } else if (filter === 'dibatalkan') {
+      result = result.filter((d) => d.status_penjemputan === 'Dibatalkan');
+    } else if (filter === 'aktif') {
+      result = result.filter((d) =>
+        ['Diproses', 'Diterima', 'Dijemput'].includes(d.status_penjemputan)
+      );
     }
-    if (totalPages === 0 && currentPage !== 1) {
-      setCurrentPage(1);
+
+    // search kode/alamat
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (d) =>
+          d.kode_penjemputan?.toLowerCase().includes(q) ||
+          d.alamat_penjemputan?.toLowerCase().includes(q)
+      );
     }
-  }, [filteredPermintaan, totalPages, currentPage]);
+
+    return result;
+  }, [daftarPenjemputan, search, filter]);
+
+  // 🔹 pagination
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentData = filteredData.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className='max-w-7xl mx-auto px-4 space-y-6'>
@@ -81,7 +76,7 @@ const LacakPenjemputanView = () => {
 
       {/* Grid layout */}
       <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>
-        {/* 🔹 Sidebar: Search + Filter (using FilterCard) */}
+        {/* Sidebar filter */}
         <div className='lg:col-span-1 space-y-6'>
           <FilterCard
             search={search}
@@ -91,7 +86,7 @@ const LacakPenjemputanView = () => {
           />
         </div>
 
-        {/* 🔹 Daftar Permintaan */}
+        {/* Daftar permintaan */}
         <div className='lg:col-span-3'>
           <Card
             className={`p-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'} border`}
@@ -106,23 +101,24 @@ const LacakPenjemputanView = () => {
 
             {isLoading ? (
               <p className='text-gray-500 text-center'>Memuat data...</p>
-            ) : daftarPenjemputan.length === 0 ? (
+            ) : currentData.length === 0 ? (
               <p className='text-gray-500 text-center'>Belum ada permintaan</p>
             ) : (
               <>
                 <div className='grid grid-cols-1 gap-4'>
                   {currentData.map((req) => (
-                    <LacakCard
-                      key={req.id}
+                    <PenjemputanMasyarakatCard
+                      key={req.id_penjemputan}
                       req={req}
                       onDetail={() =>
-                        navigate(`/dashboard/masyarakat/lacak/${req.id}`)
+                        navigate(
+                          `/dashboard/masyarakat/lacak/${req.id_penjemputan}`
+                        )
                       }
                     />
                   ))}
                 </div>
 
-                {/* Pagination */}
                 {totalPages > 1 && (
                   <Pagination
                     currentPage={currentPage}

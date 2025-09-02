@@ -66,6 +66,7 @@ const PermintaanPenjemputanView = () => {
         id_waktu_operasional: '',
         alamat_penjemputan: '',
         catatan: '',
+        daftarSampah: [],
       });
     } catch (err) {
       console.error('❌ Error submit:', err);

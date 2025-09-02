@@ -1,17 +1,21 @@
 import { Gift, Truck } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Card, SapaanDashboard } from '../../../components/elements';
-import { RiwayatCard, StatCard } from '../../../components/fragments';
-import useDashboardMasyarakat from '../../../hooks/masyarakat/useDashboardMasyarakat';
+import {
+  PenjemputanMasyarakatCard,
+  StatCard,
+} from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
+import useMasyarakat from '../../../hooks/useMasyarakat';
 import usePengguna from '../../../hooks/usePengguna';
 
 const DashboardMasyarakatView = () => {
   useDocumentTitle('Dashboard Masyarakat');
   const { isDarkMode } = useDarkMode();
-  const { stats, requests, loading } = useDashboardMasyarakat();
+  const { stats, data, isLoading: loading } = useMasyarakat();
   const { pengguna } = usePengguna();
+  const navigate = useNavigate();
 
   const safeStats = stats || {
     totalPoin: 0,
@@ -76,10 +80,18 @@ const DashboardMasyarakatView = () => {
 
           {loading ? (
             <p className='text-center text-gray-400'>⏳ Memuat data...</p>
-          ) : requests.length > 0 ? (
+          ) : data.length > 0 ? (
             <div className='grid gap-4'>
-              {requests.slice(0, 3).map((req) => (
-                <RiwayatCard key={req.kodePenjemputan || req.kode} req={req} />
+              {data.slice(0, 3).map((req) => (
+                <PenjemputanMasyarakatCard
+                  key={req.id_penjemputan}
+                  req={req}
+                  onDetail={() =>
+                    navigate(
+                      `/dashboard/masyarakat/riwayat/${req.id_penjemputan}`
+                    )
+                  }
+                />
               ))}
             </div>
           ) : (

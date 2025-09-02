@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import * as authService from '../../services/authService';
 
-export const usePemulihanAkun = () => {
+const usePemulihanAkun = () => {
   /** 🔹 State utama */
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -67,3 +67,5 @@ export const usePemulihanAkun = () => {
     setPesanSukses,
   };
 };
+
+export default usePemulihanAkun;

@@ -13,7 +13,7 @@ const FormProfilData = ({
   onChange,
   onPhotoChange,
   onSave,
-  errors = {}, // kalau ada validasi bisa dilewatkan di sini
+  errors = {},
 }) => {
   const { isDarkMode } = useDarkMode();
 

@@ -2,192 +2,112 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Card, Pagination } from '../../../components/elements';
+import { AlertModal, ConfirmModal } from '../../../components/fragments';
+import { PenjemputanKurirCard } from '../../../components/fragments/';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
-import {
-  ambilDaftarPenjemputan,
-  ambilDetailPenjemputan,
-  ambilPenjemputan,
-} from '../../../services/penjemputanService';
-
-// 🔹 Helper mapping status dari backend
-const mapStatus = (p) => {
-  if (p.waktu_dibatalkan) return 'Dibatalkan';
-  if (p.waktu_sampai) return 'Selesai';
-  if (p.waktu_diantar) return 'Sampai';
-  if (p.waktu_diterima) return 'Dijemput';
-  return 'Menunggu';
-};
+import useMitraKurir from '../../../hooks/useMitraKurir';
+import usePagination from '../../../hooks/usePagination';
 
 const DaftarPermintaanKurirView = () => {
   useDocumentTitle('Daftar Permintaan');
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
 
-  const [permintaan, setPermintaan] = useState([]);
-  const [expandedId, setExpandedId] = useState(null);
-  const [details, setDetails] = useState({});
-  const [activeRequestId, setActiveRequestId] = useState(null);
+  // ===== DaftarPermintaanKurir (pakai hook khusus kurir) =====
+  const {
+    penjemputanTersedia,
+    permintaanAktif,
+    isLoading,
+    error,
+    ambilPermintaan,
+  } = useMitraKurir();
+  // ===== END DaftarPermintaanKurir =====
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 3;
-
-  // 🔹 Fetch daftar penjemputan
-  const fetchData = async () => {
-    try {
-      setIsLoading(true);
-
-      const res = await ambilDaftarPenjemputan();
-      console.log('📦 Daftar Penjemputan (raw):', res);
-
-      // handle berbagai kemungkinan struktur response
-      const list = res?.penjemputan || res?.data || res || [];
-      console.log('📋 List final:', list);
-
-      const mapped = list.map((p) => ({ ...p, status: mapStatus(p) }));
-      const visible = mapped.filter((p) => p.status !== 'Dibatalkan');
-
-      setPermintaan(visible);
-
-      // cari request aktif
-      const aktif = visible.find(
-        (p) => p.status === 'Dijemput' || p.status === 'Sampai'
-      );
-      setActiveRequestId(aktif ? aktif.id_penjemputan : null);
-    } catch (err) {
-      console.error('❌ Error fetching daftar:', err);
-      setError('Gagal memuat daftar');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  // Auto-redirect jika ada permintaan aktif
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  // 🔹 Expand detail
-  const handleExpand = async (id) => {
-    if (expandedId === id) {
-      return setExpandedId(null);
+    if (permintaanAktif && permintaanAktif.id_penjemputan) {
+      const redirectTimer = setTimeout(() => {
+        navigate('/dashboard/mitra-kurir/permintaan-aktif');
+      }, 800);
+      return () => clearTimeout(redirectTimer);
     }
-    setExpandedId(id);
+  }, [permintaanAktif, navigate]);
 
-    if (details[id]) return;
-
-    try {
-      const res = await ambilDetailPenjemputan(id);
-      const detailData = {
-        namaMasyarakat: res.data.penjemputan.nama_masyarakat,
-        items:
-          res.data.sampah?.map((s) => ({
-            id: s.id_sampah,
-            kategori: s.nama_kategori,
-            jenis: s.nama_jenis,
-            jumlah: s.jumlah_sampah,
-            catatan: s.catatan_sampah,
-          })) || [],
-        catatanMasyarakat: res.data.penjemputan.catatan,
-        waktuOperasional: res.data.penjemputan.waktu_operasional,
-        timeline: [
-          {
-            status: 'Menunggu',
-            desc: 'Permintaan berhasil dibuat',
-            time: res.data.penjemputan.waktu_ditambah,
-          },
-          ...(res.data.penjemputan.waktu_diterima
-            ? [
-                {
-                  status: 'Dijemput',
-                  desc: 'Kurir mengambil barang',
-                  time: res.data.penjemputan.waktu_diterima,
-                },
-              ]
-            : []),
-          ...(res.data.penjemputan.waktu_diantar
-            ? [
-                {
-                  status: 'Sampai',
-                  desc: 'Barang diantar ke dropbox',
-                  time: res.data.penjemputan.waktu_diantar,
-                },
-              ]
-            : []),
-          ...(res.data.penjemputan.waktu_sampai
-            ? [
-                {
-                  status: 'Selesai',
-                  desc: 'Kurir telah setor sampah',
-                  time: res.data.penjemputan.waktu_sampai,
-                },
-              ]
-            : []),
-          ...(res.data.penjemputan.waktu_dibatalkan
-            ? [
-                {
-                  status: 'Dibatalkan',
-                  desc: 'Penjemputan dibatalkan',
-                  time: res.data.penjemputan.waktu_dibatalkan,
-                },
-              ]
-            : []),
-        ],
-      };
-      setDetails((prev) => ({ ...prev, [id]: detailData }));
-    } catch (err) {
-      console.error('❌ gagal ambil detail', err);
-    }
-  };
-
-  // 🔹 Ambil permintaan
-  const handleTakeRequest = async (id) => {
-    if (activeRequestId) {
-      alert('⚠️ Selesaikan permintaan aktif sebelum ambil yang lain');
-      return;
-    }
-
-    try {
-      const payload = { status: 'Diterima' };
-      await ambilPenjemputan(id, payload);
-
-      const currentTime = new Date().toISOString();
-      setPermintaan((prev) =>
-        prev.map((p) =>
-          p.id_penjemputan === id
-            ? { ...p, status: 'Dijemput', waktu_diterima: currentTime }
-            : p
-        )
-      );
-
-      setActiveRequestId(id);
-      localStorage.setItem('recentlyTakenRequest', id.toString());
-
-      setTimeout(async () => {
-        await fetchData();
-        navigate('/dashboard/mitra-kurir/permintaan-aktif', {
-          state: { fallbackActiveId: id, timestamp: Date.now() },
-        });
-      }, 1500);
-    } catch (err) {
-      console.error('❌ gagal ambil permintaan', err);
-      setError('Gagal mengambil permintaan. Coba lagi atau hubungi admin.');
-    }
-  };
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Pagination
-  const totalPages = Math.ceil(permintaan.length / pageSize);
-  const paginated = permintaan.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  const {
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    paginatedData: currentPageData,
+  } = usePagination(penjemputanTersedia || [], 3);
+
+  // Alert modal state
+  const [alert, setAlert] = useState({
+    open: false,
+    type: '',
+    message: '',
+    success: false,
+    takenId: null,
+  });
+
+  // Handler ambil
+  const handleAmbil = (id) => {
+    setSelectedId(id);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmAmbil = async () => {
+    if (!selectedId) return;
+    setIsSubmitting(true);
+    const result = await ambilPermintaan(selectedId);
+    setIsSubmitting(false);
+    setConfirmOpen(false);
+
+    if (result.success) {
+      setAlert({
+        open: true,
+        type: 'success',
+        message: 'Permintaan berhasil diambil ✅',
+        success: true,
+        takenId: selectedId,
+      });
+    } else {
+      setAlert({
+        open: true,
+        type: 'error',
+        message: result.error || 'Gagal mengambil permintaan ❌',
+        success: false,
+        takenId: null,
+      });
+    }
+
+    setSelectedId(null);
+  };
+
+  const handleCloseAlert = () => {
+    setAlert((prev) => ({ ...prev, open: false }));
+    if (alert.success && alert.takenId) {
+      navigate('/dashboard/mitra-kurir/permintaan-aktif', {
+        state: {
+          fallbackActiveId: alert.takenId.toString(),
+          timestamp: Date.now(),
+        },
+      });
+    }
+  };
+
+  const totalItems = penjemputanTersedia?.length || 0;
 
   if (isLoading) return <p className='text-center py-10'>⏳ Memuat...</p>;
 
   return (
-    <div className='max-w-7xl mx-auto'>
+    <div className='max-w-6xl mx-auto'>
+      {/* Header */}
       <div className='flex justify-between items-center mb-4'>
         <div>
           <h2
@@ -199,52 +119,75 @@ const DaftarPermintaanKurirView = () => {
           </h2>
           <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
             Lihat semua permintaan penjemputan yang tersedia
+            {totalItems > 0 && (
+              <span className='ml-2'>
+                ({totalItems} total, halaman {currentPage} dari {totalPages})
+              </span>
+            )}
           </p>
-        </div>
-        <div className='flex gap-2'>
-          <button
-            onClick={fetchData}
-            disabled={isLoading}
-            className='bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-4 py-2 rounded transition-colors'
-          >
-            {isLoading ? '⏳ Memuat...' : '🔄 Refresh'}
-          </button>
         </div>
       </div>
 
       <Card className='p-6 space-y-6'>
         {error && <Alert type='error' message={error} />}
 
-        {permintaan.length === 0 ? (
-          <p className='text-center text-gray-500'>
-            🚫 Tidak ada daftar permintaan penjemputan.
-          </p>
-        ) : (
-          paginated.map((req) => {
-            const expanded = expandedId === req.id_penjemputan;
-            const detail = details[req.id_penjemputan];
-            return (
-              <PermintaanDetailCard
-                key={req.id_penjemputan}
-                req={req}
-                expanded={expanded}
-                detail={detail}
-                onExpand={handleExpand}
-                onTakeRequest={handleTakeRequest}
-                activeRequestId={activeRequestId}
-              />
-            );
-          })
-        )}
-
-        {permintaan.length > 0 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(p) => setCurrentPage(p)}
+        {permintaanAktif && (
+          <Alert
+            type='warning'
+            message={`⚠️ Anda sedang mengerjakan 1 penjemputan (ID: ${permintaanAktif.id_penjemputan}, Status: ${permintaanAktif.status}). Selesaikan atau batalkan terlebih dahulu sebelum ambil yang lain.`}
           />
         )}
+
+        {totalItems === 0 ? (
+          <div className='text-center'>
+            <p className='text-gray-500 mb-4'>
+              {permintaanAktif
+                ? '✅ Tidak ada permintaan baru. Selesaikan penjemputan aktif Anda.'
+                : '🚫 Tidak ada permintaan penjemputan yang tersedia saat ini.'}
+            </p>
+          </div>
+        ) : (
+          <>
+            {currentPageData.map((req) => (
+              <PenjemputanKurirCard
+                key={req.id_penjemputan}
+                req={req}
+                onAmbil={permintaanAktif ? undefined : handleAmbil}
+                isAktif={false}
+                disabled={!!permintaanAktif}
+              />
+            ))}
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </>
+        )}
       </Card>
+
+      {/* Confirm Modal */}
+      <ConfirmModal
+        confirmType='primary'
+        isOpen={confirmOpen}
+        title='Ambil Permintaan'
+        message='Apakah Anda yakin ingin mengambil permintaan ini?'
+        confirmText='Ya, Ambil'
+        cancelText='Batal'
+        isLoading={isSubmitting}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleConfirmAmbil}
+      />
+
+      {/* Alert Modal */}
+      <AlertModal
+        isOpen={alert.open}
+        type={alert.type}
+        title={alert.success ? 'Berhasil' : 'Gagal'}
+        message={alert.message}
+        onClose={handleCloseAlert}
+      />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 // src/components/fragments/forms/penjemputan/index.jsx
-import usePenjemputan from '../../../../hooks/masyarakat/usePenjemputan';
 import useDarkMode from '../../../../hooks/useDarkMode';
+import usePenjemputan from '../../../../hooks/usePenjemputan';
 import { Button, Card, Label, Select, Textarea } from '../../../elements';
 import DaftarSampah from './DaftarSampah';
 import ModalTambahSampah from './ModalTambahSampah';
@@ -42,7 +42,7 @@ const FormPenjemputan = ({
       showAlert?.('Validasi Gagal', 'Tambah minimal 1 sampah dulu.', 'warning');
       return;
     }
-    if (!formData.id_waktu_operasional || !formData.alamat_penjemputan) {
+    if (!formData.id_waktu_operasional || !formData.alamat_jemput) {
       showAlert?.('Validasi Gagal', 'Lengkapi data wajib.', 'warning');
       return;
     }
@@ -51,8 +51,9 @@ const FormPenjemputan = ({
 
     // reset form setelah submit
     onInputChange('id_waktu_operasional', '');
-    onInputChange('alamat_penjemputan', '');
+    onInputChange('alamat_jemput', '');
     onInputChange('catatan', '');
+    onInputChange('daftarSampah', []);
   };
 
   return (
@@ -155,9 +156,9 @@ const FormPenjemputan = ({
                 <Label required>Alamat Penjemputan</Label>
                 <Textarea
                   rows={3}
-                  value={formData.alamat_penjemputan || ''}
+                  value={formData.alamat_jemput || ''}
                   onChange={(e) =>
-                    onInputChange('alamat_penjemputan', e.target.value)
+                    onInputChange('alamat_jemput', e.target.value)
                   }
                 />
               </div>

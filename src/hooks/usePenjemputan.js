@@ -1,6 +1,6 @@
 // src/hooks/usePenjemputan.js
 import { useEffect, useRef, useState } from 'react';
-import * as penjemputanService from '../../services/penjemputanService';
+import * as penjemputanService from '../services/penjemputanService';
 
 const usePenjemputan = ({ showAlert }) => {
   // master data

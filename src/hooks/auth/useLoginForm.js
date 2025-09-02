@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import * as authService from '../../services/authService';
 import { setTokenWithExpiry } from '../../utils/authExpiredUtils';
 
-export const useLoginForm = () => {
+const useLoginForm = () => {
   // --- State Form ---
   const [email, setEmail] = useState('');
   const [kata_sandi, setKataSandi] = useState('');
@@ -95,3 +95,5 @@ export const useLoginForm = () => {
     handleLoginSubmit,
   };
 };
+
+export default useLoginForm;

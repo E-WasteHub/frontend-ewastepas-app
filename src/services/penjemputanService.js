@@ -52,9 +52,6 @@ export const ambilRiwayatPenjemputan = async () => {
   }
 };
 
-// alias untuk kompatibilitas lama
-export const getRiwayatPenjemputan = ambilRiwayatPenjemputan;
-
 /* ===============================
    📌 CREATE
 ================================= */

@@ -1,8 +1,53 @@
 // src/components/fragments/lacak/Timeline.jsx
-import {
-  daftarLangkahStatus,
-  formatWaktuID,
-} from '../../../utils/penjemputanUtils';
+
+// Simple utility functions
+const formatWaktuID = (timestamp) => {
+  if (!timestamp) return '-';
+  const d = new Date(timestamp);
+  if (isNaN(d.getTime())) return '-';
+  return d.toLocaleTimeString('id-ID', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
+
+const daftarLangkahStatus = [
+  {
+    key: 'diproses',
+    label: 'Menunggu Kurir',
+    description: 'Permintaan berhasil dibuat',
+    timeKey: 'waktu_ditambah',
+    status: 'Menunggu Kurir',
+  },
+  {
+    key: 'diterima',
+    label: 'Diterima',
+    description: 'Kurir menerima permintaan',
+    timeKey: 'waktu_diterima',
+    status: 'Diterima',
+  },
+  {
+    key: 'dijemput',
+    label: 'Dijemput Kurir',
+    description: 'Kurir sampai di lokasi masyarakat dan memilih dropbox',
+    timeKey: 'waktu_dijemput',
+    status: 'Dijemput Kurir',
+  },
+  {
+    key: 'selesai',
+    label: 'Selesai',
+    description: 'Sampah sudah disetor ke dropbox',
+    timeKey: 'waktu_selesai',
+    status: 'Selesai',
+  },
+  {
+    key: 'dibatalkan',
+    label: 'Dibatalkan',
+    description: 'Penjemputan dibatalkan',
+    timeKey: 'waktu_dibatalkan',
+    status: 'Dibatalkan',
+  },
+];
 
 const Timeline = ({ currentStep = 0, isDarkMode, detail }) => {
   if (currentStep === -1) {

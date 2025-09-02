@@ -1,257 +1,260 @@
 // src/views/kurir/PermintaanAktifKurir.jsx
-import { useCallback, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Alert, Card } from '../../../components/elements';
+import { FileText, Truck } from 'lucide-react';
+import { useState } from 'react';
+import { Alert, Button, Card } from '../../../components/elements';
+import {
+  ConfirmModal,
+  ItemSampahCard,
+  PilihDropboxModal,
+  Timeline,
+} from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
-import {
-  ambilDetailPenjemputan,
-  ambilRiwayatPenjemputan,
-  updatePenjemputan,
-} from '../../../services/penjemputanService';
+import useMitraKurir, {
+  useMitraKurirDetail,
+} from '../../../hooks/useMitraKurir';
+
+// ✅ daftar langkah status (sama dengan DetailLacakPenjemputan)
+const daftarLangkahStatus = [
+  {
+    key: 'diproses',
+    label: 'Menunggu Kurir',
+    description: 'Permintaan berhasil dibuat',
+    timeKey: 'waktu_ditambah',
+    status: 'Diproses',
+  },
+  {
+    key: 'diterima',
+    label: 'Diterima',
+    description: 'Kurir menerima permintaan',
+    timeKey: 'waktu_diterima',
+    status: 'Diterima',
+  },
+  {
+    key: 'dijemput',
+    label: 'Dijemput',
+    description: 'Kurir sampai di lokasi masyarakat',
+    timeKey: 'waktu_dijemput',
+    status: 'Dijemput',
+  },
+  {
+    key: 'selesai',
+    label: 'Selesai',
+    description: 'Sampah disetor ke dropbox',
+    timeKey: 'waktu_selesai',
+    status: 'Selesai',
+  },
+  {
+    key: 'dibatalkan',
+    label: 'Dibatalkan',
+    description: 'Penjemputan dibatalkan',
+    timeKey: 'waktu_dibatalkan',
+    status: 'Dibatalkan',
+  },
+];
 
 const PermintaanAktifKurir = () => {
   useDocumentTitle('Permintaan Aktif Kurir');
   const { isDarkMode } = useDarkMode();
-  const location = useLocation();
 
-  // State utama
-  const [permintaanAktif, setPermintaanAktif] = useState(null);
-  const [detailPermintaan, setDetailPermintaan] = useState(null);
-  const [sedangMemuat, setSedangMemuat] = useState(true);
-  const [pesanError, setPesanError] = useState('');
+  // 🔹 Ambil data & actions dari hook kurir
+  const {
+    permintaanAktif,
+    isLoading,
+    error,
+    // tandaiDijemput,
+    tandaiSelesai,
+    batalkanPermintaan,
+  } = useMitraKurir();
 
-  // 🔹 Fungsi untuk menentukan status permintaan
-  const tentukanStatus = (data) => {
-    if (data.waktu_dibatalkan) return 'Dibatalkan';
-    if (data.waktu_sampai) return 'Selesai';
-    if (data.waktu_diterima && data.waktu_diantar) return 'Diantar';
-    if (data.waktu_diterima) return 'Diterima';
-    return 'Menunggu';
-  };
+  // 🔹 Ambil detail khusus untuk permintaan aktif
+  const {
+    detail,
+    isLoading: loadingDetail,
+    error: errorDetail,
+  } = useMitraKurirDetail(permintaanAktif?.id_penjemputan);
 
-  // 🔹 Ambil permintaan aktif dari riwayat
-  const ambilPermintaanAktif = useCallback(async () => {
-    try {
-      setSedangMemuat(true);
-      setPesanError('');
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [dropboxOpen, setDropboxOpen] = useState(false);
 
-      // Ambil semua riwayat penjemputan
-      const respons = await ambilRiwayatPenjemputan();
-      const daftar = Array.isArray(respons) ? respons : respons?.data || [];
-
-      // Filter sesuai kondisi yang kamu minta:
-      // - waktu_dibatalkan harus null
-      // - waktu_sampai harus null
-      // - Case 1: ada waktu_diterima, belum ada waktu_diantar
-      // - Case 2: ada waktu_diterima, ada waktu_diantar
-      const daftarTersaring = daftar
-        .filter((d) => {
-          if (d.waktu_dibatalkan || d.waktu_sampai) return false;
-          if (d.waktu_diterima && !d.waktu_diantar) return true; // case 1
-          if (d.waktu_diterima && d.waktu_diantar) return true; // case 2
-          return false;
-        })
-        .map((d) => ({ ...d, status: tentukanStatus(d) }));
-
-      // Ambil permintaan aktif pertama
-      let aktif = daftarTersaring[0] || null;
-
-      // Jika tidak ada, coba fallback ke state / localStorage
-      if (!aktif) {
-        const fallbackId =
-          location.state?.fallbackActiveId ||
-          localStorage.getItem('recentlyTakenRequest');
-
-        if (fallbackId) {
-          const ditemukan = daftarTersaring.find(
-            (d) => (d.id_penjemputan ?? d.id)?.toString() === fallbackId
-          );
-          if (ditemukan) {
-            aktif = { ...ditemukan, status: 'Diterima' };
-          }
-        }
-      }
-
-      if (aktif) {
-        setPermintaanAktif(aktif);
-
-        // Hapus data fallback kalau sudah dipakai
-        const fallbackId =
-          location.state?.fallbackActiveId ||
-          localStorage.getItem('recentlyTakenRequest');
-        if (
-          fallbackId &&
-          fallbackId.toString() ===
-            (aktif.id_penjemputan ?? aktif.id)?.toString()
-        ) {
-          localStorage.removeItem('recentlyTakenRequest');
-        }
-
-        // Ambil detail permintaan aktif
-        const idAktif = aktif.id_penjemputan ?? aktif.id;
-        const responsDetail = await ambilDetailPenjemputan(idAktif);
-        const d = responsDetail.data;
-
-        const dataDetail = {
-          items:
-            responsDetail.sampah?.map((s) => ({
-              id_sampah: s.id_sampah,
-              nama_kategori: s.nama_kategori,
-              nama_jenis: s.nama_jenis,
-              jumlah_sampah: s.jumlah_sampah,
-              catatan_sampah: s.catatan_sampah || null,
-              poin_sampah: s.poin_sampah || 0,
-            })) || [],
-          catatanMasyarakat: d.catatan || null,
-          waktuOperasional: d.waktu_operasional,
-          timeline: [
-            {
-              status: 'Menunggu',
-              desc: 'Permintaan berhasil dibuat',
-              time: d.waktu_ditambah,
-            },
-            ...(d.waktu_diterima
-              ? [
-                  {
-                    status: 'Diterima',
-                    desc: 'Kurir menerima permintaan dan menuju lokasi',
-                    time: d.waktu_diterima,
-                  },
-                ]
-              : []),
-            ...(d.waktu_diantar
-              ? [
-                  {
-                    status: 'Diantar',
-                    desc: 'Kurir menuju atau berada di dropbox',
-                    time: d.waktu_diantar,
-                  },
-                ]
-              : []),
-            ...(d.waktu_sampai
-              ? [
-                  {
-                    status: 'Selesai',
-                    desc: 'Kurir telah setor sampah',
-                    time: d.waktu_sampai,
-                  },
-                ]
-              : []),
-          ],
-        };
-
-        setDetailPermintaan(dataDetail);
-      } else {
-        setPermintaanAktif(null);
-        setDetailPermintaan(null);
-      }
-    } catch (err) {
-      console.error('❌ Gagal ambil permintaan aktif', err);
-      setPesanError('Gagal memuat permintaan aktif');
-    } finally {
-      setSedangMemuat(false);
-    }
-  }, [location.state?.fallbackActiveId]);
-
-  // 🔹 Update status penjemputan sesuai case
-  const ubahStatusPenjemputan = async (aksi) => {
-    console.log('Mengubah status penjemputan:', aksi);
-    try {
-      const idAktif = permintaanAktif?.id_penjemputan ?? permintaanAktif?.id;
-
-      if (!idAktif) return;
-      console.log('ID Aktif:', idAktif);
-
-      let statusBaru = '';
-      let deskripsi = '';
-
-      if (aksi === 'Dijemput') {
-        statusBaru = 'Diantar';
-        deskripsi = 'Kurir menuju atau berada di dropbox';
-      } else if (aksi === 'Sampai') {
-        statusBaru = 'Sampai';
-        deskripsi = 'Kurir telah setor sampah';
-      } else if (aksi === 'Dibatalkan') {
-        statusBaru = 'Dibatalkan';
-        deskripsi = 'Penjemputan dibatalkan';
-      }
-
-      await updatePenjemputan(idAktif, { status: statusBaru });
-
-      if (statusBaru === 'Sampai' || statusBaru === 'Dibatalkan') {
-        alert(`✅ Penjemputan ${statusBaru.toLowerCase()}`);
-        setPermintaanAktif(null);
-        setDetailPermintaan(null);
-      } else {
-        // update status + timeline lokal
-        setPermintaanAktif((prev) => ({ ...prev, status: statusBaru }));
-        setDetailPermintaan((prev) => ({
-          ...prev,
-          timeline: [
-            ...prev.timeline,
-            {
-              status: statusBaru,
-              desc: deskripsi,
-              time: new Date().toISOString(),
-            },
-          ],
-        }));
-      }
-    } catch (err) {
-      console.error('❌ Gagal update status penjemputan', err);
-      setPesanError('Gagal update status penjemputan');
-    }
-  };
-
-  // Jalankan saat pertama kali masuk halaman
-  useEffect(() => {
-    ambilPermintaanAktif();
-  }, [ambilPermintaanAktif]);
-
-  if (sedangMemuat) {
+  // 🔄 Loading state gabungan
+  if (isLoading || loadingDetail) {
     return <p className='text-center py-10'>⏳ Memuat data...</p>;
   }
 
+  // 🔄 Jika tidak ada permintaan aktif
+  if (!permintaanAktif) {
+    return (
+      <Card className='max-w-7xl mx-auto p-8 text-center'>
+        <p className={isDarkMode ? 'text-white' : 'text-slate-800'}>
+          Tidak ada penjemputan aktif saat ini.
+        </p>
+      </Card>
+    );
+  }
+
+  const p = permintaanAktif;
+  const d = detail;
+  const currentStatus = p.status_penjemputan;
+
   return (
-    <div className='max-w-5xl mx-auto'>
-      <div className='flex justify-between items-center mb-4'>
-        <div>
-          <h2
-            className={`text-2xl font-bold ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`}
-          >
-            Permintaan Aktif Penjemputan
-          </h2>
-          <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
-            Detail permintaan penjemputan yang sedang aktif
-          </p>
-        </div>
-        <button
-          onClick={ambilPermintaanAktif}
-          disabled={sedangMemuat}
-          className='bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-4 py-2 rounded transition-colors'
+    <div
+      className={`max-w-7xl mx-auto space-y-6 ${
+        isDarkMode ? 'bg-slate-900 text-white' : 'bg-gray-50 text-gray-900'
+      }`}
+    >
+      {/* Header */}
+      <header className='mb-2'>
+        <h1 className='text-2xl md:text-2xl font-bold'>
+          Permintaan Aktif Penjemputan
+        </h1>
+        <p
+          className={`text-sm md:text-md ${
+            isDarkMode ? 'text-gray-300' : 'text-gray-500'
+          }`}
         >
-          {sedangMemuat ? '⏳ Memuat...' : '🔄 Refresh'}
-        </button>
-      </div>
+          Detail permintaan penjemputan yang sedang berjalan.
+        </p>
+      </header>
 
-      {pesanError && <Alert type='error' message={pesanError} />}
+      {/* Error Messages */}
+      {error && <Alert type='error' message={error} />}
+      {errorDetail && <Alert type='error' message={errorDetail} />}
 
-      {!permintaanAktif ? (
-        <Card className='p-6 text-center'>
-          <p className='text-gray-500'>
-            🚚 Tidak ada penjemputan aktif saat ini.
-          </p>
-        </Card>
-      ) : (
-        <PermintaanAktifCard
-          permintaanAktif={permintaanAktif}
-          detailPermintaan={detailPermintaan}
-          onUpdateStatus={ubahStatusPenjemputan}
-        />
-      )}
+      <Card
+        className={`p-6 shadow-md rounded-xl ${
+          isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white'
+        }`}
+      >
+        {/* Informasi Penjemputan */}
+        <section className='mb-4'>
+          <h3 className='text-2xl font-bold mb-3'>Informasi Penjemputan</h3>
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm'>
+            <p>
+              <span className='font-medium'>Kode:</span> {p.kode_penjemputan}
+            </p>
+            <p>
+              <span className='font-medium'>Alamat:</span>{' '}
+              {p.alamat_penjemputan}
+            </p>
+            <p>
+              <span className='font-medium'>Masyarakat:</span>{' '}
+              {p.nama_masyarakat}
+            </p>
+            <p>
+              <span className='font-medium'>Waktu Operasional:</span>{' '}
+              {p.waktu_operasional || '-'}
+            </p>
+            {p.catatan && (
+              <p className='sm:col-span-2 italic text-gray-500'>
+                <span className='font-medium'>Catatan:</span> {p.catatan}
+              </p>
+            )}
+          </div>
+        </section>
+
+        {/* Grid Status + Detail Sampah */}
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+          {/* Status Penjemputan */}
+          <section>
+            <h3 className='text-lg font-semibold mb-2 flex items-center gap-2'>
+              <Truck className='w-5 h-5 text-green-500' />
+              Status Penjemputan
+            </h3>
+            <Timeline
+              steps={daftarLangkahStatus}
+              currentStep={
+                currentStatus === 'Dibatalkan'
+                  ? -1
+                  : currentStatus === 'Selesai'
+                  ? 3
+                  : currentStatus === 'Dijemput'
+                  ? 2
+                  : currentStatus === 'Diterima'
+                  ? 1
+                  : 0
+              }
+              isDarkMode={isDarkMode}
+              detail={p}
+            />
+          </section>
+
+          {/* Detail Sampah */}
+          <section>
+            <h3 className='text-lg font-semibold mb-3 flex items-center gap-2'>
+              <FileText className='w-5 h-5 text-green-500' />
+              Detail Sampah
+            </h3>
+            {d?.sampah?.length > 0 ? (
+              <div
+                className={`space-y-3 ${
+                  d.sampah.length > 3 ? 'max-h-96 overflow-y-auto pr-2' : ''
+                }`}
+              >
+                {d.sampah.map((s) => (
+                  <ItemSampahCard
+                    key={s.id_sampah}
+                    data={s}
+                    isDarkMode={isDarkMode}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className='text-sm text-gray-500'>Tidak ada data sampah</p>
+            )}
+          </section>
+        </div>
+
+        {/* Tombol Aksi */}
+        <div className='flex justify-end gap-3 mt-6'>
+          {currentStatus === 'Diterima' && (
+            <Button
+              type='button'
+              className='bg-blue-600 hover:bg-blue-700 text-white'
+              onClick={() => setDropboxOpen(true)}
+            >
+              Pilih Dropbox & Mulai Jemput
+            </Button>
+          )}
+          {currentStatus === 'Dijemput' && (
+            <Button
+              type='button'
+              className='bg-emerald-600 hover:bg-emerald-700 text-white'
+              onClick={() => tandaiSelesai(p.id_penjemputan)}
+            >
+              Selesaikan
+            </Button>
+          )}
+          {['Diterima', 'Dijemput'].includes(currentStatus) && (
+            <Button
+              type='button'
+              className='bg-red-600 hover:bg-red-700 text-white'
+              onClick={() => setConfirmOpen(true)}
+            >
+              Batalkan
+            </Button>
+          )}
+        </div>
+      </Card>
+
+      {/* Modal Pilih Dropbox */}
+      <PilihDropboxModal
+        isOpen={dropboxOpen}
+        onClose={() => setDropboxOpen(false)}
+        onSelect={(id_dropbox) => {
+          setDropboxOpen(false);
+          tandaiSelesai(p.id_penjemputan, id_dropbox);
+        }}
+      />
+
+      {/* Modal Konfirmasi Batal */}
+      <ConfirmModal
+        isOpen={confirmOpen}
+        title='Batalkan Penjemputan'
+        message='Apakah Anda yakin ingin membatalkan penjemputan ini?'
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={() => batalkanPermintaan(p.id_penjemputan)}
+      />
     </div>
   );
 };
