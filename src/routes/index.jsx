@@ -79,6 +79,9 @@ const PermintaanAktifKurirView = lazy(() =>
 const RiwayatMitraKurirView = lazy(() =>
   import('../pages/dashboard/mitrakurir/RiwayatMitraKurirView')
 );
+const DetailRiwayatMitraKurirView = lazy(() =>
+  import('../pages/dashboard/mitrakurir/DetailRiwayatMitraKurirView')
+);
 
 // ================= Shared (Dashboard Profil) =================
 const ProfilView = lazy(() => import('../pages/dashboard/ProfilView'));
@@ -280,6 +283,14 @@ const AppRouter = () => {
           element={
             <DashboardLayout>
               <RiwayatMitraKurirView />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path='/dashboard/mitra-kurir/riwayat/:id_penjemputan'
+          element={
+            <DashboardLayout>
+              <DetailRiwayatMitraKurirView />
             </DashboardLayout>
           }
         />

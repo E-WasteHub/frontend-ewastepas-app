@@ -18,9 +18,8 @@ const DashboardMitraKurirView = () => {
 
   const safeStats = stats || {
     tersedia: 0,
-    sedangDikerjakan: 0,
-    selesaiHariIni: 0,
-    totalSelesai: 0,
+    penjemputanBulanIni: 0,
+    totalPenjemputan: 0,
   };
   // ===== END DashboardMitraKurir =====
 
@@ -47,20 +46,20 @@ const DashboardMitraKurirView = () => {
       {/* 🔹 Quick Stats */}
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
         <StatCard
-          label='Permintaan Aktif'
-          value={safeStats.sedangDikerjakan}
+          label='Penjemputan Tersedia'
+          value={safeStats.penjemputanTersedia}
           icon={<Star className='w-6 h-6 text-green-500' />}
           useCard={false}
         />
         <StatCard
-          label='Selesai Hari Ini'
-          value={safeStats.selesaiHariIni}
+          label='Penjemputan bulan ini'
+          value={safeStats.penjemputanBulanIni}
           icon={<Package className='w-6 h-6 text-green-500' />}
           useCard={false}
         />
         <StatCard
-          label='Total Selesai'
-          value={safeStats.totalSelesai}
+          label='Total Penjemputan'
+          value={safeStats.totalPenjemputan}
           icon={<Package className='w-6 h-6 text-green-500' />}
           useCard={false}
         />

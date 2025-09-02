@@ -1,14 +1,14 @@
+// src/components/fragments/kurir/FilterCard.jsx
 import useDarkMode from '../../../hooks/useDarkMode';
 import { Card } from '../../elements';
 
-const statusOptions = [
-  { key: 'all', label: 'Semua' },
-  { key: 'aktif', label: 'Aktif' },
-  { key: 'selesai', label: 'Selesai' },
-  { key: 'dibatalkan', label: 'Dibatalkan' },
-];
-
-const FilterCard = ({ search, setSearch, filter, setFilter }) => {
+const FilterCard = ({
+  search,
+  setSearch,
+  filter,
+  setFilter,
+  statusOptions = [],
+}) => {
   const { isDarkMode } = useDarkMode();
 
   return (
@@ -27,26 +27,28 @@ const FilterCard = ({ search, setSearch, filter, setFilter }) => {
       />
 
       {/* Filter status */}
-      <div>
-        <p className='text-sm font-semibold mb-2'>Filter Status</p>
-        <div className='flex flex-wrap gap-2'>
-          {statusOptions.map((opt) => (
-            <button
-              key={opt.key}
-              onClick={() => setFilter(opt.key)}
-              className={`px-3 py-1 rounded-full text-sm border transition-colors ${
-                filter === opt.key
-                  ? `bg-green-600 text-white border-green-600`
-                  : isDarkMode
-                  ? `bg-slate-700 text-gray-300 border-slate-600 hover:bg-slate-600`
-                  : `bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200`
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
+      {statusOptions.length > 0 && (
+        <div>
+          <p className='text-sm font-semibold mb-2'>Filter Status</p>
+          <div className='flex flex-wrap gap-2'>
+            {statusOptions.map((opt) => (
+              <button
+                key={opt.key}
+                onClick={() => setFilter(opt.key)}
+                className={`px-3 py-1 rounded-full text-sm border transition-colors ${
+                  filter === opt.key
+                    ? 'bg-green-600 text-white border-green-600'
+                    : isDarkMode
+                    ? 'bg-slate-700 text-gray-300 border-slate-600 hover:bg-slate-600'
+                    : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </Card>
   );
 };

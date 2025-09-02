@@ -1,9 +1,12 @@
 // src/views/kurir/DaftarPermintaanKurirView.jsx
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Card, Pagination } from '../../../components/elements';
-import { AlertModal, ConfirmModal } from '../../../components/fragments';
-import { PenjemputanKurirCard } from '../../../components/fragments/';
+import {
+  AlertModal,
+  ConfirmModal,
+  PenjemputanKurirCard,
+} from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import useMitraKurir from '../../../hooks/useMitraKurir';
@@ -14,7 +17,7 @@ const DaftarPermintaanKurirView = () => {
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
 
-  // ===== DaftarPermintaanKurir (pakai hook khusus kurir) =====
+  // ===== Hook Kurir =====
   const {
     penjemputanTersedia,
     permintaanAktif,
@@ -22,23 +25,19 @@ const DaftarPermintaanKurirView = () => {
     error,
     ambilPermintaan,
   } = useMitraKurir();
-  // ===== END DaftarPermintaanKurir =====
 
-  // Auto-redirect jika ada permintaan aktif
-  useEffect(() => {
-    if (permintaanAktif && permintaanAktif.id_penjemputan) {
-      const redirectTimer = setTimeout(() => {
-        navigate('/dashboard/mitra-kurir/permintaan-aktif');
-      }, 800);
-      return () => clearTimeout(redirectTimer);
-    }
-  }, [permintaanAktif, navigate]);
-
+  // ===== State =====
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [alert, setAlert] = useState({
+    open: false,
+    type: '',
+    message: '',
+    success: false,
+  });
 
-  // Pagination
+  // ===== Pagination =====
   const {
     currentPage,
     setCurrentPage,
@@ -46,24 +45,16 @@ const DaftarPermintaanKurirView = () => {
     paginatedData: currentPageData,
   } = usePagination(penjemputanTersedia || [], 3);
 
-  // Alert modal state
-  const [alert, setAlert] = useState({
-    open: false,
-    type: '',
-    message: '',
-    success: false,
-    takenId: null,
-  });
-
-  // Handler ambil
-  const handleAmbil = (id) => {
-    setSelectedId(id);
+  // ===== Handler =====
+  const handleAmbil = (id_penjemputan) => {
+    setSelectedId(id_penjemputan);
     setConfirmOpen(true);
   };
 
   const handleConfirmAmbil = async () => {
     if (!selectedId) return;
     setIsSubmitting(true);
+
     const result = await ambilPermintaan(selectedId);
     setIsSubmitting(false);
     setConfirmOpen(false);
@@ -74,7 +65,6 @@ const DaftarPermintaanKurirView = () => {
         type: 'success',
         message: 'Permintaan berhasil diambil ✅',
         success: true,
-        takenId: selectedId,
       });
     } else {
       setAlert({
@@ -82,7 +72,6 @@ const DaftarPermintaanKurirView = () => {
         type: 'error',
         message: result.error || 'Gagal mengambil permintaan ❌',
         success: false,
-        takenId: null,
       });
     }
 
@@ -91,19 +80,14 @@ const DaftarPermintaanKurirView = () => {
 
   const handleCloseAlert = () => {
     setAlert((prev) => ({ ...prev, open: false }));
-    if (alert.success && alert.takenId) {
-      navigate('/dashboard/mitra-kurir/permintaan-aktif', {
-        state: {
-          fallbackActiveId: alert.takenId.toString(),
-          timestamp: Date.now(),
-        },
-      });
+    if (alert.success && permintaanAktif) {
+      navigate('/dashboard/mitra-kurir/permintaan-aktif');
     }
   };
 
-  const totalItems = penjemputanTersedia?.length || 0;
-
+  // ===== Render =====
   if (isLoading) return <p className='text-center py-10'>⏳ Memuat...</p>;
+  const totalItems = penjemputanTersedia?.length || 0;
 
   return (
     <div className='max-w-6xl mx-auto'>
@@ -128,13 +112,14 @@ const DaftarPermintaanKurirView = () => {
         </div>
       </div>
 
+      {/* Body */}
       <Card className='p-6 space-y-6'>
         {error && <Alert type='error' message={error} />}
 
         {permintaanAktif && (
           <Alert
             type='warning'
-            message={`⚠️ Anda sedang mengerjakan 1 penjemputan (ID: ${permintaanAktif.id_penjemputan}, Status: ${permintaanAktif.status}). Selesaikan atau batalkan terlebih dahulu sebelum ambil yang lain.`}
+            message={`⚠️ Anda sedang mengerjakan 1 penjemputan (ID: ${permintaanAktif.id_penjemputan}, Status: ${permintaanAktif.status_penjemputan}). Selesaikan atau batalkan terlebih dahulu sebelum ambil yang lain.`}
           />
         )}
 
@@ -152,7 +137,7 @@ const DaftarPermintaanKurirView = () => {
               <PenjemputanKurirCard
                 key={req.id_penjemputan}
                 req={req}
-                onAmbil={permintaanAktif ? undefined : handleAmbil}
+                onAmbil={() => handleAmbil(req.id_penjemputan)}
                 isAktif={false}
                 disabled={!!permintaanAktif}
               />
@@ -167,7 +152,7 @@ const DaftarPermintaanKurirView = () => {
         )}
       </Card>
 
-      {/* Confirm Modal */}
+      {/* Modal Konfirmasi */}
       <ConfirmModal
         confirmType='primary'
         isOpen={confirmOpen}
@@ -180,7 +165,7 @@ const DaftarPermintaanKurirView = () => {
         onConfirm={handleConfirmAmbil}
       />
 
-      {/* Alert Modal */}
+      {/* Modal Alert */}
       <AlertModal
         isOpen={alert.open}
         type={alert.type}

@@ -26,7 +26,7 @@ const daftarLangkahStatus = [
     label: 'Menunggu Kurir',
     description: 'Permintaan berhasil dibuat',
     timeKey: 'waktu_ditambah',
-    status: 'Menunggu Kurir',
+    status: 'Diproses',
   },
   {
     key: 'diterima',

@@ -250,7 +250,7 @@ const DetailLacakPenjemputan = () => {
         message='Apakah Anda yakin ingin membatalkan penjemputan ini?'
         onClose={() => setConfirmOpen(false)}
         onConfirm={async () => {
-          const success = await batalkan(p.id_penjemputan); // <-- kirim ID
+          const success = await batalkan(p.id_penjemputan);
           if (success) {
             setConfirmOpen(false);
             navigate(-1);

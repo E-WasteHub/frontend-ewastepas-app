@@ -51,19 +51,15 @@ const useMasyarakat = () => {
   }, [fetchData]);
 
   // ===== DashboardMasyarakat =======
+  const pengguna = JSON.parse(localStorage.getItem('pengguna')) || {};
   const stats = {
     totalPenjemputan: data.length,
     sedangBerlangsung: data.filter((d) =>
       ['Diproses', 'Diterima', 'Dijemput'].includes(d.status_penjemputan)
     ).length,
-    selesai: data.filter((d) => d.status_penjemputan === 'Selesai').length,
-    dibatalkan: data.filter((d) => d.status_penjemputan === 'Dibatalkan')
-      .length,
-    totalPoin: data.reduce(
-      (total, item) => total + (item.poin_penjemputan || 0),
-      0
-    ),
+    totalPoin: parseInt(pengguna.poin_pengguna, 10) || 0,
   };
+
   // ===== END DashboardMasyarakat =======
 
   // ===== LacakPenjemputan =======

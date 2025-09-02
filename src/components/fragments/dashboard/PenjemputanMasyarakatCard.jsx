@@ -3,34 +3,41 @@ import useDarkMode from '../../../hooks/useDarkMode';
 import { Button, Card } from '../../elements';
 
 // 🔹 Map status ke warna (disatukan untuk riwayat + lacak)
-const getStatusColor = (status_penjemputan, isDarkMode) => {
-  const map = {
-    'Menunggu Kurir': isDarkMode
-      ? 'bg-yellow-800/40 text-yellow-300'
-      : 'bg-yellow-100 text-yellow-700',
-    'Dijemput Kurir': isDarkMode
-      ? 'bg-blue-800/40 text-blue-300'
-      : 'bg-blue-100 text-blue-700',
-    'Diantar Kurir ke Dropbox': isDarkMode
-      ? 'bg-indigo-800/40 text-indigo-300'
-      : 'bg-indigo-100 text-indigo-700',
-    Selesai: isDarkMode
-      ? 'bg-green-800/40 text-green-300'
-      : 'bg-green-100 text-green-700',
-    Dibatalkan: isDarkMode
-      ? 'bg-red-800/40 text-red-300'
-      : 'bg-red-100 text-red-700',
+const warnaStatusBadge = (status, isDarkMode = false) => {
+  const warnaMap = {
+    Diproses: {
+      light: 'bg-yellow-100 text-yellow-800',
+      dark: 'bg-yellow-500/20 text-yellow-300',
+    },
+    Diterima: {
+      light: 'bg-blue-100 text-blue-800',
+      dark: 'bg-blue-500/20 text-blue-300',
+    },
+    Dijemput: {
+      light: 'bg-purple-100 text-purple-800',
+      dark: 'bg-purple-500/20 text-purple-300',
+    },
+    Selesai: {
+      light: 'bg-green-100 text-green-800',
+      dark: 'bg-green-500/20 text-green-300',
+    },
+    Dibatalkan: {
+      light: 'bg-red-100 text-red-800',
+      dark: 'bg-red-500/20 text-red-300',
+    },
   };
 
-  return (
-    map[status_penjemputan] ||
-    (isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700')
-  );
+  const entry = warnaMap[status];
+  if (entry) return isDarkMode ? entry.dark : entry.light;
+
+  return isDarkMode
+    ? 'bg-gray-600/30 text-gray-300'
+    : 'bg-gray-100 text-gray-700';
 };
 
 const PenjemputanMasyarakatCard = ({ req = {}, onDetail }) => {
   const { isDarkMode } = useDarkMode();
-  const statusColor = getStatusColor(req?.status_penjemputan, isDarkMode);
+  const statusColor = warnaStatusBadge(req?.status_penjemputan, isDarkMode);
 
   return (
     <Card

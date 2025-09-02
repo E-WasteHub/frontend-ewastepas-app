@@ -1,5 +1,5 @@
 // src/views/kurir/RiwayatMitraKurirView.jsx
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Pagination } from '../../../components/elements';
 import {
@@ -11,7 +11,14 @@ import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import useMitraKurir from '../../../hooks/useMitraKurir';
 import usePagination from '../../../hooks/usePagination';
 
-const itemsPerPage = 5;
+const itemsPerPage = 3;
+
+// 🔹 Daftar status khusus untuk Riwayat Mitra Kurir
+const statusOptionsKurir = [
+  { key: 'all', label: 'Semua' },
+  { key: 'Selesai', label: 'Selesai' },
+  { key: 'Dibatalkan', label: 'Dibatalkan' },
+];
 
 const RiwayatMitraKurirView = () => {
   useDocumentTitle('Riwayat Penjemputan Kurir');
@@ -21,30 +28,33 @@ const RiwayatMitraKurirView = () => {
   // 🔹 Ambil data riwayat dari hook kurir
   const { riwayat, isLoading } = useMitraKurir();
 
-  // 🔹 Pagination
-  const { currentPage, setCurrentPage, paginatedData, totalPages } =
-    usePagination(riwayat, itemsPerPage);
-
-  // 🔹 Search + Filter state
+  // 🔹 State filter + search
   const [pencarian, setPencarian] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
 
-  // 🔹 Filter berdasarkan pencarian & status
-  const riwayatFilter = (paginatedData || []).filter((r) => {
-    const q = pencarian.trim().toLowerCase();
+  // 🔹 Filter data
+  const filteredData = useMemo(() => {
+    let result = riwayat;
 
-    const matchSearch =
-      q === '' ||
-      r.kode_penjemputan?.toLowerCase().includes(q) ||
-      r.alamat_penjemputan?.toLowerCase().includes(q);
+    if (filterStatus !== 'all') {
+      result = result.filter((r) => r.status_penjemputan === filterStatus);
+    }
 
-    const matchStatus =
-      filterStatus === 'all'
-        ? true
-        : r.status?.toLowerCase() === filterStatus.toLowerCase();
+    if (pencarian.trim() !== '') {
+      const q = pencarian.toLowerCase();
+      result = result.filter(
+        (r) =>
+          r.kode_penjemputan?.toLowerCase().includes(q) ||
+          r.alamat_penjemputan?.toLowerCase().includes(q)
+      );
+    }
 
-    return matchSearch && matchStatus;
-  });
+    return result;
+  }, [riwayat, filterStatus, pencarian]);
+
+  // 🔹 Pagination
+  const { currentPage, setCurrentPage, paginatedData, totalPages } =
+    usePagination(filteredData, itemsPerPage);
 
   return (
     <div className='max-w-7xl mx-auto px-4 space-y-6'>
@@ -64,7 +74,7 @@ const RiwayatMitraKurirView = () => {
         </p>
       </h2>
 
-      {/* 🔹 Grid layout */}
+      {/* Layout grid */}
       <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>
         {/* Sidebar filter */}
         <div className='lg:col-span-1'>
@@ -73,10 +83,11 @@ const RiwayatMitraKurirView = () => {
             setSearch={setPencarian}
             filter={filterStatus}
             setFilter={setFilterStatus}
+            statusOptions={statusOptionsKurir}
           />
         </div>
 
-        {/* Konten kanan */}
+        {/* Konten daftar riwayat */}
         <div className='lg:col-span-3'>
           <Card
             className={`p-6 space-y-6 shadow-md rounded-xl ${
@@ -85,7 +96,6 @@ const RiwayatMitraKurirView = () => {
                 : 'bg-white border-gray-200'
             }`}
           >
-            {/* Header */}
             <h3
               className={`text-lg font-bold mb-4 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
@@ -94,19 +104,19 @@ const RiwayatMitraKurirView = () => {
               Daftar Riwayat Penjemputan
             </h3>
 
-            {/* List Riwayat */}
             {isLoading ? (
               <p className='text-gray-500 text-center'>⏳ Memuat data...</p>
-            ) : riwayatFilter.length === 0 ? (
+            ) : paginatedData.length === 0 ? (
               <p className='text-gray-500 text-center'>
                 📭 Belum ada riwayat penjemputan
               </p>
             ) : (
               <div className='space-y-4'>
-                {riwayatFilter.map((req) => (
+                {paginatedData.map((req) => (
                   <PenjemputanKurirCard
                     key={req.id_penjemputan}
                     req={req}
+                    isAktif={false}
                     onDetail={() =>
                       navigate(
                         `/dashboard/mitra-kurir/riwayat/${req.id_penjemputan}`

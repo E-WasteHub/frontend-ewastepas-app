@@ -3,6 +3,7 @@ import { FileText, Truck } from 'lucide-react';
 import { useState } from 'react';
 import { Alert, Button, Card } from '../../../components/elements';
 import {
+  AlertModal,
   ConfirmModal,
   ItemSampahCard,
   PilihDropboxModal,
@@ -62,7 +63,7 @@ const PermintaanAktifKurir = () => {
     permintaanAktif,
     isLoading,
     error,
-    // tandaiDijemput,
+    tandaiDijemput,
     tandaiSelesai,
     batalkanPermintaan,
   } = useMitraKurir();
@@ -77,6 +78,13 @@ const PermintaanAktifKurir = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [dropboxOpen, setDropboxOpen] = useState(false);
 
+  // Alert Modal
+  const [alert, setAlert] = useState({
+    open: false,
+    type: '',
+    message: '',
+  });
+
   // 🔄 Loading state gabungan
   if (isLoading || loadingDetail) {
     return <p className='text-center py-10'>⏳ Memuat data...</p>;
@@ -85,11 +93,23 @@ const PermintaanAktifKurir = () => {
   // 🔄 Jika tidak ada permintaan aktif
   if (!permintaanAktif) {
     return (
-      <Card className='max-w-7xl mx-auto p-8 text-center'>
-        <p className={isDarkMode ? 'text-white' : 'text-slate-800'}>
-          Tidak ada penjemputan aktif saat ini.
-        </p>
-      </Card>
+      <div className='max-w-7xl mx-auto p-8'>
+        {alert.open ? (
+          <AlertModal
+            isOpen={alert.open}
+            type={alert.type}
+            title={alert.type === 'success' ? 'Berhasil' : 'Gagal'}
+            message={alert.message}
+            onClose={() => setAlert({ open: false, type: '', message: '' })}
+          />
+        ) : (
+          <Card className='p-6 text-center rounded-3xl'>
+            <p className={isDarkMode ? 'text-white' : 'text-slate-800'}>
+              ❌ Tidak ada penjemputan aktif saat ini.
+            </p>
+          </Card>
+        )}
+      </div>
     );
   }
 
@@ -220,7 +240,22 @@ const PermintaanAktifKurir = () => {
             <Button
               type='button'
               className='bg-emerald-600 hover:bg-emerald-700 text-white'
-              onClick={() => tandaiSelesai(p.id_penjemputan)}
+              onClick={async () => {
+                const res = await tandaiSelesai(p.id_penjemputan);
+                if (res.success) {
+                  setAlert({
+                    open: true,
+                    type: 'success',
+                    message: '✅ Penjemputan telah selesai!',
+                  });
+                } else {
+                  setAlert({
+                    open: true,
+                    type: 'error',
+                    message: res.error || '❌ Gagal menyelesaikan penjemputan',
+                  });
+                }
+              }}
             >
               Selesaikan
             </Button>
@@ -243,7 +278,9 @@ const PermintaanAktifKurir = () => {
         onClose={() => setDropboxOpen(false)}
         onSelect={(id_dropbox) => {
           setDropboxOpen(false);
-          tandaiSelesai(p.id_penjemputan, id_dropbox);
+          // 🔹 Update status ke "Dijemput" + simpan dropbox
+          // (bukan langsung selesai)
+          tandaiDijemput(p.id_penjemputan, id_dropbox);
         }}
       />
 

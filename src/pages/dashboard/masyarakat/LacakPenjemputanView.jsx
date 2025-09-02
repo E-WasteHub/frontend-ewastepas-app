@@ -9,6 +9,14 @@ import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import useMasyarakat from '../../../hooks/useMasyarakat';
 
+// Utils Filter statusOptions :
+const statusOptionsMasyarakat = [
+  { key: 'all', label: 'Semua' },
+  { key: 'Diproses', label: 'Diproses' },
+  { key: 'Diterima', label: 'Diterima' },
+  { key: 'Dijemput', label: 'Dijemput' },
+];
+
 const LacakPenjemputanView = () => {
   useDocumentTitle('Lacak Penjemputan');
   const { isDarkMode } = useDarkMode();
@@ -18,8 +26,9 @@ const LacakPenjemputanView = () => {
   const { daftarPenjemputan, isLoading } = useMasyarakat();
 
   // 🔹 state untuk filter & search
-  const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState('all');
+  // 🔹 Search + Filter state
+  const [pencarian, setPencarian] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
@@ -28,19 +37,16 @@ const LacakPenjemputanView = () => {
     let result = daftarPenjemputan;
 
     // filter status
-    if (filter === 'selesai') {
-      result = result.filter((d) => d.status_penjemputan === 'Selesai');
-    } else if (filter === 'dibatalkan') {
-      result = result.filter((d) => d.status_penjemputan === 'Dibatalkan');
-    } else if (filter === 'aktif') {
-      result = result.filter((d) =>
-        ['Diproses', 'Diterima', 'Dijemput'].includes(d.status_penjemputan)
+    if (filterStatus !== 'all') {
+      result = result.filter(
+        (r) =>
+          r.status_penjemputan?.toLowerCase() === filterStatus.toLowerCase()
       );
     }
 
     // search kode/alamat
-    if (search) {
-      const q = search.toLowerCase();
+    if (pencarian) {
+      const q = pencarian.toLowerCase();
       result = result.filter(
         (d) =>
           d.kode_penjemputan?.toLowerCase().includes(q) ||
@@ -49,7 +55,7 @@ const LacakPenjemputanView = () => {
     }
 
     return result;
-  }, [daftarPenjemputan, search, filter]);
+  }, [daftarPenjemputan, pencarian, filterStatus]);
 
   // 🔹 pagination
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -79,10 +85,11 @@ const LacakPenjemputanView = () => {
         {/* Sidebar filter */}
         <div className='lg:col-span-1 space-y-6'>
           <FilterCard
-            search={search}
-            setSearch={setSearch}
-            filter={filter}
-            setFilter={setFilter}
+            search={pencarian}
+            setSearch={setPencarian}
+            filter={filterStatus}
+            setFilter={setFilterStatus}
+            statusOptions={statusOptionsMasyarakat}
           />
         </div>
 

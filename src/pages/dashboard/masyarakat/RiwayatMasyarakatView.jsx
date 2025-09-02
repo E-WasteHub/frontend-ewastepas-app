@@ -13,6 +13,16 @@ import usePagination from '../../../hooks/usePagination';
 
 const itemsPerPage = 3;
 
+// Utils Filter statusOptions :
+const statusOptionsMasyarakat = [
+  { key: 'all', label: 'Semua' },
+  { key: 'Diproses', label: 'Diproses' },
+  { key: 'Diterima', label: 'Diterima' },
+  { key: 'Dijemput', label: 'Dijemput' },
+  { key: 'Selesai', label: 'Selesai' },
+  { key: 'Dibatalkan', label: 'Dibatalkan' },
+];
+
 const RiwayatMasyarakatView = () => {
   useDocumentTitle('Riwayat Penjemputan');
   const { isDarkMode } = useDarkMode();
@@ -81,6 +91,7 @@ const RiwayatMasyarakatView = () => {
             setSearch={setPencarian}
             filter={filterStatus}
             setFilter={setFilterStatus}
+            statusOptions={statusOptionsMasyarakat}
           />
         </div>
 
