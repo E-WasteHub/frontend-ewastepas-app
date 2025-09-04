@@ -1,16 +1,16 @@
 import { Link, useLocation } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import { bottomMenuItemsByRole } from '../../../../utils/menuUtils';
-import { detectRoleFromPath } from '../../../../utils/peranUtils';
+import { detectPeranFromPath } from '../../../../utils/peranUtils';
 
-const BottombarDashboard = ({ userRole = 'masyarakat' }) => {
+const BottombarDashboard = ({ userRole = 'Masyarakat' }) => {
   const location = useLocation();
   const { isDarkMode } = useDarkMode();
 
-  // Ambil role dari path atau fallback ke prop
-  const currentRole = detectRoleFromPath(location.pathname, userRole);
+  // Ambil peran dari path atau fallback ke prop
+  const currentPeran = detectPeranFromPath(location.pathname, userRole);
   const navItems =
-    bottomMenuItemsByRole[currentRole] || bottomMenuItemsByRole['masyarakat'];
+    bottomMenuItemsByRole[currentPeran] || bottomMenuItemsByRole['Masyarakat'];
 
   // Styling warna
   const bgColor = isDarkMode

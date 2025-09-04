@@ -1,4 +1,12 @@
+// Reusable AdminCRUD
+export { default as DaerahCrudModal } from './admincrud/DaerahCrudModal';
+export { default as DropboxCrudModal } from './admincrud/DropboxCrudModal';
+export { default as EdukasiCrudModal } from './admincrud/EdukasiCrudModal';
+export { default as JenisCrudModal } from './admincrud/JenisCrudModal';
+export { default as KategoriCrudModal } from './admincrud/KategoriCrudModal';
+
 // Reusable dashboard UI
+export { default as AdminTable } from './dashboard/AdminTable';
 export { default as DatamasterCard } from './dashboard/DatamasterCard';
 export { default as FilterCard } from './dashboard/FilterCard';
 export { default as PenjemputanKurirCard } from './dashboard/PenjemputanKurirCard';

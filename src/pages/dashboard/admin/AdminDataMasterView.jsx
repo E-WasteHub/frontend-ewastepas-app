@@ -1,8 +1,11 @@
 import DatamasterCard from '../../../components/fragments/dashboard/DatamasterCard';
 import useDarkMode from '../../../hooks/useDarkMode';
+import useDocumentTitle from '../../../hooks/useDocumentTitle';
 
 const AdminDataMasterView = () => {
   const { isDarkMode } = useDarkMode();
+  useDocumentTitle('Data Master');
+
   return (
     <div className='max-w-7xl mx-auto p-4 md:p-6'>
       <div className='space-y-6'>

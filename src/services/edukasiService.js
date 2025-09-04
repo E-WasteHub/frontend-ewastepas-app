@@ -3,7 +3,7 @@
 import api from './api';
 
 // Ambil semua edukasi
-export const indexEdukasi = async () => {
+export const ambilSemuaEdukasi = async () => {
   try {
     const response = await api.get('/konten-edukasi');
     return response.data;
@@ -14,7 +14,7 @@ export const indexEdukasi = async () => {
 };
 
 // Tambah edukasi
-export const createEdukasi = async (payload) => {
+export const tambahEdukasi = async (payload) => {
   try {
     const response = await api.post('/konten-edukasi', payload);
     return response.data;
@@ -25,7 +25,7 @@ export const createEdukasi = async (payload) => {
 };
 
 // Update edukasi
-export const updateEdukasi = async (id, payload) => {
+export const ubahEdukasi = async (id, payload) => {
   try {
     const response = await api.put(`/konten-edukasi/${id}`, payload);
     return response.data;
@@ -36,7 +36,7 @@ export const updateEdukasi = async (id, payload) => {
 };
 
 // Hapus edukasi
-export const deleteEdukasi = async (id) => {
+export const hapusEdukasi = async (id) => {
   try {
     const response = await api.delete(`/konten-edukasi/${id}`);
     return response.data;
@@ -56,3 +56,10 @@ export const detailEdukasi = async (id) => {
     throw error;
   }
 };
+
+export const ambilSemua = async () => api.get('/konten-edukasi');
+export const detail = async (id) => api.get(`/konten-edukasi/${id}`);
+export const tambah = async (payload) => api.post('/konten-edukasi', payload);
+export const ubah = async (id, payload) =>
+  api.put(`/konten-edukasi/${id}`, payload);
+export const hapus = async (id) => api.delete(`/konten-edukasi/${id}`);

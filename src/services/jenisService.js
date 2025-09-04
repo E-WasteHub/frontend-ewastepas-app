@@ -3,7 +3,7 @@
 import api from './api';
 
 // Ambil semua jenis sampah
-export const indexJenis = async () => {
+export const ambilSemuaJenis = async () => {
   try {
     const response = await api.get('/jenis-sampah');
     return response.data;
@@ -14,7 +14,7 @@ export const indexJenis = async () => {
 };
 
 // Tambah jenis sampah baru
-export const createJenis = async (payload) => {
+export const tambahJenis = async (payload) => {
   try {
     const response = await api.post('/jenis-sampah', payload);
     return response.data;
@@ -25,9 +25,9 @@ export const createJenis = async (payload) => {
 };
 
 // Update jenis sampah
-export const updateJenis = async (id_jenis_sampah, payload) => {
+export const ubahJenis = async (id_jenis, payload) => {
   try {
-    const response = await api.put(`/jenis-sampah/${id_jenis_sampah}`, payload);
+    const response = await api.put(`/jenis-sampah/${id_jenis}`, payload);
     return response.data;
   } catch (error) {
     console.error('Error updating jenis:', error);
@@ -36,9 +36,9 @@ export const updateJenis = async (id_jenis_sampah, payload) => {
 };
 
 // Hapus jenis sampah
-export const deleteJenis = async (id_jenis_sampah) => {
+export const hapusJenis = async (id_jenis) => {
   try {
-    const response = await api.delete(`/jenis-sampah/${id_jenis_sampah}`);
+    const response = await api.delete(`/jenis-sampah/${id_jenis}`);
     return response.data;
   } catch (error) {
     console.error('Error deleting jenis:', error);
@@ -47,12 +47,20 @@ export const deleteJenis = async (id_jenis_sampah) => {
 };
 
 // Ambil 1 jenis sampah
-export const selectJenis = async (id_jenis_sampah) => {
+export const selectJenis = async (id_jenis) => {
   try {
-    const response = await api.get(`/jenis-sampah/${id_jenis_sampah}`);
+    const response = await api.get(`/jenis-sampah/${id_jenis}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching single jenis:', error);
     throw error;
   }
 };
+
+export const ambilSemua = async () => api.get('/jenis-sampah');
+export const detail = async (id_jenis) => api.get(`/jenis-sampah/${id_jenis}`);
+export const tambah = async (payload) => api.post('/jenis-sampah', payload);
+export const ubah = async (id_jenis, payload) =>
+  api.put(`/jenis-sampah/${id_jenis}`, payload);
+export const hapus = async (id_jenis) =>
+  api.delete(`/jenis-sampah/${id_jenis}`);

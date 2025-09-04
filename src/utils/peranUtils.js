@@ -1,42 +1,48 @@
-export const normalizeRole = (role) => {
-  if (!role) return 'masyarakat';
-  const normalizedRole = role.toLowerCase();
-  if (['mitra kurir', 'mitrakurir', 'mitra-kurir'].includes(normalizedRole)) {
-    return 'mitra kurir';
-  }
-  return normalizedRole;
+export const detectPeranFromPath = (pathname, fallback = 'Masyarakat') => {
+  if (pathname.startsWith('/dashboard/admin')) return 'Admin';
+  if (pathname.startsWith('/dashboard/mitra-kurir')) return 'Mitra Kurir';
+  if (pathname.startsWith('/dashboard/masyarakat')) return 'Masyarakat';
+  return fallback;
 };
 
-export const detectRoleFromPath = (pathname, fallback = 'masyarakat') => {
-  if (pathname.startsWith('/dashboard/admin')) return 'admin';
-  if (pathname.startsWith('/dashboard/mitra-kurir')) return 'mitra-kurir';
-  if (pathname.startsWith('/dashboard/masyarakat')) return 'masyarakat';
-  return normalizeRole(fallback);
-};
-
-export const getRoleDisplayName = (role) => {
-  switch (normalizeRole(role)) {
-    case 'admin':
+export const getPeranDisplayName = (peran) => {
+  // Return peran asli tanpa normalisasi
+  switch (peran) {
+    case 'Admin':
       return 'Admin';
-    case 'mitra kurir':
+    case 'Mitra Kurir':
       return 'Mitra Kurir';
-    case 'masyarakat':
+    case 'Masyarakat':
     default:
       return 'Masyarakat';
   }
 };
 
 /**
- * Helper untuk ambil path profil sesuai role
+ * Helper untuk ambil path dashboard sesuai peran
  */
-export const getProfilePathByRole = (role) => {
-  const normalizedRole = normalizeRole(role);
-  switch (normalizedRole) {
-    case 'admin':
+export const getDashboardPathByPeran = (peran) => {
+  switch (peran) {
+    case 'Admin':
+      return '/dashboard/admin';
+    case 'Mitra Kurir':
+      return '/dashboard/mitra-kurir';
+    case 'Masyarakat':
+    default:
+      return '/dashboard/masyarakat';
+  }
+};
+
+/**
+ * Helper untuk ambil path profil sesuai peran
+ */
+export const getProfilePathByPeran = (peran) => {
+  switch (peran) {
+    case 'Admin':
       return '/dashboard/admin/profil';
-    case 'mitra kurir':
+    case 'Mitra Kurir':
       return '/dashboard/mitra-kurir/profil';
-    case 'masyarakat':
+    case 'Masyarakat':
     default:
       return '/dashboard/masyarakat/profil';
   }

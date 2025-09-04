@@ -3,7 +3,7 @@
 import api from './api';
 
 // Ambil semua kategori
-export const indexKategori = async () => {
+export const ambilSemuaKategori = async () => {
   try {
     const response = await api.get('/kategori-sampah');
     return response.data;
@@ -14,7 +14,7 @@ export const indexKategori = async () => {
 };
 
 // Tambah kategori baru
-export const createKategori = async (payload) => {
+export const tambahKategori = async (payload) => {
   try {
     const response = await api.post('/kategori-sampah', payload);
     return response.data;
@@ -25,7 +25,7 @@ export const createKategori = async (payload) => {
 };
 
 // Update kategori
-export const updateKategori = async (id_kategori_sampah, payload) => {
+export const ubahKategori = async (id_kategori_sampah, payload) => {
   try {
     const response = await api.put(
       `/kategori-sampah/${id_kategori_sampah}`,
@@ -39,7 +39,7 @@ export const updateKategori = async (id_kategori_sampah, payload) => {
 };
 
 // Hapus kategori
-export const deleteKategori = async (id_kategori_sampah) => {
+export const hapusKategori = async (id_kategori_sampah) => {
   try {
     const response = await api.delete(`/kategori-sampah/${id_kategori_sampah}`);
     return response.data;
@@ -50,7 +50,7 @@ export const deleteKategori = async (id_kategori_sampah) => {
 };
 
 // Ambil 1 kategori
-export const selectKategori = async (id_kategori_sampah) => {
+export const pilihKategori = async (id_kategori_sampah) => {
   try {
     const response = await api.get(`/kategori-sampah/${id_kategori_sampah}`);
     return response.data;
@@ -59,3 +59,13 @@ export const selectKategori = async (id_kategori_sampah) => {
     throw error;
   }
 };
+
+// Normalisasi export
+export const ambilSemua = async () => api.get('/kategori-sampah');
+export const detail = async (id_kategori_sampah) =>
+  api.get(`/kategori-sampah/${id_kategori_sampah}`);
+export const tambah = async (payload) => api.post('/kategori-sampah', payload);
+export const ubah = async (id_kategori_sampah, payload) =>
+  api.put(`/kategori-sampah/${id_kategori_sampah}`, payload);
+export const hapus = async (id_kategori_sampah) =>
+  api.delete(`/kategori-sampah/${id_kategori_sampah}`);

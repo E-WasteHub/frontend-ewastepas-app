@@ -3,7 +3,7 @@
 import api from './api';
 
 // Ambil semua daerah
-export const indexDaerah = async () => {
+export const ambilSemuaDaerah = async () => {
   try {
     const response = await api.get('/daerah');
     return response.data;
@@ -14,7 +14,7 @@ export const indexDaerah = async () => {
 };
 
 // Tambah daerah baru
-export const createDaerah = async (payload) => {
+export const tambahDaerah = async (payload) => {
   try {
     const response = await api.post('/daerah', payload);
     return response.data;
@@ -25,7 +25,7 @@ export const createDaerah = async (payload) => {
 };
 
 // Update daerah
-export const updateDaerah = async (id_daerah, payload) => {
+export const ubahDaerah = async (id_daerah, payload) => {
   try {
     const response = await api.put(`/daerah/${id_daerah}`, payload);
     return response.data;
@@ -36,7 +36,7 @@ export const updateDaerah = async (id_daerah, payload) => {
 };
 
 // Hapus daerah
-export const deleteDaerah = async (id_daerah) => {
+export const hapusDaerah = async (id_daerah) => {
   try {
     const response = await api.delete(`/daerah/${id_daerah}`);
     return response.data;
@@ -47,7 +47,7 @@ export const deleteDaerah = async (id_daerah) => {
 };
 
 // Ambil 1 daerah
-export const selectDaerah = async (id_daerah) => {
+export const ambilSatuDaerah = async (id_daerah) => {
   try {
     const response = await api.get(`/daerah/${id_daerah}`);
     return response.data;
@@ -56,3 +56,10 @@ export const selectDaerah = async (id_daerah) => {
     throw error;
   }
 };
+
+export const ambilSemua = async () => api.get('/daerah');
+export const detail = async (id_daerah) => api.get(`/daerah/${id_daerah}`);
+export const tambah = async (payload) => api.post('/daerah', payload);
+export const ubah = async (id_daerah, payload) =>
+  api.put(`/daerah/${id_daerah}`, payload);
+export const hapus = async (id_daerah) => api.delete(`/daerah/${id_daerah}`);

@@ -19,7 +19,7 @@ export const register = async (payload) => {
       email: payload.email,
       kata_sandi: payload.kata_sandi,
       konfirmasi_kata_sandi: payload.konfirmasi_kata_sandi,
-      id_peran: payload.id_peran,
+      peran: payload.peran,
     });
     return response.data;
   } catch (error) {

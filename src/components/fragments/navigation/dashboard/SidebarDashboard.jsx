@@ -1,17 +1,18 @@
 import { Link, useLocation } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
+import usePengguna from '../../../../hooks/usePengguna';
 import { menuItemsByRole } from '../../../../utils/menuUtils';
-import { detectRoleFromPath } from '../../../../utils/peranUtils';
 import { LogoApp } from '../../../elements/';
 
-const SidebarDashboard = ({ userRole = 'masyarakat' }) => {
+const SidebarDashboard = () => {
   const location = useLocation();
   const { isDarkMode } = useDarkMode();
 
   // Ambil role pakai helper dari peranUtils
-  const currentRole = detectRoleFromPath(location.pathname, userRole);
-  const menuItems =
-    menuItemsByRole[currentRole] || menuItemsByRole['masyarakat'];
+  const { peran } = usePengguna();
+
+  // Ambil menu items berdasarkan peran
+  const menuItems = menuItemsByRole[peran] || menuItemsByRole['Masyarakat'];
 
   const isActiveLink = (path) => location.pathname === path;
 
@@ -42,11 +43,11 @@ const SidebarDashboard = ({ userRole = 'masyarakat' }) => {
         >
           <div
             className={`w-6 h-6 rounded-full flex items-center justify-center ${
-              currentRole === 'admin'
+              peran === 'Admin'
                 ? isDarkMode
                   ? 'bg-red-600'
                   : 'bg-red-500'
-                : currentRole === 'mitra-kurir'
+                : peran === 'Mitra Kurir'
                 ? isDarkMode
                   ? 'bg-blue-600'
                   : 'bg-blue-500'
@@ -56,11 +57,7 @@ const SidebarDashboard = ({ userRole = 'masyarakat' }) => {
             }`}
           >
             <span className='text-white text-xs font-medium'>
-              {currentRole === 'admin'
-                ? 'A'
-                : currentRole === 'mitra-kurir'
-                ? 'K'
-                : 'M'}
+              {peran === 'Admin' ? 'A' : peran === 'Mitra Kurir' ? 'K' : 'M'}
             </span>
           </div>
           <span
@@ -68,9 +65,9 @@ const SidebarDashboard = ({ userRole = 'masyarakat' }) => {
               isDarkMode ? 'text-white' : 'text-slate-900'
             }`}
           >
-            {currentRole === 'masyarakat'
+            {peran === 'Masyarakat'
               ? 'Masyarakat'
-              : currentRole === 'admin'
+              : peran === 'Admin'
               ? 'Admin'
               : 'Mitra Kurir'}
           </span>

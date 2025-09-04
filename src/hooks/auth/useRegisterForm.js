@@ -1,9 +1,13 @@
+// src/hooks/auth/useRegisterForm.js
 import { useCallback, useState } from 'react';
 import * as authService from '../../services/authService';
 
 const useRegisterForm = () => {
-  /** 🔹 State untuk input form */
-  const [formData, setFormData] = useState({
+  /* ========================
+   * 🟣 STATE INPUT FORM
+   * Menyimpan data yang diisi user
+   * ======================== */
+  const [form, setForm] = useState({
     nama_lengkap: '',
     email: '',
     kata_sandi: '',
@@ -11,51 +15,67 @@ const useRegisterForm = () => {
   });
   const [peran, setPeran] = useState('');
 
-  /** 🔹 State untuk status & feedback */
+  /* ========================
+   * 🟣 STATE STATUS & FEEDBACK
+   * isLoading → loading state
+   * errorField → validasi per field
+   * errorMessage → error umum
+   * successMessage → feedback berhasil
+   * ======================== */
   const [isLoading, setIsLoading] = useState(false);
   const [errorField, setErrorField] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  // 📌 Handle perubahan input teks
-  const handleInputChange = (e) => {
+  /* ========================
+   * 📌 HANDLE INPUT FORM
+   * Update state ketika user mengetik
+   * ======================== */
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
 
-    // Hapus error pada field yang sedang diedit
+    // reset error hanya untuk field yang diubah
     if (errorField[name]) {
       setErrorField((prev) => ({ ...prev, [name]: '' }));
     }
     setErrorMessage('');
   };
 
-  // 📌 Handle pilih peran
+  /* ========================
+   * 📌 HANDLE PILIH PERAN
+   * (Masyarakat / Mitra Kurir / Admin)
+   * ======================== */
   const handlePeranSelect = (value) => {
     setPeran(value);
     setErrorField((prev) => ({ ...prev, peran: '' }));
   };
 
-  // 📌 Validasi input sebelum submit
+  /* ========================
+   * 📌 VALIDASI FORM
+   * Periksa semua field sebelum submit
+   * ======================== */
   const validateForm = () => {
     const errors = {};
 
     if (!peran) errors.peran = 'Silakan pilih peran Anda';
-    if (!formData.nama_lengkap.trim()) {
-      errors.nama_lengkap = 'Nama wajib diisi';
-    }
-    if (!formData.email) {
+    if (!form.nama_lengkap.trim()) errors.nama_lengkap = 'Nama wajib diisi';
+
+    if (!form.email) {
       errors.email = 'Email wajib diisi';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       errors.email = 'Format email tidak valid';
     }
-    if (!formData.kata_sandi) {
+
+    if (!form.kata_sandi) {
       errors.kata_sandi = 'Kata sandi wajib diisi';
-    } else if (formData.kata_sandi.length < 6) {
+    } else if (form.kata_sandi.length < 6) {
       errors.kata_sandi = 'Kata sandi minimal 6 karakter';
     }
-    if (!formData.konfirmasi_kata_sandi) {
+
+    if (!form.konfirmasi_kata_sandi) {
       errors.konfirmasi_kata_sandi = 'Konfirmasi kata sandi wajib diisi';
-    } else if (formData.kata_sandi !== formData.konfirmasi_kata_sandi) {
+    } else if (form.kata_sandi !== form.konfirmasi_kata_sandi) {
       errors.konfirmasi_kata_sandi = 'Konfirmasi kata sandi tidak cocok';
     }
 
@@ -63,8 +83,11 @@ const useRegisterForm = () => {
     return Object.keys(errors).length === 0;
   };
 
-  // 📌 Submit form ke backend
-  const handleRegisterSubmit = async () => {
+  /* ========================
+   * 📌 SUBMIT REGISTER
+   * Kirim data ke backend jika validasi OK
+   * ======================== */
+  const handleSubmit = async () => {
     if (!validateForm()) return null;
 
     try {
@@ -73,8 +96,8 @@ const useRegisterForm = () => {
       setSuccessMessage('');
 
       const res = await authService.register({
-        ...formData,
-        id_peran: peran,
+        ...form,
+        peran,
       });
 
       setSuccessMessage(res.message || 'Registrasi berhasil');
@@ -87,25 +110,28 @@ const useRegisterForm = () => {
     }
   };
 
-  // 📌 Helper untuk clear pesan
+  /* ========================
+   * 📌 HELPER: Reset pesan
+   * Bisa dipanggil dari komponen
+   * ======================== */
   const clearError = useCallback(() => setErrorMessage(''), []);
   const clearSuccess = useCallback(() => setSuccessMessage(''), []);
 
   return {
-    // State input
-    formData,
+    // Data form
+    form,
     peran,
 
-    // Status & feedback
+    // Status
     isLoading,
     errorField,
-    error: errorMessage,
+    errorMessage,
     successMessage,
 
     // Actions
-    handleInputChange,
+    handleChange,
     handlePeranSelect,
-    handleRegisterSubmit,
+    handleSubmit,
     clearError,
     clearSuccess,
   };

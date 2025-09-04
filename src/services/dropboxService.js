@@ -3,7 +3,7 @@
 import api from './api';
 
 // Ambil semua dropbox
-export const indexDropbox = async () => {
+export const ambilSemuaDropbox = async () => {
   try {
     const response = await api.get('/dropbox');
     return response.data;
@@ -14,7 +14,7 @@ export const indexDropbox = async () => {
 };
 
 // Tambah dropbox baru
-export const createDropbox = async (payload) => {
+export const tambahDropbox = async (payload) => {
   try {
     const response = await api.post('/dropbox', payload);
     return response.data;
@@ -25,7 +25,7 @@ export const createDropbox = async (payload) => {
 };
 
 // Update dropbox
-export const updateDropbox = async (id_dropbox, payload) => {
+export const ubahDropbox = async (id_dropbox, payload) => {
   try {
     const response = await api.put(`/dropbox/${id_dropbox}`, payload);
     return response.data;
@@ -36,7 +36,7 @@ export const updateDropbox = async (id_dropbox, payload) => {
 };
 
 // Hapus dropbox
-export const deleteDropbox = async (id_dropbox) => {
+export const hapusDropbox = async (id_dropbox) => {
   try {
     const response = await api.delete(`/dropbox/${id_dropbox}`);
     return response.data;
@@ -47,7 +47,7 @@ export const deleteDropbox = async (id_dropbox) => {
 };
 
 // Ambil 1 dropbox
-export const selectDropbox = async (id_dropbox) => {
+export const ambilSatuDropbox = async (id_dropbox) => {
   try {
     const response = await api.get(`/dropbox/${id_dropbox}`);
     return response.data;
@@ -56,3 +56,12 @@ export const selectDropbox = async (id_dropbox) => {
     throw error;
   }
 };
+
+// dropboxService.js
+
+export const ambilSemua = async () => api.get('/dropbox');
+export const detail = async (id_dropbox) => api.get(`/dropbox/${id_dropbox}`);
+export const tambah = async (payload) => api.post('/dropbox', payload);
+export const ubah = async (id_dropbox, payload) =>
+  api.put(`/dropbox/${id_dropbox}`, payload);
+export const hapus = async (id_dropbox) => api.delete(`/dropbox/${id_dropbox}`);

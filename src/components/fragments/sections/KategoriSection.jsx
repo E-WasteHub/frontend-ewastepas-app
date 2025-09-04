@@ -21,8 +21,8 @@ const KategoriSection = () => {
       try {
         setLoading(true);
 
-        const kategoriRes = await kategoriService.indexKategori();
-        const jenisRes = await jenisService.indexJenis();
+        const kategoriRes = await kategoriService.ambilSemuaKategori();
+        const jenisRes = await jenisService.ambilSemuaJenis();
 
         setKategoriData(kategoriRes.data || []);
         setJenisData(jenisRes.data || []);
@@ -35,7 +35,7 @@ const KategoriSection = () => {
     fetchData();
   }, []);
 
-  const getJenisByKategori = (kategoriNama) =>
+  const ambilJenisByKategori = (kategoriNama) =>
     jenisData.filter((item) => item.nama_kategori === kategoriNama);
 
   return (
@@ -155,7 +155,7 @@ const KategoriSection = () => {
 
             <div className='max-h-96 overflow-y-auto pt-4 pr-2'>
               <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                {getJenisByKategori(selectedKategori.nama_kategori).map(
+                {ambilJenisByKategori(selectedKategori.nama_kategori).map(
                   (jenis, idx) => (
                     <Motion.div
                       key={jenis.id_jenis}

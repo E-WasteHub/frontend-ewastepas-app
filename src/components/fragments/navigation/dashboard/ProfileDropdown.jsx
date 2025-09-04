@@ -1,45 +1,28 @@
 // src/components/layouts/navbar/ProfileDropdown.jsx
 import { ChevronDown, Home, LayoutDashboard, LogOut, User } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
+import usePengguna from '../../../../hooks/usePengguna';
 import { clearAuth } from '../../../../utils/authExpiredUtils';
 import {
-  getProfilePathByRole,
-  getRoleDisplayName,
-  normalizeRole,
+  getDashboardPathByPeran,
+  getPeranDisplayName,
+  getProfilePathByPeran,
 } from '../../../../utils/peranUtils';
 
 const ProfileDropdown = ({ onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [pengguna, setPengguna] = useState(null);
-  const [peran, setPeran] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
   const { isDarkMode } = useDarkMode();
+  const { pengguna, peran } = usePengguna();
 
-  // Ambil data pengguna & peran dari localStorage
-  useEffect(() => {
-    const savedPengguna = localStorage.getItem('pengguna');
-    const savedPeran = localStorage.getItem('peran');
-    if (savedPengguna) setPengguna(JSON.parse(savedPengguna));
-    if (savedPeran) setPeran(normalizeRole(savedPeran));
-  }, []);
+  const profilePath = getProfilePathByPeran(peran);
 
-  const profilePath = getProfilePathByRole(peran);
-
-  const getDashboardPath = (role) => {
-    const r = normalizeRole(role);
-    switch (r) {
-      case 'admin':
-        return '/dashboard/admin';
-      case 'mitra kurir':
-        return '/dashboard/mitra-kurir';
-      case 'masyarakat':
-      default:
-        return '/dashboard/masyarakat';
-    }
+  const getDashboardPath = (peran) => {
+    return getDashboardPathByPeran(peran);
   };
 
   if (!pengguna) return null;
@@ -86,7 +69,7 @@ const ProfileDropdown = ({ onLogout }) => {
               isDarkMode ? 'text-gray-400' : 'text-gray-500'
             }`}
           >
-            {getRoleDisplayName(peran)}
+            {getPeranDisplayName(peran)}
           </p>
         </div>
         <ChevronDown
@@ -105,14 +88,11 @@ const ProfileDropdown = ({ onLogout }) => {
               : 'bg-white border-gray-200'
           }`}
         >
-          {/* Dashboard / Home */}
+          {/* Dashboard / Home (Auto-Toggle) */}
           <button
             onClick={() => {
-              if (isInDashboard) {
-                navigate('/'); // kalau lagi di dashboard → ke Home
-              } else {
-                navigate(getDashboardPath(peran)); // kalau di luar → ke Dashboard sesuai role
-              }
+              const targetPath = isInDashboard ? '/' : getDashboardPath(peran);
+              navigate(targetPath);
               setIsOpen(false);
             }}
             className={`flex items-center w-full px-4 py-2 text-sm transition-colors ${

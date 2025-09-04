@@ -6,23 +6,13 @@ import {
   LayoutDashboardIcon,
   User,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
-import { normalizeRole } from '../../../utils/peranUtils';
+import usePengguna from '../../../hooks/usePengguna';
 
 const BottomNavbar = () => {
   const { isDarkMode } = useDarkMode();
-  const [pengguna, setPengguna] = useState(null);
-  const [peran, setPeran] = useState(null);
-
-  // 🔑 ambil data dari localStorage
-  useEffect(() => {
-    const savedPengguna = localStorage.getItem('pengguna');
-    const savedPeran = localStorage.getItem('peran');
-    if (savedPengguna) setPengguna(JSON.parse(savedPengguna));
-    if (savedPeran) setPeran(normalizeRole(savedPeran));
-  }, []);
+  const { pengguna, peran } = usePengguna();
 
   // base navItems
   const navItems = [
@@ -35,9 +25,9 @@ const BottomNavbar = () => {
   if (pengguna && peran) {
     navItems.push({
       to:
-        peran === 'admin'
+        peran === 'Admin'
           ? '/dashboard/admin'
-          : peran === 'mitra kurir'
+          : peran === 'Mitra Kurir'
           ? '/dashboard/mitra-kurir'
           : '/dashboard/masyarakat',
       label: 'Dashboard',

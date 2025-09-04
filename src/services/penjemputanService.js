@@ -34,6 +34,7 @@ export const ambilDaftarPenjemputan = async () => {
 export const ambilDetailPenjemputan = async (id_penjemputan) => {
   try {
     const response = await api.get(`/penjemputan/${id_penjemputan}/pelacakan`);
+    console.log('Detail penjemputan response:', response);
     return response.data;
   } catch (error) {
     console.error('❌ Error fetching detail penjemputan:', error);
@@ -112,3 +113,8 @@ export const batalPenjemputan = async (id_penjemputan, payload) => {
     throw error;
   }
 };
+
+// untuk digunakan dihooks useAdminCrud(Kebutuhan Monitoring Transaksi Admin)
+export const ambilSemua = async () => api.get('/penjemputan');
+export const detail = async (id_penjemputan) =>
+  api.get(`/penjemputan/${id_penjemputan}`);

@@ -8,7 +8,7 @@ import Pagination from '../components/elements/Pagination';
 import MainLayout from '../components/layouts/MainLayout';
 import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-import { indexEdukasi } from '../services/edukasiService'; // ✅ langsung pakai service
+import { ambilSemuaEdukasi } from '../services/edukasiService';
 
 const EdukasiView = () => {
   useDocumentTitle('Edukasi | E-wasteHub');
@@ -27,8 +27,8 @@ const EdukasiView = () => {
       try {
         setIsLoading(true);
         setError('');
-        const res = await indexEdukasi();
-        setEdukasiData(res.data || res); // tergantung format respons API
+        const res = await ambilSemuaEdukasi();
+        setEdukasiData(res.data || res);
       } catch (err) {
         setError(err.message || 'Gagal memuat edukasi');
       } finally {

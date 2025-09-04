@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { indexDaerah } from '../../../services/daerahService';
-import { indexDropbox } from '../../../services/dropboxService';
+import { ambilSemuaDaerah } from '../../../services/daerahService';
+import { ambilSemuaDropbox } from '../../../services/dropboxService';
 import { Button } from '../../elements';
 
 const PilihDropboxModal = ({ isOpen, onClose, onSelect }) => {
@@ -13,7 +13,7 @@ const PilihDropboxModal = ({ isOpen, onClose, onSelect }) => {
     if (isOpen) {
       setLoading(true);
 
-      Promise.all([indexDaerah(), indexDropbox()])
+      Promise.all([ambilSemuaDaerah(), ambilSemuaDropbox()])
         .then(([daerahRes, dropboxRes]) => {
           // pastikan hasilnya array
           const daerahData = Array.isArray(daerahRes?.data)

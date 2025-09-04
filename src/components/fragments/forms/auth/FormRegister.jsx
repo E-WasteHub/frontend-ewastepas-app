@@ -1,3 +1,4 @@
+// src/components/fragments/auth/FormRegister.jsx
 import { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import useRegisterForm from '../../../../hooks/auth/useRegisterForm';
@@ -11,15 +12,15 @@ const FormRegister = () => {
   const [searchParams] = useSearchParams();
 
   const {
-    formData,
+    form,
     peran,
     isLoading,
     errorField,
-    error,
+    errorMessage,
     successMessage,
-    handleInputChange,
+    handleChange,
     handlePeranSelect,
-    handleRegisterSubmit,
+    handleSubmit,
     clearError,
     clearSuccess,
   } = useRegisterForm();
@@ -33,24 +34,24 @@ const FormRegister = () => {
   /** 🔄 Ambil peran dari query (?peran=masyarakat/mitra-kurir) */
   useEffect(() => {
     const peranParam = searchParams.get('peran');
-    const mapping = { masyarakat: 1, 'mitra-kurir': 2 };
-
-    if (peranParam && mapping[peranParam]) {
-      handlePeranSelect(mapping[peranParam]);
+    if (peranParam) {
+      handlePeranSelect(peranParam);
+    } else {
+      handlePeranSelect('');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchParams]);
 
   /** 🚀 Submit form untuk registrasi */
   const onSubmit = async (e) => {
     e.preventDefault();
-    const res = await handleRegisterSubmit();
+    const res = await handleSubmit();
 
     if (res?.data?.id_pengguna) {
       // Simpan id pengguna ke localStorage (untuk verifikasi OTP nanti)
       localStorage.setItem('userId', res.data.id_pengguna);
 
-      // Tampilkan pesan sukses lalu redirect ke halaman OTP
+      // Redirect ke halaman OTP setelah sukses
       setTimeout(() => {
         navigate('/verifikasi-otp');
         clearSuccess();
@@ -60,8 +61,8 @@ const FormRegister = () => {
 
   /** 📌 Opsi peran (bisa ditambah sewaktu-waktu) */
   const roleOptions = [
-    { value: 1, label: 'Masyarakat' },
-    { value: 2, label: 'Mitra Kurir' },
+    { value: 'Masyarakat', label: 'Masyarakat' },
+    { value: 'Mitra Kurir', label: 'Mitra Kurir' },
   ];
 
   return (
@@ -82,10 +83,10 @@ const FormRegister = () => {
         />
 
         {/* 🔹 Alert (Error / Success) */}
-        {error && (
+        {errorMessage && (
           <Alert
             type='error'
-            message={error}
+            message={errorMessage}
             className='my-3'
             onClose={clearError}
           />
@@ -135,8 +136,8 @@ const FormRegister = () => {
             name='nama_lengkap'
             type='text'
             placeholder='Masukkan nama lengkap Anda'
-            value={formData.nama_lengkap}
-            onChange={handleInputChange}
+            value={form.nama_lengkap}
+            onChange={handleChange}
             disabled={isLoading}
             required
             autoComplete='name'
@@ -149,8 +150,8 @@ const FormRegister = () => {
             name='email'
             type='email'
             placeholder='Masukkan email Anda'
-            value={formData.email}
-            onChange={handleInputChange}
+            value={form.email}
+            onChange={handleChange}
             disabled={isLoading}
             required
             autoComplete='email'
@@ -163,8 +164,8 @@ const FormRegister = () => {
             name='kata_sandi'
             type='password'
             placeholder='Masukkan kata sandi'
-            value={formData.kata_sandi}
-            onChange={handleInputChange}
+            value={form.kata_sandi}
+            onChange={handleChange}
             disabled={isLoading}
             required
             showPasswordToggle
@@ -178,8 +179,8 @@ const FormRegister = () => {
             name='konfirmasi_kata_sandi'
             type='password'
             placeholder='Konfirmasi kata sandi'
-            value={formData.konfirmasi_kata_sandi}
-            onChange={handleInputChange}
+            value={form.konfirmasi_kata_sandi}
+            onChange={handleChange}
             disabled={isLoading}
             required
             showPasswordToggle

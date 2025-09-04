@@ -11,7 +11,7 @@ import {
 
 // Sidebar menu (desktop)
 export const menuItemsByRole = {
-  admin: [
+  Admin: [
     { title: 'Dashboard', icon: Home, path: '/dashboard/admin' },
     {
       title: 'Verifikasi Akun',
@@ -25,7 +25,7 @@ export const menuItemsByRole = {
     },
     { title: 'Transaksi', icon: History, path: '/dashboard/admin/transaksi' },
   ],
-  'mitra-kurir': [
+  'Mitra Kurir': [
     { title: 'Dashboard', icon: Home, path: '/dashboard/mitra-kurir' },
     {
       title: 'Daftar Permintaan',
@@ -43,7 +43,7 @@ export const menuItemsByRole = {
       path: '/dashboard/mitra-kurir/riwayat',
     },
   ],
-  masyarakat: [
+  Masyarakat: [
     { title: 'Dashboard', icon: Home, path: '/dashboard/masyarakat' },
     {
       title: 'Buat Permintaan',
@@ -65,7 +65,7 @@ export const menuItemsByRole = {
 
 // Bottom bar menu (mobile)
 export const bottomMenuItemsByRole = {
-  admin: [
+  Admin: [
     { title: 'Dashboard', icon: Home, path: '/dashboard/admin' },
     {
       title: 'VerifikasiAkun',
@@ -75,7 +75,7 @@ export const bottomMenuItemsByRole = {
     { title: 'Data', icon: Database, path: '/dashboard/admin/data-master' },
     { title: 'Transaksi', icon: History, path: '/dashboard/admin/transaksi' },
   ],
-  'mitra-kurir': [
+  'Mitra Kurir': [
     { title: 'Dashboard', icon: Home, path: '/dashboard/mitra-kurir' },
     {
       title: 'DaftarPermintaan',
@@ -93,7 +93,7 @@ export const bottomMenuItemsByRole = {
       path: '/dashboard/mitra-kurir/riwayat',
     },
   ],
-  masyarakat: [
+  Masyarakat: [
     { title: 'Dashboard', icon: Home, path: '/dashboard/masyarakat' },
     { title: 'Buat', icon: Plus, path: '/dashboard/masyarakat/penjemputan' },
     { title: 'Lacak', icon: Search, path: '/dashboard/masyarakat/lacak' },

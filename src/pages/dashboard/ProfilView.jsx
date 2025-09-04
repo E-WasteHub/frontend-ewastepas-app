@@ -1,4 +1,3 @@
-// src/views/ProfilView.jsx
 import { useState } from 'react';
 import { Alert } from '../../components/elements';
 import {
@@ -28,66 +27,51 @@ const ProfilView = () => {
     uploadDokumen,
   } = useProfil();
 
+  // ===== STATE UI =====
   const [activeTab, setActiveTab] = useState('profil');
   const [alert, setAlert] = useState({ open: false, type: '', message: '' });
 
-  // 🔹 Handler simpan data profil
+  // ===== HANDLER: SIMPAN PROFIL =====
   const handleSaveProfil = async () => {
     const result = await updateProfil();
-    if (result.success) {
-      setAlert({
-        open: true,
-        type: 'success',
-        message: 'Profil berhasil diperbarui ✅',
-      });
-    } else {
-      setAlert({
-        open: true,
-        type: 'error',
-        message: result.error || 'Gagal memperbarui profil ❌',
-      });
-    }
+    setAlert({
+      open: true,
+      type: result.success ? 'success' : 'error',
+      message: result.success
+        ? 'Profil berhasil diperbarui ✅'
+        : result.error || 'Gagal memperbarui profil ❌',
+    });
   };
 
-  // 🔹 Handler ubah password
+  // ===== HANDLER: UBAH PASSWORD =====
   const handleUbahKataSandi = async (payload) => {
     const result = await ubahPassword(payload);
-    if (result.success) {
-      setAlert({
-        open: true,
-        type: 'success',
-        message: 'Kata sandi berhasil diubah ✅',
-      });
-    } else {
-      setAlert({
-        open: true,
-        type: 'error',
-        message: result.error || 'Gagal mengubah kata sandi ❌',
-      });
-    }
+    setAlert({
+      open: true,
+      type: result.success ? 'success' : 'error',
+      message: result.success
+        ? 'Kata sandi berhasil diubah ✅'
+        : result.error || 'Gagal mengubah kata sandi ❌',
+    });
   };
 
-  // 🔹 Handler upload dokumen
+  // ===== HANDLER: UPLOAD DOKUMEN =====
   const handleUploadDokumen = async () => {
     const result = await uploadDokumen();
-    if (result.success) {
-      setAlert({
-        open: true,
-        type: 'success',
-        message: 'Dokumen berhasil diunggah ✅',
-      });
-    } else {
-      setAlert({
-        open: true,
-        type: 'error',
-        message: result.error || 'Gagal mengunggah dokumen ❌',
-      });
-    }
+    setAlert({
+      open: true,
+      type: result.success ? 'success' : 'error',
+      message: result.success
+        ? 'Dokumen berhasil diunggah ✅'
+        : result.error || 'Gagal mengunggah dokumen ❌',
+    });
   };
 
+  // ===== MENU PROFIL =====
   const menuItems = [
     { key: 'profil', label: 'Data Profil' },
     { key: 'password', label: 'Ubah Password' },
+    // Cek peran dengan enum backend yang exact
     ...(peran === 'Mitra Kurir'
       ? [{ key: 'dokumen', label: 'Unggah Dokumen' }]
       : []),
@@ -95,7 +79,7 @@ const ProfilView = () => {
 
   return (
     <div className='max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 p-6'>
-      {/* Sidebar Menu */}
+      {/* ===== SIDEBAR MENU ===== */}
       <div className='md:col-span-1'>
         <div
           className={`shadow rounded-lg p-4 space-y-2 ${
@@ -129,7 +113,7 @@ const ProfilView = () => {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* ===== MAIN CONTENT ===== */}
       <div className='md:col-span-3'>
         <div
           className={`shadow rounded-lg p-6 ${
@@ -142,11 +126,7 @@ const ProfilView = () => {
 
           {activeTab === 'profil' && (
             <FormProfilData
-              nama_lengkap={form.nama_lengkap}
-              email={form.email}
-              no_telepon={form.no_telepon}
-              alamat_pengguna={form.alamat_pengguna}
-              gambar_pengguna={form.gambar_pengguna}
+              {...form}
               isLoading={isLoading}
               onChange={(field, value) =>
                 setForm((prev) => ({ ...prev, [field]: value }))
@@ -178,7 +158,7 @@ const ProfilView = () => {
         </div>
       </div>
 
-      {/* Alert */}
+      {/* ===== ALERT INFO ===== */}
       {alert.open && <Alert type={alert.type} message={alert.message} />}
     </div>
   );

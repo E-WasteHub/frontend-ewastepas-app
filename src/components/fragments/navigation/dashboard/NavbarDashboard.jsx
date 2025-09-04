@@ -2,6 +2,7 @@
 import { Moon, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import useDarkMode from '../../../../hooks/useDarkMode';
+import usePengguna from '../../../../hooks/usePengguna';
 import { clearAuth } from '../../../../utils/authExpiredUtils';
 import Button from '../../../elements/Button';
 import NotificationDropdown from './NotificationDropdown';
@@ -9,17 +10,9 @@ import ProfileDropdown from './ProfileDropdown';
 
 const NavbarDashboard = () => {
   const { isDarkMode, toggleTheme } = useDarkMode();
+  const { pengguna, peran } = usePengguna();
 
   const [notifications, setNotifications] = useState([]);
-  const [pengguna, setPengguna] = useState(null);
-  const [peran, setPeran] = useState(null);
-
-  useEffect(() => {
-    const savedPengguna = localStorage.getItem('pengguna');
-    const savedPeran = localStorage.getItem('peran');
-    if (savedPengguna) setPengguna(JSON.parse(savedPengguna));
-    if (savedPeran) setPeran(savedPeran);
-  }, []);
 
   // Ambil notifikasi dari backend
   useEffect(() => {

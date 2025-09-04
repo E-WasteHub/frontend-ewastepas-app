@@ -3,12 +3,15 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useLoginForm from '../../../../hooks/auth/useLoginForm';
 import useDarkMode from '../../../../hooks/useDarkMode';
+import usePengguna from '../../../../hooks/usePengguna';
+import { getDashboardPathByPeran } from '../../../../utils/peranUtils';
 import { Alert, Button, Checkbox, InputForm } from '../../../elements';
 import FormHeader from '../FormHeader';
 
 const FormLogin = () => {
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
+  const { setPengguna } = usePengguna(); // ✅ biar state global pengguna ikut update
 
   const {
     email,
@@ -29,31 +32,26 @@ const FormLogin = () => {
     const res = await handleLoginSubmit(e);
 
     if (res?.data?.peran) {
-      const peran = res.data.peran.toLowerCase();
-      const message = 'Login berhasil! Mengarahkan ke dashboard...';
+      const peran = res.data.peran;
 
-      switch (peran) {
-        case 'masyarakat':
-          setSuccessMessage(message);
-          setTimeout(() => navigate('/dashboard/masyarakat'), 2000);
-          break;
-
-        case 'mitra kurir':
-          setSuccessMessage(message);
-          setTimeout(() => navigate('/dashboard/mitra-kurir'), 2000);
-          break;
-
-        default:
-          setSuccessMessage(message);
-          setTimeout(() => navigate('/'), 2000);
+      if (peran === 'Admin') {
+        // 🚫 Jangan auto redirect ke dashboard
+        setSuccessMessage(
+          'Login berhasil! Silakan cek email Anda dan klik link verifikasi admin untuk melanjutkan.'
+        );
+        // Optional → kalau backend juga return OTP, kamu bisa langsung navigate:
+        // navigate(`/verifikasi-admin?otp=${res.otp}`);
+        return;
       }
+
+      // ✅ Non-admin langsung ke dashboard
+      setPengguna(res.data);
+      navigate(getDashboardPathByPeran(peran), { replace: true });
     }
 
-    // untuk admin menggunakan OTL
+    // Kalau backend hanya kirim message (tanpa data user)
     else if (res?.message) {
-      setSuccessMessage(
-        `${res.message}. Silakan cek email Anda untuk melanjutkan verifikasi OTP.`
-      );
+      setSuccessMessage(res.message);
     }
   };
 

@@ -1,23 +1,14 @@
 // src/components/layouts/navbar/Navbar.jsx
-import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
+import usePengguna from '../../../hooks/usePengguna';
 import { clearAuth } from '../../../utils/authExpiredUtils';
 import { LogoApp, ThemeSelector } from '../../elements/';
 import { ProfileDropdown } from '../../fragments';
 
 const Navbar = () => {
   const { isDarkMode } = useDarkMode();
-  const [pengguna, setPengguna] = useState(null);
-  const [peran, setPeran] = useState(null);
-
-  // 🔑 ambil data dari localStorage
-  useEffect(() => {
-    const savedPengguna = localStorage.getItem('pengguna');
-    const savedPeran = localStorage.getItem('peran');
-    if (savedPengguna) setPengguna(JSON.parse(savedPengguna));
-    if (savedPeran) setPeran(savedPeran);
-  }, []);
+  const { pengguna, peran } = usePengguna();
 
   const navLinks = [
     { to: '/', text: 'Beranda' },

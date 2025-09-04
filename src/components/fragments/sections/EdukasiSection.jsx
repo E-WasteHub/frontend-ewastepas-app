@@ -4,7 +4,7 @@ import { motion as Motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
-import { indexEdukasi } from '../../../services/edukasiService'; // ✅ pakai indexEdukasi
+import { ambilSemuaEdukasi } from '../../../services/edukasiService';
 import { Badge } from '../../elements';
 
 const EdukasiSection = () => {
@@ -21,7 +21,7 @@ const EdukasiSection = () => {
       try {
         setIsLoading(true);
         setError('');
-        const res = await indexEdukasi(); // ✅ ambil dari service
+        const res = await ambilSemuaEdukasi(); // ✅ ambil dari service
         setData(res.data || []); // asumsi respons punya { data: [...] }
       } catch (err) {
         setError(err.message || 'Gagal memuat data edukasi');

@@ -1,6 +1,9 @@
+// src/routes/AppRouter.jsx
+import { Loader2 } from 'lucide-react';
 import { Suspense, lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import DashboardLayout from '../components/layouts/DashboardLayout';
+import ProtectedRoute from './ProtectedRoute';
 
 // ================= Public Pages =================
 import EdukasiDetailView from '../pages/EdukasiDetailView';
@@ -9,12 +12,11 @@ import HomeView from '../pages/HomeView';
 import PanduanAplikasiView from '../pages/PanduanAplikasiView';
 
 // ================= Auth Pages =================
-import { Loader2 } from 'lucide-react';
 import LoginView from '../pages/auth/LoginView';
 import PemulihanAkunView from '../pages/auth/PemulihanAkunView';
 import RegisterView from '../pages/auth/RegisterView';
 import ResetKataSandiView from '../pages/auth/ResetKataSandiView';
-import VerifikasiAdminView from '../pages/auth/VerifikasiAdminView';
+import VerifikasiAdmin from '../pages/auth/VerifikasiAdminView';
 import VerifikasiOTPView from '../pages/auth/VerifikasiOTPView';
 
 // ================= Admin Pages =================
@@ -39,8 +41,8 @@ const AdminKelolaKategoriView = lazy(() =>
 const AdminKelolaJenisView = lazy(() =>
   import('../pages/dashboard/admin/AdminKelolaJenisView')
 );
-const AdminVerifikasiView = lazy(() =>
-  import('../pages/dashboard/admin/AdminVerifikasiView')
+const AdminVerifikasiAkunView = lazy(() =>
+  import('../pages/dashboard/admin/AdminVerifikasiAkunView')
 );
 const AdminTransaksiView = lazy(() =>
   import('../pages/dashboard/admin/AdminTransaksiView')
@@ -91,10 +93,7 @@ const AppRouter = () => {
     <Suspense
       fallback={
         <div className='flex items-center justify-center min-h-screen'>
-          {/* Loading tidak menggunakan komponen */}
-          <div className='flex items-center justify-center min-h-screen'>
-            <Loader2 className='w-12 h-12 animate-spin text-green-600' />
-          </div>
+          <Loader2 className='w-12 h-12 animate-spin text-green-600' />
         </div>
       }
     >
@@ -111,87 +110,107 @@ const AppRouter = () => {
         <Route path='/pemulihan-akun' element={<PemulihanAkunView />} />
         <Route path='/verifikasi-otp' element={<VerifikasiOTPView />} />
         <Route path='/reset-kata-sandi' element={<ResetKataSandiView />} />
-        <Route path='/verifikasi-admin' element={<VerifikasiAdminView />} />
+        <Route path='/verifikasi-admin' element={<VerifikasiAdmin />} />
 
         {/* ========= Dashboard - Admin ========= */}
         <Route
           path='/dashboard/admin'
           element={
-            <DashboardLayout>
-              <AdminDashboardView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <DashboardLayout>
+                <AdminDashboardView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/admin/data-master'
           element={
-            <DashboardLayout>
-              <AdminDataMasterView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <DashboardLayout>
+                <AdminDataMasterView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/admin/kelola-daerah'
           element={
-            <DashboardLayout>
-              <AdminKelolaDaerahView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <DashboardLayout>
+                <AdminKelolaDaerahView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/admin/kelola-dropbox'
           element={
-            <DashboardLayout>
-              <AdminKelolaDropboxView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <DashboardLayout>
+                <AdminKelolaDropboxView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/admin/kelola-edukasi'
           element={
-            <DashboardLayout>
-              <AdminKelolaEdukasiView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <DashboardLayout>
+                <AdminKelolaEdukasiView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/admin/kelola-kategori'
           element={
-            <DashboardLayout>
-              <AdminKelolaKategoriView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <DashboardLayout>
+                <AdminKelolaKategoriView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/admin/kelola-jenis'
           element={
-            <DashboardLayout>
-              <AdminKelolaJenisView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <DashboardLayout>
+                <AdminKelolaJenisView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/admin/verifikasi-akun'
           element={
-            <DashboardLayout>
-              <AdminVerifikasiView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <DashboardLayout>
+                <AdminVerifikasiAkunView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/admin/transaksi'
           element={
-            <DashboardLayout>
-              <AdminTransaksiView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <DashboardLayout>
+                <AdminTransaksiView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/admin/profil'
           element={
-            <DashboardLayout>
-              <ProfilView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <DashboardLayout>
+                <ProfilView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
 
@@ -199,57 +218,71 @@ const AppRouter = () => {
         <Route
           path='/dashboard/masyarakat'
           element={
-            <DashboardLayout>
-              <DashboardMasyarakatView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Masyarakat']}>
+              <DashboardLayout>
+                <DashboardMasyarakatView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/masyarakat/penjemputan'
           element={
-            <DashboardLayout>
-              <PermintaanPenjemputanView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Masyarakat']}>
+              <DashboardLayout>
+                <PermintaanPenjemputanView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/masyarakat/lacak'
           element={
-            <DashboardLayout>
-              <LacakPenjemputanView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Masyarakat']}>
+              <DashboardLayout>
+                <LacakPenjemputanView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/masyarakat/lacak/:id_penjemputan'
           element={
-            <DashboardLayout>
-              <DetailLacakPenjemputanView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Masyarakat']}>
+              <DashboardLayout>
+                <DetailLacakPenjemputanView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/masyarakat/riwayat'
           element={
-            <DashboardLayout>
-              <RiwayatMasyarakatView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Masyarakat']}>
+              <DashboardLayout>
+                <RiwayatMasyarakatView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/masyarakat/riwayat/:id_penjemputan'
           element={
-            <DashboardLayout>
-              <DetailRiwayatMasyarakatView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Masyarakat']}>
+              <DashboardLayout>
+                <DetailRiwayatMasyarakatView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/masyarakat/profil'
           element={
-            <DashboardLayout>
-              <ProfilView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Masyarakat']}>
+              <DashboardLayout>
+                <ProfilView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
 
@@ -257,49 +290,61 @@ const AppRouter = () => {
         <Route
           path='/dashboard/mitra-kurir'
           element={
-            <DashboardLayout>
-              <DashboardKurirView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Mitra Kurir']}>
+              <DashboardLayout>
+                <DashboardKurirView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/mitra-kurir/daftar-permintaan'
           element={
-            <DashboardLayout>
-              <DaftarPermintaanKurirView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Mitra Kurir']}>
+              <DashboardLayout>
+                <DaftarPermintaanKurirView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/mitra-kurir/permintaan-aktif'
           element={
-            <DashboardLayout>
-              <PermintaanAktifKurirView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Mitra Kurir']}>
+              <DashboardLayout>
+                <PermintaanAktifKurirView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/mitra-kurir/riwayat'
           element={
-            <DashboardLayout>
-              <RiwayatMitraKurirView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Mitra Kurir']}>
+              <DashboardLayout>
+                <RiwayatMitraKurirView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/mitra-kurir/riwayat/:id_penjemputan'
           element={
-            <DashboardLayout>
-              <DetailRiwayatMitraKurirView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Mitra Kurir']}>
+              <DashboardLayout>
+                <DetailRiwayatMitraKurirView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/dashboard/mitra-kurir/profil'
           element={
-            <DashboardLayout>
-              <ProfilView />
-            </DashboardLayout>
+            <ProtectedRoute allowedRoles={['Mitra Kurir']}>
+              <DashboardLayout>
+                <ProfilView />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
 
@@ -307,7 +352,7 @@ const AppRouter = () => {
         <Route
           path='*'
           element={
-            <div className='p-6 text-center mx-auto flex !px-12 flex-col items-center justify-center min-h-screen'>
+            <div className='p-6 text-center mx-auto flex flex-col items-center justify-center min-h-screen'>
               Halaman tidak ditemukan
             </div>
           }
