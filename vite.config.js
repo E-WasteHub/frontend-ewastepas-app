@@ -60,4 +60,22 @@ export default defineConfig({
       },
     }),
   ],
+  // ✅ Optimasi Build untuk Skripsi (Simple & Basic)
+  build: {
+    // Tingkatkan limit warning chunk size
+    chunkSizeWarningLimit: 1000,
+
+    // Optimasi sederhana untuk split bundle
+    rollupOptions: {
+      output: {
+        // Pisahkan React libraries dari app code
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+        },
+      },
+    },
+
+    // Optimasi assets
+    assetsInlineLimit: 4096,
+  },
 });

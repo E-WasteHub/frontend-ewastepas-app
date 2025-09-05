@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import darkLogo from '../../../assets/img/ewasteDark.png';
+import lightLogo from '../../../assets/img/ewasteLight.png';
 import useDarkMode from '../../../hooks/useDarkMode';
 
 const sizeConfig = {
@@ -13,9 +15,8 @@ const LogoApp = ({ size = 'md', withText = false }) => {
   const { isDarkMode } = useDarkMode();
   const [imgError, setImgError] = useState(false);
 
-  const logoSrc = isDarkMode
-    ? '/src/assets/img/ewasteDark.png'
-    : '/src/assets/img/ewasteLight.png';
+  // ✅ Gunakan imported assets daripada path string
+  const logoSrc = isDarkMode ? darkLogo : lightLogo;
 
   const currentSize = sizeConfig[size] || sizeConfig.md;
 
