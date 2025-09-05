@@ -162,6 +162,7 @@ const usePenjemputan = ({ showAlert }) => {
     // setter
     setTempSampah,
     setIsModalOpen,
+    setDaftarSampah,
 
     // action
     handleTambahSampah,

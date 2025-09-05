@@ -1,15 +1,12 @@
 import { X } from 'lucide-react';
 import useDarkMode from '../../../../hooks/useDarkMode';
-import { Button, Loading } from '../../../elements';
 
 const DaftarSampah = ({
   daftarSampah,
   totalJumlah,
   estimasiPoin,
-  isSubmitting,
   onHapus,
   onUpload,
-  onCancel,
 }) => {
   const { isDarkMode } = useDarkMode();
 
@@ -35,7 +32,9 @@ const DaftarSampah = ({
         `}
       >
         {daftarSampah.length === 0 ? (
-          <p className='text-sm text-gray-500'>Belum ada sampah ditambahkan</p>
+          <p className='text-sm text-center text-gray-500 my-3'>
+            Belum ada sampah ditambahkan
+          </p>
         ) : (
           daftarSampah.map((s) => (
             <div
@@ -91,34 +90,6 @@ const DaftarSampah = ({
             </div>
           ))
         )}
-      </div>
-
-      {/* Actions sticky */}
-      <div
-        className='
-          sticky bottom-0 bg-inherit py-8 flex justify-end gap-3
-        '
-      >
-        <Button
-          type='button'
-          variant='secondary'
-          onClick={onCancel}
-          disabled={isSubmitting}
-          className='flex-1 md:flex-none'
-        >
-          Kembali
-        </Button>
-        <Button
-          type='submit'
-          disabled={isSubmitting || daftarSampah.length === 0}
-          className='flex-1 md:flex-none'
-        >
-          {isSubmitting ? (
-            <Loading size='sm' text='Mengirim...' mode='button' />
-          ) : (
-            'Kirim Permintaan'
-          )}
-        </Button>
       </div>
     </div>
   );
