@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
+import useDarkMode from '../../../hooks/useDarkMode';
 import { ambilSemuaDaerah } from '../../../services/daerahService';
 import { ambilSemuaDropbox } from '../../../services/dropboxService';
-import { Button, Select } from '../../elements';
+import { Button, Loading, Select } from '../../elements';
 
 const PilihDropboxModal = ({ isOpen, onClose, onSelect }) => {
   const [daerahList, setDaerahList] = useState([]);
@@ -9,6 +10,7 @@ const PilihDropboxModal = ({ isOpen, onClose, onSelect }) => {
   const [selectedDaerah, setSelectedDaerah] = useState('');
   const [selectedDropbox, setSelectedDropbox] = useState('');
   const [loading, setLoading] = useState(true);
+  const { isDarkMode } = useDarkMode();
 
   useEffect(() => {
     if (isOpen) {
@@ -44,11 +46,15 @@ const PilihDropboxModal = ({ isOpen, onClose, onSelect }) => {
 
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50'>
-      <div className='bg-white dark:bg-slate-800 p-6 rounded-lg shadow-lg w-full max-w-md'>
+      <div
+        className={`p-6 rounded-lg shadow-lg w-full max-w-md ${
+          isDarkMode ? 'bg-slate-800' : 'bg-white'
+        }`}
+      >
         <h2 className='text-lg font-semibold mb-4'>Pilih Dropbox Tujuan</h2>
 
         {loading ? (
-          <p className='text-sm text-gray-500'>⏳ Memuat data...</p>
+          <Loading mode='inline' text='Memuat data...' />
         ) : (
           <>
             {/* Select Daerah */}

@@ -3,7 +3,7 @@ import { BookOpen } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Badge } from '../components/elements';
+import { Badge, Loading } from '../components/elements';
 import Pagination from '../components/elements/Pagination';
 import MainLayout from '../components/layouts/MainLayout';
 import useDarkMode from '../hooks/useDarkMode';
@@ -85,9 +85,7 @@ const EdukasiView = () => {
         className={`px-4 py-8 ${isDarkMode ? 'bg-slate-900/50' : 'bg-white'}`}
       >
         <div className='max-w-6xl mx-auto'>
-          {isLoading && (
-            <p className='text-center text-slate-500'>Loading konten...</p>
-          )}
+          {isLoading && <Loading mode='inline' text='Loading konten...' />}
           {error && <p className='text-center text-red-500'>{error}</p>}
 
           {!isLoading && !error && (

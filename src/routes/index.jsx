@@ -1,7 +1,7 @@
 // src/routes/AppRouter.jsx
-import { Loader2 } from 'lucide-react';
 import { Suspense, lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import { Loading } from '../components/elements';
 import DashboardLayout from '../components/layouts/DashboardLayout';
 import ProtectedRoute from './ProtectedRoute';
 
@@ -90,13 +90,7 @@ const ProfilView = lazy(() => import('../pages/dashboard/ProfilView'));
 
 const AppRouter = () => {
   return (
-    <Suspense
-      fallback={
-        <div className='flex items-center justify-center min-h-screen'>
-          <Loader2 className='w-12 h-12 animate-spin text-green-600' />
-        </div>
-      }
-    >
+    <Suspense fallback={<Loading mode='overlay' text='Memuat halaman...' />}>
       <Routes>
         {/* ========= Public Routes ========= */}
         <Route path='/' element={<HomeView />} />

@@ -1,7 +1,6 @@
-// src/views/kurir/DaftarPermintaanKurirView.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Card, Pagination } from '../../../components/elements';
+import { Card, Loading, Pagination } from '../../../components/elements';
 import {
   AlertModal,
   ConfirmModal,
@@ -30,11 +29,13 @@ const DaftarPermintaanKurirView = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [alert, setAlert] = useState({
-    open: false,
-    type: '',
+
+  // AlertModal state
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({
+    title: '',
     message: '',
-    success: false,
+    type: 'success',
   });
 
   // ===== Pagination =====
@@ -60,33 +61,33 @@ const DaftarPermintaanKurirView = () => {
     setConfirmOpen(false);
 
     if (result.success) {
-      setAlert({
-        open: true,
-        type: 'success',
+      setAlertConfig({
+        title: 'Berhasil',
         message: 'Permintaan berhasil diambil ✅',
-        success: true,
+        type: 'success',
       });
+      setAlertOpen(true);
+
+      // Navigate to active requests after success
+      setTimeout(() => {
+        if (permintaanAktif) {
+          navigate('/dashboard/mitra-kurir/permintaan-aktif');
+        }
+      }, 2000);
     } else {
-      setAlert({
-        open: true,
-        type: 'error',
+      setAlertConfig({
+        title: 'Gagal',
         message: result.error || 'Gagal mengambil permintaan ❌',
-        success: false,
+        type: 'error',
       });
+      setAlertOpen(true);
     }
 
     setSelectedId(null);
   };
 
-  const handleCloseAlert = () => {
-    setAlert((prev) => ({ ...prev, open: false }));
-    if (alert.success && permintaanAktif) {
-      navigate('/dashboard/mitra-kurir/permintaan-aktif');
-    }
-  };
-
   // ===== Render =====
-  if (isLoading) return <p className='text-center py-10'>⏳ Memuat...</p>;
+  if (isLoading) return <Loading mode='overlay' text='Memuat...' />;
   const totalItems = penjemputanTersedia?.length || 0;
 
   return (
@@ -114,13 +115,31 @@ const DaftarPermintaanKurirView = () => {
 
       {/* Body */}
       <Card className='p-6 space-y-6'>
-        {error && <Alert type='error' message={error} />}
+        {error && (
+          <div
+            className={`p-4 mb-4 rounded-lg border ${
+              isDarkMode
+                ? 'text-red-300 bg-red-900 border-red-800'
+                : 'text-red-700 bg-red-100 border-red-200'
+            }`}
+          >
+            {error}
+          </div>
+        )}
 
         {permintaanAktif && (
-          <Alert
-            type='warning'
-            message={`⚠️ Anda sedang mengerjakan 1 penjemputan (ID: ${permintaanAktif.id_penjemputan}, Status: ${permintaanAktif.status_penjemputan}). Selesaikan atau batalkan terlebih dahulu sebelum ambil yang lain.`}
-          />
+          <div
+            className={`p-4 mb-4 rounded-lg border ${
+              isDarkMode
+                ? 'text-yellow-300 bg-yellow-900 border-yellow-800'
+                : 'text-yellow-700 bg-yellow-100 border-yellow-200'
+            }`}
+          >
+            ⚠️ Anda sedang mengerjakan 1 penjemputan (ID:{' '}
+            {permintaanAktif.id_penjemputan}, Status:{' '}
+            {permintaanAktif.status_penjemputan}). Selesaikan atau batalkan
+            terlebih dahulu sebelum ambil yang lain.
+          </div>
         )}
 
         {totalItems === 0 ? (
@@ -165,13 +184,13 @@ const DaftarPermintaanKurirView = () => {
         onConfirm={handleConfirmAmbil}
       />
 
-      {/* Modal Alert */}
+      {/* Alert Modal */}
       <AlertModal
-        isOpen={alert.open}
-        type={alert.type}
-        title={alert.success ? 'Berhasil' : 'Gagal'}
-        message={alert.message}
-        onClose={handleCloseAlert}
+        isOpen={alertOpen}
+        onClose={() => setAlertOpen(false)}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
       />
     </div>
   );

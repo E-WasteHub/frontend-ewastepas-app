@@ -1,6 +1,6 @@
 import { Package, Users } from 'lucide-react';
 import DataTable from 'react-data-table-component';
-import { SapaanDashboard } from '../../../components/elements';
+import { Loading, SapaanDashboard } from '../../../components/elements';
 import { StatCard } from '../../../components/fragments';
 import useAdminMonitoring from '../../../hooks/useAdminMonitoring';
 import useDarkMode from '../../../hooks/useDarkMode';
@@ -86,7 +86,7 @@ const AdminDashboardView = () => {
         <div>
           <h2 className='text-xl font-bold mb-2'>Transaksi Terbaru</h2>
           {isLoading ? (
-            <p>⏳ Memuat data...</p>
+            <Loading mode='inline' text='Memuat data...' />
           ) : error ? (
             <p className='text-red-500'>{error}</p>
           ) : (

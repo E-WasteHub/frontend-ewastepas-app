@@ -1,7 +1,7 @@
 // src/views/masyarakat/DetailRiwayatMasyarakatView.jsx
 import { FileText, Truck } from 'lucide-react';
 import { useParams } from 'react-router-dom';
-import { Card } from '../../../components/elements';
+import { Card, Loading } from '../../../components/elements';
 import { ItemSampahCard, Timeline } from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
@@ -73,11 +73,7 @@ const DetailRiwayatMasyarakatView = () => {
     useMasyarakatDetail(id_penjemputan);
 
   if (isLoading) {
-    return (
-      <p className='p-6 text-center text-gray-500'>
-        ⏳ Memuat detail riwayat...
-      </p>
-    );
+    return <Loading mode='overlay' text='Memuat detail riwayat...' />;
   }
 
   if (!detailRiwayat?.penjemputan) {

@@ -1,8 +1,7 @@
-import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { Alert } from '../components/elements';
-import { AlertModal } from '../components/fragments';
+import { Loading } from '../components/elements';
 import usePengguna from '../hooks/usePengguna';
+import useToast from '../hooks/useToast';
 import {
   getDashboardPathByPeran,
   getProfilePathByPeran,
@@ -11,21 +10,11 @@ import {
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { pengguna, isLoading } = usePengguna();
   const navigate = useNavigate();
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertConfig, setAlertConfig] = useState({
-    title: '',
-    message: '',
-    type: 'warning',
-  });
+  const { error, warning } = useToast();
 
   // 🔄 Tunggu dulu sampai usePengguna selesai load
   if (isLoading) {
-    return (
-      <div className='flex items-center justify-center min-h-screen'>
-        <span>Loading...</span>
-      </div>
-    );
+    return <Loading mode='overlay' text='Memeriksa akses pengguna...' />;
   }
 
   // 🚫 Belum login → ke halaman login
@@ -37,115 +26,90 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
   // 🚫 Role tidak sesuai → redirect ke dashboard sesuai peran
   if (allowedRoles && !allowedRoles.includes(currentRole)) {
-    if (!showAlert) {
-      setAlertConfig({
-        title: 'Akses Ditolak',
-        message: `Anda tidak memiliki izin untuk mengakses halaman ini. Peran Anda: ${currentRole}`,
-        type: 'warning',
-      });
-      setShowAlert(true);
-    }
+    warning(
+      `Anda tidak memiliki izin untuk mengakses halaman ini. Peran Anda: ${currentRole}`
+    );
+
+    setTimeout(() => {
+      navigate(getDashboardPathByPeran(currentRole), { replace: true });
+    }, 2000);
 
     return (
-      <>
-        <AlertModal
-          isOpen={showAlert}
-          onClose={() => {
-            setShowAlert(false);
-            setTimeout(() => {
-              navigate(getDashboardPathByPeran(currentRole));
-            }, 200);
-          }}
-          title={alertConfig.title}
-          message={alertConfig.message}
-          type={alertConfig.type}
-        />
-        <div className='min-h-screen flex items-center justify-center bg-gray-50'>
-          <Alert
-            type='warning'
-            title='Akses Ditolak'
-            message={`Peran Anda (${currentRole}) tidak memiliki izin untuk mengakses halaman ini.`}
-          />
-        </div>
-      </>
+      <Loading mode='overlay' text='Mengarahkan ke dashboard yang sesuai...' />
     );
   }
 
-  // 🚫 Khusus Mitra Kurir → cek status
+  // 🚫 Khusus Mitra Kurir → cek status (sebelum Aktif tidak boleh akses fitur)
   if (currentRole === 'Mitra Kurir' && pengguna.status_pengguna !== 'Aktif') {
     const profilePath = getProfilePathByPeran(currentRole);
 
+    // Status: Belum Aktif → perlu upload dokumen
     if (pengguna.status_pengguna === 'Belum Aktif') {
-      // hanya boleh akses halaman profil
       if (window.location.pathname !== profilePath) {
-        if (!showAlert) {
-          setAlertConfig({
-            title: 'Akun Belum Aktif',
-            message:
-              'Akun Anda belum aktif. Silakan upload dokumen verifikasi terlebih dahulu di halaman profil.',
-            type: 'warning',
-          });
-          setShowAlert(true);
-        }
+        warning(
+          'Akun Anda belum aktif. Silakan upload dokumen verifikasi terlebih dahulu di halaman profil.'
+        );
+
+        setTimeout(() => {
+          navigate(profilePath, { replace: true });
+        }, 2000);
 
         return (
-          <>
-            <AlertModal
-              isOpen={showAlert}
-              onClose={() => {
-                setShowAlert(false);
-                setTimeout(() => {
-                  navigate(profilePath);
-                }, 200);
-              }}
-              title={alertConfig.title}
-              message={alertConfig.message}
-              type={alertConfig.type}
-            />
-            <div className='min-h-screen flex items-center justify-center bg-gray-50'>
-              <Alert
-                type='warning'
-                title='Akun Belum Aktif'
-                message='Silakan upload dokumen verifikasi di halaman profil untuk mengaktifkan akun Anda.'
-              />
-            </div>
-          </>
+          <Loading
+            mode='overlay'
+            text='Mengarahkan ke halaman profil untuk upload dokumen...'
+          />
         );
       }
-    } else {
-      // Status lain selain Aktif/Belum Aktif (misal: Ditolak, Pending, dll)
+    }
+    // Status: Belum Selesai → masih proses registrasi
+    else if (pengguna.status_pengguna === 'Belum Selesai') {
       if (window.location.pathname !== profilePath) {
-        if (!showAlert) {
-          setAlertConfig({
-            title: 'Status Akun Tidak Valid',
-            message: `Status akun Anda: ${pengguna.status_pengguna}. Silakan hubungi admin untuk informasi lebih lanjut.`,
-            type: 'error',
-          });
-          setShowAlert(true);
-        }
+        warning(
+          'Proses registrasi Anda belum selesai. Silakan lengkapi data profil terlebih dahulu.'
+        );
+
+        setTimeout(() => {
+          navigate(profilePath, { replace: true });
+        }, 2000);
 
         return (
-          <>
-            <AlertModal
-              isOpen={showAlert}
-              onClose={() => {
-                setShowAlert(false);
-                setTimeout(() => {
-                  navigate(profilePath);
-                }, 200);
-              }}
-              title={alertConfig.title}
-              message={alertConfig.message}
-              type={alertConfig.type}
-            />
-            <div className='min-h-screen flex items-center justify-center bg-gray-50'>
-              <Alert
-                type='error'
-                title='Status Akun Tidak Valid'
-                message={`Status: ${pengguna.status_pengguna}. Hubungi admin untuk bantuan.`}
-              />
-            </div>
-          </>
+          <Loading
+            mode='overlay'
+            text='Mengarahkan ke halaman profil untuk melengkapi registrasi...'
+          />
+        );
+      }
+    }
+    // Status: Menunggu Verifikasi → dokumen sudah diupload, menunggu admin
+    else if (pengguna.status_pengguna === 'Menunggu Verifikasi') {
+      if (window.location.pathname !== profilePath) {
+        warning(
+          'Dokumen Anda sedang dalam proses verifikasi oleh admin. Mohon tunggu konfirmasi lebih lanjut.'
+        );
+
+        setTimeout(() => {
+          navigate(profilePath, { replace: true });
+        }, 2000);
+
+        return (
+          <Loading mode='overlay' text='Mengarahkan ke halaman profil...' />
+        );
+      }
+    }
+    // Status lain (misal: Ditolak, dll)
+    else {
+      if (window.location.pathname !== profilePath) {
+        error(
+          `Status akun Anda: ${pengguna.status_pengguna}. Silakan hubungi admin untuk informasi lebih lanjut.`
+        );
+
+        setTimeout(() => {
+          navigate(profilePath, { replace: true });
+        }, 2000);
+
+        return (
+          <Loading mode='overlay' text='Mengarahkan ke halaman profil...' />
         );
       }
     }

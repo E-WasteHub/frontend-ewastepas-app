@@ -1,5 +1,6 @@
 import { BookOpen, Box, FolderKanban, ListChecks, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import useDarkMode from '../../../hooks/useDarkMode';
 import { Card } from '../../elements';
 
 const menus = [
@@ -36,6 +37,8 @@ const menus = [
 ];
 
 const DatamasterCard = () => {
+  const { isDarkMode } = useDarkMode();
+
   return (
     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
       {menus.map((menu, idx) => {
@@ -46,7 +49,11 @@ const DatamasterCard = () => {
               <Card.Body className='flex flex-col items-center text-center space-y-2'>
                 <Icon className='w-10 h-10 text-green-600' />
                 <h3 className='text-lg font-semibold'>{menu.title}</h3>
-                <p className='text-sm text-gray-500 dark:text-gray-400'>
+                <p
+                  className={`text-sm ${
+                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                  }`}
+                >
                   {menu.desc}
                 </p>
               </Card.Body>

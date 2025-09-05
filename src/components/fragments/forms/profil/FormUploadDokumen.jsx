@@ -13,7 +13,11 @@ const FormUploadDokumen = ({ files, onFileChange, onSave, isLoading }) => {
       {/* 🔹 Header */}
       <div>
         <h2 className='text-xl font-semibold'>Unggah Dokumen Verifikasi</h2>
-        <p className='text-sm text-gray-500 dark:text-slate-400'>
+        <p
+          className={`text-sm ${
+            isDarkMode ? 'text-slate-400' : 'text-gray-500'
+          }`}
+        >
           Unggah dokumen KTP dan SIM untuk verifikasi akun Mitra Kurir
         </p>
       </div>
@@ -75,8 +79,12 @@ const FormUploadDokumen = ({ files, onFileChange, onSave, isLoading }) => {
         <p
           className={`text-sm mb-2 ${
             readyToUpload
-              ? 'text-green-600 dark:text-green-400'
-              : 'text-red-600 dark:text-red-400'
+              ? isDarkMode
+                ? 'text-green-400'
+                : 'text-green-600'
+              : isDarkMode
+              ? 'text-red-400'
+              : 'text-red-600'
           }`}
         >
           {readyToUpload

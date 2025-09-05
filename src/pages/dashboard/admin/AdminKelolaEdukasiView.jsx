@@ -1,10 +1,11 @@
 // src/pages/admin/edukasi/AdminKelolaEdukasiView.jsx
 import { useState } from 'react';
 import DataTable from 'react-data-table-component';
+import { Loading } from '../../../components/elements';
 import EdukasiCrudModal from '../../../components/fragments/admincrud/EdukasiCrudModal';
-import AlertModal from '../../../components/fragments/modals/AlertModal';
 import ConfirmModal from '../../../components/fragments/modals/ConfirmModal';
 import useAdminCrud from '../../../hooks/useAdminCrud';
+import useToast from '../../../hooks/useToast';
 import * as edukasiService from '../../../services/edukasiService';
 
 const AdminKelolaEdukasiView = () => {
@@ -18,59 +19,52 @@ const AdminKelolaEdukasiView = () => {
     isSubmitting,
   } = useAdminCrud(edukasiService);
 
+  const { showAlert } = useToast();
+
   const [crudOpen, setCrudOpen] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState(null);
 
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertConfig, setAlertConfig] = useState({
-    title: '',
-    message: '',
-    type: 'info',
-  });
-
   // Tambah / Ubah
   const handleCrudSubmit = async (formValues) => {
     if (editTarget) {
       const res = await ubah(editTarget.id_konten, formValues);
-      setAlertConfig({
-        title: res.success ? 'Berhasil' : 'Gagal',
-        message: res.success
+      showAlert(
+        res.success ? 'Berhasil' : 'Gagal',
+        res.success
           ? 'Konten edukasi berhasil diperbarui'
           : res.error || 'Konten edukasi gagal diperbarui',
-        type: res.success ? 'success' : 'error',
-      });
+        res.success ? 'success' : 'error'
+      );
     } else {
       const res = await tambah(formValues);
-      setAlertConfig({
-        title: res.success ? 'Berhasil' : 'Gagal',
-        message: res.success
+      showAlert(
+        res.success ? 'Berhasil' : 'Gagal',
+        res.success
           ? 'Konten edukasi berhasil ditambahkan'
           : res.error || 'Konten edukasi gagal ditambahkan',
-        type: res.success ? 'success' : 'error',
-      });
+        res.success ? 'success' : 'error'
+      );
     }
 
     setCrudOpen(false);
     setEditTarget(null);
-    setAlertOpen(true);
   };
 
   // Hapus
   const handleDelete = async () => {
     if (!confirmTarget) return;
     const res = await hapus(confirmTarget);
-    setAlertConfig({
-      title: res.success ? 'Berhasil' : 'Gagal',
-      message: res.success
+    showAlert(
+      res.success ? 'Berhasil' : 'Gagal',
+      res.success
         ? 'Konten edukasi berhasil dihapus'
         : res.error || 'Konten edukasi gagal dihapus',
-      type: res.success ? 'success' : 'error',
-    });
+      res.success ? 'success' : 'error'
+    );
     setConfirmOpen(false);
-    setAlertOpen(true);
   };
 
   const columns = [
@@ -139,7 +133,7 @@ const AdminKelolaEdukasiView = () => {
       </div>
 
       {isLoading ? (
-        <p>⏳ Memuat data...</p>
+        <Loading mode='inline' text='Memuat data...' />
       ) : error ? (
         <p className='text-red-500'>{error}</p>
       ) : (
@@ -177,15 +171,6 @@ const AdminKelolaEdukasiView = () => {
         confirmText='Hapus'
         cancelText='Batal'
         isLoading={isSubmitting}
-      />
-
-      {/* Modal Alert */}
-      <AlertModal
-        isOpen={alertOpen}
-        onClose={() => setAlertOpen(false)}
-        title={alertConfig.title}
-        message={alertConfig.message}
-        type={alertConfig.type}
       />
     </div>
   );

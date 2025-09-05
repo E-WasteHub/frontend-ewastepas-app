@@ -1,39 +1,36 @@
-// src/components/fragments/modals/AlertModal.jsx
-import { Button, Modal } from '../../elements';
+// Stub AlertModal for backward compatibility - use react-toastify instead
+import useDarkMode from '../../../hooks/useDarkMode';
 
-const typeStyles = {
-  success: 'text-green-600 dark:text-green-400',
-  error: 'text-red-600 dark:text-red-400',
-  warning: 'text-yellow-600 dark:text-yellow-400',
-  info: 'text-blue-600 dark:text-blue-400',
-};
+const AlertModal = ({ isOpen, onClose, title, message }) => {
+  // This is a stub - the actual AlertModal has been removed
+  // Use useToast hook instead for new implementations
+  console.warn('AlertModal is deprecated. Use useToast hook instead.');
 
-const AlertModal = ({ isOpen, onClose, title, message, type = 'info' }) => {
+  const { isDarkMode } = useDarkMode();
+
+  if (!isOpen) return null;
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      {/* Pesan */}
-      <p className={`text-sm ${typeStyles[type] || typeStyles.info}`}>
-        {message}
-      </p>
-
-      {/* Footer */}
-      <div className='flex justify-end mt-6'>
-        <Button
-          onClick={onClose}
-          variant={
-            type === 'success'
-              ? 'primary'
-              : type === 'error'
-              ? 'danger'
-              : type === 'warning'
-              ? 'warning'
-              : 'info'
-          }
-        >
-          Ok
-        </Button>
+    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
+      <div
+        className={`p-6 rounded-lg max-w-md mx-4 ${
+          isDarkMode ? 'bg-gray-800' : 'bg-white'
+        }`}
+      >
+        <h3 className='text-lg font-semibold mb-4'>{title}</h3>
+        <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+          {message}
+        </p>
+        <div className='flex justify-end'>
+          <button
+            onClick={onClose}
+            className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'
+          >
+            OK
+          </button>
+        </div>
       </div>
-    </Modal>
+    </div>
   );
 };
 

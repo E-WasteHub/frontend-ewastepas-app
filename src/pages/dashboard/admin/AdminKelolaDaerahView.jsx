@@ -1,10 +1,11 @@
 // src/pages/admin/daerah/AdminKelolaDaerahView.jsx
 import { useState } from 'react';
 import DataTable from 'react-data-table-component';
+import { Loading } from '../../../components/elements';
 import DaerahCrudModal from '../../../components/fragments/admincrud/DaerahCrudModal';
-import AlertModal from '../../../components/fragments/modals/AlertModal';
 import ConfirmModal from '../../../components/fragments/modals/ConfirmModal';
 import useAdminCrud from '../../../hooks/useAdminCrud';
+import useToast from '../../../hooks/useToast';
 import * as daerahService from '../../../services/daerahService';
 
 const AdminKelolaDaerahView = () => {
@@ -18,59 +19,52 @@ const AdminKelolaDaerahView = () => {
     isSubmitting,
   } = useAdminCrud(daerahService);
 
+  const { showAlert } = useToast();
+
   const [crudOpen, setCrudOpen] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState(null);
 
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertConfig, setAlertConfig] = useState({
-    title: '',
-    message: '',
-    type: 'info',
-  });
-
   // Handler Tambah/Edit
   const handleCrudSubmit = async (formValues) => {
     if (editTarget) {
       const res = await ubah(editTarget.id_daerah, formValues);
-      setAlertConfig({
-        title: res.success ? 'Berhasil' : 'Gagal',
-        message: res.success
+      showAlert(
+        res.success ? 'Berhasil' : 'Gagal',
+        res.success
           ? 'Daerah berhasil diperbarui'
           : res.error || 'Daerah gagal diperbarui',
-        type: res.success ? 'success' : 'error',
-      });
+        res.success ? 'success' : 'error'
+      );
     } else {
       const res = await tambah(formValues);
-      setAlertConfig({
-        title: res.success ? 'Berhasil' : 'Gagal',
-        message: res.success
+      showAlert(
+        res.success ? 'Berhasil' : 'Gagal',
+        res.success
           ? 'Daerah berhasil ditambahkan'
           : res.error || 'Daerah gagal ditambahkan',
-        type: res.success ? 'success' : 'error',
-      });
+        res.success ? 'success' : 'error'
+      );
     }
 
     setCrudOpen(false);
     setEditTarget(null);
-    setAlertOpen(true);
   };
 
   // Handler Hapus
   const handleDelete = async () => {
     if (!confirmTarget) return;
     const res = await hapus(confirmTarget);
-    setAlertConfig({
-      title: res.success ? 'Berhasil' : 'Gagal',
-      message: res.success
+    showAlert(
+      res.success ? 'Berhasil' : 'Gagal',
+      res.success
         ? 'Daerah berhasil dihapus'
         : res.error || 'Daerah gagal dihapus',
-      type: res.success ? 'success' : 'error',
-    });
+      res.success ? 'success' : 'error'
+    );
     setConfirmOpen(false);
-    setAlertOpen(true);
   };
 
   const columns = [
@@ -122,7 +116,7 @@ const AdminKelolaDaerahView = () => {
       </div>
 
       {isLoading ? (
-        <p>⏳ Memuat data...</p>
+        <Loading mode='inline' text='Memuat data...' />
       ) : error ? (
         <p className='text-red-500'>{error}</p>
       ) : (
@@ -160,15 +154,6 @@ const AdminKelolaDaerahView = () => {
         confirmText='Hapus'
         cancelText='Batal'
         isLoading={isSubmitting}
-      />
-
-      {/* Alert Modal */}
-      <AlertModal
-        isOpen={alertOpen}
-        onClose={() => setAlertOpen(false)}
-        title={alertConfig.title}
-        message={alertConfig.message}
-        type={alertConfig.type}
       />
     </div>
   );

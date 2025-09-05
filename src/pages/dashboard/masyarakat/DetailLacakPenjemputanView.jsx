@@ -2,9 +2,8 @@
 import { FileText, Truck } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, Card } from '../../../components/elements';
+import { Button, Card, Loading } from '../../../components/elements';
 import {
-  AlertModal,
   ConfirmModal,
   ItemSampahCard,
   Timeline,
@@ -14,6 +13,7 @@ import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import useMasyarakat, {
   useMasyarakatDetail,
 } from '../../../hooks/useMasyarakat';
+import useToast from '../../../hooks/useToast';
 
 // Utility: format tanggal ke bahasa Indonesia
 const formatTanggalID = (tanggal) => {
@@ -64,6 +64,7 @@ const daftarLangkahStatus = [
 const DetailLacakPenjemputan = () => {
   useDocumentTitle('Detail Penjemputan');
   const { isDarkMode } = useDarkMode();
+  const { showAlert } = useToast(); // ✅ Add toast
   const { id_penjemputan } = useParams();
   const navigate = useNavigate();
 
@@ -73,7 +74,7 @@ const DetailLacakPenjemputan = () => {
   const { batalkan } = useMasyarakat();
 
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [alertOpen, setAlertOpen] = useState(false);
+  // ❌ Removed alertOpen state - using toast now
 
   // Helper untuk menentukan langkah aktif berdasarkan field waktu
   const getLangkahAktif = (penjemputan) => {
@@ -87,11 +88,7 @@ const DetailLacakPenjemputan = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className='p-6 text-center text-gray-500'>
-        Memuat detail penjemputan...
-      </div>
-    );
+    return <Loading mode='overlay' text='Memuat detail penjemputan...' />;
   }
 
   if (!detailPenjemputan?.penjemputan) {
@@ -257,21 +254,14 @@ const DetailLacakPenjemputan = () => {
           const success = await batalkan(p.id_penjemputan);
           if (success) {
             setConfirmOpen(false);
-            setAlertOpen(true);
+            showAlert(
+              'Berhasil',
+              'Penjemputan berhasil dibatalkan.',
+              'success'
+            );
+            setTimeout(() => navigate(-1), 1500); // Navigate after toast
           }
         }}
-      />
-
-      {/* Modal alert */}
-      <AlertModal
-        isOpen={alertOpen}
-        onClose={() => {
-          setAlertOpen(false);
-          navigate(-1);
-        }}
-        title='Penjemputan Dibatalkan'
-        message='Penjemputan berhasil dibatalkan.'
-        type='success'
       />
     </div>
   );

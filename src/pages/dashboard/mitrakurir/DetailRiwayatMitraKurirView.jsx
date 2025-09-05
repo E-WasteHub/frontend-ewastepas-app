@@ -1,7 +1,7 @@
 // src/views/kurir/DetailRiwayatMitraKurirView.jsx
 import { FileText, Truck } from 'lucide-react';
 import { useParams } from 'react-router-dom';
-import { Card } from '../../../components/elements';
+import { Card, Loading } from '../../../components/elements';
 import { ItemSampahCard, Timeline } from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
@@ -81,8 +81,7 @@ const DetailRiwayatMitraKurirView = () => {
     return 0;
   };
 
-  if (isLoading)
-    return <p className='p-6 text-center text-gray-500'>⏳ Memuat detail...</p>;
+  if (isLoading) return <Loading mode='overlay' text='Memuat detail...' />;
 
   if (!detailRiwayat?.penjemputan) {
     return (

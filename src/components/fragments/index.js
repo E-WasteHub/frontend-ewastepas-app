@@ -22,7 +22,7 @@ export { default as FileUploadMultiple } from './uploads/FileUploadMultiple';
 export { default as FileUploadSingle } from './uploads/FileUploadSingle';
 
 // Reusable Modals
-export { default as AlertModal } from './modals/AlertModal';
+export { default as AlertModal } from './modals/AlertModal'; // Stub for backward compatibility
 export { default as ConfirmModal } from './modals/ConfirmModal.jsx';
 export { default as PilihDropboxModal } from './modals/PilihDropboxModal.jsx';
 

@@ -1,7 +1,7 @@
 // src/views/masyarakat/RiwayatMasyarakatView.jsx
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Pagination } from '../../../components/elements';
+import { Card, Loading, Pagination } from '../../../components/elements';
 import {
   FilterCard,
   PenjemputanMasyarakatCard,
@@ -113,7 +113,7 @@ const RiwayatMasyarakatView = () => {
             </h3>
 
             {sedangMemuat ? (
-              <p className='text-gray-500 text-center'>⏳ Memuat data...</p>
+              <Loading mode='inline' text='Memuat data...' />
             ) : paginatedData.length === 0 ? (
               <p className='text-gray-500 text-center'>
                 📭 Belum ada riwayat penjemputan

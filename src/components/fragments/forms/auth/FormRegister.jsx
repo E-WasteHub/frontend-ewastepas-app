@@ -1,5 +1,4 @@
-// src/components/fragments/auth/FormRegister.jsx
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import useRegisterForm from '../../../../hooks/auth/useRegisterForm';
 import useDarkMode from '../../../../hooks/useDarkMode';
@@ -10,6 +9,9 @@ const FormRegister = () => {
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
+  // State untuk alert
+  const [alert, setAlert] = useState({ show: false, type: '', message: '' });
 
   const {
     form,
@@ -25,11 +27,39 @@ const FormRegister = () => {
     clearSuccess,
   } = useRegisterForm();
 
+  // Helper function untuk show alert
+  const showAlert = (type, message) => {
+    // Clear any existing alert first
+    setAlert({ show: false, type: '', message: '' });
+
+    // Show new alert after a brief delay to ensure state update
+    setTimeout(() => {
+      setAlert({ show: true, type, message });
+    }, 100);
+
+    // Clear alert after 6 seconds to allow time for redirect messages to be seen
+    setTimeout(() => setAlert({ show: false, type: '', message: '' }), 6000);
+  };
+
   /** 🔄 Reset pesan error/sukses saat halaman dibuka ulang */
   useEffect(() => {
     clearError();
     clearSuccess();
   }, [clearError, clearSuccess]);
+
+  /** 🔄 Show alert for errors */
+  useEffect(() => {
+    if (errorMessage) {
+      showAlert('error', errorMessage);
+    }
+  }, [errorMessage]);
+
+  /** 🔄 Show alert for success */
+  useEffect(() => {
+    if (successMessage) {
+      showAlert('success', successMessage);
+    }
+  }, [successMessage]);
 
   /** 🔄 Ambil peran dari query (?peran=masyarakat/mitra-kurir) */
   useEffect(() => {
@@ -51,11 +81,16 @@ const FormRegister = () => {
       // Simpan id pengguna ke localStorage (untuk verifikasi OTP nanti)
       localStorage.setItem('userId', res.data.id_pengguna);
 
+      showAlert(
+        'success',
+        'Akun berhasil dibuat. Mengarahkan ke halaman verifikasi OTP...'
+      );
+
       // Redirect ke halaman OTP setelah sukses
       setTimeout(() => {
         navigate('/verifikasi-otp');
         clearSuccess();
-      }, 2000);
+      }, 2500); // Increase timeout to 2.5 seconds so user can see the alert
     }
   };
 
@@ -82,17 +117,9 @@ const FormRegister = () => {
           className='mb-6'
         />
 
-        {/* 🔹 Alert (Error / Success) */}
-        {errorMessage && (
-          <Alert
-            type='error'
-            message={errorMessage}
-            className='my-3'
-            onClose={clearError}
-          />
-        )}
-        {successMessage && (
-          <Alert type='success' message={successMessage} className='my-3' />
+        {/* Alert */}
+        {alert.show && (
+          <Alert type={alert.type} message={alert.message} className='mb-4' />
         )}
 
         {/* 🔹 Form Register */}

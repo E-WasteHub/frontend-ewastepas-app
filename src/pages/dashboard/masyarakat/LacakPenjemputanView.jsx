@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Pagination } from '../../../components/elements';
+import { Card, Loading, Pagination } from '../../../components/elements';
 import {
   FilterCard,
   PenjemputanMasyarakatCard,
@@ -107,7 +107,7 @@ const LacakPenjemputanView = () => {
             </h3>
 
             {isLoading ? (
-              <p className='text-gray-500 text-center'>Memuat data...</p>
+              <Loading mode='inline' text='Memuat data...' />
             ) : currentData.length === 0 ? (
               <p className='text-gray-500 text-center'>Belum ada permintaan</p>
             ) : (

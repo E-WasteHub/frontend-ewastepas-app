@@ -1,15 +1,18 @@
 import { useState } from 'react';
-import { Button, Modal } from '../../../components/elements';
+import { Button, Loading, Modal } from '../../../components/elements';
 import { AdminTable } from '../../../components/fragments';
-import AlertModal from '../../../components/fragments/modals/AlertModal';
 import ConfirmModal from '../../../components/fragments/modals/ConfirmModal';
 import useAdminVerifikasi from '../../../hooks/useAdminVerifikasi';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
+import useToast from '../../../hooks/useToast';
 
 const AdminVerifikasiAkunView = () => {
   useDocumentTitle('Verifikasi Akun');
   const { data, isLoading, error, updateStatus, fetchDetail, isSubmitting } =
     useAdminVerifikasi();
+
+  // ✅ Toast hook
+  const { showAlert } = useToast();
 
   const [selectedUser, setSelectedUser] = useState(null);
 
@@ -21,14 +24,6 @@ const AdminVerifikasiAkunView = () => {
     title: '',
     message: '',
     confirmType: 'primary',
-  });
-
-  // Modal Alert
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertConfig, setAlertConfig] = useState({
-    title: '',
-    message: '',
-    type: 'info',
   });
 
   // Show detail dokumen
@@ -60,19 +55,18 @@ const AdminVerifikasiAkunView = () => {
     const res = await updateStatus(id_pengguna, status);
 
     if (res.success) {
-      setAlertConfig({
-        title: 'Berhasil',
-        message: `Akun berhasil diperbarui menjadi ${status}`,
-        type: 'success',
-      });
+      showAlert(
+        'Berhasil',
+        `Akun berhasil diperbarui menjadi ${status}`,
+        'success'
+      );
     } else {
-      setAlertConfig({
-        title: 'Gagal',
-        message: `Gagal memperbarui status akun: ${res.error || ''}`,
-        type: 'error',
-      });
+      showAlert(
+        'Gagal',
+        `Gagal memperbarui status akun: ${res.error || ''}`,
+        'error'
+      );
     }
-    setAlertOpen(true);
   };
 
   // Kolom tabel
@@ -124,7 +118,7 @@ const AdminVerifikasiAkunView = () => {
       <h1 className='text-2xl font-bold'>Verifikasi Akun</h1>
 
       {isLoading ? (
-        <p>⏳ Memuat data...</p>
+        <Loading mode='inline' text='Memuat data...' />
       ) : error ? (
         <p className='text-red-500'>{error}</p>
       ) : (
@@ -165,15 +159,6 @@ const AdminVerifikasiAkunView = () => {
         cancelText='Batal'
         confirmType={confirmConfig.confirmType}
         isLoading={isSubmitting}
-      />
-
-      {/* Alert Modal */}
-      <AlertModal
-        isOpen={alertOpen}
-        onClose={() => setAlertOpen(false)}
-        title={alertConfig.title}
-        message={alertConfig.message}
-        type={alertConfig.type}
       />
     </div>
   );

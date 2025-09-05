@@ -1,6 +1,7 @@
 // src/views/admin/transaksi/AdminTransaksiView.jsx
 import { useState } from 'react';
 import DataTable from 'react-data-table-component';
+import { Loading } from '../../../components/elements';
 import { AlertModal } from '../../../components/fragments';
 import useAdminMonitoring from '../../../hooks/useAdminMonitoring';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
@@ -17,7 +18,48 @@ const AdminTransaksiView = () => {
     fetchDetail,
   } = useAdminMonitoring(penjemputanService);
 
-  const [detailOpen, setDetailOpen] = useState(false);
+  // AlertModal state
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({
+    title: '',
+    message: '',
+    type: 'info',
+  });
+
+  const showDetailModal = async (id) => {
+    await fetchDetail(id);
+
+    // Wait a bit for the detail to load
+    setTimeout(() => {
+      if (detail && detail.penjemputan) {
+        const detailContent = `
+ID: ${detail.penjemputan.id_penjemputan}
+Kode: ${detail.penjemputan.kode_penjemputan}
+Alamat: ${detail.penjemputan.alamat_penjemputan}
+Status: ${detail.penjemputan.status_penjemputan}
+Total Poin: ${detail.penjemputan.poin_penjemputan}
+Catatan: ${detail.penjemputan.catatan || '-'}
+
+Waktu diterima: ${detail.penjemputan.waktu_diterima || '-'}
+Waktu dijemput: ${detail.penjemputan.waktu_dijemput || '-'}
+Waktu selesai: ${detail.penjemputan.waktu_selesai || '-'}
+
+${
+  detail.sampah
+    ? `Jumlah Sampah: ${detail.sampah.length} item`
+    : 'Tidak ada data sampah'
+}
+        `;
+
+        setAlertConfig({
+          title: 'Detail Transaksi',
+          message: detailContent,
+          type: 'info',
+        });
+        setAlertOpen(true);
+      }
+    }, 500);
+  };
 
   const columns = [
     { name: 'ID', selector: (row) => row.id_penjemputan, sortable: true },
@@ -30,10 +72,7 @@ const AdminTransaksiView = () => {
       name: 'Detail',
       cell: (row) => (
         <button
-          onClick={async () => {
-            await fetchDetail(row.id_penjemputan);
-            setDetailOpen(true);
-          }}
+          onClick={() => showDetailModal(row.id_penjemputan)}
           className='px-3 py-1 bg-blue-600 text-white rounded'
         >
           🔍 Lihat
@@ -47,7 +86,7 @@ const AdminTransaksiView = () => {
       <h1 className='text-2xl font-bold'>Monitoring Penjemputan</h1>
 
       {isLoading ? (
-        <p>⏳ Memuat data...</p>
+        <Loading mode='inline' text='Memuat data...' />
       ) : error ? (
         <p className='text-red-500'>{error}</p>
       ) : (
@@ -61,116 +100,14 @@ const AdminTransaksiView = () => {
         />
       )}
 
-      {/* Modal Detail */}
-      {detailOpen && detail && detail.penjemputan && (
-        <AlertModal
-          isOpen={detailOpen}
-          onClose={() => setDetailOpen(false)}
-          title='Detail Transaksi'
-          type='info'
-          message={
-            <div className='space-y-3 text-sm'>
-              {/* Data Penjemputan */}
-              <p>
-                <b>ID:</b> {detail.penjemputan.id_penjemputan}
-              </p>
-              <p>
-                <b>Kode:</b> {detail.penjemputan.kode_penjemputan}
-              </p>
-              <p>
-                <b>Alamat:</b> {detail.penjemputan.alamat_penjemputan}
-              </p>
-              <p>
-                <b>Status:</b> {detail.penjemputan.status_penjemputan}
-              </p>
-              <p>
-                <b>Total Poin:</b> {detail.penjemputan.poin_penjemputan}
-              </p>
-              <p>
-                <b>Catatan:</b> {detail.penjemputan.catatan || '-'}
-              </p>
-
-              {/* Waktu */}
-              <div className='border-t pt-2'>
-                <p>
-                  <b>Waktu diterima:</b>{' '}
-                  {detail.penjemputan.waktu_diterima || '-'}
-                </p>
-                <p>
-                  <b>Waktu dijemput:</b>{' '}
-                  {detail.penjemputan.waktu_dijemput || '-'}
-                </p>
-                <p>
-                  <b>Waktu selesai:</b>{' '}
-                  {detail.penjemputan.waktu_selesai || '-'}
-                </p>
-                <p>
-                  <b>Waktu dibatalkan:</b>{' '}
-                  {detail.penjemputan.waktu_dibatalkan || '-'}
-                </p>
-                <p>
-                  <b>Waktu ditambah:</b>{' '}
-                  {detail.penjemputan.waktu_ditambah || '-'}
-                </p>
-                <p>
-                  <b>Waktu diubah:</b> {detail.penjemputan.waktu_diubah || '-'}
-                </p>
-              </div>
-
-              {/* Relasi ID */}
-              <div className='border-t pt-2'>
-                <p>
-                  <b>Masyarakat:</b> {detail.penjemputan.nama_masyarakat}
-                </p>
-                <p>
-                  <b>Kurir:</b> {detail.penjemputan.nama_kurir}
-                </p>
-                <p>
-                  <b>Dropbox:</b> {detail.penjemputan.nama_dropbox}
-                </p>
-                <p>
-                  <b>Waktu Operasional:</b>{' '}
-                  {detail.penjemputan.waktu_operasional}
-                </p>
-              </div>
-
-              {/* Sampah */}
-              {detail.sampah && detail.sampah.length > 0 && (
-                <div className='border-t pt-2'>
-                  <h3 className='font-semibold'>Daftar Sampah</h3>
-                  <ul className='list-disc ml-5 mt-2 space-y-2'>
-                    {detail.sampah.map((s) => (
-                      <li key={s.id_sampah}>
-                        <p>
-                          Nama Kategori:
-                          <b> {s.nama_kategori}</b>
-                        </p>
-                        <p>
-                          Nama Jenis:
-                          <b>{s.nama_jenis}</b>
-                        </p>
-                        <p>
-                          Jumlah: {s.jumlah_sampah} unit | Poin: {s.poin_sampah}
-                        </p>
-                        <p>Catatan: {s.catatan_sampah || '-'}</p>
-                        {s.gambar && (
-                          <div className='mt-1'>
-                            <img
-                              src={s.gambar}
-                              alt='Sampah'
-                              className='w-32 h-32 object-cover rounded border'
-                            />
-                          </div>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          }
-        />
-      )}
+      {/* Alert Modal */}
+      <AlertModal
+        isOpen={alertOpen}
+        onClose={() => setAlertOpen(false)}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+      />
     </div>
   );
 };

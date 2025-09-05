@@ -2,6 +2,7 @@
 import { ArrowLeft, BookOpen } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { Loading } from '../components/elements';
 import MainLayout from '../components/layouts/MainLayout';
 import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
@@ -36,7 +37,7 @@ const EdukasiDetailView = () => {
   }, [id]);
 
   if (isLoading) {
-    return <p className='text-center py-10'>Loading artikel...</p>;
+    return <Loading mode='overlay' text='Loading artikel...' />;
   }
 
   if (error) {

@@ -1,5 +1,6 @@
 import { Plus, X } from 'lucide-react';
 import { useState } from 'react';
+import useDarkMode from '../../../hooks/useDarkMode';
 import { FileUpload, Modal } from '../../elements';
 
 const FileUploadMultiple = ({
@@ -9,6 +10,7 @@ const FileUploadMultiple = ({
   accept,
 }) => {
   const [previewFile, setPreviewFile] = useState(null);
+  const { isDarkMode } = useDarkMode();
 
   const handleRemove = (index) => {
     onFilesChange(files.filter((_, i) => i !== index));
@@ -22,7 +24,9 @@ const FileUploadMultiple = ({
           <button
             type='button'
             onClick={() => document.getElementById('multi-upload-btn').click()}
-            className='flex items-center gap-2 px-4 py-1.5 text-sm rounded-md border border-dashed border-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700'
+            className={`flex items-center gap-2 px-4 py-1.5 text-sm rounded-md border border-dashed border-gray-400 ${
+              isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-gray-100'
+            }`}
           >
             <Plus className='w-4 h-4' /> Tambah Foto
           </button>

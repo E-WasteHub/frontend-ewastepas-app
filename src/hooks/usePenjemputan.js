@@ -1,6 +1,7 @@
 // src/hooks/usePenjemputan.js
 import { useEffect, useRef, useState } from 'react';
 import * as penjemputanService from '../services/penjemputanService';
+import useToast from './useToast';
 
 const usePenjemputan = ({ showAlert }) => {
   // master data
@@ -27,6 +28,10 @@ const usePenjemputan = ({ showAlert }) => {
   // file ref
   const fileInputRef = useRef(null);
 
+  // ✅ Toast hook untuk mengganti alert jika tidak ada showAlert dari parent
+  const toast = useToast();
+  const alertFunction = showAlert || toast.showAlert;
+
   // fetch kategori & waktu
   useEffect(() => {
     let isMounted = true;
@@ -38,13 +43,13 @@ const usePenjemputan = ({ showAlert }) => {
         setWaktuOperasional(res?.data?.waktu_operasional || []);
       } catch (err) {
         console.error('❌ Gagal fetch awal:', err);
-        showAlert?.('Error', 'Gagal memuat data awal', 'error');
+        alertFunction('Error', 'Gagal memuat data awal', 'error');
       }
     })();
     return () => {
       isMounted = false;
     };
-  }, [showAlert]);
+  }, [alertFunction]);
 
   // fetch jenis saat kategori berubah
   useEffect(() => {
@@ -57,10 +62,10 @@ const usePenjemputan = ({ showAlert }) => {
         setJenisData(res?.data?.jenis || []);
       } catch (err) {
         console.error('❌ Gagal fetch jenis:', err);
-        showAlert?.('Error', 'Gagal memuat jenis sampah', 'error');
+        alertFunction('Error', 'Gagal memuat jenis sampah', 'error');
       }
     })();
-  }, [tempSampah.id_kategori, showAlert]);
+  }, [tempSampah.id_kategori, alertFunction]);
 
   // tambah sampah
   const handleTambahSampah = () => {
@@ -69,7 +74,7 @@ const usePenjemputan = ({ showAlert }) => {
       !tempSampah.id_jenis ||
       !tempSampah.jumlah_sampah
     ) {
-      showAlert?.(
+      alertFunction(
         'Peringatan',
         'Lengkapi data sampah terlebih dahulu',
         'warning'
@@ -98,7 +103,7 @@ const usePenjemputan = ({ showAlert }) => {
     };
 
     setDaftarSampah((prev) => [...prev, newSampah]);
-    showAlert?.('Berhasil', 'Sampah ditambahkan.', 'success');
+    alertFunction('Berhasil', 'Sampah ditambahkan.', 'success');
 
     setTempSampah({
       id_kategori: '',

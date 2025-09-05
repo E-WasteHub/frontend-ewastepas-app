@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import DataTable from 'react-data-table-component';
+import { Loading } from '../../../components/elements';
 import {
   AlertModal,
   ConfirmModal,
@@ -27,12 +28,12 @@ const AdminKelolaKategoriView = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState(null);
 
-  // State Alert
+  // AlertModal state
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertConfig, setAlertConfig] = useState({
     title: '',
     message: '',
-    type: 'info',
+    type: 'success',
   });
 
   // Handler Tambah/Edit
@@ -45,12 +46,14 @@ const AdminKelolaKategoriView = () => {
           message: 'Kategori berhasil diperbarui',
           type: 'success',
         });
+        setAlertOpen(true);
       } else {
         setAlertConfig({
           title: 'Gagal',
           message: res.error || 'Kategori gagal diperbarui',
           type: 'error',
         });
+        setAlertOpen(true);
       }
     } else {
       const res = await tambah(formValues);
@@ -60,18 +63,19 @@ const AdminKelolaKategoriView = () => {
           message: 'Kategori berhasil ditambahkan',
           type: 'success',
         });
+        setAlertOpen(true);
       } else {
         setAlertConfig({
           title: 'Gagal',
           message: res.error || 'Kategori gagal ditambahkan',
           type: 'error',
         });
+        setAlertOpen(true);
       }
     }
 
     setCrudOpen(false);
     setEditTarget(null);
-    setAlertOpen(true);
   };
 
   // Handler Hapus
@@ -84,15 +88,16 @@ const AdminKelolaKategoriView = () => {
         message: 'Kategori berhasil dihapus',
         type: 'success',
       });
+      setAlertOpen(true);
     } else {
       setAlertConfig({
         title: 'Gagal',
         message: res.error || 'Kategori gagal dihapus',
         type: 'error',
       });
+      setAlertOpen(true);
     }
     setConfirmOpen(false);
-    setAlertOpen(true);
   };
 
   // Kolom DataTable
@@ -145,7 +150,7 @@ const AdminKelolaKategoriView = () => {
       </div>
 
       {isLoading ? (
-        <p>⏳ Memuat data...</p>
+        <Loading mode='inline' text='Memuat data...' />
       ) : error ? (
         <p className='text-red-500'>{error}</p>
       ) : (

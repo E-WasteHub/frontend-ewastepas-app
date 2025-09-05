@@ -1,4 +1,3 @@
-// src/components/fragments/forms/FormLogin.jsx
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useLoginForm from '../../../../hooks/auth/useLoginForm';
@@ -13,6 +12,9 @@ const FormLogin = () => {
   const navigate = useNavigate();
   const { setPengguna } = usePengguna();
 
+  // State untuk alert
+  const [alert, setAlert] = useState({ show: false, type: '', message: '' });
+
   const {
     email,
     kata_sandi,
@@ -24,7 +26,19 @@ const FormLogin = () => {
     handleLoginSubmit,
   } = useLoginForm();
 
-  const [successMessage, setSuccessMessage] = useState('');
+  // Helper function untuk show alert
+  const showAlert = (type, message) => {
+    // Clear any existing alert first
+    setAlert({ show: false, type: '', message: '' });
+
+    // Show new alert after a brief delay to ensure state update
+    setTimeout(() => {
+      setAlert({ show: true, type, message });
+    }, 100);
+
+    // Clear alert after 6 seconds to allow time for redirect messages to be seen
+    setTimeout(() => setAlert({ show: false, type: '', message: '' }), 6000);
+  };
 
   // Submit handler
   const onSubmit = async (e) => {
@@ -36,7 +50,8 @@ const FormLogin = () => {
 
       if (peran === 'Admin') {
         // 🚫 Jangan auto redirect ke dashboard
-        setSuccessMessage(
+        showAlert(
+          'info',
           'Login berhasil! Silakan cek email Anda dan klik link verifikasi admin untuk melanjutkan.'
         );
         // Optional → kalau backend juga return OTP, kamu bisa langsung navigate:
@@ -45,17 +60,29 @@ const FormLogin = () => {
       }
 
       // ✅ Non-admin langsung ke dashboard
+      showAlert(
+        'success',
+        `Selamat datang! Mengarahkan ke dashboard ${peran}...`
+      );
       setPengguna(res.data);
-      navigate(getDashboardPathByPeran(peran), { replace: true });
+
+      setTimeout(() => {
+        navigate(getDashboardPathByPeran(peran), { replace: true });
+      }, 2500); // Increase timeout to 2.5 seconds so user can see the alert
     }
 
     // Kalau backend hanya kirim message (tanpa data user)
     else if (res?.message) {
-      setSuccessMessage(res.message);
+      showAlert('info', res.message);
     }
   };
 
-  useEffect(() => () => setSuccessMessage(''), []);
+  useEffect(() => {
+    // Show error alert when error changes
+    if (error) {
+      showAlert('error', error);
+    }
+  }, [error]);
 
   return (
     <div className='w-full max-w-md mx-auto'>
@@ -73,10 +100,9 @@ const FormLogin = () => {
           className='mb-6'
         />
 
-        {/* Alerts */}
-        {error && <Alert type='error' message={error} className='my-3' />}
-        {successMessage && (
-          <Alert type='success' message={successMessage} className='my-3' />
+        {/* Alert */}
+        {alert.show && (
+          <Alert type={alert.type} message={alert.message} className='mb-4' />
         )}
 
         <form onSubmit={onSubmit} className='space-y-4'>

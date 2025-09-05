@@ -1,7 +1,8 @@
 // src/pages/masyarakat/PermintaanPenjemputanView.jsx
 import { useRef, useState } from 'react';
-import { AlertModal, FormPenjemputan } from '../../../components/fragments';
+import { FormPenjemputan } from '../../../components/fragments';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
+import useToast from '../../../hooks/useToast';
 import { buatPenjemputan } from '../../../services/penjemputanService';
 
 const PermintaanPenjemputanView = () => {
@@ -9,6 +10,9 @@ const PermintaanPenjemputanView = () => {
 
   // 🔹 ref untuk memanggil reset dari child
   const formRef = useRef(null);
+
+  // 🔹 toast hook
+  const { showAlert } = useToast();
 
   // 🔹 state utama untuk form
   const [formData, setFormData] = useState({
@@ -19,20 +23,6 @@ const PermintaanPenjemputanView = () => {
 
   // 🔹 state loading submit
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // 🔹 state alert modal
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertConfig, setAlertConfig] = useState({
-    title: '',
-    message: '',
-    type: 'info',
-  });
-
-  // show alert reusable
-  const showAlert = (title, message, type = 'info') => {
-    setAlertConfig({ title, message, type });
-    setAlertOpen(true);
-  };
 
   // handle input formData
   const handleInputChange = (field, value) => {
@@ -108,25 +98,15 @@ const PermintaanPenjemputanView = () => {
   };
 
   return (
-    <>
-      <FormPenjemputan
-        ref={formRef}
-        formData={formData}
-        onInputChange={handleInputChange}
-        isSubmitting={isSubmitting}
-        showAlert={showAlert}
-        onSubmit={handleSubmit}
-        onReset={handleReset}
-      />
-
-      <AlertModal
-        isOpen={alertOpen}
-        onClose={() => setAlertOpen(false)}
-        title={alertConfig.title}
-        message={alertConfig.message}
-        type={alertConfig.type}
-      />
-    </>
+    <FormPenjemputan
+      ref={formRef}
+      formData={formData}
+      onInputChange={handleInputChange}
+      isSubmitting={isSubmitting}
+      showAlert={showAlert}
+      onSubmit={handleSubmit}
+      onReset={handleReset}
+    />
   );
 };
 

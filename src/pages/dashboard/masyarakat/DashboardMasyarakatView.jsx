@@ -1,6 +1,6 @@
 import { Gift, Truck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Card, SapaanDashboard } from '../../../components/elements';
+import { Card, Loading, SapaanDashboard } from '../../../components/elements';
 import {
   PenjemputanMasyarakatCard,
   StatCard,
@@ -79,7 +79,7 @@ const DashboardMasyarakatView = () => {
           </div>
 
           {loading ? (
-            <p className='text-center text-gray-400'>⏳ Memuat data...</p>
+            <Loading mode='inline' text='Memuat data...' />
           ) : data.length > 0 ? (
             <div className='grid gap-4'>
               {data.slice(0, 3).map((req) => (

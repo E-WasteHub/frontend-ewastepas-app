@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import DataTable from 'react-data-table-component';
-import {
-  AlertModal,
-  ConfirmModal,
-  JenisCrudModal,
-} from '../../../components/fragments';
+import { Loading } from '../../../components/elements';
+import { ConfirmModal, JenisCrudModal } from '../../../components/fragments';
 import useAdminCrud from '../../../hooks/useAdminCrud';
+import useToast from '../../../hooks/useToast';
 import * as jenisService from '../../../services/jenisService';
 
 const AdminKelolaJenisView = () => {
@@ -19,6 +17,8 @@ const AdminKelolaJenisView = () => {
     isSubmitting,
   } = useAdminCrud(jenisService);
 
+  const { showAlert } = useToast();
+
   // State Modal CRUD
   const [crudOpen, setCrudOpen] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
@@ -27,51 +27,30 @@ const AdminKelolaJenisView = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState(null);
 
-  // State Alert
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertConfig, setAlertConfig] = useState({
-    title: '',
-    message: '',
-    type: 'info',
-  });
-
   // Handler Tambah/Edit
   const handleCrudSubmit = async (formValues) => {
     if (editTarget) {
       const res = await ubah(editTarget.id_jenis, formValues);
-      if (res.success) {
-        setAlertConfig({
-          title: 'Berhasil',
-          message: 'Jenis sampah berhasil diperbarui',
-          type: 'success',
-        });
-      } else {
-        setAlertConfig({
-          title: 'Gagal',
-          message: res.error || 'Jenis sampah gagal diperbarui',
-          type: 'error',
-        });
-      }
+      showAlert(
+        res.success ? 'Berhasil' : 'Gagal',
+        res.success
+          ? 'Jenis sampah berhasil diperbarui'
+          : res.error || 'Jenis sampah gagal diperbarui',
+        res.success ? 'success' : 'error'
+      );
     } else {
       const res = await tambah(formValues);
-      if (res.success) {
-        setAlertConfig({
-          title: 'Berhasil',
-          message: 'Jenis sampah berhasil ditambahkan',
-          type: 'success',
-        });
-      } else {
-        setAlertConfig({
-          title: 'Gagal',
-          message: res.error || 'Jenis sampah gagal ditambahkan',
-          type: 'error',
-        });
-      }
+      showAlert(
+        res.success ? 'Berhasil' : 'Gagal',
+        res.success
+          ? 'Jenis sampah berhasil ditambahkan'
+          : res.error || 'Jenis sampah gagal ditambahkan',
+        res.success ? 'success' : 'error'
+      );
     }
 
     setCrudOpen(false);
     setEditTarget(null);
-    setAlertOpen(true);
   };
 
   // Handler Hapus
@@ -80,21 +59,14 @@ const AdminKelolaJenisView = () => {
     if (!confirmTarget) return;
 
     const res = await hapus(confirmTarget);
-    if (res.success) {
-      setAlertConfig({
-        title: 'Berhasil',
-        message: 'Jenis sampah berhasil dihapus',
-        type: 'success',
-      });
-    } else {
-      setAlertConfig({
-        title: 'Gagal',
-        message: res.error || 'Jenis sampah gagal dihapus',
-        type: 'error',
-      });
-    }
+    showAlert(
+      res.success ? 'Berhasil' : 'Gagal',
+      res.success
+        ? 'Jenis sampah berhasil dihapus'
+        : res.error || 'Jenis sampah gagal dihapus',
+      res.success ? 'success' : 'error'
+    );
     setConfirmOpen(false);
-    setAlertOpen(true);
   };
 
   // Kolom DataTable
@@ -156,7 +128,7 @@ const AdminKelolaJenisView = () => {
       </div>
 
       {isLoading ? (
-        <p>⏳ Memuat data...</p>
+        <Loading mode='inline' text='Memuat data...' />
       ) : error ? (
         <p className='text-red-500'>{error}</p>
       ) : (
@@ -194,15 +166,6 @@ const AdminKelolaJenisView = () => {
         confirmText='Hapus'
         cancelText='Batal'
         isLoading={isSubmitting}
-      />
-
-      {/* Alert Modal */}
-      <AlertModal
-        isOpen={alertOpen}
-        onClose={() => setAlertOpen(false)}
-        title={alertConfig.title}
-        message={alertConfig.message}
-        type={alertConfig.type}
       />
     </div>
   );
