@@ -138,7 +138,8 @@ export const useMitraKurir = () => {
     try {
       setIsSubmitting(true);
       await batalPenjemputan(id_penjemputan, {
-        status_penjemputan: 'Dibatalkan',
+        status_penjemputan: 'Diproses',
+        id_kurir: null,
         waktu_dibatalkan: new Date().toISOString(),
       });
       await fetchData();

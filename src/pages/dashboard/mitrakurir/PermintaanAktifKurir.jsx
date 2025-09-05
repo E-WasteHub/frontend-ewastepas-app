@@ -337,10 +337,38 @@ const PermintaanAktifKurir = () => {
       <ConfirmModal
         isOpen={confirmOpen}
         title='Batalkan Penjemputan'
-        message='Apakah Anda yakin ingin membatalkan penjemputan ini?'
+        message='Apakah Anda yakin ingin melepaskan penjemputan ini?'
         onClose={() => setConfirmOpen(false)}
-        onConfirm={() => batalkanPermintaan(p.id_penjemputan)}
+        onConfirm={async () => {
+          const res = await batalkanPermintaan(p.id_penjemputan);
+          setConfirmOpen(false);
+          if (res.success) {
+            setAlert({
+              open: true,
+              type: 'success',
+              message:
+                '✅ Penjemputan dilepaskan, kembali ke daftar permintaan!',
+            });
+          } else {
+            setAlert({
+              open: true,
+              type: 'error',
+              message: res.error || '❌ Gagal melepaskan penjemputan',
+            });
+          }
+        }}
       />
+
+      {/* Alert Modal */}
+      {alert.open && (
+        <AlertModal
+          isOpen={alert.open}
+          onClose={() => setAlert({ open: false, type: '', message: '' })}
+          type={alert.type}
+          title={alert.type === 'success' ? 'Berhasil' : 'Gagal'}
+          message={alert.message}
+        />
+      )}
     </div>
   );
 };

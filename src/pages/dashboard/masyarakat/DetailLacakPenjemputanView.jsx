@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, Card } from '../../../components/elements';
 import {
+  AlertModal,
   ConfirmModal,
   ItemSampahCard,
   Timeline,
@@ -72,6 +73,7 @@ const DetailLacakPenjemputan = () => {
   const { batalkan } = useMasyarakat();
 
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
 
   // Helper untuk menentukan langkah aktif berdasarkan field waktu
   const getLangkahAktif = (penjemputan) => {
@@ -232,7 +234,7 @@ const DetailLacakPenjemputan = () => {
         </div>
 
         {/* Tombol batal */}
-        {langkahAktif >= 0 && langkahAktif < 3 && (
+        {langkahAktif >= 0 && langkahAktif < 2 && (
           <div className='flex justify-end mt-4'>
             <Button
               type='button'
@@ -255,9 +257,21 @@ const DetailLacakPenjemputan = () => {
           const success = await batalkan(p.id_penjemputan);
           if (success) {
             setConfirmOpen(false);
-            navigate(-1);
+            setAlertOpen(true);
           }
         }}
+      />
+
+      {/* Modal alert */}
+      <AlertModal
+        isOpen={alertOpen}
+        onClose={() => {
+          setAlertOpen(false);
+          navigate(-1);
+        }}
+        title='Penjemputan Dibatalkan'
+        message='Penjemputan berhasil dibatalkan.'
+        type='success'
       />
     </div>
   );

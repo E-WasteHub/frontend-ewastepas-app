@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { ambilSemuaDaerah } from '../../../services/daerahService';
 import { ambilSemuaDropbox } from '../../../services/dropboxService';
-import { Button } from '../../elements';
+import { Button, Select } from '../../elements';
 
 const PilihDropboxModal = ({ isOpen, onClose, onSelect }) => {
   const [daerahList, setDaerahList] = useState([]);
   const [dropboxList, setDropboxList] = useState([]);
   const [selectedDaerah, setSelectedDaerah] = useState('');
+  const [selectedDropbox, setSelectedDropbox] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,7 +16,6 @@ const PilihDropboxModal = ({ isOpen, onClose, onSelect }) => {
 
       Promise.all([ambilSemuaDaerah(), ambilSemuaDropbox()])
         .then(([daerahRes, dropboxRes]) => {
-          // pastikan hasilnya array
           const daerahData = Array.isArray(daerahRes?.data)
             ? daerahRes.data
             : daerahRes?.data?.daerah || daerahRes || [];
@@ -23,9 +23,6 @@ const PilihDropboxModal = ({ isOpen, onClose, onSelect }) => {
           const dropboxData = Array.isArray(dropboxRes?.data)
             ? dropboxRes.data
             : dropboxRes?.data?.dropbox || dropboxRes || [];
-
-          console.log('📥 Daerah Response:', daerahRes);
-          console.log('📥 Dropbox Response:', dropboxRes);
 
           setDaerahList(daerahData);
           setDropboxList(dropboxData);
@@ -54,47 +51,42 @@ const PilihDropboxModal = ({ isOpen, onClose, onSelect }) => {
           <p className='text-sm text-gray-500'>⏳ Memuat data...</p>
         ) : (
           <>
-            {/* Dropdown pilih daerah */}
-            <select
-              className='w-full mb-4 border rounded p-2 text-sm dark:bg-slate-700 dark:text-white'
+            {/* Select Daerah */}
+            <Select
+              label='Pilih Daerah'
               value={selectedDaerah}
-              onChange={(e) => setSelectedDaerah(e.target.value)}
-            >
-              <option value=''>-- Pilih Daerah --</option>
-              {daerahList.map((d) => (
-                <option key={d.id_daerah} value={d.id_daerah}>
-                  {d.nama_daerah}
-                </option>
-              ))}
-            </select>
+              onChange={(value) => {
+                setSelectedDaerah(value);
+                setSelectedDropbox('');
+              }}
+              placeholder='Pilih Daerah'
+              options={daerahList.map((d) => ({
+                value: d.id_daerah,
+                label: d.nama_daerah,
+              }))}
+            />
 
-            {/* List dropbox sesuai daerah */}
-            {selectedDaerah && dropboxFiltered.length > 0 ? (
-              <ul className='space-y-2'>
-                {dropboxFiltered.map((db) => (
-                  <li
-                    key={db.id_dropbox}
-                    className='flex justify-between items-center border-b pb-2'
-                  >
-                    <span>
-                      {db.nama_dropbox} - {db.alamat}
-                    </span>
-                    <Button
-                      type='button'
-                      className='bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-xs'
-                      onClick={() => onSelect(db.id_dropbox)}
-                    >
-                      Pilih
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className='text-sm text-gray-500'>
-                {selectedDaerah
-                  ? 'Tidak ada dropbox di daerah ini.'
-                  : 'Pilih daerah terlebih dahulu.'}
-              </p>
+            {/* Select Dropbox */}
+            {selectedDaerah && (
+              <Select
+                className='mt-4'
+                label='Pilih Dropbox'
+                value={selectedDropbox}
+                onChange={(value) => {
+                  setSelectedDropbox(value);
+                  onSelect?.(value);
+                }}
+                placeholder={
+                  dropboxFiltered.length > 0
+                    ? 'Pilih Dropbox'
+                    : 'Tidak ada dropbox di daerah ini'
+                }
+                disabled={dropboxFiltered.length === 0}
+                options={dropboxFiltered.map((db) => ({
+                  value: db.id_dropbox,
+                  label: `${db.nama_dropbox} - ${db.latitude}, ${db.longitude}`,
+                }))}
+              />
             )}
           </>
         )}

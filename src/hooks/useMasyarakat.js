@@ -32,16 +32,18 @@ const useMasyarakat = () => {
   // ===== END DashboardMasyarakat =======
 
   // ===== RiwayatMasyarakat & DashboardMasyarakat =======
-  const batalkan = async (id) => {
+  const batalkan = async (id_penjemputan) => {
     try {
-      await batalPenjemputan(id, {
-        status: 'Dibatalkan',
+      await batalPenjemputan(id_penjemputan, {
+        status_penjemputan: 'Dibatalkan',
         waktu_dibatalkan: new Date().toISOString(),
       });
       await fetchData();
+      return true; // ⬅️ penting
     } catch (err) {
       console.error('❌ Gagal batalkan penjemputan:', err);
       setError('Gagal membatalkan penjemputan');
+      return false; // ⬅️ penting
     }
   };
   // ===== END RiwayatMasyarakat & DashboardMasyarakat =======
