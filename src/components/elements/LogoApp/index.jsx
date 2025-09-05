@@ -27,7 +27,7 @@ const LogoApp = ({ size = 'md', withText = false }) => {
         {!imgError ? (
           <img
             src={logoSrc}
-            alt='E-WasteHub Logo'
+            alt='EWasteHub Logo'
             className={`${currentSize.icon} object-contain`}
             onError={() => setImgError(true)}
           />

@@ -33,7 +33,7 @@ export const ambilDaftarPenjemputan = async () => {
 // Ambil detail penjemputan + pelacakan
 export const ambilDetailPenjemputan = async (id_penjemputan) => {
   try {
-    const response = await api.get(`/penjemputan/${id_penjemputan}/pelacakan`);
+    const response = await api.get(`/penjemputan/${id_penjemputan}`);
     console.log('Detail penjemputan response:', response);
     return response.data;
   } catch (error) {

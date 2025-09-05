@@ -120,31 +120,65 @@ const DetailRiwayatMitraKurirView = () => {
       >
         {/* Informasi Penjemputan */}
         <section className='mb-4'>
-          <h3 className='text-2xl font-bold mb-3'>📋 Informasi Penjemputan</h3>
-          <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm'>
-            <p>
-              <b>Kode:</b> {p.kode_penjemputan}
-            </p>
-            <p>
-              <b>Tanggal:</b> {formatTanggalID(p.waktu_ditambah)}
-            </p>
-            <p>
-              <b>Alamat:</b> {p.alamat_penjemputan}
-            </p>
-            <p>
-              <b>Nama Masyarakat:</b> {p.nama_masyarakat}
-            </p>
-            <p>
-              <b>Dropbox:</b> {p.nama_dropbox || '-'}
-            </p>
-            <p>
-              <b>Waktu Operasional:</b> {p.waktu_operasional || '-'}
-            </p>
-            {p.catatan && (
-              <p className='sm:col-span-2 italic text-gray-500'>
-                <b>Catatan:</b> {p.catatan}
-              </p>
-            )}
+          <h3 className='text-2xl font-bold mb-3'>Informasi Penjemputan</h3>
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm'>
+            <div>
+              <span className='text-xs font-semibold text-gray-400'>
+                Kode Penjemputan : {''}
+              </span>
+              <span className='block'>{p.kode_penjemputan}</span>
+            </div>
+            <div>
+              <span className='text-xs font-semibold text-gray-400'>
+                Tanggal Dibuat : {''}
+              </span>
+              <span className='block'>{formatTanggalID(p.waktu_ditambah)}</span>
+            </div>
+            <div>
+              <span className='text-xs font-semibold text-gray-400'>
+                Alamat Penjemputan : {''}
+              </span>
+              <span className='block'>{p.alamat_penjemputan}</span>
+            </div>
+            <div>
+              <span className='text-xs font-semibold text-gray-400'>
+                Nama Masyarakat : {''}
+              </span>
+              <span className='block'>
+                {p.nama_masyarakat || 'Belum ditentukan'}
+              </span>
+            </div>
+            <div>
+              <span className='text-xs font-semibold text-gray-400'>
+                Waktu Operasional : {''}
+              </span>
+              <span className='block'>{p.waktu_operasional || '-'}</span>
+            </div>
+            <div>
+              {p.catatan && (
+                <div className='sm:col-span-2'>
+                  <span className='text-xs font-semibold text-gray-400'>
+                    Catatan Masyarakat : {''}
+                  </span>
+                  <span className='block italic'>{p.catatan}</span>
+                </div>
+              )}
+            </div>
+            <div>
+              {/* Dropbox */}
+              <span className='text-xs font-semibold text-gray-400'>
+                Dropbox Tujuan : {''}
+              </span>
+              <div className='mt-1'>
+                {p.nama_dropbox ? (
+                  <div className='text-sm'>
+                    <p className='font-medium'>{p.nama_dropbox}</p>
+                  </div>
+                ) : (
+                  <p className='text-sm text-gray-500'>-</p>
+                )}
+              </div>
+            </div>
           </div>
         </section>
 
@@ -187,7 +221,7 @@ const DetailRiwayatMitraKurirView = () => {
               </div>
             ) : (
               <p className='text-sm text-gray-500 text-center'>
-                📭 Tidak ada data sampah
+                Tidak ada data sampah
               </p>
             )}
           </section>

@@ -96,18 +96,18 @@ const useMasyarakat = () => {
 };
 
 // ===== LacakPenjemputan & DetailRiwayatMasyarakat =======
-export const useMasyarakatDetail = (id) => {
+export const useMasyarakatDetail = (id_penjemputan) => {
   const [detail, setDetail] = useState(null);
-  const [isLoading, setIsLoading] = useState(!!id);
+  const [isLoading, setIsLoading] = useState(!!id_penjemputan);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!id) return;
+    if (!id_penjemputan) return;
     (async () => {
       try {
         setIsLoading(true);
         setError('');
-        const res = await ambilDetailPenjemputan(id);
+        const res = await ambilDetailPenjemputan(id_penjemputan);
         console.log('📦 Detail penjemputan:', res.data);
         setDetail(res.data);
       } catch (err) {
@@ -118,7 +118,7 @@ export const useMasyarakatDetail = (id) => {
         setIsLoading(false);
       }
     })();
-  }, [id]);
+  }, [id_penjemputan]);
 
   return { detail, isLoading, error };
 };

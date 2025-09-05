@@ -130,60 +130,62 @@ const DetailLacakPenjemputan = () => {
         {/* Info penjemputan */}
         <section className='mb-4'>
           <h3 className='text-2xl font-bold mb-3'>Informasi Penjemputan</h3>
-          <div className='grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm'>
-            {/* Kolom kiri */}
-            <div className='flex flex-col gap-4'>
-              <div>
-                <span className='text-xs font-semibold text-gray-400'>
-                  Kode Penjemputan : {''}
-                </span>
-                <span className='text-sm font-medium'>
-                  {p.kode_penjemputan}
-                </span>
-              </div>
-              <div>
-                <span className='text-xs font-semibold text-gray-400'>
-                  Tanggal Dibuat : {''}
-                </span>
-                <span className='text-sm font-medium'>
-                  {formatTanggalID(p.waktu_ditambah)}
-                </span>
-              </div>
-              <div>
-                <span className='text-xs font-semibold text-gray-400'>
-                  Alamat Penjemputan: {''}
-                </span>
-                <span className='text-sm font-medium'>
-                  {p.alamat_penjemputan}
-                </span>
-              </div>
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm'>
+            <div>
+              <span className='text-xs font-semibold text-gray-400'>
+                Kode Penjemputan : {''}
+              </span>
+              <span className='block'>{p.kode_penjemputan}</span>
             </div>
-
-            {/* Kolom kanan */}
-            <div className='flex flex-col gap-4'>
-              <div>
-                <span className='text-xs font-semibold text-gray-400'>
-                  Nama Kurir : {''}
-                </span>
-                <span className='text-sm font-medium'>
-                  {p.nama_kurir || 'Belum ditentukan'}
-                </span>
-              </div>
-              <div>
-                <span className='text-xs font-semibold text-gray-400'>
-                  Waktu Operasional : {''}
-                </span>
-                <span className='text-sm font-medium'>
-                  {p.waktu_operasional || 'Belum ditentukan'}
-                </span>
-              </div>
-              <div>
-                <span className='text-xs font-semibold text-gray-400'>
-                  Catatan : {''}
-                </span>
-                <span className='text-sm font-medium'>
-                  {p.catatan || 'Tidak ada catatan'}
-                </span>
+            <div>
+              <span className='text-xs font-semibold text-gray-400'>
+                Tanggal Dibuat : {''}
+              </span>
+              <span className='block'>{formatTanggalID(p.waktu_ditambah)}</span>
+            </div>
+            <div>
+              <span className='text-xs font-semibold text-gray-400'>
+                Alamat Penjemputan : {''}
+              </span>
+              <span className='block'>{p.alamat_penjemputan}</span>
+            </div>
+            <div>
+              <span className='text-xs font-semibold text-gray-400'>
+                Nama Kurir : {''}
+              </span>
+              <span className='block'>
+                {p.nama_kurir || 'Belum ditentukan'}
+              </span>
+            </div>
+            <div>
+              <span className='text-xs font-semibold text-gray-400'>
+                Waktu Operasional : {''}
+              </span>
+              <span className='block'>{p.waktu_operasional || '-'}</span>
+            </div>
+            <div>
+              {p.catatan && (
+                <div className='sm:col-span-2'>
+                  <span className='text-xs font-semibold text-gray-400'>
+                    Catatan : {''}
+                  </span>
+                  <span className='block italic'>{p.catatan}</span>
+                </div>
+              )}
+            </div>
+            <div>
+              {/* Dropbox */}
+              <span className='text-xs font-semibold text-gray-400'>
+                Dropbox Tujuan : {''}
+              </span>
+              <div className='mt-1'>
+                {p.nama_dropbox ? (
+                  <div className='text-sm'>
+                    <p className='font-medium'>{p.nama_dropbox}</p>
+                  </div>
+                ) : (
+                  <p className='text-sm text-gray-500'>-</p>
+                )}
               </div>
             </div>
           </div>

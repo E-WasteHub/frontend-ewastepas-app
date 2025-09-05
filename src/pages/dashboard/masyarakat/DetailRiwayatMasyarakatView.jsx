@@ -151,14 +151,31 @@ const DetailRiwayatMasyarakatView = () => {
               </span>
               <span className='block'>{p.waktu_operasional || '-'}</span>
             </div>
-            {p.catatan && (
-              <div className='sm:col-span-2'>
-                <span className='text-xs font-semibold text-gray-400'>
-                  Catatan : {''}
-                </span>
-                <span className='block italic'>{p.catatan}</span>
+            <div>
+              {p.catatan && (
+                <div className='sm:col-span-2'>
+                  <span className='text-xs font-semibold text-gray-400'>
+                    Catatan : {''}
+                  </span>
+                  <span className='block italic'>{p.catatan}</span>
+                </div>
+              )}
+            </div>
+            <div>
+              {/* Dropbox */}
+              <span className='text-xs font-semibold text-gray-400'>
+                Dropbox Tujuan : {''}
+              </span>
+              <div className='mt-1'>
+                {p.nama_dropbox ? (
+                  <div className='text-sm'>
+                    <p className='font-medium'>{p.nama_dropbox}</p>
+                  </div>
+                ) : (
+                  <p className='text-sm text-gray-500'>-</p>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </section>
 
