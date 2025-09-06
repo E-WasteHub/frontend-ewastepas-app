@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import * as verifikasiService from '../services/verifikasiService';
+import { ambilDataArrayAman } from '../utils/penjemputanUtils';
 
 const useAdminVerifikasi = () => {
   const [data, setData] = useState([]);
@@ -15,7 +16,7 @@ const useAdminVerifikasi = () => {
       setError('');
       const response = await verifikasiService.indexBelumVerifikasi();
       console.log('Data akun belum diverifikasi:', response);
-      const rawData = Array.isArray(response) ? response : response?.data || [];
+      const rawData = ambilDataArrayAman(response);
       setData(rawData);
     } catch (err) {
       console.error('❌ Gagal fetch akun belum verifikasi:', err);

@@ -38,8 +38,8 @@ const FormPenjemputan = forwardRef(
       onInputChange('id_waktu_operasional', '');
       onInputChange('alamat_penjemputan', '');
       onInputChange('catatan', '');
-      setDaftarSampah([]); // Kosongkan daftar sampah
-      onReset?.(); // ✅ Panggil onReset dari parent jika ada
+      setDaftarSampah([]);
+      onReset?.();
     };
 
     /** 🔄 Submit form */

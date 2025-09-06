@@ -1,20 +1,7 @@
 // src/components/fragments/kurir/PenjemputanKurirCard.jsx
 import useDarkMode from '../../../hooks/useDarkMode';
+import { formatTanggalWaktuIndonesia } from '../../../utils/dateUtils';
 import { Button, Card } from '../../elements';
-
-// Utility: format tanggal ke lokal Indonesia
-const formatTanggalWaktuID = (tanggal) => {
-  if (!tanggal) return '-';
-  const d = new Date(tanggal);
-  if (isNaN(d.getTime())) return '-';
-  return d.toLocaleString('id-ID', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
 
 // Utility: warna badge status
 const warnaStatusBadge = (status, isDarkMode = false) => {
@@ -88,7 +75,7 @@ const PenjemputanKurirCard = ({
               isDarkMode ? 'text-gray-400 text-xs' : 'text-gray-500 text-xs'
             }
           >
-            {formatTanggalWaktuID(req.waktu_ditambah)}
+            {formatTanggalWaktuIndonesia(req.waktu_ditambah)}
           </p>
 
           <p

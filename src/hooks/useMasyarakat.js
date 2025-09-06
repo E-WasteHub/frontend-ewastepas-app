@@ -4,6 +4,7 @@ import {
   ambilRiwayatPenjemputan,
   batalPenjemputan,
 } from '../services/penjemputanService';
+import { ambilDataArrayAman } from '../utils/penjemputanUtils';
 
 const useMasyarakat = () => {
   const [data, setData] = useState([]);
@@ -17,9 +18,7 @@ const useMasyarakat = () => {
       setError('');
       const response = await ambilRiwayatPenjemputan();
       console.log('📦 Data riwayat penjemputan:', response.data);
-      const rawData = Array.isArray(response.data)
-        ? response.data
-        : response.data?.penjemputan || [];
+      const rawData = ambilDataArrayAman(response, 'data');
       setData(rawData);
     } catch (err) {
       console.error('❌ Gagal fetch data masyarakat:', err);
@@ -97,7 +96,7 @@ const useMasyarakat = () => {
   };
 };
 
-// ===== LacakPenjemputan & DetailRiwayatMasyarakat =======
+// ===== DetailLacakPenjemputan & DetailRiwayatMasyarakat =======
 export const useMasyarakatDetail = (id_penjemputan) => {
   const [detail, setDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(!!id_penjemputan);
@@ -124,6 +123,6 @@ export const useMasyarakatDetail = (id_penjemputan) => {
 
   return { detail, isLoading, error };
 };
-// ===== END LacakPenjemputan & DetailRiwayatMasyarakat =======
+// ===== END DetailLacakPenjemputan & DetailRiwayatMasyarakat =======
 
 export default useMasyarakat;

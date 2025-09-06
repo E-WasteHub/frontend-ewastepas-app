@@ -7,6 +7,11 @@ import {
   batalPenjemputan,
   updatePenjemputan,
 } from '../services/penjemputanService';
+import {
+  ambilDataArrayAman,
+  filterPenjemputanByStatus,
+  hitungStatistikPenjemputan,
+} from '../utils/penjemputanUtils';
 
 export const useMitraKurir = () => {
   // ================== STATE ==================
@@ -24,12 +29,12 @@ export const useMitraKurir = () => {
 
       // 🔹 Ambil daftar permintaan baru (status = Diproses)
       const daftarRes = await ambilDaftarPenjemputan();
-      const daftarRaw = Array.isArray(daftarRes.data) ? daftarRes.data : [];
+      const daftarRaw = ambilDataArrayAman(daftarRes);
       setDaftar(daftarRaw);
 
       // 🔹 Ambil riwayat (Diterima, Dijemput, Selesai, Dibatalkan)
       const riwayatRes = await ambilRiwayatPenjemputan();
-      const riwayatRaw = Array.isArray(riwayatRes.data) ? riwayatRes.data : [];
+      const riwayatRaw = ambilDataArrayAman(riwayatRes);
       setRiwayat(riwayatRaw);
     } catch (err) {
       console.error('❌ Gagal fetch data kurir:', err);
@@ -46,9 +51,7 @@ export const useMitraKurir = () => {
   }, [fetchData]);
 
   // ================== SELECTOR ==================
-  const penjemputanTersedia = daftar.filter(
-    (d) => d.status_penjemputan === 'Diproses'
-  );
+  const penjemputanTersedia = filterPenjemputanByStatus(daftar, 'Diproses');
 
   const permintaanAktif = riwayat.find((d) =>
     ['Diterima', 'Dijemput'].includes(d.status_penjemputan)
@@ -58,7 +61,8 @@ export const useMitraKurir = () => {
     ['Selesai', 'Dibatalkan'].includes(d.status_penjemputan)
   );
 
-  // Untuk Dashboard
+  // Untuk Dashboard - menggunakan utils
+  const statistikPenjemputan = hitungStatistikPenjemputan(riwayat);
   const stats = {
     penjemputanTersedia: penjemputanTersedia.length,
     penjemputanBulanIni: riwayat.filter((d) => {
@@ -69,7 +73,9 @@ export const useMitraKurir = () => {
         tanggal.getMonth() === bulanIni && tanggal.getFullYear() === tahunIni
       );
     }).length,
-    totalPenjemputan: riwayat.length,
+    totalPenjemputan: statistikPenjemputan.total,
+    selesai: statistikPenjemputan.selesai,
+    dibatalkan: statistikPenjemputan.dibatalkan,
   };
 
   // ================== ACTIONS ==================

@@ -1,6 +1,10 @@
 // src/hooks/usePenjemputan.js
 import { useEffect, useRef, useState } from 'react';
 import * as penjemputanService from '../services/penjemputanService';
+import {
+  hitungEstimasiPoin,
+  hitungTotalJumlahSampah,
+} from '../utils/penjemputanUtils';
 import useToast from './useToast';
 
 const usePenjemputan = ({ showAlert }) => {
@@ -142,15 +146,9 @@ const usePenjemputan = ({ showAlert }) => {
     );
   };
 
-  // total jumlah & poin
-  const totalJumlah = daftarSampah.reduce(
-    (t, s) => t + (s.jumlah_sampah || 0),
-    0
-  );
-  const estimasiPoin = daftarSampah.reduce(
-    (t, s) => t + (s.jumlah_sampah || 0) * (s.poin_per_unit || 0),
-    0
-  );
+  // total jumlah & poin menggunakan utils
+  const totalJumlah = hitungTotalJumlahSampah(daftarSampah);
+  const estimasiPoin = hitungEstimasiPoin(daftarSampah);
 
   return {
     // state

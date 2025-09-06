@@ -14,57 +14,8 @@ import useMitraKurir, {
   useMitraKurirDetail,
 } from '../../../hooks/useMitraKurir';
 import useToast from '../../../hooks/useToast';
-
-// 🔹 Utility: Format tanggal ke bahasa Indonesia
-const formatTanggalID = (tanggal) => {
-  if (!tanggal) return '-';
-  const d = new Date(tanggal);
-  if (isNaN(d.getTime())) return '-';
-  return d.toLocaleDateString('id-ID', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  });
-};
-
-// ✅ daftar langkah status (sama dengan DetailLacakPenjemputan)
-const daftarLangkahStatus = [
-  {
-    key: 'diproses',
-    label: 'Menunggu Kurir',
-    description: 'Permintaan berhasil dibuat',
-    timeKey: 'waktu_ditambah',
-    status: 'Diproses',
-  },
-  {
-    key: 'diterima',
-    label: 'Diterima',
-    description: 'Kurir menerima permintaan',
-    timeKey: 'waktu_diterima',
-    status: 'Diterima',
-  },
-  {
-    key: 'dijemput',
-    label: 'Dijemput',
-    description: 'Kurir sampai di lokasi masyarakat',
-    timeKey: 'waktu_dijemput',
-    status: 'Dijemput',
-  },
-  {
-    key: 'selesai',
-    label: 'Selesai',
-    description: 'Sampah disetor ke dropbox',
-    timeKey: 'waktu_selesai',
-    status: 'Selesai',
-  },
-  {
-    key: 'dibatalkan',
-    label: 'Dibatalkan',
-    description: 'Penjemputan dibatalkan',
-    timeKey: 'waktu_dibatalkan',
-    status: 'Dibatalkan',
-  },
-];
+import { formatTanggalIndonesia } from '../../../utils/dateUtils';
+import { DAFTAR_LANGKAH_STATUS } from '../../../utils/penjemputanUtils';
 
 const PermintaanAktifKurir = () => {
   useDocumentTitle('Permintaan Aktif Kurir');
@@ -156,7 +107,9 @@ const PermintaanAktifKurir = () => {
               <span className='text-xs font-semibold text-gray-400'>
                 Tanggal Dibuat : {''}
               </span>
-              <span className='block'>{formatTanggalID(p.waktu_ditambah)}</span>
+              <span className='block'>
+                {formatTanggalIndonesia(p.waktu_ditambah)}
+              </span>
             </div>
             <div>
               <span className='text-xs font-semibold text-gray-400'>
@@ -215,7 +168,7 @@ const PermintaanAktifKurir = () => {
               Status Penjemputan
             </h3>
             <Timeline
-              steps={daftarLangkahStatus}
+              steps={DAFTAR_LANGKAH_STATUS}
               currentStep={
                 currentStatus === 'Dibatalkan'
                   ? -1

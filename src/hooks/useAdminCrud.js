@@ -1,5 +1,6 @@
 // src/hooks/useAdminCrud.js
 import { useCallback, useEffect, useState } from 'react';
+import { ambilDataArrayAman } from '../utils/penjemputanUtils';
 
 const useAdminCrud = (service) => {
   const [data, setData] = useState([]);
@@ -13,9 +14,7 @@ const useAdminCrud = (service) => {
     try {
       setIsLoading(true);
       const response = await service.ambilSemua();
-      const rawData = Array.isArray(response?.data)
-        ? response.data
-        : response?.data?.data || [];
+      const rawData = ambilDataArrayAman(response);
       setData(rawData);
     } catch (err) {
       setError('Gagal memuat data', err);

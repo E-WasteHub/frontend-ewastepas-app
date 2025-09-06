@@ -1,6 +1,7 @@
 // src/components/fragments/admincrud/DropboxCrudModal.jsx
 import { useEffect, useState } from 'react';
 import * as daerahService from '../../../services/daerahService';
+import { ambilDataArrayAman } from '../../../utils/penjemputanUtils';
 import { Button, InputForm, Modal } from '../../elements';
 
 const DropboxCrudModal = ({
@@ -22,7 +23,7 @@ const DropboxCrudModal = ({
     const fetchDaerah = async () => {
       try {
         const res = await daerahService.ambilSemua();
-        const data = Array.isArray(res.data) ? res.data : res?.data?.data || [];
+        const data = ambilDataArrayAman(res);
         setDaerahOptions(data);
       } catch (err) {
         console.error('❌ Gagal ambil daftar daerah:', err);

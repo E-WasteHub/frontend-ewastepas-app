@@ -110,7 +110,7 @@ const FormPemulihanAkun = () => {
 
         {/* 🔹 Footer */}
         <div
-          className={`text-center mt-6 pt-4 border-t ${
+          className={`text-center text-sm mt-6 pt-4 border-t ${
             isDarkMode ? 'border-slate-700' : 'border-gray-200'
           }`}
         >

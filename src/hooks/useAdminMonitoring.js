@@ -1,5 +1,6 @@
 // src/hooks/useAdminMonitoring.js
 import { useCallback, useEffect, useState } from 'react';
+import { ambilDataArrayAman } from '../utils/penjemputanUtils';
 
 const useAdminMonitoring = (service) => {
   const [data, setData] = useState([]);
@@ -13,9 +14,7 @@ const useAdminMonitoring = (service) => {
     try {
       setIsLoading(true);
       const response = await service.ambilSemua();
-      const rawData = Array.isArray(response?.data)
-        ? response.data
-        : response?.data?.data || [];
+      const rawData = ambilDataArrayAman(response);
       setData(rawData);
     } catch (err) {
       console.error('❌ Gagal fetch transaksi:', err);

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import * as authService from '../../services/authService';
+import { formatWaktuCountdown } from '../../utils/dateUtils';
 
 const useVerifikasiOTPForm = () => {
   /** 🔹 State utama */
@@ -94,14 +95,8 @@ const useVerifikasiOTPForm = () => {
     return stopTimer;
   }, [mulaiTimer]);
 
-  // 📌 Format menit:detik
-  const formatWaktu = () => {
-    const menit = Math.floor(waktuTersisa / 60);
-    const detik = waktuTersisa % 60;
-    return `${menit.toString().padStart(2, '0')}:${detik
-      .toString()
-      .padStart(2, '0')}`;
-  };
+  // 📌 Format menit:detik menggunakan utils
+  const formatWaktu = () => formatWaktuCountdown(waktuTersisa);
 
   return {
     // State

@@ -4,7 +4,7 @@ const Alert = ({ type = 'info', message, className = '' }) => {
   const { isDarkMode } = useDarkMode();
 
   const getTypeStyles = (type) => {
-    const baseClasses = 'p-4 border rounded-lg';
+    const baseClasses = 'p-4 border my-3 rounded-xl';
     const typeClasses = {
       success: isDarkMode
         ? 'text-green-300 bg-green-900 border-green-800'

@@ -11,7 +11,11 @@ const AlertModal = ({ isOpen, onClose, title, message }) => {
   if (!isOpen) return null;
 
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center ${
+        isDarkMode ? 'bg-black bg-opacity-50' : 'bg-gray-100 bg-opacity-50'
+      }`}
+    >
       <div
         className={`p-6 rounded-lg max-w-md mx-4 ${
           isDarkMode ? 'bg-gray-800' : 'bg-white'

@@ -14,52 +14,11 @@ import useMasyarakat, {
   useMasyarakatDetail,
 } from '../../../hooks/useMasyarakat';
 import useToast from '../../../hooks/useToast';
-
-// Utility: format tanggal ke bahasa Indonesia
-const formatTanggalID = (tanggal) => {
-  if (!tanggal) return '-';
-  const d = new Date(tanggal);
-  if (isNaN(d.getTime())) return '-';
-  return d.toLocaleDateString('id-ID', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  });
-};
-
-// Daftar step status untuk timeline
-const daftarLangkahStatus = [
-  {
-    key: 'diproses',
-    label: 'Menunggu Kurir',
-    description: 'Permintaan berhasil dibuat',
-    timeKey: 'waktu_ditambah',
-  },
-  {
-    key: 'diterima',
-    label: 'Diterima',
-    description: 'Kurir menerima permintaan',
-    timeKey: 'waktu_diterima',
-  },
-  {
-    key: 'dijemput',
-    label: 'Dijemput Kurir',
-    description: 'Kurir sampai di lokasi masyarakat',
-    timeKey: 'waktu_dijemput',
-  },
-  {
-    key: 'selesai',
-    label: 'Selesai',
-    description: 'Sampah sudah disetor ke dropbox',
-    timeKey: 'waktu_selesai',
-  },
-  {
-    key: 'dibatalkan',
-    label: 'Dibatalkan',
-    description: 'Penjemputan dibatalkan',
-    timeKey: 'waktu_dibatalkan',
-  },
-];
+import { formatTanggalIndonesia } from '../../../utils/dateUtils';
+import {
+  DAFTAR_LANGKAH_STATUS,
+  dapatkanLangkahAktif,
+} from '../../../utils/penjemputanUtils';
 
 const DetailLacakPenjemputan = () => {
   useDocumentTitle('Detail Penjemputan');
@@ -76,17 +35,6 @@ const DetailLacakPenjemputan = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   // ❌ Removed alertOpen state - using toast now
 
-  // Helper untuk menentukan langkah aktif berdasarkan field waktu
-  const getLangkahAktif = (penjemputan) => {
-    if (!penjemputan) return 0;
-    if (penjemputan.waktu_dibatalkan) return -1;
-    if (penjemputan.waktu_selesai) return 3;
-    if (penjemputan.waktu_dijemput) return 2;
-    if (penjemputan.waktu_diterima) return 1;
-    if (penjemputan.waktu_ditambah) return 0;
-    return 0;
-  };
-
   if (isLoading) {
     return <Loading mode='overlay' text='Memuat detail penjemputan...' />;
   }
@@ -100,7 +48,7 @@ const DetailLacakPenjemputan = () => {
   }
 
   const p = detailPenjemputan.penjemputan;
-  const langkahAktif = getLangkahAktif(p);
+  const langkahAktif = dapatkanLangkahAktif(p);
 
   return (
     <div
@@ -140,7 +88,9 @@ const DetailLacakPenjemputan = () => {
               <span className='text-xs font-semibold text-gray-400'>
                 Tanggal Dibuat : {''}
               </span>
-              <span className='block'>{formatTanggalID(p.waktu_ditambah)}</span>
+              <span className='block'>
+                {formatTanggalIndonesia(p.waktu_ditambah)}
+              </span>
             </div>
             <div>
               <span className='text-xs font-semibold text-gray-400'>
@@ -197,7 +147,7 @@ const DetailLacakPenjemputan = () => {
               <Truck className='w-5 h-5 text-green-500' /> Status Penjemputan
             </h3>
             <Timeline
-              steps={daftarLangkahStatus}
+              steps={DAFTAR_LANGKAH_STATUS}
               currentStep={langkahAktif}
               isDarkMode={isDarkMode}
               detail={p}
