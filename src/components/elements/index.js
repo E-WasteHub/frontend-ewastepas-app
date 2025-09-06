@@ -25,5 +25,4 @@ export { default as ThemeSelector } from './ThemeSelector';
 // Layout / UI Helpers
 export { default as Loading } from './Loading';
 export { default as Modal } from './Modal';
-export { default as SapaanDashboard } from './SapaanDashboard';
 export { default as ScrollToTop } from './ScrollToTop';

@@ -1,12 +1,14 @@
-import { useState } from 'react';
-import DataTable from 'react-data-table-component';
-import { Loading } from '../../../components/elements';
+import { useMemo, useState } from 'react';
+import { Loading, Pagination } from '../../../components/elements';
 import {
-  AlertModal,
+  AdminTable,
   ConfirmModal,
+  FilterCrud,
   KategoriCrudModal,
-} from '../../../components/fragments/';
+} from '../../../components/fragments';
 import useAdminCrud from '../../../hooks/useAdminCrud';
+import usePagination from '../../../hooks/usePagination';
+import useToast from '../../../hooks/useToast';
 import * as kategoriService from '../../../services/kategoriService';
 
 const AdminKelolaKategoriView = () => {
@@ -20,58 +22,56 @@ const AdminKelolaKategoriView = () => {
     isSubmitting,
   } = useAdminCrud(kategoriService);
 
-  // State Modal CRUD
+  const { showAlert } = useToast();
+
+  // 🔹 State Modal CRUD
   const [crudOpen, setCrudOpen] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
 
-  // State Confirm
+  // 🔹 State Confirm
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState(null);
 
-  // AlertModal state
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertConfig, setAlertConfig] = useState({
-    title: '',
-    message: '',
-    type: 'success',
-  });
+  // 🔹 Search state
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('');
+
+  // Filter data by search
+  const filteredData = useMemo(() => {
+    if (!search && !filter) return kategori;
+    return kategori.filter((item) => {
+      const matchSearch =
+        !search ||
+        item.nama_kategori?.toLowerCase().includes(search.toLowerCase());
+      const matchFilter = !filter || item.poin_kategori >= parseInt(filter);
+      return matchSearch && matchFilter;
+    });
+  }, [kategori, search, filter]);
+
+  // Pagination
+  const { currentPage, setCurrentPage, totalPages, paginatedData } =
+    usePagination(filteredData, 7);
 
   // Handler Tambah/Edit
   const handleCrudSubmit = async (formValues) => {
     if (editTarget) {
       const res = await ubah(editTarget.id_kategori, formValues);
-      if (res.success) {
-        setAlertConfig({
-          title: 'Berhasil',
-          message: 'Kategori berhasil diperbarui',
-          type: 'success',
-        });
-        setAlertOpen(true);
-      } else {
-        setAlertConfig({
-          title: 'Gagal',
-          message: res.error || 'Kategori gagal diperbarui',
-          type: 'error',
-        });
-        setAlertOpen(true);
-      }
+      showAlert(
+        res.success ? 'Berhasil' : 'Gagal',
+        res.success
+          ? 'Kategori berhasil diperbarui'
+          : res.error || 'Kategori gagal diperbarui',
+        res.success ? 'success' : 'error'
+      );
     } else {
       const res = await tambah(formValues);
-      if (res.success) {
-        setAlertConfig({
-          title: 'Berhasil',
-          message: 'Kategori berhasil ditambahkan',
-          type: 'success',
-        });
-        setAlertOpen(true);
-      } else {
-        setAlertConfig({
-          title: 'Gagal',
-          message: res.error || 'Kategori gagal ditambahkan',
-          type: 'error',
-        });
-        setAlertOpen(true);
-      }
+      showAlert(
+        res.success ? 'Berhasil' : 'Gagal',
+        res.success
+          ? 'Kategori berhasil ditambahkan'
+          : res.error || 'Kategori gagal ditambahkan',
+        res.success ? 'success' : 'error'
+      );
     }
 
     setCrudOpen(false);
@@ -82,30 +82,30 @@ const AdminKelolaKategoriView = () => {
   const handleDelete = async () => {
     if (!confirmTarget) return;
     const res = await hapus(confirmTarget);
-    if (res.success) {
-      setAlertConfig({
-        title: 'Berhasil',
-        message: 'Kategori berhasil dihapus',
-        type: 'success',
-      });
-      setAlertOpen(true);
-    } else {
-      setAlertConfig({
-        title: 'Gagal',
-        message: res.error || 'Kategori gagal dihapus',
-        type: 'error',
-      });
-      setAlertOpen(true);
-    }
+    showAlert(
+      res.success ? 'Berhasil' : 'Gagal',
+      res.success
+        ? 'Kategori berhasil dihapus'
+        : res.error || 'Kategori gagal dihapus',
+      res.success ? 'success' : 'error'
+    );
     setConfirmOpen(false);
   };
 
-  // Kolom DataTable
+  // Kolom tabel
   const columns = [
+    { name: 'Nama Kategori', selector: 'nama_kategori' },
     {
-      name: 'Nama Kategori',
-      selector: (row) => row.nama_kategori,
-      sortable: true,
+      name: 'Poin Per Kategori',
+      selector: 'poin_kategori',
+    },
+    {
+      name: 'Deskripsi',
+      selector: 'deskripsi_kategori',
+      cell: (row) =>
+        row.deskripsi_kategori && row.deskripsi_kategori.length > 50
+          ? row.deskripsi_kategori.substring(0, 50) + '...'
+          : row.deskripsi_kategori || '-',
     },
     {
       name: 'Aksi',
@@ -116,18 +116,18 @@ const AdminKelolaKategoriView = () => {
               setEditTarget(row);
               setCrudOpen(true);
             }}
-            className='px-3 py-1 bg-yellow-500 text-white rounded'
+            className='px-3 py-1 text-xs font-medium rounded bg-yellow-500 text-white hover:bg-yellow-600'
           >
-            ✏️ Edit
+            Edit
           </button>
           <button
             onClick={() => {
               setConfirmTarget(row.id_kategori);
               setConfirmOpen(true);
             }}
-            className='px-3 py-1 bg-red-600 text-white rounded'
+            className='px-3 py-1 text-xs font-medium rounded bg-red-600 text-white hover:bg-red-700'
           >
-            🗑 Hapus
+            Hapus
           </button>
         </div>
       ),
@@ -136,32 +136,54 @@ const AdminKelolaKategoriView = () => {
 
   return (
     <div className='max-w-7xl mx-auto p-6 space-y-6'>
-      <div className='flex justify-between items-center'>
+      <div className='space-y-2'>
         <h1 className='text-2xl font-bold'>Kelola Kategori</h1>
-        <button
-          onClick={() => {
-            setEditTarget(null);
-            setCrudOpen(true);
-          }}
-          className='px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700'
-        >
-          ➕ Tambah Kategori
-        </button>
+        <p className='text-gray-600'>
+          Kelola kategori sampah elektronik dan poin reward yang diberikan
+        </p>
       </div>
 
       {isLoading ? (
         <Loading mode='inline' text='Memuat data...' />
       ) : error ? (
-        <p className='text-red-500'>{error}</p>
+        <p className='text-red-500'>Error: {error}</p>
+      ) : kategori.length === 0 ? (
+        <div className='text-center py-8 text-gray-500'>
+          <p>Belum ada data kategori.</p>
+          <p>Klik tombol "Tambah Kategori" untuk menambahkan data pertama.</p>
+        </div>
       ) : (
-        <DataTable
-          columns={columns}
-          data={kategori}
-          pagination
-          highlightOnHover
-          striped
-          dense
-        />
+        <>
+          <AdminTable
+            columns={columns}
+            data={paginatedData}
+            topContent={
+              <FilterCrud
+                search={search}
+                setSearch={setSearch}
+                filter={filter}
+                setFilter={setFilter}
+                placeholder='Cari kategori...'
+                filterOptions={[
+                  { value: '1', label: 'Poin ≥ 1' },
+                  { value: '5', label: 'Poin ≥ 5' },
+                  { value: '10', label: 'Poin ≥ 10' },
+                  { value: '20', label: 'Poin ≥ 20' },
+                ]}
+                filterLabel='Filter Poin'
+                onAdd={() => {
+                  setEditTarget(null);
+                  setCrudOpen(true);
+                }}
+              />
+            }
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </>
       )}
 
       {/* Crud Modal */}
@@ -188,15 +210,6 @@ const AdminKelolaKategoriView = () => {
         confirmText='Hapus'
         cancelText='Batal'
         isLoading={isSubmitting}
-      />
-
-      {/* Alert Modal */}
-      <AlertModal
-        isOpen={alertOpen}
-        onClose={() => setAlertOpen(false)}
-        title={alertConfig.title}
-        message={alertConfig.message}
-        type={alertConfig.type}
       />
     </div>
   );

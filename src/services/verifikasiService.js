@@ -3,7 +3,7 @@
 import api from './api';
 
 // Ambil semua data yang belum diverifikasi
-export const indexBelumVerifikasi = async () => {
+export const ambilSemuaDataBelumVerifikasi = async () => {
   try {
     const response = await api.get('/akun/belum-verifikasi');
     return response.data;
@@ -14,7 +14,7 @@ export const indexBelumVerifikasi = async () => {
 };
 
 // Lihat detail akun pengguna
-export const selectAkunPengguna = async (id_pengguna) => {
+export const ambilDetailAkunPengguna = async (id_pengguna) => {
   try {
     const response = await api.get(`/akun/${id_pengguna}`);
     return response.data;
@@ -25,10 +25,7 @@ export const selectAkunPengguna = async (id_pengguna) => {
 };
 
 // Ubah status akun pengguna
-export const updateStatusAkunPengguna = async (
-  id_pengguna,
-  status_pengguna
-) => {
+export const ubahStatusAkunPengguna = async (id_pengguna, status_pengguna) => {
   try {
     const payload = { id_pengguna, status_pengguna };
     const response = await api.put(`/akun/${id_pengguna}/status`, payload);

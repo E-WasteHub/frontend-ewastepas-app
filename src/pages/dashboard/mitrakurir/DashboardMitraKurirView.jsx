@@ -1,13 +1,12 @@
 // src/views/dashboard/mitra-kurir/DashboardMitraKurirView.jsx
 import { ArrowRight, Package, Star, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Alert, Card, Loading } from '../../../components/elements';
 import {
-  Alert,
-  Card,
-  Loading,
+  PenjemputanKurirCard,
   SapaanDashboard,
-} from '../../../components/elements';
-import { PenjemputanKurirCard, StatCard } from '../../../components/fragments'; // ✅ import card kurir
+  StatCard,
+} from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import useMitraKurir from '../../../hooks/useMitraKurir';

@@ -1,10 +1,16 @@
-import { Package, Users } from 'lucide-react';
-import DataTable from 'react-data-table-component';
-import { Loading, SapaanDashboard } from '../../../components/elements';
-import { StatCard } from '../../../components/fragments';
+import { Package, UserCheck, Users } from 'lucide-react';
+import { useState } from 'react';
+import { Loading, Pagination } from '../../../components/elements';
+import {
+  AdminTable,
+  FilterCrud,
+  SapaanDashboard,
+  StatCard,
+} from '../../../components/fragments';
 import useAdminMonitoring from '../../../hooks/useAdminMonitoring';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
+import usePagination from '../../../hooks/usePagination';
 import usePengguna from '../../../hooks/usePengguna';
 import * as penjemputanService from '../../../services/penjemputanService';
 
@@ -13,6 +19,10 @@ const AdminDashboardView = () => {
   const { pengguna } = usePengguna();
   useDocumentTitle('Dashboard Admin');
 
+  // State untuk filter dan search transaksi
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('');
+
   // pakai hook monitoring transaksi
   const {
     data: transaksi,
@@ -20,27 +30,99 @@ const AdminDashboardView = () => {
     error,
   } = useAdminMonitoring(penjemputanService);
 
-  // sementara: dummy statistik
-  const statistikPengguna = {
-    totalPengguna: 1248,
-    mitraKurir: 45,
-  };
-  const statistikTransaksi = {
-    totalTransaksi: 3456,
+  // TODO: Implementasi statistik real dari API
+  const statistikData = {
+    belumTerverifikasi: 0, // TODO: fetch dari penggunaService
+    jumlahDatamaster: 0, // TODO: hitung kategori + jenis + daerah + dropbox + edukasi
+    totalTransaksi: Array.isArray(transaksi) ? transaksi.length : 0,
   };
 
-  // ambil hanya 5 transaksi terbaru
-  const transaksiTerbaru = Array.isArray(transaksi)
-    ? transaksi.slice(0, 5)
+  // Filter transaksi berdasarkan search dan filter
+  const filteredTransaksi = Array.isArray(transaksi)
+    ? transaksi.filter((item) => {
+        const matchSearch =
+          !search ||
+          item.kode_penjemputan?.toLowerCase().includes(search.toLowerCase()) ||
+          item.nama_masyarakat?.toLowerCase().includes(search.toLowerCase()) ||
+          item.nama_kurir?.toLowerCase().includes(search.toLowerCase());
+        const matchFilter = !filter || item.status_penjemputan === filter;
+        return matchSearch && matchFilter;
+      })
     : [];
 
+  // Pagination untuk transaksi
+  const { currentPage, setCurrentPage, totalPages, paginatedData } =
+    usePagination(filteredTransaksi, 5);
+
+  // Filter options berdasarkan status yang ada
+  const filterOptions = [
+    { value: '', label: 'Semua' },
+    { value: 'Diproses', label: 'Diproses' },
+    { value: 'Diterima', label: 'Diterima' },
+    { value: 'Dijemput', label: 'Dijemput' },
+    { value: 'Selesai', label: 'Selesai' },
+    { value: 'Dibatalkan', label: 'Dibatalkan' },
+  ];
+
+  // Kolom untuk AdminTable
   const columns = [
-    { name: 'Kode', selector: (row) => row.kode_penjemputan },
-    { name: 'Masyarakat', selector: (row) => row.nama_masyarakat },
-    { name: 'Kurir', selector: (row) => row.nama_kurir || '-' },
-    { name: 'Status', selector: (row) => row.status_penjemputan },
-    { name: 'Poin', selector: (row) => row.poin_penjemputan },
-    { name: 'Tanggal', selector: (row) => row.waktu_ditambah },
+    {
+      name: 'Kode',
+      selector: 'kode_penjemputan',
+      cell: (row) => (
+        <span className='font-mono text-xs'>{row.kode_penjemputan}</span>
+      ),
+    },
+    {
+      name: 'Masyarakat',
+      selector: 'nama_masyarakat',
+      cell: (row) => <span className='font-medium'>{row.nama_masyarakat}</span>,
+    },
+    {
+      name: 'Kurir',
+      selector: 'nama_kurir',
+      cell: (row) => <span>{row.nama_kurir || '-'}</span>,
+      hideOnMobile: true,
+    },
+    {
+      name: 'Status',
+      selector: 'status_penjemputan',
+      cell: (row) => (
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
+            row.status_penjemputan === 'Selesai'
+              ? 'bg-green-100 text-green-800'
+              : row.status_penjemputan === 'Diproses'
+              ? 'bg-yellow-100 text-yellow-800'
+              : row.status_penjemputan === 'Dibatalkan'
+              ? 'bg-red-100 text-red-800'
+              : 'bg-blue-100 text-blue-800'
+          }`}
+        >
+          {row.status_penjemputan}
+        </span>
+      ),
+    },
+    {
+      name: 'Poin',
+      selector: 'poin_penjemputan',
+      cell: (row) => (
+        <span className='font-semibold text-green-600'>
+          {row.poin_penjemputan || 0}
+        </span>
+      ),
+      hideOnMobile: true,
+    },
+    {
+      name: 'Tanggal',
+      selector: 'waktu_ditambah',
+      cell: (row) => (
+        <span className='text-xs text-gray-600'>
+          {new Date(row.waktu_ditambah).toLocaleDateString('id-ID')}
+        </span>
+      ),
+      hideOnMobile: true,
+    },
   ];
 
   return (
@@ -61,43 +143,60 @@ const AdminDashboardView = () => {
         />
 
         {/* Statistik */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+        <div className='text-green-500 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           <StatCard
-            label='Total Pengguna Masyarakat'
-            value={statistikPengguna.totalPengguna}
-            icon={<Users className='w-6 h-6 text-green-500' />}
+            label='Jumlah Yang Belum Terverifikasi'
+            value={statistikData.belumTerverifikasi}
+            icon={<UserCheck className='w-6 h-6' />}
             useCard={false}
           />
           <StatCard
-            label='Total Pengguna Mitra Kurir'
-            value={statistikPengguna.mitraKurir}
-            icon={<Users className='w-6 h-6 text-green-500' />}
+            label='Jumlah Datamaster'
+            value={statistikData.jumlahDatamaster}
+            icon={<Package className='w-6 h-6 ' />}
             useCard={false}
           />
           <StatCard
             label='Total Transaksi'
-            value={statistikTransaksi.totalTransaksi}
-            icon={<Package className='w-6 h-6 text-green-500' />}
+            value={statistikData.totalTransaksi}
+            icon={<Users className='w-6 h-6 ' />}
             useCard={false}
           />
         </div>
 
         {/* Transaksi terbaru */}
         <div>
-          <h2 className='text-xl font-bold mb-2'>Transaksi Terbaru</h2>
+          <h2 className='text-xl font-bold mb-4'>Transaksi Terbaru</h2>
+
+          {/* Filter dan Search */}
+          <FilterCrud
+            search={search}
+            setSearch={setSearch}
+            filter={filter}
+            setFilter={setFilter}
+            placeholder='Cari kode, masyarakat, atau kurir...'
+            filterOptions={filterOptions}
+            filterLabel='Status'
+          />
+
           {isLoading ? (
             <Loading mode='inline' text='Memuat data...' />
           ) : error ? (
             <p className='text-red-500'>{error}</p>
           ) : (
-            <DataTable
-              columns={columns}
-              data={transaksiTerbaru}
-              highlightOnHover
-              striped
-              dense
-              pagination={false}
-            />
+            <>
+              <AdminTable columns={columns} data={paginatedData} />
+
+              {totalPages > 1 && (
+                <div className='mt-4'>
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

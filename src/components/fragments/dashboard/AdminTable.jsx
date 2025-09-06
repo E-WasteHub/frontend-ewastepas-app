@@ -1,56 +1,71 @@
 // src/components/fragments/AdminTable.jsx
-import DataTable from 'react-data-table-component';
+import { useMediaQuery } from 'react-responsive';
 import useDarkMode from '../../../hooks/useDarkMode';
 
-const AdminTable = ({ columns, data }) => {
+const AdminTable = ({ columns = [], data = [], topContent }) => {
   const { isDarkMode } = useDarkMode();
-
-  const customStyles = {
-    header: {
-      style: {
-        minHeight: '56px',
-      },
-    },
-    headRow: {
-      style: {
-        backgroundColor: isDarkMode ? '#374151' : '#f3f4f6', // gray-700 : gray-100
-        color: isDarkMode ? '#fff' : '#000',
-      },
-    },
-    headCells: {
-      style: {
-        fontWeight: 'bold',
-      },
-    },
-    rows: {
-      style: {
-        backgroundColor: isDarkMode ? '#1f2937' : '#fff', // gray-800 : white
-        color: isDarkMode ? '#fff' : '#000',
-        fontSize: '14px',
-      },
-      highlightOnHoverStyle: {
-        backgroundColor: isDarkMode ? '#374151' : '#f9fafb',
-        cursor: 'pointer',
-      },
-    },
-    pagination: {
-      style: {
-        backgroundColor: isDarkMode ? '#1f2937' : '#fff',
-        color: isDarkMode ? '#fff' : '#000',
-      },
-    },
-  };
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   return (
-    <DataTable
-      columns={columns}
-      data={data}
-      pagination
-      highlightOnHover
-      responsive
-      noDataComponent='Tidak ada data untuk ditampilkan'
-      customStyles={customStyles}
-    />
+    <div className='space-y-4'>
+      {topContent && topContent}
+      <div
+        className={`overflow-x-auto rounded-lg shadow-md ${
+          isDarkMode ? 'bg-slate-800' : 'bg-white'
+        }`}
+      >
+        <table className='min-w-full text-sm text-left'>
+          <thead
+            className={`${
+              isDarkMode
+                ? 'bg-slate-700 text-slate-300'
+                : 'bg-slate-100 text-slate-700'
+            }`}
+          >
+            <tr>
+              {columns.map((col, i) =>
+                isMobile && col.hideOnMobile ? null : (
+                  <th
+                    key={i}
+                    className='px-4 py-3 text-sm font-semibold tracking-wide'
+                  >
+                    {col.name}
+                  </th>
+                )
+              )}
+            </tr>
+          </thead>
+          <tbody
+            className={`divide-y ${
+              isDarkMode ? 'divide-slate-600' : 'divide-slate-300'
+            }`}
+          >
+            {data.length > 0 ? (
+              data.map((row, idx) => (
+                <tr key={idx} className={`transition`}>
+                  {columns.map((col, i) =>
+                    isMobile && col.hideOnMobile ? null : (
+                      <td key={i} className='px-4 py-3'>
+                        {col.cell ? col.cell(row) : row[col.selector]}
+                      </td>
+                    )
+                  )}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={columns.length}
+                  className='px-4 py-6 text-center text-slate-500 dark:text-slate-400'
+                >
+                  Tidak ada data untuk ditampilkan
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 };
 

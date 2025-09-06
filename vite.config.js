@@ -60,7 +60,7 @@ export default defineConfig({
       },
     }),
   ],
-  // ✅ Optimasi Build untuk Skripsi (Simple & Basic)
+  // Optimasi Build
   build: {
     // Tingkatkan limit warning chunk size
     chunkSizeWarningLimit: 1000,

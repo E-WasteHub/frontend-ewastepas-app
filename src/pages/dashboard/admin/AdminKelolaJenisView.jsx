@@ -1,8 +1,13 @@
-import { useState } from 'react';
-import DataTable from 'react-data-table-component';
-import { Loading } from '../../../components/elements';
-import { ConfirmModal, JenisCrudModal } from '../../../components/fragments';
+import { useMemo, useState } from 'react';
+import { Loading, Pagination } from '../../../components/elements';
+import {
+  AdminTable,
+  ConfirmModal,
+  FilterCrud,
+  JenisCrudModal,
+} from '../../../components/fragments';
 import useAdminCrud from '../../../hooks/useAdminCrud';
+import usePagination from '../../../hooks/usePagination';
 import useToast from '../../../hooks/useToast';
 import * as jenisService from '../../../services/jenisService';
 
@@ -26,6 +31,40 @@ const AdminKelolaJenisView = () => {
   // State Confirm
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState(null);
+
+  // Search state
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('');
+
+  // Filter data by search
+  const filteredData = useMemo(() => {
+    if (!search && !filter) return jenis;
+    return jenis.filter((item) => {
+      const matchSearch =
+        !search ||
+        item.nama_jenis?.toLowerCase().includes(search.toLowerCase()) ||
+        item.nama_kategori?.toLowerCase().includes(search.toLowerCase());
+      const matchFilter =
+        !filter ||
+        item.nama_kategori?.toLowerCase().includes(filter.toLowerCase());
+      return matchSearch && matchFilter;
+    });
+  }, [jenis, search, filter]);
+
+  // Pagination
+  const { currentPage, setCurrentPage, totalPages, paginatedData } =
+    usePagination(filteredData, 7);
+
+  // Get unique categories for filter
+  const categoryOptions = useMemo(() => {
+    const uniqueCategories = [
+      ...new Set(jenis.map((item) => item.nama_kategori).filter(Boolean)),
+    ];
+    return uniqueCategories.map((category) => ({
+      value: category,
+      label: category,
+    }));
+  }, [jenis]);
 
   // Handler Tambah/Edit
   const handleCrudSubmit = async (formValues) => {
@@ -73,16 +112,18 @@ const AdminKelolaJenisView = () => {
   const columns = [
     {
       name: 'Nama Jenis',
-      selector: (row) => row.nama_jenis,
+      selector: 'nama_jenis',
       sortable: true,
     },
     {
       name: 'Deskripsi',
-      selector: (row) => row.deskripsi_jenis || '-',
+      selector: 'deskripsi_jenis',
+      cell: (row) => row.deskripsi_jenis || '-',
     },
     {
       name: 'Kategori',
-      selector: (row) => row.nama_kategori || '-',
+      selector: 'nama_kategori',
+      cell: (row) => row.nama_kategori || '-',
     },
     {
       name: 'Aksi',
@@ -93,9 +134,9 @@ const AdminKelolaJenisView = () => {
               setEditTarget(row);
               setCrudOpen(true);
             }}
-            className='px-3 py-1 bg-yellow-500 text-white rounded'
+            className='px-3 py-1 text-xs font-medium rounded bg-yellow-500 text-white hover:bg-yellow-600'
           >
-            ✏️ Edit
+            Edit
           </button>
           <button
             onClick={() => {
@@ -103,9 +144,9 @@ const AdminKelolaJenisView = () => {
               setConfirmTarget(row.id_jenis);
               setConfirmOpen(true);
             }}
-            className='px-3 py-1 bg-red-600 text-white rounded'
+            className='px-3 py-1 text-xs font-medium rounded bg-red-600 text-white hover:bg-red-700'
           >
-            🗑 Hapus
+            Hapus
           </button>
         </div>
       ),
@@ -114,32 +155,50 @@ const AdminKelolaJenisView = () => {
 
   return (
     <div className='max-w-7xl mx-auto p-6 space-y-6'>
-      <div className='flex justify-between items-center'>
+      <div className='space-y-2'>
         <h1 className='text-2xl font-bold'>Kelola Jenis Sampah</h1>
-        <button
-          onClick={() => {
-            setEditTarget(null);
-            setCrudOpen(true);
-          }}
-          className='px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700'
-        >
-          ➕ Tambah Jenis
-        </button>
+        <p className='text-gray-600'>
+          Kelola jenis-jenis sampah elektronik berdasarkan kategori yang
+          tersedia
+        </p>
       </div>
 
       {isLoading ? (
         <Loading mode='inline' text='Memuat data...' />
       ) : error ? (
-        <p className='text-red-500'>{error}</p>
+        <p className='text-red-500'>Error: {error}</p>
+      ) : jenis.length === 0 ? (
+        <div className='text-center py-8 text-gray-500'>
+          <p>Belum ada data jenis sampah.</p>
+          <p>Klik tombol "Tambah Jenis" untuk menambahkan data pertama.</p>
+        </div>
       ) : (
-        <DataTable
-          columns={columns}
-          data={jenis}
-          pagination
-          highlightOnHover
-          striped
-          dense
-        />
+        <>
+          <AdminTable
+            columns={columns}
+            data={paginatedData}
+            topContent={
+              <FilterCrud
+                search={search}
+                setSearch={setSearch}
+                filter={filter}
+                setFilter={setFilter}
+                placeholder='Cari jenis sampah...'
+                filterOptions={categoryOptions}
+                filterLabel='Filter Kategori'
+                onAdd={() => {
+                  setEditTarget(null);
+                  setCrudOpen(true);
+                }}
+              />
+            }
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </>
       )}
 
       {/* Crud Modal */}

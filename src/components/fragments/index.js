@@ -12,6 +12,8 @@ export { default as FilterCard } from './dashboard/FilterCard';
 export { default as PenjemputanKurirCard } from './dashboard/PenjemputanKurirCard';
 export { default as PenjemputanMasyarakatCard } from './dashboard/PenjemputanMasyarakatCard';
 export { default as StatCard } from './dashboard/StatCard';
+export { default as FilterCrud } from './dashboard/FilterCrud';
+export { default as SapaanDashboard } from './dashboard/SapaanDashboard';
 
 // Reusable Components Form
 export { default as FormHeader } from './forms/FormHeader';

@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import * as kategoriService from '../../../services/kategoriService';
 import { Button, InputForm, Modal } from '../../elements';
+import Select from '../../elements/Select';
 
 const JenisCrudModal = ({
   isOpen,
@@ -84,23 +85,19 @@ const JenisCrudModal = ({
         />
 
         {/* Pilih Kategori */}
-        <div className='space-y-2'>
-          <label className='block text-sm font-medium'>Kategori</label>
-          <select
-            name='id_kategori'
-            value={formValues.id_kategori}
-            onChange={handleChange}
-            className='w-full border rounded px-3 py-2'
-            required
-          >
-            <option value=''>-- Pilih Kategori --</option>
-            {kategoriOptions.map((k) => (
-              <option key={k.id_kategori} value={k.id_kategori}>
-                {k.nama_kategori}
-              </option>
-            ))}
-          </select>
-        </div>
+        <Select
+          label='Kategori'
+          value={formValues.id_kategori}
+          onChange={(value) =>
+            setFormValues((prev) => ({ ...prev, id_kategori: value }))
+          }
+          options={kategoriOptions.map((k) => ({
+            value: k.id_kategori,
+            label: k.nama_kategori,
+          }))}
+          placeholder='-- Pilih Kategori --'
+          required
+        />
 
         {/* Tombol Aksi */}
         <div className='flex justify-end gap-2 mt-4'>

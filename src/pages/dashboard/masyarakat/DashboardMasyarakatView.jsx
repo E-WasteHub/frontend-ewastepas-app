@@ -1,8 +1,9 @@
 import { Gift, Truck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Card, Loading, SapaanDashboard } from '../../../components/elements';
+import { Card, Loading } from '../../../components/elements';
 import {
   PenjemputanMasyarakatCard,
+  SapaanDashboard,
   StatCard,
 } from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';

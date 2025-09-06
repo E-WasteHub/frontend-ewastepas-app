@@ -1,12 +1,6 @@
 // src/hooks/common/usePagination.js
 import { useMemo, useState } from 'react';
 
-/**
- * Hook untuk mengelola pagination (halaman, slice data, total halaman).
- *
- * @param {Array} data - data asli (array)
- * @param {number} pageSize - jumlah item per halaman (default = 5)
- */
 const usePagination = (data, pageSize = 5) => {
   const [currentPage, setCurrentPage] = useState(1);
 

@@ -1,10 +1,14 @@
 // src/pages/admin/daerah/AdminKelolaDaerahView.jsx
-import { useState } from 'react';
-import DataTable from 'react-data-table-component';
-import { Loading } from '../../../components/elements';
-import DaerahCrudModal from '../../../components/fragments/admincrud/DaerahCrudModal';
-import ConfirmModal from '../../../components/fragments/modals/ConfirmModal';
+import { useMemo, useState } from 'react';
+import { Loading, Pagination } from '../../../components/elements';
+import {
+  AdminTable,
+  ConfirmModal,
+  DaerahCrudModal,
+  FilterCrud,
+} from '../../../components/fragments';
 import useAdminCrud from '../../../hooks/useAdminCrud';
+import usePagination from '../../../hooks/usePagination';
 import useToast from '../../../hooks/useToast';
 import * as daerahService from '../../../services/daerahService';
 
@@ -26,6 +30,31 @@ const AdminKelolaDaerahView = () => {
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState(null);
+
+  // Search state
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('');
+
+  // Filter data by search
+  const filteredData = useMemo(() => {
+    if (!search && !filter) return daerah;
+    return daerah.filter((item) => {
+      const matchSearch =
+        !search ||
+        item.nama_daerah?.toLowerCase().includes(search.toLowerCase());
+      let matchFilter = true;
+      if (filter === 'A-M') {
+        matchFilter = item.nama_daerah?.[0]?.toLowerCase() <= 'm';
+      } else if (filter === 'N-Z') {
+        matchFilter = item.nama_daerah?.[0]?.toLowerCase() > 'm';
+      }
+      return matchSearch && matchFilter;
+    });
+  }, [daerah, search, filter]);
+
+  // Pagination
+  const { currentPage, setCurrentPage, totalPages, paginatedData } =
+    usePagination(filteredData, 7);
 
   // Handler Tambah/Edit
   const handleCrudSubmit = async (formValues) => {
@@ -70,7 +99,7 @@ const AdminKelolaDaerahView = () => {
   const columns = [
     {
       name: 'Nama Daerah',
-      selector: (row) => row.nama_daerah,
+      selector: 'nama_daerah',
       sortable: true,
     },
     {
@@ -82,18 +111,18 @@ const AdminKelolaDaerahView = () => {
               setEditTarget(row);
               setCrudOpen(true);
             }}
-            className='px-3 py-1 bg-yellow-500 text-white rounded'
+            className='px-3 py-1 text-xs font-medium rounded bg-yellow-500 text-white hover:bg-yellow-600'
           >
-            ✏️ Edit
+            Edit
           </button>
           <button
             onClick={() => {
               setConfirmTarget(row.id_daerah);
               setConfirmOpen(true);
             }}
-            className='px-3 py-1 bg-red-600 text-white rounded'
+            className='px-3 py-1 text-xs font-medium rounded bg-red-600 text-white hover:bg-red-700'
           >
-            🗑 Hapus
+            Hapus
           </button>
         </div>
       ),
@@ -102,32 +131,52 @@ const AdminKelolaDaerahView = () => {
 
   return (
     <div className='max-w-7xl mx-auto p-6 space-y-6'>
-      <div className='flex justify-between items-center'>
+      <div className='space-y-2'>
         <h1 className='text-2xl font-bold'>Kelola Daerah</h1>
-        <button
-          onClick={() => {
-            setEditTarget(null);
-            setCrudOpen(true);
-          }}
-          className='px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700'
-        >
-          ➕ Tambah Daerah
-        </button>
+        <p className='text-gray-600'>
+          Kelola daftar daerah untuk penempatan dropbox dan layanan penjemputan
+        </p>
       </div>
 
       {isLoading ? (
         <Loading mode='inline' text='Memuat data...' />
       ) : error ? (
-        <p className='text-red-500'>{error}</p>
+        <p className='text-red-500'>Error: {error}</p>
+      ) : daerah.length === 0 ? (
+        <div className='text-center py-8 text-gray-500'>
+          <p>Belum ada data daerah.</p>
+          <p>Klik tombol "Tambah Daerah" untuk menambahkan data pertama.</p>
+        </div>
       ) : (
-        <DataTable
-          columns={columns}
-          data={daerah}
-          pagination
-          highlightOnHover
-          striped
-          dense
-        />
+        <>
+          <AdminTable
+            columns={columns}
+            data={paginatedData}
+            topContent={
+              <FilterCrud
+                search={search}
+                setSearch={setSearch}
+                filter={filter}
+                setFilter={setFilter}
+                placeholder='Cari daerah...'
+                filterOptions={[
+                  { value: 'A-M', label: 'A - M' },
+                  { value: 'N-Z', label: 'N - Z' },
+                ]}
+                filterLabel='Filter Abjad'
+                onAdd={() => {
+                  setEditTarget(null);
+                  setCrudOpen(true);
+                }}
+              />
+            }
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </>
       )}
 
       {/* Crud Modal */}

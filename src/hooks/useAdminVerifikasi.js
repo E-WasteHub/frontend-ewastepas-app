@@ -14,7 +14,7 @@ const useAdminVerifikasi = () => {
     try {
       setIsLoading(true);
       setError('');
-      const response = await verifikasiService.indexBelumVerifikasi();
+      const response = await verifikasiService.ambilSemuaDataBelumVerifikasi();
       console.log('Data akun belum diverifikasi:', response);
       const rawData = ambilDataArrayAman(response);
       setData(rawData);
@@ -36,9 +36,11 @@ const useAdminVerifikasi = () => {
     try {
       setIsLoading(true);
       setError('');
-      const response = await verifikasiService.selectAkunPengguna(id_pengguna);
+      const response = await verifikasiService.ambilDetailAkunPengguna(
+        id_pengguna
+      );
       console.log('Detail akun:', response);
-      const result = response?.data || null; // ✅ ambil data aja
+      const result = response?.data || null;
       setDetail(result);
       return result;
     } catch (err) {
@@ -57,7 +59,7 @@ const useAdminVerifikasi = () => {
       setIsSubmitting(true);
       setError('');
 
-      const response = await verifikasiService.updateStatusAkunPengguna(
+      const response = await verifikasiService.ubahStatusAkunPengguna(
         id_pengguna,
         status_pengguna
       );
