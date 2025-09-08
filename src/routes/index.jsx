@@ -97,6 +97,7 @@ const AppRouter = () => {
         <Route path='/edukasi' element={<EdukasiView />} />
         <Route path='/edukasi/:id' element={<EdukasiDetailView />} />
         <Route path='/panduan-aplikasi' element={<PanduanAplikasiView />} />
+        <Route path='/pwa-test' element={<PWATestView />} />
 
         {/* ========= Auth Routes ========= */}
         <Route path='/login' element={<LoginView />} />

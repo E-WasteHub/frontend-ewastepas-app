@@ -8,10 +8,12 @@ import {
 import useDarkMode from '../../hooks/useDarkMode';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 import useProfil from '../../hooks/useProfil';
+import useToast from '../../hooks/useToast';
 
 const ProfilView = () => {
   useDocumentTitle('Pengaturan Profil');
   const { isDarkMode } = useDarkMode();
+  const { success, error: showErrorToast } = useToast();
 
   // 🔹 Ambil data & actions dari hook profil
   const {
@@ -29,42 +31,45 @@ const ProfilView = () => {
 
   // ===== STATE UI =====
   const [activeTab, setActiveTab] = useState('profil');
-  const [alert, setAlert] = useState({ open: false, type: '', message: '' });
 
   // ===== HANDLER: SIMPAN PROFIL =====
   const handleSaveProfil = async () => {
     const result = await updateProfil();
-    setAlert({
-      open: true,
-      type: result.success ? 'success' : 'error',
-      message: result.success
-        ? 'Profil berhasil diperbarui ✅'
-        : result.error || 'Gagal memperbarui profil ❌',
-    });
+    if (result.success) {
+      success('Profil berhasil diperbarui ✅');
+
+      // 🔄 Refresh halaman agar semua komponen ter-update
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000); // Delay agar user sempat melihat toast success
+    } else {
+      showErrorToast(result.error || 'Gagal memperbarui profil ❌');
+    }
   };
 
   // ===== HANDLER: UBAH PASSWORD =====
   const handleUbahKataSandi = async (payload) => {
     const result = await ubahPassword(payload);
-    setAlert({
-      open: true,
-      type: result.success ? 'success' : 'error',
-      message: result.success
-        ? 'Kata sandi berhasil diubah ✅'
-        : result.error || 'Gagal mengubah kata sandi ❌',
-    });
+    if (result.success) {
+      success('Kata sandi berhasil diubah ✅');
+    } else {
+      showErrorToast(result.error || 'Gagal mengubah kata sandi ❌');
+    }
   };
 
   // ===== HANDLER: UPLOAD DOKUMEN =====
   const handleUploadDokumen = async () => {
     const result = await uploadDokumen();
-    setAlert({
-      open: true,
-      type: result.success ? 'success' : 'error',
-      message: result.success
-        ? 'Dokumen berhasil diunggah ✅'
-        : result.error || 'Gagal mengunggah dokumen ❌',
-    });
+    if (result.success) {
+      success('Dokumen berhasil diunggah ✅');
+
+      // 🔄 Refresh halaman agar status ter-update di seluruh aplikasi
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500); // Delay agar user sempat melihat toast success
+    } else {
+      showErrorToast(result.error || 'Gagal mengunggah dokumen ❌');
+    }
   };
 
   // ===== MENU PROFIL =====
@@ -157,9 +162,6 @@ const ProfilView = () => {
           )}
         </div>
       </div>
-
-      {/* ===== ALERT INFO ===== */}
-      {alert.open && <Alert type={alert.type} message={alert.message} />}
     </div>
   );
 };

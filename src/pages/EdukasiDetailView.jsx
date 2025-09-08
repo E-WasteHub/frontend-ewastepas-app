@@ -1,16 +1,17 @@
 // src/views/EdukasiDetailView.jsx
-import { ArrowLeft, BookOpen } from 'lucide-react';
+import { ArrowLeft, BookOpen, WifiOff } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Loading } from '../components/elements';
 import MainLayout from '../components/layouts/MainLayout';
 import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-import { detailEdukasi } from '../services/edukasiService';
+import useOfflineEdukasi from '../hooks/useOfflineEdukasi';
 
 const EdukasiDetailView = () => {
   const { id } = useParams();
   const { isDarkMode } = useDarkMode();
+  const { isOnline, getEdukasiDetail, isEdukasiCached } = useOfflineEdukasi();
 
   // state lokal
   const [artikel, setArtikel] = useState(null);
@@ -24,8 +25,8 @@ const EdukasiDetailView = () => {
       try {
         setIsLoading(true);
         setError('');
-        const res = await detailEdukasi(id);
-        setArtikel(res.data);
+        const data = await getEdukasiDetail(id);
+        setArtikel(data);
       } catch (err) {
         setError(err.message || 'Gagal memuat detail edukasi');
       } finally {
@@ -34,14 +35,72 @@ const EdukasiDetailView = () => {
     };
 
     if (id) fetchDetail();
-  }, [id]);
+  }, [id, getEdukasiDetail]);
 
   if (isLoading) {
     return <Loading mode='overlay' text='Loading artikel...' />;
   }
 
   if (error) {
-    return <p className='text-center text-red-500 py-10'>{error}</p>;
+    return (
+      <MainLayout>
+        <section
+          className={`px-4 py-12 mt-12 ${
+            isDarkMode ? 'bg-slate-900' : 'bg-slate-50'
+          }`}
+        >
+          <div className='max-w-4xl mx-auto text-center'>
+            <Link
+              to='/edukasi'
+              className={`inline-flex items-center mb-6 text-sm font-medium ${
+                isDarkMode
+                  ? 'text-green-400 hover:text-green-300'
+                  : 'text-green-600 hover:text-green-500'
+              }`}
+            >
+              <ArrowLeft className='w-4 h-4 mr-2' />
+              Kembali ke Edukasi
+            </Link>
+
+            {!isOnline ? (
+              <div
+                className={`border rounded-lg p-8 ${
+                  isDarkMode
+                    ? 'bg-amber-900/20 border-amber-700'
+                    : 'bg-amber-50 border-amber-200'
+                }`}
+              >
+                <WifiOff className='w-16 h-16 mx-auto mb-4 text-amber-600' />
+                <h2
+                  className={`text-xl font-semibold mb-4 ${
+                    isDarkMode ? 'text-amber-400' : 'text-amber-800'
+                  }`}
+                >
+                  Konten Tidak Tersedia Offline
+                </h2>
+                <p
+                  className={`mb-4 ${
+                    isDarkMode ? 'text-amber-300' : 'text-amber-700'
+                  }`}
+                >
+                  {error}
+                </p>
+                <p
+                  className={`text-sm ${
+                    isDarkMode ? 'text-amber-400' : 'text-amber-600'
+                  }`}
+                >
+                  Sambungkan internet atau kembali ke halaman edukasi untuk
+                  menyimpan konten offline
+                </p>
+              </div>
+            ) : (
+              <p className='text-red-500 py-10'>{error}</p>
+            )}
+          </div>
+        </section>
+      </MainLayout>
+    );
   }
 
   if (!artikel) {
@@ -100,10 +159,25 @@ const EdukasiDetailView = () => {
             dangerouslySetInnerHTML={{ __html: artikel.isi_konten }}
           />
 
-          {/* Footer */}
-          <div className='mt-10 flex items-center gap-2 text-sm text-slate-500'>
-            <BookOpen className='w-4 h-4' />
-            Artikel edukasi dari EwasteHub
+          {/* Footer dengan status offline */}
+          <div className='mt-10 flex items-center justify-between'>
+            <div className='flex items-center gap-2 text-sm text-slate-500'>
+              <BookOpen className='w-4 h-4' />
+              Artikel edukasi dari EwasteHub
+            </div>
+
+            {!isOnline && isEdukasiCached(id) && (
+              <div
+                className={`flex items-center gap-2 text-sm px-3 py-1 rounded-full ${
+                  isDarkMode
+                    ? 'bg-amber-900/30 text-amber-400'
+                    : 'bg-amber-100 text-amber-700'
+                }`}
+              >
+                <WifiOff className='w-3 h-3' />
+                Disimpan offline
+              </div>
+            )}
           </div>
         </div>
       </section>

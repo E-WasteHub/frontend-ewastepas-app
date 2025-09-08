@@ -1,18 +1,19 @@
 // src/views/EdukasiView.jsx
-import { BookOpen } from 'lucide-react';
+import { BookOpen, WifiOff } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Badge, Loading } from '../components/elements';
+import { Badge, CacheManager, Loading } from '../components/elements';
 import Pagination from '../components/elements/Pagination';
 import MainLayout from '../components/layouts/MainLayout';
 import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-import { ambilSemuaEdukasi } from '../services/edukasiService';
+import useOfflineEdukasi from '../hooks/useOfflineEdukasi';
 
 const EdukasiView = () => {
   useDocumentTitle('Edukasi | E-wasteHub');
   const { isDarkMode } = useDarkMode();
+  const { isOnline, getEdukasiList } = useOfflineEdukasi();
 
   // state lokal
   const [edukasiData, setEdukasiData] = useState([]);
@@ -27,8 +28,8 @@ const EdukasiView = () => {
       try {
         setIsLoading(true);
         setError('');
-        const res = await ambilSemuaEdukasi();
-        setEdukasiData(res.data || res);
+        const data = await getEdukasiList();
+        setEdukasiData(data || []);
       } catch (err) {
         setError(err.message || 'Gagal memuat edukasi');
       } finally {
@@ -37,7 +38,7 @@ const EdukasiView = () => {
     };
 
     fetchData();
-  }, []);
+  }, [getEdukasiList]);
 
   const totalPages = Math.ceil(edukasiData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -85,8 +86,57 @@ const EdukasiView = () => {
         className={`px-4 py-8 ${isDarkMode ? 'bg-slate-900/50' : 'bg-white'}`}
       >
         <div className='max-w-6xl mx-auto'>
+          {/* Cache Manager */}
+          <div className='mb-8'>
+            <CacheManager />
+          </div>
+
+          {/* Offline warning */}
+          {!isOnline && edukasiData.length === 0 && (
+            <Motion.div
+              className={`border rounded-lg p-6 mb-8 text-center ${
+                isDarkMode
+                  ? 'bg-amber-900/20 border-amber-700'
+                  : 'bg-amber-50 border-amber-200'
+              }`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <WifiOff className='w-12 h-12 mx-auto mb-4 text-amber-600' />
+              <h3
+                className={`text-lg font-semibold mb-2 ${
+                  isDarkMode ? 'text-amber-400' : 'text-amber-800'
+                }`}
+              >
+                Mode Offline
+              </h3>
+              <p
+                className={`${
+                  isDarkMode ? 'text-amber-300' : 'text-amber-700'
+                }`}
+              >
+                Konten edukasi tidak tersedia offline. Sambungkan internet dan
+                simpan konten untuk akses offline.
+              </p>
+            </Motion.div>
+          )}
+
           {isLoading && <Loading mode='inline' text='Loading konten...' />}
-          {error && <p className='text-center text-red-500'>{error}</p>}
+          {error && (
+            <div className='text-center'>
+              <p className='text-red-500 mb-4'>{error}</p>
+              {!isOnline && (
+                <p
+                  className={`text-sm ${
+                    isDarkMode ? 'text-slate-400' : 'text-slate-600'
+                  }`}
+                >
+                  Periksa koneksi internet atau gunakan konten yang tersimpan
+                  offline
+                </p>
+              )}
+            </div>
+          )}
 
           {!isLoading && !error && (
             <>

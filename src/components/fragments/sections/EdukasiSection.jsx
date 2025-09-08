@@ -4,11 +4,12 @@ import { motion as Motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
-import { ambilSemuaEdukasi } from '../../../services/edukasiService';
+import useOfflineEdukasi from '../../../hooks/useOfflineEdukasi';
 import { Badge } from '../../elements';
 
 const EdukasiSection = () => {
   const { isDarkMode } = useDarkMode();
+  const { getEdukasiList } = useOfflineEdukasi();
 
   // state lokal
   const [data, setData] = useState([]);
@@ -21,8 +22,8 @@ const EdukasiSection = () => {
       try {
         setIsLoading(true);
         setError('');
-        const res = await ambilSemuaEdukasi(); // ✅ ambil dari service
-        setData(res.data || []); // asumsi respons punya { data: [...] }
+        const edukasiData = await getEdukasiList();
+        setData(edukasiData || []);
       } catch (err) {
         setError(err.message || 'Gagal memuat data edukasi');
       } finally {
@@ -31,7 +32,8 @@ const EdukasiSection = () => {
     };
 
     fetchData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - hanya run sekali saat mount
 
   // hanya ambil 4 edukasi terbaru
   const edukasiPreview = data.slice(0, 4);

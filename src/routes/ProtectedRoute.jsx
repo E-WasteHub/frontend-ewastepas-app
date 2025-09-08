@@ -7,24 +7,31 @@ import {
   getProfilePathByPeran,
 } from '../utils/peranUtils';
 
+/**
+ * Komponen untuk melindungi rute dari akses yang tidak sah
+ * Mengatur otorisasi berdasarkan peran pengguna dan status akun
+ */
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { pengguna, isLoading } = usePengguna();
   const navigate = useNavigate();
   const { error, warning } = useToast();
 
-  // 🔄 Tunggu dulu sampai usePengguna selesai load
+  // ===== TAHAP 1: PEMERIKSAAN LOADING =====
+  // Tunggu sampai data pengguna selesai dimuat
   if (isLoading) {
     return <Loading mode='overlay' text='Memeriksa akses pengguna...' />;
   }
 
-  // 🚫 Belum login → ke halaman login
+  // ===== TAHAP 2: PEMERIKSAAN LOGIN =====
+  // Jika belum login, arahkan ke halaman login
   if (!pengguna) {
     return <Navigate to='/login' replace />;
   }
 
   const currentRole = pengguna.peran;
 
-  // 🚫 Role tidak sesuai → redirect ke dashboard sesuai peran
+  // ===== TAHAP 3: PEMERIKSAAN OTORISASI PERAN =====
+  // Periksa apakah peran pengguna diizinkan mengakses halaman ini
   if (allowedRoles && !allowedRoles.includes(currentRole)) {
     warning(
       `Anda tidak memiliki izin untuk mengakses halaman ini. Peran Anda: ${currentRole}`
@@ -39,15 +46,19 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     );
   }
 
-  // 🚫 Khusus Mitra Kurir → cek status (sebelum Aktif tidak boleh akses fitur)
+  // ===== TAHAP 4: PEMERIKSAAN KHUSUS MITRA KURIR =====
+  // Mitra Kurir memiliki validasi status tambahan sebelum dapat mengakses fitur
   if (currentRole === 'Mitra Kurir' && pengguna.status_pengguna !== 'Aktif') {
     const profilePath = getProfilePathByPeran(currentRole);
 
-    // Status: Belum Aktif → perlu upload dokumen
+    // Cegah redirect loop - jika sudah di halaman profil, izinkan akses
+    const isCurrentlyOnProfile = window.location.pathname === profilePath;
+
+    // Status 1: Belum Aktif - Pengguna baru yang belum upload dokumen
     if (pengguna.status_pengguna === 'Belum Aktif') {
-      if (window.location.pathname !== profilePath) {
+      if (!isCurrentlyOnProfile) {
         warning(
-          'Akun Anda belum aktif. Silakan upload dokumen verifikasi terlebih dahulu di halaman profil.'
+          'Akun Anda belum aktif. Silakan upload dokumen verifikasi terlebih dahulu di halaman profil untuk menggunakan fitur aplikasi.'
         );
 
         setTimeout(() => {
@@ -62,11 +73,12 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
         );
       }
     }
-    // Status: Belum Selesai → masih proses registrasi
+
+    // Status 2: Belum Selesai - Dokumen ditolak admin, perlu upload ulang
     else if (pengguna.status_pengguna === 'Belum Selesai') {
-      if (window.location.pathname !== profilePath) {
-        warning(
-          'Proses registrasi Anda belum selesai. Silakan lengkapi data profil terlebih dahulu.'
+      if (!isCurrentlyOnProfile) {
+        error(
+          'Dokumen verifikasi Anda tidak sesuai dan telah ditolak oleh admin. Silakan upload dokumen yang benar di halaman profil.'
         );
 
         setTimeout(() => {
@@ -76,16 +88,17 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
         return (
           <Loading
             mode='overlay'
-            text='Mengarahkan ke halaman profil untuk melengkapi registrasi...'
+            text='Mengarahkan ke halaman profil untuk upload ulang dokumen...'
           />
         );
       }
     }
-    // Status: Menunggu Verifikasi → dokumen sudah diupload, menunggu admin
+
+    // Status 3: Menunggu Verifikasi - Dokumen sudah diupload, menunggu persetujuan admin
     else if (pengguna.status_pengguna === 'Menunggu Verifikasi') {
-      if (window.location.pathname !== profilePath) {
+      if (!isCurrentlyOnProfile) {
         warning(
-          'Dokumen Anda sedang dalam proses verifikasi oleh admin. Mohon tunggu konfirmasi lebih lanjut.'
+          'Dokumen Anda sedang dalam proses verifikasi oleh admin. Mohon tunggu konfirmasi dan jangan mengubah dokumen selama proses berlangsung.'
         );
 
         setTimeout(() => {
@@ -93,15 +106,19 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
         }, 2000);
 
         return (
-          <Loading mode='overlay' text='Mengarahkan ke halaman profil...' />
+          <Loading
+            mode='overlay'
+            text='Mengarahkan ke halaman profil untuk menunggu verifikasi...'
+          />
         );
       }
     }
-    // Status lain (misal: Ditolak, dll)
+
+    // Status lainnya - Kemungkinan ada status baru atau error
     else {
-      if (window.location.pathname !== profilePath) {
+      if (!isCurrentlyOnProfile) {
         error(
-          `Status akun Anda: ${pengguna.status_pengguna}. Silakan hubungi admin untuk informasi lebih lanjut.`
+          `Status akun Anda: ${pengguna.status_pengguna}. Silakan hubungi admin melalui customer service untuk informasi lebih lanjut.`
         );
 
         setTimeout(() => {
@@ -115,7 +132,8 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     }
   }
 
-  // ✅ Kalau lolos semua validasi → render children
+  // ===== TAHAP 5: AKSES DIBERIKAN =====
+  // Semua pemeriksaan berhasil, render komponen yang diminta
   return children;
 };
 
