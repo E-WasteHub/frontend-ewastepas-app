@@ -38,7 +38,7 @@ const LogoApp = ({ size = null, withText = false, responsive = true }) => {
         {!imgError ? (
           <img
             src={logoSrc}
-            alt='EWasteHub Logo'
+            alt='Ewastepas Logo'
             className={`${currentSize.icon} object-contain`}
             onError={() => setImgError(true)}
           />
@@ -53,7 +53,7 @@ const LogoApp = ({ size = null, withText = false, responsive = true }) => {
             isDarkMode ? 'text-green-400' : 'text-green-500'
           }`}
         >
-          EWasteHub
+          Ewastepas
         </span>
       )}
     </div>

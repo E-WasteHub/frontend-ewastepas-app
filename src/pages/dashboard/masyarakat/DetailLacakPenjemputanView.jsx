@@ -23,7 +23,7 @@ import {
 const DetailLacakPenjemputan = () => {
   useDocumentTitle('Detail Penjemputan');
   const { isDarkMode } = useDarkMode();
-  const { showAlert } = useToast(); // ✅ Add toast
+  const { showAlert } = useToast();
   const { id_penjemputan } = useParams();
   const navigate = useNavigate();
 
@@ -58,9 +58,9 @@ const DetailLacakPenjemputan = () => {
     >
       {/* Header */}
       <header className='mb-2'>
-        <h1 className='text-2xl text-2xl font-bold'>Detail Penjemputan</h1>
+        <h1 className='text-2xl font-bold'>Detail Penjemputan</h1>
         <p
-          className={`text-sm text-base ${
+          className={`text-sm  ${
             isDarkMode ? 'text-gray-300' : 'text-gray-500'
           }`}
         >
@@ -77,7 +77,7 @@ const DetailLacakPenjemputan = () => {
         {/* Info penjemputan */}
         <section className='mb-4'>
           <h3 className='text-2xl font-bold mb-3'>Informasi Penjemputan</h3>
-          <div className='grid grid-cols-1 grid-cols-2 gap-4 text-sm'>
+          <div className='grid grid-cols-2 gap-4 text-sm'>
             <div>
               <span className='text-xs font-semibold text-gray-400'>
                 Kode Penjemputan : {''}
@@ -141,7 +141,7 @@ const DetailLacakPenjemputan = () => {
         </section>
 
         {/* Status + Detail sampah */}
-        <div className='grid grid-cols-1 grid-cols-2 gap-4'>
+        <div className='grid grid-cols-2 gap-4'>
           <section>
             <h3 className='text-lg font-semibold mb-2 flex items-center gap-2'>
               <Truck className='w-5 h-5 text-green-500' /> Status Penjemputan

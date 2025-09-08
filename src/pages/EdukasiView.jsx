@@ -61,7 +61,7 @@ const EdukasiView = () => {
         <div className='max-w-4xl mx-auto'>
           <Badge variant='solid' intent='success' size='md' className='mb-4'>
             <BookOpen className='w-4 h-4 mr-2' />
-            Pusat Edukasi EwasteHub
+            Pusat Edukasi Ewastepas
           </Badge>
 
           <h1

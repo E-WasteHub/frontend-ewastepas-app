@@ -6,7 +6,7 @@ import MainLayout from '../components/layouts/MainLayout';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
 const HomePage = () => {
-  useDocumentTitle('EwasteHub App');
+  useDocumentTitle('Ewastepas App');
 
   return (
     <MainLayout>

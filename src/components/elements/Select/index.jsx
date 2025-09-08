@@ -66,14 +66,16 @@ const Select = ({
         </select>
 
         {/* Panah dropdown - Hanya tampil di desktop */}
-        {!isMobile && (
-          <div className='absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none'>
-            <ChevronDown
-              size={16}
-              className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}
-            />
-          </div>
-        )}
+        <div
+          className={`absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none ${
+            isMobile ? 'hidden' : ''
+          }`}
+        >
+          <ChevronDown
+            size={16}
+            className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}
+          />
+        </div>
       </div>
     </div>
   );

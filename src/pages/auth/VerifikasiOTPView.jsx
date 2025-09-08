@@ -6,7 +6,7 @@ const VerifikasiOTPView = () => {
   useDocumentTitle('Verifikasi OTP - E-WasteHub');
 
   return (
-    <AuthLayout namaApp='EwasteHub'>
+    <AuthLayout namaApp='Ewastepas'>
       <FormVerifikasiOTP />
     </AuthLayout>
   );

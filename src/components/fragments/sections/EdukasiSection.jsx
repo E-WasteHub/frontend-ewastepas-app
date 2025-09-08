@@ -55,7 +55,7 @@ const EdukasiSection = () => {
         >
           <Badge variant='solid' intent='success' size='md' className='mb-4'>
             <Sparkles className='w-4 h-4 mr-1.5' />
-            Edukasi EWasteHub
+            Edukasi Ewastepas
           </Badge>
 
           <h2
@@ -63,7 +63,7 @@ const EdukasiSection = () => {
               isDarkMode ? 'text-white' : 'text-slate-900'
             }`}
           >
-            Kumpulan Edukasi EWasteHub
+            Kumpulan Edukasi Ewastepas
           </h2>
 
           <p

@@ -48,7 +48,7 @@ const FormResetKataSandi = () => {
       >
         {/* Header */}
         <FormHeader
-          title='EWasteHub'
+          title='Ewastepas'
           subtitle='Reset Kata Sandi'
           showLogo
           className='mb-6'

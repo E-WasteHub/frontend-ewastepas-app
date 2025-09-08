@@ -113,7 +113,7 @@ const PWAInstallPrompt = () => {
         </div>
 
         <div className='flex-1'>
-          <h3 className='font-semibold text-sm mb-1'>Install EWasteHub</h3>
+          <h3 className='font-semibold text-sm mb-1'>Install Ewastepas</h3>
           <p
             className={`text-xs mb-3 ${
               isDarkMode ? 'text-gray-400' : 'text-gray-600'

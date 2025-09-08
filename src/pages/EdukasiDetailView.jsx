@@ -17,7 +17,7 @@ const EdukasiDetailView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useDocumentTitle('Detail Edukasi | EwasteHub');
+  useDocumentTitle('Detail Edukasi | Ewastepas');
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -163,7 +163,7 @@ const EdukasiDetailView = () => {
           <div className='mt-10 flex items-center justify-between'>
             <div className='flex items-center gap-2 text-sm text-slate-500'>
               <BookOpen className='w-4 h-4' />
-              Artikel edukasi dari EwasteHub
+              Artikel edukasi dari Ewastepas
             </div>
 
             {!isOnline && isEdukasiCached(id) && (

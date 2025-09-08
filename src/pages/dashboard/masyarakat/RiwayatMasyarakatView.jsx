@@ -83,7 +83,7 @@ const RiwayatMasyarakatView = () => {
       </h2>
 
       {/* Layout grid */}
-      <div className='grid grid-cols-1 grid-cols-4 gap-6'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
         {/* Sidebar filter */}
         <div className='col-span-1'>
           <FilterCard

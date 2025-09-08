@@ -18,8 +18,8 @@ export default defineConfig({
       base: '/',
       includeAssets: ['favicon.ico', 'vite.svg'],
       manifest: {
-        name: 'EWasteHub',
-        short_name: 'EWasteHub',
+        name: 'Ewastepas',
+        short_name: 'Ewastepas',
         description: 'Aplikasi Antar Jemput Sampah Elektronik',
         theme_color: '#508D4E',
         background_color: '#ffffff',

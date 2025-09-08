@@ -7,7 +7,7 @@ const LoginView = () => {
   useDocumentTitle('Masuk - E-WasteHub');
 
   return (
-    <AuthLayout namaApp='EwasteHub' maxWidth='max-w-2xl'>
+    <AuthLayout namaApp='Ewastepas' maxWidth='max-w-2xl'>
       <FormLogin />
     </AuthLayout>
   );

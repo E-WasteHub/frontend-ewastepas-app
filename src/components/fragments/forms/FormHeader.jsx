@@ -12,7 +12,7 @@ const FormHeader = ({ title, subtitle, showLogo = true, center = true }) => {
     <div className={textAlign}>
       {/* Logo */}
       {showLogo && (
-        <img src={logo} alt='EWasteHub' className='h-16 w-auto mx-auto mb-6' />
+        <img src={logo} alt='Ewastepas' className='h-16 w-auto mx-auto mb-6' />
       )}
 
       {/* Judul */}

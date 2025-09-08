@@ -6,7 +6,7 @@ const RegisterView = () => {
   useDocumentTitle('Registrasi - E-WasteHub');
 
   return (
-    <AuthLayout namaApp='EwasteHub'>
+    <AuthLayout namaApp='Ewastepas'>
       <FormRegister />
     </AuthLayout>
   );

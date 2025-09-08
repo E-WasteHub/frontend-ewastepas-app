@@ -1,10 +1,10 @@
-# EwasteHub: Frontend Aplikasi Antar Jemput Sampah Elektronik
+# Ewastepas: Frontend Aplikasi Antar Jemput Sampah Elektronik
 
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="src/assets/img/ewasteDark.png">
     <source media="(prefers-color-scheme: light)" srcset="src/assets/img/ewasteLight.png">
-    <img alt="EwasteHub Logo" width='150px' height='150px' src="src/assets/img/ewasteLight.png">
+    <img alt="Ewastepas Logo" width='150px' height='150px' src="src/assets/img/ewasteLight.png">
   </picture>
 </p>
 
@@ -13,11 +13,11 @@
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 
-Selamat datang di repositori frontend untuk **EwasteHub**, sebuah aplikasi inovatif yang dirancang untuk merevolusi cara kita mengelola sampah elektronik. Proyek ini bertujuan untuk menyediakan platform yang ramah pengguna, efisien, dan andal untuk menjadwalkan layanan penjemputan sampah elektronik langsung dari rumah.
+Selamat datang di repositori frontend untuk **Ewastepas**, sebuah aplikasi inovatif yang dirancang untuk merevolusi cara kita mengelola sampah elektronik. Proyek ini bertujuan untuk menyediakan platform yang ramah pengguna, efisien, dan andal untuk menjadwalkan layanan penjemputan sampah elektronik langsung dari rumah.
 
 ## 📖 Tentang Proyek
 
-EwasteHub adalah solusi modern untuk masalah limbah elektronik yang terus berkembang. Dengan antarmuka yang bersih dan intuitif, aplikasi ini memungkinkan pengguna untuk dengan mudah mendaftar, masuk, dan mengakses berbagai fitur untuk membuang e-waste mereka secara bertanggung jawab. Dibangun dengan teknologi web modern seperti React dan Vite, aplikasi ini menawarkan performa tinggi dan pengalaman pengguna yang mulus di berbagai perangkat.
+Ewastepas adalah solusi modern untuk masalah limbah elektronik yang terus berkembang. Dengan antarmuka yang bersih dan intuitif, aplikasi ini memungkinkan pengguna untuk dengan mudah mendaftar, masuk, dan mengakses berbagai fitur untuk membuang e-waste mereka secara bertanggung jawab. Dibangun dengan teknologi web modern seperti React dan Vite, aplikasi ini menawarkan performa tinggi dan pengalaman pengguna yang mulus di berbagai perangkat.
 
 ## 🛠️ Dibangun Dengan
 
@@ -42,13 +42,13 @@ Pastikan Anda telah menginstal [Node.js](https://nodejs.org/) (disarankan versi 
 1.  **Clone repositori ini ke mesin lokal Anda:**
 
     ```sh
-    git clone https://github.com/username/frontend-ewastehub-app.git
+    git clone https://github.com/username/frontend-ewastepas-app.git
     ```
 
 2.  **Navigasi ke direktori proyek:**
 
     ```sh
-    cd frontend-ewastehub-app
+    cd frontend-ewastepas-app
     ```
 
 3.  **Instal semua dependensi yang diperlukan:**
@@ -90,7 +90,7 @@ Setelah instalasi selesai, Anda dapat menjalankan aplikasi dalam beberapa mode:
 Struktur direktori proyek ini sudah disesuaikan dengan workspace nyata. Berikut penjelasan dan struktur folder utama:
 
 ```
-frontend-ewastehub-app/
+frontend-ewastepas-app/
 ├── public/                # Aset statis yang langsung diakses browser (favicon, logo, dsb)
 ├── src/                   # Seluruh source code aplikasi
 │   ├── assets/            # Gambar, ikon, dan media lain

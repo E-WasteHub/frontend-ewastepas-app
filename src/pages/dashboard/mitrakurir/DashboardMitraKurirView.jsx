@@ -40,7 +40,7 @@ const DashboardMitraKurirView = () => {
         pengguna={pengguna}
         subtitle={
           <span>
-            Selamat datang di dashboard Mitra Kurir EWasteHub. Semangat bekerja
+            Selamat datang di dashboard Mitra Kurir Ewastepas. Semangat bekerja
             💪
           </span>
         }

@@ -37,7 +37,7 @@ const SplashScreen = ({ onComplete }) => {
           <div className='w-24 h-24 mx-auto mb-4 bg-white rounded-full flex items-center justify-center shadow-lg'>
             <img
               src={ewasteLight}
-              alt='EWasteHub Logo'
+              alt='Ewastepas Logo'
               className='w-16 h-16 object-contain'
             />
           </div>
@@ -49,7 +49,7 @@ const SplashScreen = ({ onComplete }) => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <h1 className='text-3xl font-bold text-white mb-2'>EWasteHub</h1>
+          <h1 className='text-3xl font-bold text-white mb-2'>Ewastepas</h1>
           <p className='text-green-100 text-base'>
             Antar Jemput Sampah Elektronik
           </p>

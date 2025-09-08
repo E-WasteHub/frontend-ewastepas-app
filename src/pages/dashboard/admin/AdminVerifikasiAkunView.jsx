@@ -1,11 +1,5 @@
 import { useMemo, useState } from 'react';
-import {
-  Button,
-  Desktop,
-  Mobile,
-  Modal,
-  Pagination,
-} from '../../../components/elements';
+import { Button, Modal, Pagination } from '../../../components/elements';
 import {
   AdminTable,
   ConfirmModal,
@@ -15,12 +9,14 @@ import useAdminVerifikasi from '../../../hooks/useAdminVerifikasi';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import usePagination from '../../../hooks/usePagination';
+import { useResponsive } from '../../../hooks/useResponsive';
 import useToast from '../../../hooks/useToast';
 import { formatTanggalWaktuIndonesia } from '../../../utils/dateUtils';
 
 const AdminVerifikasiAkunView = () => {
   useDocumentTitle('Verifikasi Akun Pengguna');
   const { isDarkMode } = useDarkMode();
+  const { isMobile } = useResponsive();
   const { data, isLoading, error, updateStatus, fetchDetail, isSubmitting } =
     useAdminVerifikasi();
 
@@ -154,24 +150,13 @@ const AdminVerifikasiAkunView = () => {
       <header className='mb-4'>
         <h1 className='text-2xl mb-1 font-bold'>Verifikasi Akun Pengguna</h1>
         {/* Description - Responsive */}
-        <Mobile>
-          <p
-            className={`text-sm ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-500'
-            }`}
-          >
-            Daftar lengkap untuk proses verifikasi akun pengguna.
-          </p>
-        </Mobile>
-        <Desktop>
-          <p
-            className={`text-base ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-500'
-            }`}
-          >
-            Daftar lengkap untuk proses verifikasi akun pengguna.
-          </p>
-        </Desktop>
+        <p
+          className={`${isMobile ? 'text-sm' : 'text-base'} ${
+            isDarkMode ? 'text-gray-300' : 'text-gray-500'
+          }`}
+        >
+          Daftar lengkap untuk proses verifikasi akun pengguna.
+        </p>
       </header>
 
       {isLoading ? (

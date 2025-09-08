@@ -7,7 +7,7 @@ const ResetKataSandiView = () => {
   useDocumentTitle('Reset Kata Sandi - E-WasteHub');
 
   return (
-    <AuthLayout namaApp='EwasteHub' maxWidth='max-w-2xl'>
+    <AuthLayout namaApp='Ewastepas' maxWidth='max-w-2xl'>
       <FormResetKataSandi />
     </AuthLayout>
   );
