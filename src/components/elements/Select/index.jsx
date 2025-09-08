@@ -1,5 +1,6 @@
 import { ChevronDown } from 'lucide-react';
 import useDarkMode from '../../../hooks/useDarkMode';
+import { useIsMobile } from '../../../hooks/useResponsive';
 import Label from '../Input/Label';
 
 const Select = ({
@@ -14,9 +15,11 @@ const Select = ({
   ...props
 }) => {
   const { isDarkMode } = useDarkMode();
+  const isMobile = useIsMobile();
 
-  const baseStyle =
-    'w-full rounded-lg border transition text-base sm:text-sm px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 appearance-auto sm:appearance-none';
+  const baseStyle = isMobile
+    ? 'w-full rounded-lg border transition text-base px-3 py-2 focus:outline-none focus:ring-2 appearance-auto'
+    : 'w-full rounded-lg border transition text-sm px-4 py-3 focus:outline-none focus:ring-2 appearance-none';
 
   const colorStyle = isDarkMode
     ? 'bg-slate-800 text-slate-100'
@@ -62,13 +65,15 @@ const Select = ({
           ))}
         </select>
 
-        {/* Panah dropdown */}
-        <div className='absolute inset-y-0 right-0 hidden sm:flex items-center pr-3 pointer-events-none'>
-          <ChevronDown
-            size={16}
-            className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}
-          />
-        </div>
+        {/* Panah dropdown - Hanya tampil di desktop */}
+        {!isMobile && (
+          <div className='absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none'>
+            <ChevronDown
+              size={16}
+              className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -15,11 +15,9 @@ const EdukasiView = () => {
   const { isDarkMode } = useDarkMode();
   const { isOnline, getEdukasiList } = useOfflineEdukasi();
 
-  // state lokal
   const [edukasiData, setEdukasiData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
@@ -42,8 +40,10 @@ const EdukasiView = () => {
 
   const totalPages = Math.ceil(edukasiData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentTopics = edukasiData.slice(startIndex, endIndex);
+  const currentTopics = edukasiData.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   const goToPage = (page) => {
     setCurrentPage(page);
@@ -63,17 +63,19 @@ const EdukasiView = () => {
             <BookOpen className='w-4 h-4 mr-2' />
             Pusat Edukasi EwasteHub
           </Badge>
+
           <h1
-            className={`text-3xl md:text-5xl font-bold mb-4 ${
+            className={`font-bold mb-4 ${
               isDarkMode ? 'text-white' : 'text-slate-900'
-            }`}
+            } text-3xl sm:text-4xl lg:text-5xl`}
           >
             Tingkatkan Pengetahuan Anda
           </h1>
+
           <p
-            className={`max-w-2xl mx-auto text-base md:text-xl ${
+            className={`max-w-2xl mx-auto ${
               isDarkMode ? 'text-slate-300' : 'text-slate-600'
-            }`}
+            } text-base sm:text-lg lg:text-xl`}
           >
             Jelajahi berbagai artikel untuk memahami pentingnya pengelolaan
             sampah elektronik yang bertanggung jawab.
@@ -140,7 +142,7 @@ const EdukasiView = () => {
 
           {!isLoading && !error && (
             <>
-              <Motion.div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+              <Motion.div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
                 {currentTopics.map((topic, index) => (
                   <Motion.div
                     key={topic.id_konten}

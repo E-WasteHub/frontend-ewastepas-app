@@ -11,10 +11,12 @@ import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import useMitraKurir from '../../../hooks/useMitraKurir';
 import usePengguna from '../../../hooks/usePengguna';
+import { useResponsive } from '../../../hooks/useResponsive';
 
 const DashboardMitraKurirView = () => {
   useDocumentTitle('Dashboard Mitra Kurir');
   const { isDarkMode } = useDarkMode();
+  const { isMobile } = useResponsive();
   const { pengguna } = usePengguna();
 
   // ===== DashboardMitraKurir (pakai hook khusus kurir) =====
@@ -29,9 +31,9 @@ const DashboardMitraKurirView = () => {
 
   return (
     <div
-      className={`max-w-7xl mx-auto px-4 md:px-6 lg:px-8 ${
+      className={`max-w-7xl mx-auto space-y-6 ${isMobile ? 'px-4' : 'px-8'} ${
         isDarkMode ? 'bg-slate-900' : 'bg-slate-50'
-      } space-y-6`}
+      }`}
     >
       {/* Header Sapaan */}
       <SapaanDashboard
@@ -48,7 +50,7 @@ const DashboardMitraKurirView = () => {
       {error && <Alert type='error' message={error} />}
 
       {/* 🔹 Quick Stats */}
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+      <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
         <StatCard
           label='Penjemputan Tersedia'
           value={safeStats.penjemputanTersedia}

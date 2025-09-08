@@ -1,4 +1,4 @@
-const ErrorMessage = ({ children, className = '', variant = 'error' }) => {
+const Message = ({ children, className = '', variant = 'error' }) => {
   const variants = {
     error: 'text-red-500',
     warning: 'text-yellow-600',
@@ -10,4 +10,4 @@ const ErrorMessage = ({ children, className = '', variant = 'error' }) => {
   );
 };
 
-export default ErrorMessage;
+export default Message;

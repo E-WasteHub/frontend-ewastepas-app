@@ -29,10 +29,11 @@ const PanduanAplikasiPage = () => {
             Panduan Mudah
           </Badge>
 
+          {/* Title - Responsive with Tailwind */}
           <h1
-            className={`text-4xl md:text-5xl font-bold mb-4 ${
+            className={`font-bold mb-4 ${
               isDarkMode ? 'text-white' : 'text-slate-900'
-            }`}
+            } text-4xl sm:text-5xl`}
           >
             3 Langkah Mudah{' '}
             <span className={isDarkMode ? 'text-green-400' : 'text-green-600'}>
@@ -40,10 +41,11 @@ const PanduanAplikasiPage = () => {
             </span>
           </h1>
 
+          {/* Description - Responsive with Tailwind */}
           <p
-            className={`text-lg md:text-xl leading-relaxed ${
+            className={`leading-relaxed ${
               isDarkMode ? 'text-slate-300' : 'text-slate-600'
-            }`}
+            } text-lg sm:text-xl`}
           >
             Dari daftar akun sampai dapat poin, ikuti langkah mudah ini!
           </p>

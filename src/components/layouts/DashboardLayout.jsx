@@ -35,7 +35,7 @@ const DashboardLayout = ({
       </div>
 
       {/* Bottom Navigation (mobile only) */}
-      <div className='lg:hidden fixed bottom-0 left-0 right-0 z-40'>
+      <div className='hidden fixed bottom-0 left-0 right-0 z-40'>
         <BottombarDashboard />
       </div>
     </div>

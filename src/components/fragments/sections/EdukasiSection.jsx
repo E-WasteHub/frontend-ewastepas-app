@@ -33,7 +33,7 @@ const EdukasiSection = () => {
 
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array - hanya run sekali saat mount
+  }, []);
 
   // hanya ambil 4 edukasi terbaru
   const edukasiPreview = data.slice(0, 4);
@@ -59,7 +59,7 @@ const EdukasiSection = () => {
           </Badge>
 
           <h2
-            className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-4 ${
+            className={`text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 ${
               isDarkMode ? 'text-white' : 'text-slate-900'
             }`}
           >

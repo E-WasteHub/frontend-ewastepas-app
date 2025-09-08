@@ -1,6 +1,6 @@
 // Alert & Feedback
 export { default as Alert } from './Alert';
-export { default as ErrorMessage } from './ErrorMessage';
+export { default as Message } from './Message';
 
 // Data Display
 export { default as Badge } from './Badge';
@@ -29,6 +29,6 @@ export { default as ScrollToTop } from './ScrollToTop';
 
 // PWA Components
 export { default as CacheManager } from './CacheManager';
-export { InstallPrompt, default as OfflineIndicator } from './OfflineIndicator';
+export { default as OfflineIndicator } from './OfflineIndicator';
 export { default as PWAInstallPrompt } from './PWAInstallPrompt';
 export { default as SplashScreen } from './SplashScreen';

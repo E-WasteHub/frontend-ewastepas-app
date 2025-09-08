@@ -41,11 +41,11 @@ const DetailRiwayatMasyarakatView = () => {
     >
       {/* Header */}
       <header className='mb-2'>
-        <h1 className='text-2xl md:text-2xl font-bold'>
+        <h1 className='text-2xl text-2xl font-bold'>
           Detail Riwayat Penjemputan
         </h1>
         <p
-          className={`text-sm md:text-md ${
+          className={`text-sm text-base ${
             isDarkMode ? 'text-gray-300' : 'text-gray-500'
           }`}
         >
@@ -62,7 +62,7 @@ const DetailRiwayatMasyarakatView = () => {
         {/* Info penjemputan */}
         <section className='mb-4'>
           <h3 className='text-2xl font-bold mb-3'>Informasi Penjemputan</h3>
-          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm'>
+          <div className='grid grid-cols-1 grid-cols-2 gap-4 text-sm'>
             <div>
               <span className='text-xs font-semibold text-gray-400'>
                 Kode Penjemputan : {''}
@@ -99,7 +99,7 @@ const DetailRiwayatMasyarakatView = () => {
             </div>
             <div>
               {p.catatan && (
-                <div className='sm:col-span-2'>
+                <div className='col-span-2'>
                   <span className='text-xs font-semibold text-gray-400'>
                     Catatan : {''}
                   </span>
@@ -126,7 +126,7 @@ const DetailRiwayatMasyarakatView = () => {
         </section>
 
         {/* Status + Detail sampah */}
-        <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+        <div className='grid grid-cols-1 grid-cols-2 gap-4'>
           <section>
             <h3 className='text-lg font-semibold mb-2 flex items-center gap-2'>
               <Truck className='w-5 h-5 text-green-500' /> Status Penjemputan

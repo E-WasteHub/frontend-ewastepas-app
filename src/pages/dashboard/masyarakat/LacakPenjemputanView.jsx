@@ -81,9 +81,9 @@ const LacakPenjemputanView = () => {
       </h2>
 
       {/* Grid layout */}
-      <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>
+      <div className='grid grid-cols-1 grid-cols-4 gap-6'>
         {/* Sidebar filter */}
-        <div className='lg:col-span-1 space-y-6'>
+        <div className='col-span-1 space-y-6'>
           <FilterCard
             search={pencarian}
             setSearch={setPencarian}
@@ -94,7 +94,7 @@ const LacakPenjemputanView = () => {
         </div>
 
         {/* Daftar permintaan */}
-        <div className='lg:col-span-3'>
+        <div className='col-span-3'>
           <Card
             className={`p-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'} border`}
           >

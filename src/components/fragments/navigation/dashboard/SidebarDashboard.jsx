@@ -18,7 +18,7 @@ const SidebarDashboard = () => {
 
   return (
     <div
-      className={`hidden lg:flex lg:flex-col lg:fixed lg:top-0 lg:left-0 lg:w-64 lg:h-full border-r shadow-xl ${
+      className={`hidden flex flex-col lg:fixed lg:top-0 lg:left-0 lg:w-64 lg:h-full border-r shadow-xl ${
         isDarkMode
           ? 'bg-slate-800 border-slate-700'
           : 'bg-white border-slate-200'

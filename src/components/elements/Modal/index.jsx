@@ -1,8 +1,10 @@
 import { X } from 'lucide-react';
 import useDarkMode from '../../../hooks/useDarkMode';
+import { useResponsive } from '../../../hooks/useResponsive';
 
 const Modal = ({ isOpen, onClose, title, children }) => {
   const { isDarkMode } = useDarkMode();
+  const { isMobile } = useResponsive();
 
   if (!isOpen) return null;
 
@@ -13,17 +15,29 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 
   return (
     <div
-      className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-2 sm:px-4'
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 ${
+        isMobile ? 'px-2' : 'px-4'
+      }`}
       onClick={onClose}
     >
       <div
-        className={`rounded-lg shadow-lg w-full max-w-md relative m-3 sm:m-6 ${bgStyle}`}
+        className={`rounded-lg shadow-lg w-full max-w-md relative ${
+          isMobile ? 'm-3' : 'm-6'
+        } ${bgStyle}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className='flex justify-between items-center px-3 py-2 sm:px-4 sm:py-3 border-b border-gray-700/30'>
+        <div
+          className={`flex justify-between items-center border-b border-gray-700/30 ${
+            isMobile ? 'px-3 py-2' : 'px-4 py-3'
+          }`}
+        >
           {title && (
-            <h2 className='text-base sm:text-lg font-semibold'>{title}</h2>
+            <h2
+              className={`font-semibold ${isMobile ? 'text-base' : 'text-lg'}`}
+            >
+              {title}
+            </h2>
           )}
           <button
             onClick={onClose}
@@ -35,7 +49,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
         </div>
 
         {/* Content */}
-        <div className='p-3 sm:p-6'>{children}</div>
+        <div className={isMobile ? 'p-3' : 'p-6'}>{children}</div>
       </div>
     </div>
   );

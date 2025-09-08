@@ -27,7 +27,7 @@ const InformasiSection = () => {
           </Badge>
 
           <h2
-            className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-4 ${
+            className={`text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 ${
               isDarkMode ? 'text-white' : 'text-slate-900'
             }`}
           >
@@ -46,7 +46,7 @@ const InformasiSection = () => {
         </Motion.div>
 
         {/* CTA Cards */}
-        <div className='grid grid-cols-2 gap-6 sm:gap-8 mb-12 place-items-center max-w-3xl mx-auto'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 mb-12 place-items-center max-w-3xl mx-auto'>
           {/* Masyarakat CTA */}
           <Motion.div
             initial={{ opacity: 0, x: -20 }}

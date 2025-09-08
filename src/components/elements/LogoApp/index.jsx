@@ -2,6 +2,7 @@ import { useState } from 'react';
 import darkLogo from '../../../assets/img/ewasteDark.png';
 import lightLogo from '../../../assets/img/ewasteLight.png';
 import useDarkMode from '../../../hooks/useDarkMode';
+import { useResponsive } from '../../../hooks/useResponsive';
 
 const sizeConfig = {
   sm: { wrapper: 'w-6 h-6', icon: 'w-4 h-4', text: 'text-sm' },
@@ -11,15 +12,24 @@ const sizeConfig = {
   '2xl': { wrapper: 'w-14 h-14', icon: 'w-12 h-12', text: 'text-2xl' },
 };
 
-const LogoApp = ({ size = 'md', withText = false }) => {
+const LogoApp = ({ size = null, withText = false, responsive = true }) => {
   const { isDarkMode } = useDarkMode();
+  const { isMobile, isTablet } = useResponsive();
   const [imgError, setImgError] = useState(false);
 
   // ✅ Gunakan imported assets daripada path string
   const logoSrc = isDarkMode ? darkLogo : lightLogo;
 
-  const currentSize = sizeConfig[size] || sizeConfig.md;
+  // Auto responsive sizing jika size tidak diberikan dan responsive = true
+  const getResponsiveSize = () => {
+    if (!responsive || size) return size || 'md';
 
+    if (isMobile) return 'sm';
+    if (isTablet) return 'md';
+    return 'lg'; // desktop = lg
+  };
+
+  const currentSize = sizeConfig[getResponsiveSize()] || sizeConfig.md;
   return (
     <div className={`flex items-center ${withText ? 'space-x-2' : ''}`}>
       <div

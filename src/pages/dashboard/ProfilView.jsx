@@ -8,11 +8,13 @@ import {
 import useDarkMode from '../../hooks/useDarkMode';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 import useProfil from '../../hooks/useProfil';
+import { useResponsive } from '../../hooks/useResponsive';
 import useToast from '../../hooks/useToast';
 
 const ProfilView = () => {
   useDocumentTitle('Pengaturan Profil');
   const { isDarkMode } = useDarkMode();
+  const { isMobile } = useResponsive();
   const { success, error: showErrorToast } = useToast();
 
   // 🔹 Ambil data & actions dari hook profil
@@ -83,9 +85,13 @@ const ProfilView = () => {
   ];
 
   return (
-    <div className='max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 p-6'>
+    <div
+      className={`max-w-7xl mx-auto gap-6 p-6 ${
+        isMobile ? 'flex flex-col' : 'grid grid-cols-4'
+      }`}
+    >
       {/* ===== SIDEBAR MENU ===== */}
-      <div className='md:col-span-1'>
+      <div className={isMobile ? 'w-full' : 'col-span-1'}>
         <div
           className={`shadow rounded-lg p-4 space-y-2 ${
             isDarkMode ? 'bg-slate-800' : 'bg-white'
@@ -119,7 +125,7 @@ const ProfilView = () => {
       </div>
 
       {/* ===== MAIN CONTENT ===== */}
-      <div className='md:col-span-3'>
+      <div className={isMobile ? 'w-full' : 'col-span-3'}>
         <div
           className={`shadow rounded-lg p-6 ${
             isDarkMode

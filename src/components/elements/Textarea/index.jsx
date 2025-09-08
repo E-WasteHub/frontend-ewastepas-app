@@ -1,7 +1,6 @@
 import { forwardRef } from 'react';
 import useDarkMode from '../../../hooks/useDarkMode';
-import ErrorMessage from '../ErrorMessage';
-import Label from '../Input/Label';
+import { Label, Message } from '../../elements';
 
 const Textarea = forwardRef(
   (
@@ -67,7 +66,7 @@ const Textarea = forwardRef(
         />
 
         {/* Error */}
-        <ErrorMessage>{error}</ErrorMessage>
+        <Message variant='error'>{error}</Message>
       </div>
     );
   }

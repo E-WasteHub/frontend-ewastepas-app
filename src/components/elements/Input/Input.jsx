@@ -1,7 +1,7 @@
 import { Eye, EyeOff } from 'lucide-react';
 import { forwardRef, useState } from 'react';
 import useDarkMode from '../../../hooks/useDarkMode';
-import ErrorMessage from '../ErrorMessage';
+import Message from '../Message';
 
 const Input = forwardRef(
   (
@@ -82,7 +82,7 @@ const Input = forwardRef(
         </div>
 
         {/* Pesan error */}
-        <ErrorMessage>{error}</ErrorMessage>
+        <Message variant='error'>{error}</Message>
       </div>
     );
   }

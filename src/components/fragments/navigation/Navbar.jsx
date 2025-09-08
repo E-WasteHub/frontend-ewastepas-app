@@ -2,13 +2,15 @@
 import { Link, NavLink } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
 import usePengguna from '../../../hooks/usePengguna';
+import useResponsive from '../../../hooks/useResponsive';
 import { clearAuth } from '../../../utils/authExpiredUtils';
-import { LogoApp, ThemeSelector } from '../../elements/';
+import { LogoApp, ThemeSelector } from '../../elements';
 import { ProfileDropdown } from '../../fragments';
 
 const Navbar = () => {
   const { isDarkMode } = useDarkMode();
   const { pengguna, peran } = usePengguna();
+  const { isMobile, isDesktop } = useResponsive();
 
   const navLinks = [
     { to: '/', text: 'Beranda' },
@@ -35,29 +37,17 @@ const Navbar = () => {
           : 'bg-white/90 border-slate-200'
       }`}
     >
-      <div className='flex items-center justify-between px-4 py-3 mx-auto max-w-7xl'>
-        {/* Logo */}
-        <div className='flex items-center'>
-          <Link to='/' className='flex items-center'>
-            <LogoApp size='xl' withText={true} textSize='2xl' />
-          </Link>
-        </div>
+      {isMobile && (
+        <div className='flex items-center justify-between px-4 py-3 mx-auto max-w-7xl'>
+          {/* Logo */}
+          <div className='flex items-center'>
+            <Link to='/' className='flex items-center'>
+              <LogoApp size='lg' withText={true} textSize='xl' />
+            </Link>
+          </div>
 
-        {/* Navigation Links (Desktop only) */}
-        <nav className='items-center hidden space-x-4 lg:flex'>
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              end={link.to === '/'}
-              className={({ isActive }) => getNavLinkClass(isActive)}
-            >
-              {link.text}
-            </NavLink>
-          ))}
-
-          {/* Auth / Profile & Theme Selector (Desktop) */}
-          <div className='flex items-center text-sm gap-4 ml-2'>
+          {/* Right section - Mobile */}
+          <div className='flex items-center gap-2'>
             <ThemeSelector />
             {pengguna ? (
               <ProfileDropdown
@@ -70,52 +60,77 @@ const Navbar = () => {
                   window.location.href = '/login';
                 }}
               />
-            ) : (
-              <>
-                <NavLink
-                  to='/login'
-                  className={({ isActive }) =>
-                    `px-4 py-2 rounded-md font-medium transition-colors duration-200 ${
-                      isActive
-                        ? isDarkMode
-                          ? 'text-emerald-400 underline decoration-2 underline-offset-4'
-                          : 'text-emerald-600 underline decoration-2 underline-offset-4'
-                        : isDarkMode
-                        ? 'text-slate-300 hover:text-slate-100 hover:bg-slate-800/50'
-                        : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
-                    }`
-                  }
-                >
-                  Masuk
-                </NavLink>
-                <NavLink
-                  to='/register'
-                  className='px-4 py-2 rounded-md font-medium transition-colors duration-200 bg-emerald-600 text-white hover:bg-emerald-700'
-                >
-                  Daftar
-                </NavLink>
-              </>
-            )}
+            ) : null}
           </div>
-        </nav>
-
-        {/* Right section (Mobile only) */}
-        <div className='flex items-center gap-2 lg:hidden'>
-          <ThemeSelector />
-          {pengguna ? (
-            <ProfileDropdown
-              pengguna={pengguna}
-              peran={peran}
-              onLogout={() => {
-                clearAuth();
-                localStorage.removeItem('pengguna');
-                localStorage.removeItem('peran');
-                window.location.href = '/login';
-              }}
-            />
-          ) : null}
         </div>
-      </div>
+      )}
+
+      {isDesktop && (
+        <div className='flex items-center justify-between px-4 py-3 mx-auto max-w-7xl'>
+          {/* Logo */}
+          <div className='flex items-center'>
+            <Link to='/' className='flex items-center'>
+              <LogoApp size='xl' withText={true} textSize='2xl' />
+            </Link>
+          </div>
+
+          {/* Navigation Links - Desktop */}
+          <nav className='flex items-center space-x-4'>
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.to === '/'}
+                className={({ isActive }) => getNavLinkClass(isActive)}
+              >
+                {link.text}
+              </NavLink>
+            ))}
+
+            {/* Auth / Profile & Theme Selector - Desktop */}
+            <div className='flex items-center text-sm gap-4 ml-2'>
+              <ThemeSelector />
+              {pengguna ? (
+                <ProfileDropdown
+                  pengguna={pengguna}
+                  peran={peran}
+                  onLogout={() => {
+                    clearAuth();
+                    localStorage.removeItem('pengguna');
+                    localStorage.removeItem('peran');
+                    window.location.href = '/login';
+                  }}
+                />
+              ) : (
+                <>
+                  <NavLink
+                    to='/login'
+                    className={({ isActive }) =>
+                      `px-4 py-2 rounded-md font-medium transition-colors duration-200 ${
+                        isActive
+                          ? isDarkMode
+                            ? 'text-emerald-400 underline decoration-2 underline-offset-4'
+                            : 'text-emerald-600 underline decoration-2 underline-offset-4'
+                          : isDarkMode
+                          ? 'text-slate-300 hover:text-slate-100 hover:bg-slate-800/50'
+                          : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+                      }`
+                    }
+                  >
+                    Masuk
+                  </NavLink>
+                  <NavLink
+                    to='/register'
+                    className='px-4 py-2 rounded-md font-medium transition-colors duration-200 bg-emerald-600 text-white hover:bg-emerald-700'
+                  >
+                    Daftar
+                  </NavLink>
+                </>
+              )}
+            </div>
+          </nav>
+        </div>
+      )}
     </header>
   );
 };

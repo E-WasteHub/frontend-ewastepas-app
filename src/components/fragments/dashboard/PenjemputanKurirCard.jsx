@@ -39,7 +39,7 @@ const warnaStatusBadge = (status, isDarkMode = false) => {
 const PenjemputanKurirCard = ({
   req,
   onAmbil,
-  onDetail, // 🔹 Tambahin props onDetail untuk Riwayat
+  onDetail,
   isAktif = false,
   disabled = false,
 }) => {

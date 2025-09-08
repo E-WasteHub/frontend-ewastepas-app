@@ -13,7 +13,6 @@ const EdukasiDetailView = () => {
   const { isDarkMode } = useDarkMode();
   const { isOnline, getEdukasiDetail, isEdukasiCached } = useOfflineEdukasi();
 
-  // state lokal
   const [artikel, setArtikel] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -142,11 +141,12 @@ const EdukasiDetailView = () => {
               />
             </div>
           )}
-          {/* Judul */}
+
+          {/* Judul (pakai Tailwind responsive) */}
           <h1
-            className={`text-3xl md:text-4xl font-bold mb-6 ${
+            className={`font-bold mb-6 ${
               isDarkMode ? 'text-white' : 'text-slate-900'
-            }`}
+            } text-3xl sm:text-4xl`}
           >
             {artikel.judul_konten}
           </h1>

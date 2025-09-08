@@ -75,9 +75,9 @@ const RiwayatMitraKurirView = () => {
       </h2>
 
       {/* Layout grid */}
-      <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>
+      <div className='grid grid-cols-1 gap-6'>
         {/* Sidebar filter */}
-        <div className='lg:col-span-1'>
+        <div className='col-span-1'>
           <FilterCard
             search={pencarian}
             setSearch={setPencarian}
@@ -88,7 +88,7 @@ const RiwayatMitraKurirView = () => {
         </div>
 
         {/* Konten daftar riwayat */}
-        <div className='lg:col-span-3'>
+        <div className='col-span-3'>
           <Card
             className={`p-6 space-y-6 shadow-md rounded-xl ${
               isDarkMode
