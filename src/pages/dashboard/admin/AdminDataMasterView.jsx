@@ -1,4 +1,4 @@
-import { DatamasterCard } from '../../../components/fragments/';
+import { DataMasterCard } from '../../../components/fragments/';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 
@@ -28,7 +28,7 @@ const AdminDataMasterView = () => {
         </div>
 
         {/* Data Master Cards */}
-        <DatamasterCard />
+        <DataMasterCard />
       </div>
     </div>
   );

@@ -36,7 +36,7 @@ const menus = [
   },
 ];
 
-const DatamasterCard = () => {
+const DataMasterCard = () => {
   const { isDarkMode } = useDarkMode();
 
   return (
@@ -65,4 +65,4 @@ const DatamasterCard = () => {
   );
 };
 
-export default DatamasterCard;
+export default DataMasterCard;
