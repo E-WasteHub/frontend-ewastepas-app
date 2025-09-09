@@ -39,7 +39,7 @@ const BottomNavbar = () => {
 
   return (
     <nav
-      className={`fixed bottom-0 z-50 w-full border-t backdrop-blur-lg md:hidden ${
+      className={`fixed bottom-0 z-50 w-full border-t backdrop-blur-lg lg:hidden ${
         isDarkMode
           ? 'bg-slate-900/95 border-slate-700'
           : 'bg-white/95 border-slate-200'

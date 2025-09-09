@@ -1,12 +1,10 @@
 import ScrollToTop from '../elements/ScrollToTop';
-import BottomNavbar from '../fragments/navigation/BottomNavbar';
-import Footer from '../fragments/navigation/Footer';
-import Header from '../fragments/navigation/Navbar';
+import { BottomNavbar, Footer, Navbar } from '../fragments/';
 
 const MainLayout = ({ children }) => {
   return (
     <div className='flex flex-col min-h-screen'>
-      <Header />
+      <Navbar />
       <main className='flex-grow'>{children}</main>
       <Footer />
       <BottomNavbar />

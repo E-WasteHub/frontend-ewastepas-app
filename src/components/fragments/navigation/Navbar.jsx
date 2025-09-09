@@ -10,7 +10,7 @@ import { ProfileDropdown } from '../../fragments';
 const Navbar = () => {
   const { isDarkMode } = useDarkMode();
   const { pengguna, peran } = usePengguna();
-  const { isMobile, isDesktop } = useResponsive();
+  const { isMobile, isDesktop, isTablet } = useResponsive();
 
   const navLinks = [
     { to: '/', text: 'Beranda' },
@@ -37,7 +37,7 @@ const Navbar = () => {
           : 'bg-white/90 border-slate-200'
       }`}
     >
-      {isMobile && (
+      {(isMobile || isTablet) && (
         <div className='flex items-center justify-between px-4 py-3 mx-auto max-w-7xl'>
           {/* Logo */}
           <div className='flex items-center'>
@@ -46,7 +46,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Right section - Mobile */}
+          {/* Right section - Mobile & Tablet */}
           <div className='flex items-center gap-2'>
             <ThemeSelector />
             {pengguna ? (
