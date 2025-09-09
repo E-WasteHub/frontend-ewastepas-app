@@ -94,7 +94,7 @@ const FormLogin = () => {
         } rounded-2xl border shadow-lg p-8`}
       >
         <FormHeader
-          title='EWasteHub'
+          title='Ewastepas'
           subtitle='Masuk ke Akun Anda'
           showLogo
           className='mb-6'

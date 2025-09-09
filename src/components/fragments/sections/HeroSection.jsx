@@ -96,7 +96,7 @@ const HeroSection = () => {
               <div className='w-full mt-12 max-w-sm'>
                 <Motion.img
                   src={isDarkMode ? ewasteDark : ewasteLight}
-                  alt='EWasteHub Illustration'
+                  alt='Ewastepas Illustration'
                   className='object-contain w-full h-full filter drop-shadow-2xl'
                   animate={{ y: [0, -30, 0] }}
                   transition={{
@@ -189,7 +189,7 @@ const HeroSection = () => {
               <div className='w-full mt-12 max-w-md'>
                 <Motion.img
                   src={isDarkMode ? ewasteDark : ewasteLight}
-                  alt='EWasteHub Illustration'
+                  alt='Ewastepas Illustration'
                   className='object-contain w-full h-full filter drop-shadow-2xl'
                   animate={{ y: [0, -30, 0] }}
                   transition={{

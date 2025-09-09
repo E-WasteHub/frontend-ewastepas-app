@@ -138,7 +138,7 @@ const AdminDashboardView = () => {
           pengguna={pengguna}
           subtitle={
             <span>
-              Selamat datang di dashboard Admin EWasteHub. Selamat bekerja.
+              Selamat datang di dashboard Admin Ewastepas. Selamat bekerja.
             </span>
           }
         />

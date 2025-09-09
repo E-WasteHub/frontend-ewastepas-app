@@ -43,7 +43,7 @@ const SplashScreen = ({ onComplete }) => {
           <div className='w-24 h-24 mx-auto mb-4  rounded-3xl flex items-center justify-center shadow-lg'>
             <img
               src={isDarkMode ? ewasteLight : ewasteLight}
-              alt='EWasteHub Logo'
+              alt='Ewastepas Logo'
               className='w-16 h-16 object-contain'
             />
           </div>
@@ -60,7 +60,7 @@ const SplashScreen = ({ onComplete }) => {
               isDarkMode ? 'text-white' : 'text-slate-900'
             } mb-2`}
           >
-            EWasteHub
+            Ewastepas
           </h1>
           <p
             className={`text-base ${

@@ -111,7 +111,7 @@ const FormRegister = () => {
       >
         {/* 🔹 Header Form */}
         <FormHeader
-          title='EWasteHub'
+          title='Ewastepas'
           subtitle='Buat Akun Baru'
           showLogo
           className='mb-6'

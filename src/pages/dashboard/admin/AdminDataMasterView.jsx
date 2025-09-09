@@ -22,7 +22,7 @@ const AdminDataMasterView = () => {
             isDarkMode ? 'text-gray-300' : 'text-gray-600'
           }`}
         >
-          Kelola data master aplikasi EWasteHub
+          Kelola data master aplikasi Ewastepas
         </p>
       </div>
 

@@ -51,7 +51,7 @@ const FormPemulihanAkun = () => {
       >
         {/* 🔹 Header */}
         <FormHeader
-          title='EWasteHub'
+          title='Ewastepas'
           subtitle='Lupa Kata Sandi'
           showLogo
           className='mb-6'

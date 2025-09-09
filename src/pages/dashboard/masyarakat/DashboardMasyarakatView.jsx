@@ -32,7 +32,7 @@ const DashboardMasyarakatView = () => {
     >
       <SapaanDashboard
         pengguna={pengguna}
-        subtitle='Selamat datang di EWasteHub. Yuk kelola sampah elektronik kamu!'
+        subtitle='Selamat datang di Ewastepas. Yuk kelola sampah elektronik kamu!'
       />
 
       {/* Statistik */}

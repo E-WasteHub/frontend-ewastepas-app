@@ -94,7 +94,7 @@ const FormVerifikasiOTP = () => {
       >
         {/* 🔹 Header */}
         <FormHeader
-          title='EWasteHub'
+          title='Ewastepas'
           subtitle='Verifikasi OTP'
           showLogo
           className='mb-6'
