@@ -1,11 +1,5 @@
 import { useMemo, useState } from 'react';
-import {
-  Button,
-  Desktop,
-  Mobile,
-  Modal,
-  Pagination,
-} from '../../../components/elements';
+import { Button, Modal, Pagination } from '../../../components/elements';
 import {
   AdminTable,
   ConfirmModal,
@@ -153,25 +147,13 @@ const AdminVerifikasiAkunView = () => {
       {/* Header */}
       <header className='mb-4'>
         <h1 className='text-2xl mb-1 font-bold'>Verifikasi Akun Pengguna</h1>
-        {/* Description - Responsive */}
-        <Mobile>
-          <p
-            className={`text-sm ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-500'
-            }`}
-          >
-            Daftar lengkap untuk proses verifikasi akun pengguna.
-          </p>
-        </Mobile>
-        <Desktop>
-          <p
-            className={`text-base ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-500'
-            }`}
-          >
-            Daftar lengkap untuk proses verifikasi akun pengguna.
-          </p>
-        </Desktop>
+        <p
+          className={`${
+            isDarkMode ? 'text-gray-300' : 'text-gray-500'
+          } text-sm md:text-base`}
+        >
+          Daftar lengkap untuk proses verifikasi akun pengguna.
+        </p>
       </header>
 
       {isLoading ? (

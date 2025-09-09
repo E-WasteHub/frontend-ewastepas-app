@@ -30,5 +30,4 @@ export { default as ScrollToTop } from './ScrollToTop';
 // PWA Components
 export { default as CacheManager } from './CacheManager';
 export { default as OfflineIndicator } from './OfflineIndicator';
-export { default as PWAInstallPrompt } from './PWAInstallPrompt';
 export { default as SplashScreen } from './SplashScreen';

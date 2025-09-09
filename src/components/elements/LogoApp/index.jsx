@@ -26,7 +26,7 @@ const LogoApp = ({ size = null, withText = false, responsive = true }) => {
 
     if (isMobile) return 'sm';
     if (isTablet) return 'md';
-    return 'lg'; // desktop = lg
+    return 'lg';
   };
 
   const currentSize = sizeConfig[getResponsiveSize()] || sizeConfig.md;

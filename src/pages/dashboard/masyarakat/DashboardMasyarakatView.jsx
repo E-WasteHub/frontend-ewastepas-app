@@ -36,7 +36,7 @@ const DashboardMasyarakatView = () => {
       />
 
       {/* Statistik */}
-      <div className='grid grid-cols-1 grid-cols-3 gap-6'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
         <StatCard
           label='Total Poin'
           value={safeStats.totalPoin}
@@ -62,7 +62,7 @@ const DashboardMasyarakatView = () => {
             : 'bg-white border-slate-200'
         } border`}
       >
-        <div className='p-4 p-6 space-y-6'>
+        <div className='p-6 space-y-6'>
           <div className='flex justify-between items-center'>
             <h2
               className={`text-lg font-semibold ${

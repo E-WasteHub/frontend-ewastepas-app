@@ -1,11 +1,6 @@
 import { Package, UserCheck, Users } from 'lucide-react';
 import { useState } from 'react';
-import {
-  Desktop,
-  Loading,
-  Mobile,
-  Pagination,
-} from '../../../components/elements';
+import { Loading, Pagination } from '../../../components/elements';
 import {
   AdminTable,
   FilterCrud,
@@ -37,8 +32,9 @@ const AdminDashboardView = () => {
 
   // TODO: Implementasi statistik real dari API
   const statistikData = {
-    belumTerverifikasi: 0, // TODO: fetch dari penggunaService
-    jumlahDatamaster: 0, // TODO: hitung kategori + jenis + daerah + dropbox + edukasi
+    belumTerverifikasi: 0,
+    jumlahDatamaster: 0,
+    totalPengguna: 0, // FIXME: isi nanti dari API penggunaService
     totalTransaksi: Array.isArray(transaksi) ? transaksi.length : 0,
   };
 
@@ -147,52 +143,27 @@ const AdminDashboardView = () => {
           }
         />
 
-        {/* Statistik */}
         {/* Statistik - Responsive Grid */}
-        <Mobile>
-          <div className='text-green-500 grid grid-cols-1 gap-6'>
-            <StatCard
-              label='Jumlah Yang Belum Terverifikasi'
-              value={statistikData.belumTerverifikasi}
-              icon={<UserCheck className='w-6 h-6' />}
-              useCard={false}
-            />
-            <StatCard
-              label='Jumlah Datamaster'
-              value={statistikData.jumlahDatamaster}
-              icon={<Package className='w-6 h-6' />}
-              useCard={false}
-            />
-            <StatCard
-              label='Total Pengguna'
-              value={statistikData.totalPengguna}
-              icon={<Users className='w-6 h-6' />}
-              useCard={false}
-            />
-          </div>
-        </Mobile>
-        <Desktop>
-          <div className='text-green-500 grid grid-cols-3 gap-6'>
-            <StatCard
-              label='Jumlah Yang Belum Terverifikasi'
-              value={statistikData.belumTerverifikasi}
-              icon={<UserCheck className='w-6 h-6' />}
-              useCard={false}
-            />
-            <StatCard
-              label='Jumlah Datamaster'
-              value={statistikData.jumlahDatamaster}
-              icon={<Package className='w-6 h-6' />}
-              useCard={false}
-            />
-            <StatCard
-              label='Total Pengguna'
-              value={statistikData.totalPengguna}
-              icon={<Users className='w-6 h-6' />}
-              useCard={false}
-            />
-          </div>
-        </Desktop>
+        <div className='text-green-500 grid grid-cols-1 md:grid-cols-3 gap-6'>
+          <StatCard
+            label='Jumlah Yang Belum Terverifikasi'
+            value={statistikData.belumTerverifikasi}
+            icon={<UserCheck className='w-6 h-6' />}
+            useCard={false}
+          />
+          <StatCard
+            label='Jumlah Datamaster'
+            value={statistikData.jumlahDatamaster}
+            icon={<Package className='w-6 h-6' />}
+            useCard={false}
+          />
+          <StatCard
+            label='Total Pengguna'
+            value={statistikData.totalPengguna}
+            icon={<Users className='w-6 h-6' />}
+            useCard={false}
+          />
+        </div>
 
         {/* Transaksi terbaru */}
         <div>

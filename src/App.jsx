@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {
-  OfflineIndicator,
-  PWAInstallPrompt,
-  SplashScreen,
-} from './components/elements';
+import { OfflineIndicator, SplashScreen } from './components/elements';
 import useDarkMode from './hooks/useDarkMode';
 import AppRouter from './routes';
 
@@ -44,7 +40,6 @@ const App = () => {
 
           {/* PWA Components */}
           <OfflineIndicator />
-          <PWAInstallPrompt />
         </>
       )}
 

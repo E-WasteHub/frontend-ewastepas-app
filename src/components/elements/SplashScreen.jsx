@@ -2,9 +2,11 @@
 import { motion as Motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import ewasteLight from '../../assets/img/ewasteLight.png';
+import useDarkMode from '../../hooks/useDarkMode';
 
 const SplashScreen = ({ onComplete }) => {
   const [isVisible, setIsVisible] = useState(true);
+  const { isDarkMode } = useDarkMode();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -21,7 +23,11 @@ const SplashScreen = ({ onComplete }) => {
 
   return (
     <Motion.div
-      className='fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-green-600 via-green-500 to-green-700'
+      className={`fixed inset-0 z-50 flex items-center justify-center ${
+        isDarkMode
+          ? 'bg-gradient-to-tl from-green-400 via-green-300 to-green-600'
+          : 'bg-gradient-to-br from-green-600 via-green-500 to-green-700'
+      }`}
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
@@ -34,9 +40,9 @@ const SplashScreen = ({ onComplete }) => {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
-          <div className='w-24 h-24 mx-auto mb-4 bg-white rounded-full flex items-center justify-center shadow-lg'>
+          <div className='w-24 h-24 mx-auto mb-4  rounded-3xl flex items-center justify-center shadow-lg'>
             <img
-              src={ewasteLight}
+              src={isDarkMode ? ewasteLight : ewasteLight}
               alt='EWasteHub Logo'
               className='w-16 h-16 object-contain'
             />
@@ -49,8 +55,18 @@ const SplashScreen = ({ onComplete }) => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <h1 className='text-3xl font-bold text-white mb-2'>EWasteHub</h1>
-          <p className='text-green-100 text-base'>
+          <h1
+            className={`text-3xl font-bold ${
+              isDarkMode ? 'text-white' : 'text-slate-900'
+            } mb-2`}
+          >
+            EWasteHub
+          </h1>
+          <p
+            className={`text-base ${
+              isDarkMode ? 'text-green-100' : 'text-green-50'
+            }`}
+          >
             Antar Jemput Sampah Elektronik
           </p>
         </Motion.div>

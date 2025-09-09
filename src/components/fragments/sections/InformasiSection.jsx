@@ -2,10 +2,12 @@ import { Users, UsersRound, Zap } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
+import { useResponsive } from '../../../hooks/useResponsive';
 import { Badge } from '../../elements';
 
 const InformasiSection = () => {
   const { isDarkMode } = useDarkMode();
+  const { isMobile } = useResponsive();
 
   return (
     <section
@@ -46,7 +48,11 @@ const InformasiSection = () => {
         </Motion.div>
 
         {/* CTA Cards */}
-        <div className='grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 mb-12 place-items-center max-w-3xl mx-auto'>
+        <div
+          className={`grid gap-6 sm:gap-8 mb-12 place-items-center max-w-3xl mx-auto ${
+            isMobile ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'
+          }`}
+        >
           {/* Masyarakat CTA */}
           <Motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -57,28 +63,30 @@ const InformasiSection = () => {
           >
             <Link to='/register?peran=masyarakat' className='block h-full'>
               <div
-                className={`p-6 border rounded-xl hover:border-green-500 hover:shadow-lg transition-all duration-300 h-full text-center ${
+                className={`border rounded-xl hover:border-green-500 hover:shadow-lg transition-all duration-300 h-full text-center ${
+                  isMobile ? 'p-4' : 'p-6'
+                } ${
                   isDarkMode
                     ? 'bg-slate-800 border-slate-700'
                     : 'bg-white border-slate-200'
                 }`}
               >
                 <div
-                  className={`flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full ${
-                    isDarkMode ? 'bg-green-900/50' : 'bg-green-100'
-                  }`}
+                  className={`flex items-center justify-center mx-auto mb-4 rounded-full ${
+                    isMobile ? 'w-10 h-10 mb-3' : 'w-12 h-12 mb-4'
+                  } ${isDarkMode ? 'bg-green-900/50' : 'bg-green-100'}`}
                 >
                   <Users
-                    className={`w-6 h-6 ${
+                    className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'} ${
                       isDarkMode ? 'text-green-400' : 'text-green-600'
                     }`}
                   />
                 </div>
 
                 <h3
-                  className={`text-lg font-semibold ${
-                    isDarkMode ? 'text-white' : 'text-slate-900'
-                  }`}
+                  className={`font-semibold ${
+                    isMobile ? 'text-sm' : 'text-lg'
+                  } ${isDarkMode ? 'text-white' : 'text-slate-900'}`}
                 >
                   Daftar sebagai Masyarakat
                 </h3>
@@ -96,28 +104,30 @@ const InformasiSection = () => {
           >
             <Link to='/register?peran=mitra-kurir' className='block h-full'>
               <div
-                className={`p-6 border rounded-xl hover:border-green-500 hover:shadow-lg transition-all duration-300 h-full text-center ${
+                className={`border rounded-xl hover:border-green-500 hover:shadow-lg transition-all duration-300 h-full text-center ${
+                  isMobile ? 'p-4' : 'p-6'
+                } ${
                   isDarkMode
                     ? 'bg-slate-800 border-slate-700'
                     : 'bg-white border-slate-200'
                 }`}
               >
                 <div
-                  className={`flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full ${
-                    isDarkMode ? 'bg-green-900/50' : 'bg-green-100'
-                  }`}
+                  className={`flex items-center justify-center mx-auto mb-4 rounded-full ${
+                    isMobile ? 'w-10 h-10 mb-3' : 'w-12 h-12 mb-4'
+                  } ${isDarkMode ? 'bg-green-900/50' : 'bg-green-100'}`}
                 >
                   <UsersRound
-                    className={`w-6 h-6 ${
+                    className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'} ${
                       isDarkMode ? 'text-green-400' : 'text-green-600'
                     }`}
                   />
                 </div>
 
                 <h3
-                  className={`text-lg font-semibold ${
-                    isDarkMode ? 'text-white' : 'text-slate-900'
-                  }`}
+                  className={`font-semibold ${
+                    isMobile ? 'text-sm' : 'text-lg'
+                  } ${isDarkMode ? 'text-white' : 'text-slate-900'}`}
                 >
                   Bergabung sebagai Mitra Kurir
                 </h3>
