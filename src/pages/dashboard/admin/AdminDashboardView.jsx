@@ -1,6 +1,6 @@
 import { Package, UserCheck, Users } from 'lucide-react';
 import { useState } from 'react';
-import { Loading, Pagination } from '../../../components/elements';
+import { Loading } from '../../../components/elements';
 import {
   AdminTable,
   FilterCrud,
@@ -13,6 +13,7 @@ import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import usePagination from '../../../hooks/usePagination';
 import usePengguna from '../../../hooks/usePengguna';
 import * as penjemputanService from '../../../services/penjemputanService';
+import { formatTanggalIndonesia } from '../../../utils/dateUtils';
 
 const AdminDashboardView = () => {
   const { isDarkMode } = useDarkMode();
@@ -52,8 +53,7 @@ const AdminDashboardView = () => {
     : [];
 
   // Pagination untuk transaksi
-  const { currentPage, setCurrentPage, totalPages, paginatedData } =
-    usePagination(filteredTransaksi, 5);
+  const { paginatedData } = usePagination(filteredTransaksi, 8);
 
   // Filter options berdasarkan status yang ada
   const filterOptions = [
@@ -67,6 +67,16 @@ const AdminDashboardView = () => {
 
   // Kolom untuk AdminTable
   const columns = [
+    {
+      name: 'Tanggal',
+      selector: 'waktu_ditambah',
+      cell: (row) => (
+        <span className='text-sm'>
+          {formatTanggalIndonesia(row.waktu_ditambah)}
+        </span>
+      ),
+      hideOnMobile: true,
+    },
     {
       name: 'Kode',
       selector: 'kode_penjemputan',
@@ -114,16 +124,6 @@ const AdminDashboardView = () => {
       ),
       hideOnMobile: true,
     },
-    {
-      name: 'Tanggal',
-      selector: 'waktu_ditambah',
-      cell: (row) => (
-        <span className='text-xs text-gray-600'>
-          {new Date(row.waktu_ditambah).toLocaleDateString('id-ID')}
-        </span>
-      ),
-      hideOnMobile: true,
-    },
   ];
 
   return (
@@ -144,7 +144,7 @@ const AdminDashboardView = () => {
         />
 
         {/* Statistik - Responsive Grid */}
-        <div className='text-green-500 grid grid-cols-1 md:grid-cols-3 gap-6'>
+        <div className='text-green-500 grid grid-cols-1 md:grid-cols-3 gap-6 mb-6'>
           <StatCard
             label='Jumlah Yang Belum Terverifikasi'
             value={statistikData.belumTerverifikasi}
@@ -188,7 +188,7 @@ const AdminDashboardView = () => {
             <>
               <AdminTable columns={columns} data={paginatedData} />
 
-              {totalPages > 1 && (
+              {/* {totalPages > 1 && (
                 <div className='mt-4'>
                   <Pagination
                     currentPage={currentPage}
@@ -196,7 +196,7 @@ const AdminDashboardView = () => {
                     onPageChange={setCurrentPage}
                   />
                 </div>
-              )}
+              )} */}
             </>
           )}
         </div>

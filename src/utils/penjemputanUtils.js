@@ -1,29 +1,25 @@
 // src/utils/penjemputanUtils.js
-// Utility khusus untuk fitur penjemputan
 
-/**
- * 🔹 DAFTAR LANGKAH STATUS PENJEMPUTAN
- * Konstanta untuk step timeline penjemputan
- */
-export const DAFTAR_LANGKAH_STATUS = [
+// Daftar langkah status penjemputan
+export const daftarLangkahStatus = [
   {
     key: 'diproses',
     label: 'Menunggu Kurir',
-    description: 'Permintaan berhasil dibuat',
+    description: 'Menunggu diterima oleh kurir',
     timeKey: 'waktu_ditambah',
     status: 'Diproses',
   },
   {
     key: 'diterima',
     label: 'Diterima',
-    description: 'Kurir menerima permintaan',
+    description: 'Kurir sedang menuju lokasi masyarakat',
     timeKey: 'waktu_diterima',
     status: 'Diterima',
   },
   {
     key: 'dijemput',
     label: 'Dijemput Kurir',
-    description: 'Kurir sampai di lokasi masyarakat',
+    description: 'Kurir sedang menuju dropbox',
     timeKey: 'waktu_dijemput',
     status: 'Dijemput',
   },
@@ -43,10 +39,7 @@ export const DAFTAR_LANGKAH_STATUS = [
   },
 ];
 
-/**
- * 🔹 DAPATKAN LANGKAH AKTIF
- * Menentukan langkah aktif berdasarkan field waktu penjemputan
- */
+// Dapatkan langkah aktif berdasarkan status penjemputan
 export const dapatkanLangkahAktif = (penjemputan) => {
   if (!penjemputan) return 0;
   if (penjemputan.waktu_dibatalkan) return -1;
@@ -57,10 +50,7 @@ export const dapatkanLangkahAktif = (penjemputan) => {
   return 0;
 };
 
-/**
- * 🔹 HITUNG TOTAL JUMLAH SAMPAH
- * Menghitung total jumlah dari daftar sampah
- */
+// Hitung total jumlah sampah dari daftar sampah
 export const hitungTotalJumlahSampah = (daftarSampah) => {
   if (!Array.isArray(daftarSampah)) return 0;
 
@@ -70,10 +60,7 @@ export const hitungTotalJumlahSampah = (daftarSampah) => {
   }, 0);
 };
 
-/**
- * 🔹 HITUNG ESTIMASI POIN
- * Menghitung estimasi poin dari daftar sampah
- */
+// Hitung estimasi poin dari daftar sampah
 export const hitungEstimasiPoin = (daftarSampah) => {
   if (!Array.isArray(daftarSampah)) return 0;
 
@@ -84,10 +71,7 @@ export const hitungEstimasiPoin = (daftarSampah) => {
   }, 0);
 };
 
-/**
- * 🔹 FILTER PENJEMPUTAN BERDASARKAN STATUS
- * Filter daftar penjemputan berdasarkan status tertentu
- */
+// Filter penjemputan berdasarkan status
 export const filterPenjemputanByStatus = (daftarPenjemputan, status) => {
   if (!Array.isArray(daftarPenjemputan)) return [];
 
@@ -96,20 +80,14 @@ export const filterPenjemputanByStatus = (daftarPenjemputan, status) => {
   );
 };
 
-/**
- * 🔹 AMBIL DATA ARRAY DENGAN AMAN
- * Safely extract array dari response API
- */
+// Ambil data array dengan aman dari response API
 export const ambilDataArrayAman = (response, keyData = 'data') => {
   if (Array.isArray(response)) return response;
   if (response && Array.isArray(response[keyData])) return response[keyData];
   return [];
 };
 
-/**
- * 🔹 CARI PENJEMPUTAN BERDASARKAN ID
- * Mencari penjemputan berdasarkan ID
- */
+// Cari penjemputan berdasarkan ID
 export const cariPenjemputanById = (daftarPenjemputan, idPenjemputan) => {
   if (!Array.isArray(daftarPenjemputan)) return null;
 
@@ -121,10 +99,7 @@ export const cariPenjemputanById = (daftarPenjemputan, idPenjemputan) => {
   );
 };
 
-/**
- * 🔹 UPDATE STATUS PENJEMPUTAN
- * Update status penjemputan dalam array
- */
+// Update status penjemputan dalam daftar penjemputan
 export const updateStatusPenjemputan = (
   daftarPenjemputan,
   idPenjemputan,
@@ -140,10 +115,7 @@ export const updateStatusPenjemputan = (
   );
 };
 
-/**
- * 🔹 KELOMPOKKAN PENJEMPUTAN BERDASARKAN STATUS
- * Mengelompokkan penjemputan berdasarkan status
- */
+// Kelompokkan penjemputan berdasarkan status
 export const kelompokkanPenjemputanByStatus = (daftarPenjemputan) => {
   if (!Array.isArray(daftarPenjemputan)) return {};
 
@@ -157,10 +129,7 @@ export const kelompokkanPenjemputanByStatus = (daftarPenjemputan) => {
   }, {});
 };
 
-/**
- * 🔹 STATISTIK PENJEMPUTAN
- * Menghitung statistik dari daftar penjemputan
- */
+// Hitung statistik penjemputan berdasarkan status
 export const hitungStatistikPenjemputan = (daftarPenjemputan) => {
   if (!Array.isArray(daftarPenjemputan)) {
     return {

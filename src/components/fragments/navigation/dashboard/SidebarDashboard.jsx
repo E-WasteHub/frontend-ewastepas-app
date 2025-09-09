@@ -6,14 +6,16 @@ import { LogoApp } from '../../../elements/';
 
 const SidebarDashboard = () => {
   const { isDarkMode } = useDarkMode();
-  const { peran: rawPeran } = usePengguna();
+  const { peran } = usePengguna();
 
-  // fallback biar gak null
-  const peran = rawPeran || 'Masyarakat';
+  // fallback kalau peran null
+  const peranKey = peran || 'Masyarakat';
 
-  const menuItems = menuItemsByRole[peran] || menuItemsByRole['Masyarakat'];
+  // ambil menu sesuai peran
+  const menuItems = menuItemsByRole[peranKey] || menuItemsByRole['Masyarakat'];
 
-  const roleConfig = {
+  // konfigurasi tampilan badge peran
+  const peranConfig = {
     Admin: {
       label: 'Admin',
       short: 'A',
@@ -31,7 +33,7 @@ const SidebarDashboard = () => {
     },
   };
 
-  const role = roleConfig[peran] || roleConfig['Masyarakat'];
+  const peranPengguna = peranConfig[peranKey] || peranConfig['Masyarakat'];
 
   return (
     <div
@@ -59,16 +61,18 @@ const SidebarDashboard = () => {
           }`}
         >
           <div
-            className={`w-6 h-6 rounded-full flex items-center justify-center ${role.color}`}
+            className={`w-6 h-6 rounded-full flex items-center justify-center ${peranPengguna.color}`}
           >
-            <span className='text-white text-xs font-medium'>{role.short}</span>
+            <span className='text-white text-xs font-medium'>
+              {peranPengguna.short}
+            </span>
           </div>
           <span
             className={`text-sm font-medium ${
               isDarkMode ? 'text-white' : 'text-slate-900'
             }`}
           >
-            {role.label}
+            {peranPengguna.label}
           </span>
         </div>
       </div>
@@ -77,11 +81,13 @@ const SidebarDashboard = () => {
       <nav className='flex-1 px-4 pb-4 space-y-1 overflow-y-auto'>
         {menuItems.map((item) => {
           const IconComponent = item.icon;
+          const isRootDashboard = item.path.split('/').length === 3; // contoh: /dashboard/admin
+
           return (
             <NavLink
               key={item.path}
               to={item.path}
-              end={item.path === `/dashboard/${peran.toLowerCase()}`}
+              end={isRootDashboard}
               className={({ isActive }) =>
                 `group flex items-center px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive

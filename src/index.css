@@ -4,7 +4,6 @@
   --font-sans: 'Mulish', sans-serif;
   --font-family: 'Mulish', sans-serif;
 }
-
 /* Overwrite style google Input Form */
 @layer base {
   /* Light mode autofill */

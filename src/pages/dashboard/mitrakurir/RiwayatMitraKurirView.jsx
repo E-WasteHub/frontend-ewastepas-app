@@ -75,9 +75,9 @@ const RiwayatMitraKurirView = () => {
       </h2>
 
       {/* Layout grid */}
-      <div className='grid grid-cols-1 gap-6'>
+      <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>
         {/* Sidebar filter */}
-        <div className='col-span-1'>
+        <div className='col-span-1 lg:col-span-1 lg:sticky lg:top-24'>
           <FilterCard
             search={pencarian}
             setSearch={setPencarian}
@@ -88,7 +88,7 @@ const RiwayatMitraKurirView = () => {
         </div>
 
         {/* Konten daftar riwayat */}
-        <div className='col-span-3'>
+        <div className='col-span-1 lg:col-span-3'>
           <Card
             className={`p-6 space-y-6 shadow-md rounded-xl ${
               isDarkMode
@@ -108,7 +108,7 @@ const RiwayatMitraKurirView = () => {
               <Loading mode='inline' text='Memuat data...' />
             ) : paginatedData.length === 0 ? (
               <p className='text-gray-500 text-center'>
-                📭 Belum ada riwayat penjemputan
+                Belum ada riwayat penjemputan
               </p>
             ) : (
               <div className='space-y-4'>

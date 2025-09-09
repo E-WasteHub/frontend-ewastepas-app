@@ -14,7 +14,7 @@ const usePengguna = () => {
         const penggunaData = JSON.parse(savedPengguna);
         setPenggunaState(penggunaData);
 
-        // ✅ Gunakan peran asli dari backend tanpa normalisasi
+        // Gunakan peran asli dari backend tanpa normalisasi
         const role = penggunaData.peran || savedPeran;
         if (role) {
           localStorage.setItem('peran', role);
@@ -30,7 +30,7 @@ const usePengguna = () => {
       setPenggunaState(null);
       setPeranState(null);
     } finally {
-      // ✅ apapun hasilnya, loading harus selesai
+      // apapun hasilnya, loading harus selesai
       setIsLoading(false);
     }
   }, []);

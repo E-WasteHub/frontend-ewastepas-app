@@ -15,14 +15,13 @@ import useMitraKurir, {
 } from '../../../hooks/useMitraKurir';
 import useToast from '../../../hooks/useToast';
 import { formatTanggalIndonesia } from '../../../utils/dateUtils';
-import { DAFTAR_LANGKAH_STATUS } from '../../../utils/penjemputanUtils';
+import { daftarLangkahStatus } from '../../../utils/penjemputanUtils';
 
 const PermintaanAktifKurir = () => {
   useDocumentTitle('Permintaan Aktif Kurir');
   const { isDarkMode } = useDarkMode();
   const { showAlert } = useToast();
 
-  // 🔹 Ambil data & actions dari hook kurir
   const {
     permintaanAktif,
     isLoading,
@@ -32,7 +31,6 @@ const PermintaanAktifKurir = () => {
     batalkanPermintaan,
   } = useMitraKurir();
 
-  // 🔹 Ambil detail khusus untuk permintaan aktif
   const {
     detail,
     isLoading: loadingDetail,
@@ -42,12 +40,10 @@ const PermintaanAktifKurir = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [dropboxOpen, setDropboxOpen] = useState(false);
 
-  // 🔄 Loading state gabungan
   if (isLoading || loadingDetail) {
     return <Loading mode='overlay' text='Memuat data...' />;
   }
 
-  // 🔄 Jika tidak ada permintaan aktif
   if (!permintaanAktif) {
     return (
       <div className='max-w-7xl mx-auto p-8'>
@@ -72,11 +68,9 @@ const PermintaanAktifKurir = () => {
     >
       {/* Header */}
       <header className='mb-2'>
-        <h1 className='text-2xl text-2xl font-bold'>
-          Permintaan Aktif Penjemputan
-        </h1>
+        <h1 className='text-2xl font-bold'>Permintaan Aktif Penjemputan</h1>
         <p
-          className={`text-sm text-base ${
+          className={`text-sm ${
             isDarkMode ? 'text-gray-300' : 'text-gray-500'
           }`}
         >
@@ -95,17 +89,17 @@ const PermintaanAktifKurir = () => {
       >
         {/* Informasi Penjemputan */}
         <section className='mb-4'>
-          <h3 className='text-2xl font-bold mb-3'>Informasi Penjemputan</h3>
-          <div className='grid grid-cols-1 grid-cols-2 gap-4 text-sm'>
+          <h3 className='text-xl font-bold mb-3'>Informasi Penjemputan</h3>
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm'>
             <div>
               <span className='text-xs font-semibold text-gray-400'>
-                Kode Penjemputan : {''}
+                Kode Penjemputan :
               </span>
               <span className='block'>{p.kode_penjemputan}</span>
             </div>
             <div>
               <span className='text-xs font-semibold text-gray-400'>
-                Tanggal Dibuat : {''}
+                Tanggal Dibuat :
               </span>
               <span className='block'>
                 {formatTanggalIndonesia(p.waktu_ditambah)}
@@ -113,13 +107,13 @@ const PermintaanAktifKurir = () => {
             </div>
             <div>
               <span className='text-xs font-semibold text-gray-400'>
-                Alamat Penjemputan : {''}
+                Alamat Penjemputan :
               </span>
               <span className='block'>{p.alamat_penjemputan}</span>
             </div>
             <div>
               <span className='text-xs font-semibold text-gray-400'>
-                Nama Masyarakat : {''}
+                Nama Masyarakat :
               </span>
               <span className='block'>
                 {p.nama_masyarakat || 'Belum ditentukan'}
@@ -127,30 +121,27 @@ const PermintaanAktifKurir = () => {
             </div>
             <div>
               <span className='text-xs font-semibold text-gray-400'>
-                Waktu Operasional : {''}
+                Waktu Operasional :
               </span>
               <span className='block'>{p.waktu_operasional || '-'}</span>
             </div>
-            <div>
-              {p.catatan && (
-                <div className='col-span-2'>
-                  <span className='text-xs font-semibold text-gray-400'>
-                    Catatan Masyarakat : {''}
-                  </span>
-                  <span className='block italic'>{p.catatan}</span>
-                </div>
-              )}
-            </div>
-            <div>
-              {/* Dropbox */}
+
+            {p.catatan && (
+              <div className='sm:col-span-2'>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Catatan Masyarakat :
+                </span>
+                <span className='block italic'>{p.catatan}</span>
+              </div>
+            )}
+
+            <div className='sm:col-span-2'>
               <span className='text-xs font-semibold text-gray-400'>
-                Dropbox Tujuan : {''}
+                Dropbox Tujuan :
               </span>
               <div className='mt-1'>
                 {p.nama_dropbox ? (
-                  <div className='text-sm'>
-                    <p className='font-medium'>{p.nama_dropbox}</p>
-                  </div>
+                  <p className='text-sm font-medium'>{p.nama_dropbox}</p>
                 ) : (
                   <p className='text-sm text-gray-500'>-</p>
                 )}
@@ -160,7 +151,7 @@ const PermintaanAktifKurir = () => {
         </section>
 
         {/* Grid Status + Detail Sampah */}
-        <div className='grid grid-cols-1 grid-cols-2 gap-4'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
           {/* Status Penjemputan */}
           <section>
             <h3 className='text-lg font-semibold mb-2 flex items-center gap-2'>
@@ -168,7 +159,7 @@ const PermintaanAktifKurir = () => {
               Status Penjemputan
             </h3>
             <Timeline
-              steps={DAFTAR_LANGKAH_STATUS}
+              steps={daftarLangkahStatus}
               currentStep={
                 currentStatus === 'Dibatalkan'
                   ? -1
@@ -206,7 +197,9 @@ const PermintaanAktifKurir = () => {
                 ))}
               </div>
             ) : (
-              <p className='text-sm text-gray-500'>Tidak ada data sampah</p>
+              <p className='text-sm text-gray-500 text-center'>
+                📭 Tidak ada data sampah
+              </p>
             )}
           </section>
         </div>
@@ -246,7 +239,7 @@ const PermintaanAktifKurir = () => {
               Selesaikan
             </Button>
           )}
-          {['Diterima'].includes(currentStatus) && (
+          {currentStatus === 'Diterima' && (
             <Button
               type='button'
               className='bg-red-600 hover:bg-red-700 text-white'
@@ -262,11 +255,24 @@ const PermintaanAktifKurir = () => {
       <PilihDropboxModal
         isOpen={dropboxOpen}
         onClose={() => setDropboxOpen(false)}
-        onSelect={(id_dropbox) => {
-          setDropboxOpen(false);
-          // 🔹 Update status ke "Dijemput" + simpan dropbox
-          // (bukan langsung selesai)
-          tandaiDijemput(p.id_penjemputan, id_dropbox);
+        onSelect={async (id_dropbox) => {
+          try {
+            const res = await tandaiDijemput(p.id_penjemputan, id_dropbox);
+
+            if (res.success) {
+              setDropboxOpen(false);
+              showAlert('Berhasil', 'Dropbox berhasil dipilih!', 'success');
+            } else {
+              showAlert(
+                'Gagal',
+                res.error || 'Tidak bisa memilih dropbox.',
+                'error'
+              );
+            }
+          } catch (err) {
+            console.error('❌ Error saat pilih dropbox:', err);
+            showAlert('Gagal', 'Terjadi kesalahan pada server.', 'error');
+          }
         }}
       />
 

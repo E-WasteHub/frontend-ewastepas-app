@@ -10,7 +10,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       devOptions: {
-        enabled: true, // Enable PWA in development
+        enabled: true, // aktifkan PWA di mode development
         type: 'module',
         navigateFallback: 'index.html',
       },
@@ -28,41 +28,23 @@ export default defineConfig({
         start_url: '/',
         lang: 'id',
         icons: [
-          {
-            src: '/icons/icon-48x48.png',
-            sizes: '48x48',
-            type: 'image/png',
-            purpose: 'any',
-          },
-          {
-            src: '/icons/icon-72x72.png',
-            sizes: '72x72',
-            type: 'image/png',
-            purpose: 'any',
-          },
-          {
-            src: '/icons/icon-96x96.png',
-            sizes: '96x96',
-            type: 'image/png',
-            purpose: 'any',
-          },
+          { src: '/icons/icon-48x48.png', sizes: '48x48', type: 'image/png' },
+          { src: '/icons/icon-72x72.png', sizes: '72x72', type: 'image/png' },
+          { src: '/icons/icon-96x96.png', sizes: '96x96', type: 'image/png' },
           {
             src: '/icons/icon-128x128.png',
             sizes: '128x128',
             type: 'image/png',
-            purpose: 'any',
           },
           {
             src: '/icons/icon-144x144.png',
             sizes: '144x144',
             type: 'image/png',
-            purpose: 'any',
           },
           {
             src: '/icons/icon-152x152.png',
             sizes: '152x152',
             type: 'image/png',
-            purpose: 'any',
           },
           {
             src: '/icons/icon-192x192.png',
@@ -74,13 +56,11 @@ export default defineConfig({
             src: '/icons/icon-256x256.png',
             sizes: '256x256',
             type: 'image/png',
-            purpose: 'any',
           },
           {
             src: '/icons/icon-384x384.png',
             sizes: '384x384',
             type: 'image/png',
-            purpose: 'any',
           },
           {
             src: '/icons/icon-512x512.png',
@@ -103,12 +83,7 @@ export default defineConfig({
             short_name: 'Edukasi',
             description: 'Akses konten edukasi sampah elektronik',
             url: '/edukasi',
-            icons: [
-              {
-                src: '/icons/icon-192x192.png',
-                sizes: '192x192',
-              },
-            ],
+            icons: [{ src: '/icons/icon-192x192.png', sizes: '192x192' }],
           },
         ],
       },
@@ -127,7 +102,7 @@ export default defineConfig({
             },
           },
           {
-            // Cache API calls untuk konten edukasi
+            // Cache API konten edukasi
             urlPattern: ({ url }) => url.pathname.includes('/konten-edukasi'),
             handler: 'NetworkFirst',
             options: {
@@ -137,9 +112,7 @@ export default defineConfig({
                 maxAgeSeconds: 60 * 60 * 24 * 7, // 7 hari
               },
               networkTimeoutSeconds: 3,
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
+              cacheableResponse: { statuses: [0, 200] },
             },
           },
           {
@@ -157,27 +130,29 @@ export default defineConfig({
             },
           },
         ],
-        skipWaiting: false, // Prevent immediate activation
-        clientsClaim: false, // Prevent immediate control
+        skipWaiting: false, // jangan langsung aktifkan SW baru
+        clientsClaim: false, // jangan langsung ambil alih kontrol client
       },
     }),
   ],
-  // Optimasi Build
-  build: {
-    // Tingkatkan limit warning chunk size
-    chunkSizeWarningLimit: 1000,
 
-    // Optimasi sederhana untuk split bundle
+  // Konfigurasi server untuk development
+  server: {
+    host: true, // biar bisa diakses lewat IP LAN
+    port: 5173, // default port vite, bisa diubah sesuai kebutuhan
+    strictPort: true, // kalau port dipakai, jangan auto ganti
+  },
+
+  // Optimasi build
+  build: {
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        // Pisahkan React libraries dari app code
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
         },
       },
     },
-
-    // Optimasi assets
     assetsInlineLimit: 4096,
   },
 });

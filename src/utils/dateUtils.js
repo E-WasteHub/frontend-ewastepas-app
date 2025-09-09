@@ -1,10 +1,6 @@
 // src/utils/dateUtils.js
-// Utility untuk format tanggal dan waktu khusus penjemputan
 
-/**
- * 🔹 FORMAT TANGGAL INDONESIA
- * Untuk menampilkan tanggal penjemputan
- */
+// format tanggal ke format Indonesia (DD MMMM YYYY)
 export const formatTanggalIndonesia = (tanggal) => {
   if (!tanggal) return '-';
   const waktuTanggal = new Date(tanggal);
@@ -17,10 +13,7 @@ export const formatTanggalIndonesia = (tanggal) => {
   });
 };
 
-/**
- * 🔹 FORMAT TANGGAL DAN WAKTU INDONESIA
- * Untuk menampilkan waktu lengkap penjemputan
- */
+// format tanggal dan waktu ke format Indonesia (DD MMMM YYYY, HH:MM)
 export const formatTanggalWaktuIndonesia = (tanggal) => {
   if (!tanggal) return '-';
   const waktuTanggal = new Date(tanggal);
@@ -35,10 +28,7 @@ export const formatTanggalWaktuIndonesia = (tanggal) => {
   });
 };
 
-/**
- * 🔹 FORMAT WAKTU COUNTDOWN UNTUK OTP
- * Untuk timer verifikasi OTP
- */
+// format detik ke format MM:SS untuk countdown timer
 export const formatWaktuCountdown = (detik) => {
   if (detik <= 0) return '00:00';
 
@@ -50,10 +40,7 @@ export const formatWaktuCountdown = (detik) => {
     .padStart(2, '0')}`;
 };
 
-/**
- * 🔹 FORMAT WAKTU INDONESIA (JAM:MENIT)
- * Untuk menampilkan waktu saja dalam timeline
- */
+// format waktu ke format Indonesia (HH:MM)
 export const formatWaktuIndonesia = (tanggal) => {
   if (!tanggal) return '-';
   const waktuTanggal = new Date(tanggal);
@@ -65,10 +52,7 @@ export const formatWaktuIndonesia = (tanggal) => {
   });
 };
 
-/**
- * 🔹 CEK APAKAH TANGGAL HARI INI
- * Untuk mengecek status penjemputan hari ini
- */
+// cek apakah tanggal adalah hari ini
 export const apakahHariIni = (tanggal) => {
   const hariIni = new Date();
   const tanggalCek = new Date(tanggal);

@@ -17,7 +17,7 @@ const BottombarDashboard = ({ userRole = 'Masyarakat' }) => {
 
   return (
     <nav
-      className={`fixed bottom-0 z-50 w-full border-t backdrop-blur-lg ${bgColor} md:hidden`}
+      className={`fixed bottom-0 z-50 w-full border-t backdrop-blur-lg ${bgColor}`}
     >
       <div className='flex h-16 items-center px-2'>
         {navItems.map((item) => {

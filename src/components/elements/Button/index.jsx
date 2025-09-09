@@ -2,7 +2,7 @@ import useDarkMode from '../../../hooks/useDarkMode';
 
 const Button = ({
   children,
-  variant = 'primary', // "primary" | "secondary" | "icon"
+  variant = 'primary',
   disabled = false,
   isLoading = false,
   loadingText = 'Loading...',

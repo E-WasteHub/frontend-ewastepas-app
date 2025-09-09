@@ -25,9 +25,9 @@ export { default as FileUploadSingle } from './uploads/FileUploadSingle';
 
 // Reusable Modals
 export { default as AlertModal } from './modals/AlertModal';
-export { default as ConfirmModal } from './modals/ConfirmModal.jsx';
-export { default as PilihDropboxModal } from './modals/PilihDropboxModal.jsx';
-
+export { default as ConfirmModal } from './modals/ConfirmModal';
+export { default as DetailTransaksiModal } from './modals/DetailTransaksiModal';
+export { default as PilihDropboxModal } from './modals/PilihDropboxModal';
 // Forms Auth
 export { default as FormLogin } from './forms/auth/FormLogin';
 export { default as FormPemulihanAkun } from './forms/auth/FormPemulihanAkun';

@@ -144,14 +144,14 @@ export const useMitraKurir = () => {
     try {
       setIsSubmitting(true);
       await batalPenjemputan(id_penjemputan, {
-        status_penjemputan: 'Diproses',
+        status_penjemputan: 'Dibatalkan',
         id_kurir: null,
         waktu_dibatalkan: new Date().toISOString(),
       });
       await fetchData();
       return { success: true };
     } catch (err) {
-      console.error('❌ Gagal batalkan permintaan:', err);
+      console.error(' Gagal batalkan permintaan:', err);
       return { success: false, error: 'Gagal membatalkan permintaan' };
     } finally {
       setIsSubmitting(false);

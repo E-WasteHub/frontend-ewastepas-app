@@ -8,20 +8,20 @@ import { buatPenjemputan } from '../../../services/penjemputanService';
 const PermintaanPenjemputanView = () => {
   useDocumentTitle('Permintaan Penjemputan');
 
-  // 🔹 ref untuk memanggil reset dari child
+  // ref untuk memanggil reset dari child
   const formRef = useRef(null);
 
-  // 🔹 toast hook
+  // toast hook
   const { showAlert } = useToast();
 
-  // 🔹 state utama untuk form
+  // state utama untuk form
   const [formData, setFormData] = useState({
     id_waktu_operasional: '',
     alamat_penjemputan: '',
     catatan: '',
   });
 
-  // 🔹 state loading submit
+  // state loading submit
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // handle input formData
@@ -54,7 +54,7 @@ const PermintaanPenjemputanView = () => {
       formPayload.append('alamat_penjemputan', formData.alamat_penjemputan);
       formPayload.append('catatan', formData.catatan);
 
-      // ✅ Gunakan daftarSampah yang dikirim dari FormPenjemputan
+      // Gunakan daftarSampah yang dikirim dari FormPenjemputan
       if (
         Array.isArray(daftarSampahFromForm) &&
         daftarSampahFromForm.length > 0
@@ -78,14 +78,14 @@ const PermintaanPenjemputanView = () => {
       await buatPenjemputan(formPayload);
       showAlert('Berhasil', 'Form penjemputan berhasil dikirim!', 'success');
 
-      // ✅ Reset form data di parent
+      // Reset form data di parent
       setFormData({
         id_waktu_operasional: '',
         alamat_penjemputan: '',
         catatan: '',
       });
 
-      // ✅ Trigger reset di child component melalui ref
+      // Trigger reset di child component melalui ref
       if (formRef.current?.resetForm) {
         formRef.current.resetForm();
       }

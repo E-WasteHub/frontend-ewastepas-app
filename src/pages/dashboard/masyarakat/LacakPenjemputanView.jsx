@@ -22,17 +22,16 @@ const LacakPenjemputanView = () => {
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
 
-  // 🔹 ambil data dari hook
+  // ambil data dari hook
   const { daftarPenjemputan, isLoading } = useMasyarakat();
 
-  // 🔹 state untuk filter & search
-  // 🔹 Search + Filter state
+  // state untuk filter & search
   const [pencarian, setPencarian] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
-  // 🔹 filter data
+  // filter data
   const filteredData = useMemo(() => {
     let result = daftarPenjemputan;
 
@@ -57,7 +56,7 @@ const LacakPenjemputanView = () => {
     return result;
   }, [daftarPenjemputan, pencarian, filterStatus]);
 
-  // 🔹 pagination
+  // pagination
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentData = filteredData.slice(startIndex, startIndex + itemsPerPage);
@@ -81,9 +80,9 @@ const LacakPenjemputanView = () => {
       </h2>
 
       {/* Grid layout */}
-      <div className='grid grid-cols-1 grid-cols-4 gap-6'>
+      <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>
         {/* Sidebar filter */}
-        <div className='col-span-1 space-y-6'>
+        <div className='col-span-1 lg:col-span-1 lg:sticky lg:top-24'>
           <FilterCard
             search={pencarian}
             setSearch={setPencarian}
@@ -94,7 +93,7 @@ const LacakPenjemputanView = () => {
         </div>
 
         {/* Daftar permintaan */}
-        <div className='col-span-3'>
+        <div className='col-span-1 lg:col-span-3'>
           <Card
             className={`p-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'} border`}
           >

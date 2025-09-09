@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { Loading, Pagination } from '../../../components/elements';
 import {
   AdminTable,
-  ConfirmModal,
+  DetailTransaksiModal,
   FilterCrud,
 } from '../../../components/fragments';
 import useAdminMonitoring from '../../../hooks/useAdminMonitoring';
@@ -12,6 +12,7 @@ import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import usePagination from '../../../hooks/usePagination';
 import useToast from '../../../hooks/useToast';
 import * as penjemputanService from '../../../services/penjemputanService';
+import { formatTanggalIndonesia } from '../../../utils/dateUtils';
 
 const AdminTransaksiView = () => {
   useDocumentTitle('Monitoring Penjemputan');
@@ -76,10 +77,12 @@ const AdminTransaksiView = () => {
   // Kolom untuk AdminTable
   const columns = [
     {
-      name: 'ID',
-      selector: 'id_penjemputan',
+      name: 'Tanggal',
+      selector: 'waktu_ditambah',
       cell: (row) => (
-        <span className='font-mono text-xs'>{row.id_penjemputan}</span>
+        <span className='text-sm'>
+          {formatTanggalIndonesia(row.waktu_ditambah)}
+        </span>
       ),
       hideOnMobile: true,
     },
@@ -186,69 +189,11 @@ const AdminTransaksiView = () => {
       )}
 
       {/* Detail Modal */}
-      <ConfirmModal
+      <DetailTransaksiModal
         isOpen={detailOpen}
         onClose={() => setDetailOpen(false)}
-        title='Detail Transaksi'
-        message={
-          selectedDetail && detail ? (
-            <div className='space-y-2 text-left'>
-              <div>
-                <strong>ID:</strong> {selectedDetail.id_penjemputan}
-              </div>
-              <div>
-                <strong>Kode:</strong> {selectedDetail.kode_penjemputan}
-              </div>
-              <div>
-                <strong>Masyarakat:</strong> {selectedDetail.nama_masyarakat}
-              </div>
-              <div>
-                <strong>Kurir:</strong> {selectedDetail.nama_kurir || '-'}
-              </div>
-              <div>
-                <strong>Status:</strong> {selectedDetail.status_penjemputan}
-              </div>
-              <div>
-                <strong>Poin:</strong> {selectedDetail.poin_penjemputan || 0}
-              </div>
-              {detail?.penjemputan && (
-                <>
-                  <div>
-                    <strong>Alamat:</strong>{' '}
-                    {detail.penjemputan.alamat_penjemputan}
-                  </div>
-                  <div>
-                    <strong>Catatan:</strong>{' '}
-                    {detail.penjemputan.catatan || '-'}
-                  </div>
-                  <div>
-                    <strong>Waktu diterima:</strong>{' '}
-                    {detail.penjemputan.waktu_diterima || '-'}
-                  </div>
-                  <div>
-                    <strong>Waktu dijemput:</strong>{' '}
-                    {detail.penjemputan.waktu_dijemput || '-'}
-                  </div>
-                  <div>
-                    <strong>Waktu selesai:</strong>{' '}
-                    {detail.penjemputan.waktu_selesai || '-'}
-                  </div>
-                  {detail.sampah && (
-                    <div>
-                      <strong>Jumlah Sampah:</strong> {detail.sampah.length}{' '}
-                      item
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          ) : (
-            'Loading detail...'
-          )
-        }
-        type='info'
-        confirmText='Tutup'
-        showCancel={false}
+        detail={detail}
+        selectedDetail={selectedDetail}
       />
     </div>
   );

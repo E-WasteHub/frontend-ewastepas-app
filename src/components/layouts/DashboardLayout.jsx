@@ -1,4 +1,5 @@
 import useDarkMode from '../../hooks/useDarkMode';
+import useResponsive from '../../hooks/useResponsive';
 import Breadcrumb from '../elements/Breadcrumb';
 import BottombarDashboard from '../fragments/navigation/dashboard/BottombarDashboard';
 import NavbarDashboard from '../fragments/navigation/dashboard/NavbarDashboard';
@@ -10,6 +11,7 @@ const DashboardLayout = ({
   showBreadcrumb = true,
 }) => {
   const { isDarkMode } = useDarkMode();
+  const { isTablet, isMobile } = useResponsive();
 
   return (
     <div
@@ -29,13 +31,18 @@ const DashboardLayout = ({
             {showBreadcrumb && (
               <Breadcrumb customBreadcrumbs={customBreadcrumbs} />
             )}
-            {children}
+            {/* Content */}
+            <div className='max-w-7xl w-full mx-auto'>{children}</div>
           </div>
         </main>
       </div>
 
       {/* Bottom Navigation (mobile only) */}
-      <div className='lg:hidden fixed bottom-0 left-0 right-0 z-40'>
+      <div
+        className={`${
+          isTablet || isMobile ? 'fixed' : 'hidden'
+        } bottom-0 left-0 right-0 z-40`}
+      >
         <BottombarDashboard />
       </div>
     </div>

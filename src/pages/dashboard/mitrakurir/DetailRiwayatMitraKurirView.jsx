@@ -8,7 +8,7 @@ import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import { useMitraKurirDetail } from '../../../hooks/useMitraKurir';
 import { formatTanggalIndonesia } from '../../../utils/dateUtils';
 import {
-  DAFTAR_LANGKAH_STATUS,
+  daftarLangkahStatus,
   dapatkanLangkahAktif,
 } from '../../../utils/penjemputanUtils';
 
@@ -17,18 +17,14 @@ const DetailRiwayatMitraKurirView = () => {
   const { isDarkMode } = useDarkMode();
   const { id_penjemputan } = useParams();
 
-  // 🔹 Ambil detail riwayat kurir
-  const {
-    detail: detailRiwayat,
-    isLoading,
-    // error,
-  } = useMitraKurirDetail(id_penjemputan);
+  const { detail: detailRiwayat, isLoading } =
+    useMitraKurirDetail(id_penjemputan);
 
   if (isLoading) return <Loading mode='overlay' text='Memuat detail...' />;
 
   if (!detailRiwayat?.penjemputan) {
     return (
-      <p className='p-6 text-center text-red-500'>❌ Riwayat tidak ditemukan</p>
+      <p className='p-6 text-center text-red-500'>Riwayat tidak ditemukan</p>
     );
   }
 
@@ -37,17 +33,15 @@ const DetailRiwayatMitraKurirView = () => {
 
   return (
     <div
-      className={`max-w-7xl mx-auto space-y-6 ${
+      className={`max-w-7xl mx-auto space-y-3 ${
         isDarkMode ? 'bg-slate-900 text-white' : 'bg-gray-50 text-gray-900'
       }`}
     >
       {/* Header */}
       <header>
-        <h1 className='text-2xl text-2xl font-bold'>
-          Detail Riwayat Penjemputan
-        </h1>
+        <h1 className='text-2xl font-bold'>Detail Riwayat Penjemputan</h1>
         <p
-          className={`text-sm text-base ${
+          className={`text-sm ${
             isDarkMode ? 'text-gray-300' : 'text-gray-500'
           }`}
         >
@@ -55,6 +49,7 @@ const DetailRiwayatMitraKurirView = () => {
         </p>
       </header>
 
+      {/* Card utama */}
       <Card
         className={`p-6 shadow-md rounded-xl ${
           isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white'
@@ -62,17 +57,17 @@ const DetailRiwayatMitraKurirView = () => {
       >
         {/* Informasi Penjemputan */}
         <section className='mb-4'>
-          <h3 className='text-2xl font-bold mb-3'>Informasi Penjemputan</h3>
-          <div className='grid grid-cols-1 grid-cols-2 gap-4 text-sm'>
+          <h3 className='text-xl font-bold mb-3'>Informasi Penjemputan</h3>
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm'>
             <div>
               <span className='text-xs font-semibold text-gray-400'>
-                Kode Penjemputan : {''}
+                Kode Penjemputan :
               </span>
               <span className='block'>{p.kode_penjemputan}</span>
             </div>
             <div>
               <span className='text-xs font-semibold text-gray-400'>
-                Tanggal Dibuat : {''}
+                Tanggal Dibuat :
               </span>
               <span className='block'>
                 {formatTanggalIndonesia(p.waktu_ditambah)}
@@ -80,13 +75,13 @@ const DetailRiwayatMitraKurirView = () => {
             </div>
             <div>
               <span className='text-xs font-semibold text-gray-400'>
-                Alamat Penjemputan : {''}
+                Alamat Penjemputan :
               </span>
               <span className='block'>{p.alamat_penjemputan}</span>
             </div>
             <div>
               <span className='text-xs font-semibold text-gray-400'>
-                Nama Masyarakat : {''}
+                Nama Masyarakat :
               </span>
               <span className='block'>
                 {p.nama_masyarakat || 'Belum ditentukan'}
@@ -94,30 +89,27 @@ const DetailRiwayatMitraKurirView = () => {
             </div>
             <div>
               <span className='text-xs font-semibold text-gray-400'>
-                Waktu Operasional : {''}
+                Waktu Operasional :
               </span>
               <span className='block'>{p.waktu_operasional || '-'}</span>
             </div>
-            <div>
-              {p.catatan && (
-                <div className='col-span-2'>
-                  <span className='text-xs font-semibold text-gray-400'>
-                    Catatan Masyarakat : {''}
-                  </span>
-                  <span className='block italic'>{p.catatan}</span>
-                </div>
-              )}
-            </div>
-            <div>
-              {/* Dropbox */}
+
+            {p.catatan && (
+              <div className='sm:col-span-2'>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Catatan Masyarakat :
+                </span>
+                <span className='block italic'>{p.catatan}</span>
+              </div>
+            )}
+
+            <div className='sm:col-span-2'>
               <span className='text-xs font-semibold text-gray-400'>
-                Dropbox Tujuan : {''}
+                Dropbox Tujuan :
               </span>
               <div className='mt-1'>
                 {p.nama_dropbox ? (
-                  <div className='text-sm'>
-                    <p className='font-medium'>{p.nama_dropbox}</p>
-                  </div>
+                  <p className='text-sm font-medium'>{p.nama_dropbox}</p>
                 ) : (
                   <p className='text-sm text-gray-500'>-</p>
                 )}
@@ -127,7 +119,7 @@ const DetailRiwayatMitraKurirView = () => {
         </section>
 
         {/* Status + Detail Sampah */}
-        <div className='grid grid-cols-1 grid-cols-2 gap-4'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
           {/* Status */}
           <section>
             <h3 className='text-lg font-semibold mb-2 flex items-center gap-2'>
@@ -135,7 +127,7 @@ const DetailRiwayatMitraKurirView = () => {
               Status Penjemputan
             </h3>
             <Timeline
-              steps={DAFTAR_LANGKAH_STATUS}
+              steps={daftarLangkahStatus}
               currentStep={langkahAktif}
               isDarkMode={isDarkMode}
               detail={p}

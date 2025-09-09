@@ -35,6 +35,10 @@ const PilihDropboxModal = ({ isOpen, onClose, onSelect }) => {
           setDropboxList([]);
         })
         .finally(() => setLoading(false));
+    } else {
+      // reset state saat modal ditutup
+      setSelectedDaerah('');
+      setSelectedDropbox('');
     }
   }, [isOpen]);
 
@@ -78,10 +82,7 @@ const PilihDropboxModal = ({ isOpen, onClose, onSelect }) => {
                 className='mt-4'
                 label='Pilih Dropbox'
                 value={selectedDropbox}
-                onChange={(value) => {
-                  setSelectedDropbox(value);
-                  onSelect?.(value);
-                }}
+                onChange={(value) => setSelectedDropbox(value)}
                 placeholder={
                   dropboxFiltered.length > 0
                     ? 'Pilih Dropbox'
@@ -90,16 +91,36 @@ const PilihDropboxModal = ({ isOpen, onClose, onSelect }) => {
                 disabled={dropboxFiltered.length === 0}
                 options={dropboxFiltered.map((db) => ({
                   value: db.id_dropbox,
-                  label: `${db.nama_dropbox} - ${db.latitude}, ${db.longitude}`,
+                  label: `${db.nama_dropbox}`,
                 }))}
               />
             )}
           </>
         )}
 
-        <div className='flex justify-end mt-4'>
-          <Button type='button' onClick={onClose} className='text-sm'>
-            Tutup
+        {/* Tombol Aksi */}
+        <div className='flex justify-end mt-6 gap-3'>
+          <Button
+            type='button'
+            variant='secondary'
+            onClick={onClose}
+            className='text-sm'
+          >
+            Batal
+          </Button>
+          <Button
+            type='button'
+            variant='primary'
+            className='text-sm'
+            disabled={!selectedDropbox}
+            onClick={() => {
+              if (selectedDropbox) {
+                onSelect?.(selectedDropbox);
+                onClose?.();
+              }
+            }}
+          >
+            Konfirmasi
           </Button>
         </div>
       </div>
