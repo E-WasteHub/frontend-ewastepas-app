@@ -4,10 +4,10 @@ import AuthLayout from '../../components/layouts/AuthLayout';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 const PemulihanAkunView = () => {
-  useDocumentTitle('Reset Kata Sandi - E-WasteHub');
+  useDocumentTitle('Reset Kata Sandi - Ewastepas');
 
   return (
-    <AuthLayout namaApp='EwasteHub' maxWidth='max-w-2xl'>
+    <AuthLayout namaApp='Ewastepas' maxWidth='max-w-2xl'>
       <FormPemulihanAkun />
     </AuthLayout>
   );

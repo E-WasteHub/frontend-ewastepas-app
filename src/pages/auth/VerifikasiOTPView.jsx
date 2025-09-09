@@ -3,10 +3,10 @@ import AuthLayout from '../../components/layouts/AuthLayout';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 const VerifikasiOTPView = () => {
-  useDocumentTitle('Verifikasi OTP - E-WasteHub');
+  useDocumentTitle('Verifikasi OTP - Ewastepas');
 
   return (
-    <AuthLayout namaApp='EwasteHub'>
+    <AuthLayout namaApp='Ewastepas'>
       <FormVerifikasiOTP />
     </AuthLayout>
   );

@@ -3,10 +3,10 @@ import AuthLayout from '../../components/layouts/AuthLayout';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 
 const RegisterView = () => {
-  useDocumentTitle('Registrasi - E-WasteHub');
+  useDocumentTitle('Registrasi - Ewastepas');
 
   return (
-    <AuthLayout namaApp='EwasteHub'>
+    <AuthLayout namaApp='Ewastepas'>
       <FormRegister />
     </AuthLayout>
   );

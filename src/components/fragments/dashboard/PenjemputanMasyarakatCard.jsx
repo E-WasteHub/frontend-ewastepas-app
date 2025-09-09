@@ -1,5 +1,6 @@
 // src/components/fragments/dashboard/PenjemputanMasyarakatCard.jsx
 import useDarkMode from '../../../hooks/useDarkMode';
+import { formatTanggalWaktuIndonesia } from '../../../utils/dateUtils';
 import { Button, Card } from '../../elements';
 
 // 🔹 Map status ke warna (disatukan untuk riwayat + lacak)
@@ -48,57 +49,46 @@ const PenjemputanMasyarakatCard = ({ req = {}, onDetail }) => {
       }`}
     >
       <div className='flex items-start justify-between'>
-        {/* Left: informasi utama */}
-        <div className='flex-1 pr-4 gap-1.5 flex flex-col'>
-          {/* Kode */}
+        {/* 🔹 Kiri: info utama */}
+        <div className='flex-1 pr-4 space-y-2'>
           <p
-            className={`text-sm font-bold mb-1 ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-700'
+            className={`text-lg ${
+              isDarkMode ? 'text-gray-200' : 'text-gray-800'
             }`}
           >
-            Kode Penjemputan :{' '}
-            <span className='text-green-600 font-semibold ml-1'>
-              {req?.kode_penjemputan || '-'}
-            </span>
-          </p>
-
-          {/* Tanggal / waktu */}
-          <p
-            className={`text-sm mb-1 ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-700'
-            }`}
-          >
-            Tanggal:{' '}
-            <span className='font-semibold'>
-              {req?.tanggal || req?.waktu_ditambah || '-'}
-            </span>
-          </p>
-
-          {/* Kurir */}
-          {req?.nama_kurir && (
-            <p
-              className={`text-sm mb-1 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-700'
+            <span
+              className={`font-semibold ${
+                isDarkMode ? 'text-green-400' : 'text-green-600'
               }`}
             >
-              Nama Kurir:{' '}
-              <span className='font-semibold'>
-                {req.nama_kurir || 'Belum ditentukan'}
-              </span>
-            </p>
-          )}
-
-          {/* Alamat */}
-          <p
-            className={`text-sm mb-1 ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-700'
-            }`}
-            title={req?.alamat_penjemputan}
-          >
-            Alamat Penjemputan :{' '}
-            <span className='text-xs font-semibold'>
-              {req?.alamat_penjemputan || '-'}
+              {req.kode_penjemputan}
             </span>
+          </p>
+
+          <p
+            className={
+              isDarkMode ? 'text-gray-400 text-xs' : 'text-gray-500 text-xs'
+            }
+          >
+            {formatTanggalWaktuIndonesia(req.waktu_ditambah)}
+          </p>
+
+          <p
+            className={
+              isDarkMode ? 'text-gray-200 text-sm' : 'text-gray-700 text-sm'
+            }
+          >
+            <span className='font-semibold'>Kurir :</span>{' '}
+            {req.nama_kurir || '-'}
+          </p>
+          <p
+            className={`text-sm line-clamp-2 ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}
+            title={req.alamat_penjemputan}
+          >
+            <span className='font-semibold'>Alamat Penjemputan:</span>{' '}
+            {req.alamat_penjemputan}
           </p>
         </div>
 

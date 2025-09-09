@@ -2,9 +2,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ambilSemuaEdukasi, detailEdukasi } from '../services/edukasiService';
 
-const CACHE_KEY_PREFIX = 'ewastehub_edukasi_';
-const CACHE_LIST_KEY = 'ewastehub_edukasi_list';
-const CACHE_TIMESTAMP_KEY = 'ewastehub_edukasi_timestamp';
+const CACHE_KEY_PREFIX = 'ewastepas_edukasi_';
+const CACHE_LIST_KEY = 'ewastepas_edukasi_list';
+const CACHE_TIMESTAMP_KEY = 'ewastepas_edukasi_timestamp';
 const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 hari
 
 const useOfflineEdukasi = () => {

@@ -27,7 +27,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <p className='px-2 text-center leading-relaxed text-sm md:text-base'>
-            © {currentYear} E-wasteHub. Semua hak dilindungi undang-undang.
+            © {currentYear} Ewastepas. Semua hak dilindungi undang-undang.
           </p>
         </div>
       </div>

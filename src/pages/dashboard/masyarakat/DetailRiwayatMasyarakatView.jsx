@@ -58,63 +58,58 @@ const DetailRiwayatMasyarakatView = () => {
         }`}
       >
         {/* Info penjemputan */}
-        <section className='mb-4'>
-          <h3 className='text-xl font-bold mb-3'>Informasi Penjemputan</h3>
-          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm'>
-            <div>
-              <span className='text-xs font-semibold text-gray-400'>
-                Kode Penjemputan :
-              </span>
-              <span className='block'>{p.kode_penjemputan}</span>
-            </div>
-            <div>
-              <span className='text-xs font-semibold text-gray-400'>
-                Tanggal Dibuat :
-              </span>
-              <span className='block'>
-                {formatTanggalIndonesia(p.waktu_ditambah)}
-              </span>
-            </div>
-            <div>
-              <span className='text-xs font-semibold text-gray-400'>
-                Alamat Penjemputan :
-              </span>
-              <span className='block'>{p.alamat_penjemputan}</span>
-            </div>
-            <div>
-              <span className='text-xs font-semibold text-gray-400'>
-                Nama Kurir :
-              </span>
-              <span className='block'>
-                {p.nama_kurir || 'Belum ditentukan'}
-              </span>
-            </div>
-            <div>
-              <span className='text-xs font-semibold text-gray-400'>
-                Waktu Operasional :
-              </span>
-              <span className='block'>{p.waktu_operasional || '-'}</span>
-            </div>
-
-            {p.catatan && (
-              <div className='sm:col-span-2'>
+        <section className='mb-6'>
+          <h3 className='text-xl font-bold mb-4'>Informasi Penjemputan</h3>
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 text-sm'>
+            {/* Kolom kiri: masyarakat */}
+            <div className='space-y-3'>
+              <div>
                 <span className='text-xs font-semibold text-gray-400'>
-                  Catatan :
+                  Kode Penjemputan
                 </span>
-                <span className='block italic'>{p.catatan}</span>
+                <p className='font-mono'>{p.kode_penjemputan}</p>
               </div>
-            )}
+              <div>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Tanggal Dibuat
+                </span>
+                <p>{formatTanggalIndonesia(p.waktu_ditambah)}</p>
+              </div>
+              <div>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Alamat Penjemputan
+                </span>
+                <p>{p.alamat_penjemputan}</p>
+              </div>
+              {p.catatan && (
+                <div>
+                  <span className='text-xs font-semibold text-gray-400'>
+                    Catatan Penjemputan
+                  </span>
+                  <p className='italic'>{p.catatan}</p>
+                </div>
+              )}
+            </div>
 
-            <div className='sm:col-span-2'>
-              <span className='text-xs font-semibold text-gray-400'>
-                Dropbox Tujuan :
-              </span>
-              <div className='mt-1'>
-                {p.nama_dropbox ? (
-                  <p className='text-sm font-medium'>{p.nama_dropbox}</p>
-                ) : (
-                  <p className='text-sm text-gray-500'>-</p>
-                )}
+            {/* Kolom kanan: kurir */}
+            <div className='space-y-3'>
+              <div>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Perkiraan Waktu Jemput
+                </span>
+                <p>{p.waktu_operasional || '-'}</p>
+              </div>
+              <div>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Nama Kurir
+                </span>
+                <p>{p.nama_kurir || 'Belum ditentukan'}</p>
+              </div>
+              <div>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Dropbox Tujuan
+                </span>
+                <p>{p.nama_dropbox || '-'}</p>
               </div>
             </div>
           </div>

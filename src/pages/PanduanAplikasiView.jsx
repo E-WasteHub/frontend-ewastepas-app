@@ -7,7 +7,7 @@ import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
 const PanduanAplikasiPage = () => {
-  useDocumentTitle('Panduan | E-wasteHub');
+  useDocumentTitle('Panduan | Ewastepas');
   const { isDarkMode } = useDarkMode();
   const [activeStep, setActiveStep] = useState(null);
 

@@ -55,7 +55,7 @@ const PenjemputanKurirCard = ({
     >
       <div className='flex items-start justify-between'>
         {/* 🔹 Kiri: info utama */}
-        <div className='flex-1 pr-4 space-y-1'>
+        <div className='flex-1 pr-4 space-y-2'>
           <p
             className={`text-lg ${
               isDarkMode ? 'text-gray-200' : 'text-gray-800'
@@ -84,7 +84,7 @@ const PenjemputanKurirCard = ({
             }
           >
             <span className='font-semibold'>Masyarakat:</span>{' '}
-            {req.nama_masyarakat}
+            {req.nama_masyarakat || '-'}
           </p>
 
           <p

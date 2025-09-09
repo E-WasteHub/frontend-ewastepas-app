@@ -5,7 +5,7 @@ export const panduanDummy = [
     id: 1,
     number: 1,
     title: 'Daftar Akun',
-    description: 'Buat akun masyarakat untuk mulai menggunakan E-wasteHub',
+    description: 'Buat akun masyarakat untuk mulai menggunakan Ewastepas',
     Icon: UserRoundPlus,
     steps: [
       'Pilih role "Masyarakat" di halaman utama',
