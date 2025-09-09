@@ -7,13 +7,13 @@ export { default as KategoriCrudModal } from './admincrud/KategoriCrudModal';
 
 // Reusable dashboard UI
 export { default as AdminTable } from './dashboard/AdminTable';
-export { default as DatamasterCard } from './dashboard/DatamasterCard';
+export { default as DataMasterCard } from './dashboard/DataMasterCard';
 export { default as FilterCard } from './dashboard/FilterCard';
+export { default as FilterCrud } from './dashboard/FilterCrud';
 export { default as PenjemputanKurirCard } from './dashboard/PenjemputanKurirCard';
 export { default as PenjemputanMasyarakatCard } from './dashboard/PenjemputanMasyarakatCard';
-export { default as StatCard } from './dashboard/StatCard';
-export { default as FilterCrud } from './dashboard/FilterCrud';
 export { default as SapaanDashboard } from './dashboard/SapaanDashboard';
+export { default as StatCard } from './dashboard/StatCard';
 
 // Reusable Components Form
 export { default as FormHeader } from './forms/FormHeader';
@@ -24,7 +24,7 @@ export { default as FileUploadMultiple } from './uploads/FileUploadMultiple';
 export { default as FileUploadSingle } from './uploads/FileUploadSingle';
 
 // Reusable Modals
-export { default as AlertModal } from './modals/AlertModal'; // Stub for backward compatibility
+export { default as AlertModal } from './modals/AlertModal';
 export { default as ConfirmModal } from './modals/ConfirmModal.jsx';
 export { default as PilihDropboxModal } from './modals/PilihDropboxModal.jsx';
 

@@ -1,4 +1,4 @@
-import DatamasterCard from '../../../components/fragments/dashboard/DatamasterCard';
+import { DatamasterCard } from '../../../components/fragments/';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 

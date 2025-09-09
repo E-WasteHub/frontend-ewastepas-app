@@ -3,7 +3,7 @@ import { motion as Motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useResponsive from '../../../hooks/useResponsive';
-import { Badge } from '../../elements'; // ⬅️ hapus Mobile, Desktop import
+import { Badge } from '../../elements';
 
 // services
 import * as jenisService from '../../../services/jenisService';

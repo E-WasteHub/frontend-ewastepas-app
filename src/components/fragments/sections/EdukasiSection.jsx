@@ -36,7 +36,7 @@ const EdukasiSection = () => {
   }, []);
 
   // hanya ambil 4 edukasi terbaru
-  const edukasiPreview = data.slice(0, 4);
+  const edukasiPreview = Array.isArray(data) ? data.slice(0, 4) : [];
 
   return (
     <section
