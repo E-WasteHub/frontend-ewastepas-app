@@ -15,7 +15,7 @@ const KategoriSection = () => {
   const [jenisData, setJenisData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // 🔹 Ambil kategori & jenis dari backend
+  //    Ambil kategori & jenis dari backend
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -25,7 +25,7 @@ const KategoriSection = () => {
         setKategoriData(kategoriRes.data || []);
         setJenisData(jenisRes.data || []);
       } catch (err) {
-        console.error('❌ Gagal ambil kategori/jenis:', err);
+        console.error('  Gagal ambil kategori/jenis:', err);
       } finally {
         setLoading(false);
       }

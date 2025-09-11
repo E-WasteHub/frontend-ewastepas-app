@@ -1,38 +1,57 @@
 import { Link, useLocation } from 'react-router-dom';
+import usePengguna from '../../../hooks/usePengguna';
+import { menuItemsByRole } from '../../../utils/menuUtils';
 
-// Ubah teks dari "user-profile" -> "User Profile"
-const formatPathName = (nama) =>
-  nama
-    .replace(/-/g, ' ') // ubah "-" jadi spasi
-    .replace(/\b\w/g, (char) => char.toUpperCase()); // kapital huruf pertama
+// rekursif cari path di menu
+const findBreadcrumb = (items, pathname) => {
+  for (const item of items) {
+    if (item.path === pathname) return [item];
+    if (item.children) {
+      const child = findBreadcrumb(item.children, pathname);
+      if (child.length) return [item, ...child];
+    }
+  }
+  return [];
+};
 
-const Breadcrumb = ({ customItems }) => {
+const Breadcrumb = () => {
   const location = useLocation();
-  const pathParts = location.pathname.split('/').filter(Boolean);
+  const { peran } = usePengguna();
+  const role = peran || 'Masyarakat';
 
-  // Buat breadcrumb otomatis kalau customItems nggak ada
-  const generatedItems = pathParts.slice(1).map((part, index) => {
-    const fullPath = '/' + pathParts.slice(0, index + 2).join('/');
-    return {
-      label: formatPathName(part),
-      path: fullPath,
-    };
-  });
+  const menuItems = menuItemsByRole[role] || [];
 
-  const breadcrumbItems = customItems || generatedItems;
+  const breadcrumbItems = findBreadcrumb(menuItems, location.pathname);
+
+  // root dashboard sesuai role
+  const rootDashboardPath =
+    role === 'Admin'
+      ? '/dashboard/admin'
+      : role === 'Mitra Kurir'
+      ? '/dashboard/mitra-kurir'
+      : '/dashboard/masyarakat';
+
+  const dashboardItem = { title: 'Dashboard', path: rootDashboardPath };
+
+  // cegah double dashboard
+  const finalItems =
+    breadcrumbItems.length === 0 ||
+    breadcrumbItems[0].path !== rootDashboardPath
+      ? [dashboardItem, ...breadcrumbItems]
+      : breadcrumbItems;
 
   return (
     <nav className='mb-4 px-8'>
       <ul className='flex items-center gap-2 text-sm'>
-        {breadcrumbItems.map((item, index) => (
+        {finalItems.map((item, index) => (
           <li key={item.path} className='flex items-center gap-2'>
             <Link
               to={item.path}
               className='text-green-600 hover:underline capitalize'
             >
-              {item.label}
+              {item.title}
             </Link>
-            {index < breadcrumbItems.length - 1 && <span>/</span>}
+            {index < finalItems.length - 1 && <span>/</span>}
           </li>
         ))}
       </ul>

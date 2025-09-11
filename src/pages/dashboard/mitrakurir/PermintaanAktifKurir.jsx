@@ -1,6 +1,6 @@
 // src/views/kurir/PermintaanAktifKurir.jsx
 import { FileText, Truck } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Button, Card, Loading } from '../../../components/elements';
 import {
   ConfirmModal,
@@ -10,9 +10,7 @@ import {
 } from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
-import useMitraKurir, {
-  useMitraKurirDetail,
-} from '../../../hooks/useMitraKurir';
+import useMitraKurir from '../../../hooks/useMitraKurir';
 import useToast from '../../../hooks/useToast';
 import { formatTanggalIndonesia } from '../../../utils/dateUtils';
 import { daftarLangkahStatus } from '../../../utils/penjemputanUtils';
@@ -24,23 +22,28 @@ const PermintaanAktifKurir = () => {
 
   const {
     permintaanAktif,
+    detail,
+    fetchDetail,
     isLoading,
+    isLoadingDetail,
     error,
+    errorDetail,
     tandaiDijemput,
     tandaiSelesai,
     batalkanPermintaan,
   } = useMitraKurir();
 
-  const {
-    detail,
-    isLoading: loadingDetail,
-    error: errorDetail,
-  } = useMitraKurirDetail(permintaanAktif?.id_penjemputan);
-
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [dropboxOpen, setDropboxOpen] = useState(false);
 
-  if (isLoading || loadingDetail) {
+  // fetch detail begitu permintaanAktif sudah ada
+  useEffect(() => {
+    if (permintaanAktif?.id_penjemputan) {
+      fetchDetail(permintaanAktif.id_penjemputan);
+    }
+  }, [permintaanAktif, fetchDetail]);
+
+  if (isLoading) {
     return <Loading mode='overlay' text='Memuat data...' />;
   }
 
@@ -49,7 +52,7 @@ const PermintaanAktifKurir = () => {
       <div className='max-w-7xl mx-auto p-8'>
         <Card className='p-6 text-center rounded-3xl'>
           <p className={isDarkMode ? 'text-white' : 'text-slate-800'}>
-            ❌ Tidak ada penjemputan aktif saat ini.
+            Tidak ada penjemputan aktif saat ini.
           </p>
         </Card>
       </div>
@@ -88,63 +91,58 @@ const PermintaanAktifKurir = () => {
         }`}
       >
         {/* Informasi Penjemputan */}
-        <section className='mb-4'>
-          <h3 className='text-xl font-bold mb-3'>Informasi Penjemputan</h3>
-          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm'>
-            <div>
-              <span className='text-xs font-semibold text-gray-400'>
-                Kode Penjemputan :
-              </span>
-              <span className='block'>{p.kode_penjemputan}</span>
-            </div>
-            <div>
-              <span className='text-xs font-semibold text-gray-400'>
-                Tanggal Dibuat :
-              </span>
-              <span className='block'>
-                {formatTanggalIndonesia(p.waktu_ditambah)}
-              </span>
-            </div>
-            <div>
-              <span className='text-xs font-semibold text-gray-400'>
-                Alamat Penjemputan :
-              </span>
-              <span className='block'>{p.alamat_penjemputan}</span>
-            </div>
-            <div>
-              <span className='text-xs font-semibold text-gray-400'>
-                Nama Masyarakat :
-              </span>
-              <span className='block'>
-                {p.nama_masyarakat || 'Belum ditentukan'}
-              </span>
-            </div>
-            <div>
-              <span className='text-xs font-semibold text-gray-400'>
-                Waktu Operasional :
-              </span>
-              <span className='block'>{p.waktu_operasional || '-'}</span>
-            </div>
-
-            {p.catatan && (
-              <div className='sm:col-span-2'>
+        <section className='mb-6'>
+          <h3 className='text-xl font-bold mb-4'>Informasi Penjemputan</h3>
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 text-sm'>
+            {/* Kolom kiri */}
+            <div className='space-y-3'>
+              <div>
                 <span className='text-xs font-semibold text-gray-400'>
-                  Catatan Masyarakat :
+                  Kode Penjemputan
                 </span>
-                <span className='block italic'>{p.catatan}</span>
+                <p>{p.kode_penjemputan}</p>
               </div>
-            )}
+              <div>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Tanggal Dibuat
+                </span>
+                <p>{formatTanggalIndonesia(p.waktu_ditambah)}</p>
+              </div>
+              <div>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Alamat Penjemputan
+                </span>
+                <p>{p.alamat_penjemputan}</p>
+              </div>
+              {p.catatan && (
+                <div>
+                  <span className='text-xs font-semibold text-gray-400'>
+                    Catatan Penjemputan
+                  </span>
+                  <p className='italic'>{p.catatan}</p>
+                </div>
+              )}
+            </div>
 
-            <div className='sm:col-span-2'>
-              <span className='text-xs font-semibold text-gray-400'>
-                Dropbox Tujuan :
-              </span>
-              <div className='mt-1'>
-                {p.nama_dropbox ? (
-                  <p className='text-sm font-medium'>{p.nama_dropbox}</p>
-                ) : (
-                  <p className='text-sm text-gray-500'>-</p>
-                )}
+            {/* Kolom kanan */}
+            <div className='space-y-3'>
+              <div>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Waktu Operasional
+                </span>
+                <p>{p.waktu_operasional || '-'}</p>
+              </div>
+              <div>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Nama Masyarakat
+                </span>
+                <p>{p.nama_masyarakat || '-'}</p>
+              </div>
+              <div>
+                <span className='text-xs font-semibold text-gray-400'>
+                  Dropbox Tujuan
+                </span>
+                <p>{p.nama_dropbox || '-'}</p>
               </div>
             </div>
           </div>
@@ -152,7 +150,7 @@ const PermintaanAktifKurir = () => {
 
         {/* Grid Status + Detail Sampah */}
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-          {/* Status Penjemputan */}
+          {/* Status */}
           <section>
             <h3 className='text-lg font-semibold mb-2 flex items-center gap-2'>
               <Truck className='w-5 h-5 text-green-500' />
@@ -182,7 +180,11 @@ const PermintaanAktifKurir = () => {
               <FileText className='w-5 h-5 text-green-500' />
               Detail Sampah
             </h3>
-            {d?.sampah?.length > 0 ? (
+            {isLoadingDetail ? (
+              <p className='text-sm text-gray-500 text-center'>
+                ⏳ Memuat detail sampah...
+              </p>
+            ) : d?.sampah?.length > 0 ? (
               <div
                 className={`space-y-3 ${
                   d.sampah.length > 3 ? 'max-h-96 overflow-y-auto pr-2' : ''
@@ -198,7 +200,7 @@ const PermintaanAktifKurir = () => {
               </div>
             ) : (
               <p className='text-sm text-gray-500 text-center'>
-                📭 Tidak ada data sampah
+                Tidak ada data sampah
               </p>
             )}
           </section>
@@ -208,7 +210,6 @@ const PermintaanAktifKurir = () => {
         <div className='flex justify-end gap-3 mt-6'>
           {currentStatus === 'Diterima' && (
             <Button
-              type='button'
               className='bg-blue-600 hover:bg-blue-700 text-white'
               onClick={() => setDropboxOpen(true)}
             >
@@ -217,20 +218,15 @@ const PermintaanAktifKurir = () => {
           )}
           {currentStatus === 'Dijemput' && (
             <Button
-              type='button'
               className='bg-emerald-600 hover:bg-emerald-700 text-white'
               onClick={async () => {
                 const res = await tandaiSelesai(p.id_penjemputan);
                 if (res.success) {
-                  showAlert(
-                    'Berhasil',
-                    '✅ Penjemputan telah selesai!',
-                    'success'
-                  );
+                  showAlert('Berhasil', 'Penjemputan selesai!', 'success');
                 } else {
                   showAlert(
                     'Gagal',
-                    res.error || '❌ Gagal menyelesaikan penjemputan',
+                    res.error || 'Error menyelesaikan',
                     'error'
                   );
                 }
@@ -241,7 +237,6 @@ const PermintaanAktifKurir = () => {
           )}
           {currentStatus === 'Diterima' && (
             <Button
-              type='button'
               className='bg-red-600 hover:bg-red-700 text-white'
               onClick={() => setConfirmOpen(true)}
             >
@@ -256,47 +251,33 @@ const PermintaanAktifKurir = () => {
         isOpen={dropboxOpen}
         onClose={() => setDropboxOpen(false)}
         onSelect={async (id_dropbox) => {
-          try {
-            const res = await tandaiDijemput(p.id_penjemputan, id_dropbox);
-
-            if (res.success) {
-              setDropboxOpen(false);
-              showAlert('Berhasil', 'Dropbox berhasil dipilih!', 'success');
-            } else {
-              showAlert(
-                'Gagal',
-                res.error || 'Tidak bisa memilih dropbox.',
-                'error'
-              );
-            }
-          } catch (err) {
-            console.error('❌ Error saat pilih dropbox:', err);
-            showAlert('Gagal', 'Terjadi kesalahan pada server.', 'error');
+          const res = await tandaiDijemput(p.id_penjemputan, id_dropbox);
+          if (res.success) {
+            setDropboxOpen(false);
+            showAlert('Berhasil', 'Dropbox dipilih!', 'success');
+          } else {
+            showAlert(
+              'Gagal',
+              res.error || 'Tidak bisa pilih dropbox',
+              'error'
+            );
           }
         }}
       />
 
-      {/* Modal Konfirmasi Batal */}
+      {/* Modal Batalkan */}
       <ConfirmModal
         isOpen={confirmOpen}
         title='Batalkan Penjemputan'
-        message='Apakah Anda yakin ingin melepaskan penjemputan ini?'
+        message='Apakah Anda yakin ingin membatalkan?'
         onClose={() => setConfirmOpen(false)}
         onConfirm={async () => {
           const res = await batalkanPermintaan(p.id_penjemputan);
           setConfirmOpen(false);
           if (res.success) {
-            showAlert(
-              'Berhasil',
-              '✅ Penjemputan dilepaskan, kembali ke daftar permintaan!',
-              'success'
-            );
+            showAlert('Berhasil', 'Penjemputan dibatalkan!', 'success');
           } else {
-            showAlert(
-              'Gagal',
-              res.error || '❌ Gagal melepaskan penjemputan',
-              'error'
-            );
+            showAlert('Gagal', res.error || 'Tidak bisa membatalkan', 'error');
           }
         }}
       />

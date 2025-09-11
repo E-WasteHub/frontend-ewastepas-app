@@ -1,75 +1,95 @@
+// src/components/forms/auth/FormVerifikasiOTP.jsx
 import { useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useVerifikasiOTPForm from '../../../../hooks/auth/useVerifikasiOTPForm';
 import useDarkMode from '../../../../hooks/useDarkMode';
-import { Alert, Button } from '../../../elements';
+import useToast from '../../../../hooks/useToast';
+import { Button } from '../../../elements';
 import FormHeader from '../FormHeader';
 
 const FormVerifikasiOTP = () => {
   const { isDarkMode } = useDarkMode();
+  const { success, error } = useToast();
   const navigate = useNavigate();
-  const inputRefs = useRef([]); // simpan referensi setiap input digit OTP
+  const inputRefs = useRef([]);
 
-  // 🔹 Ambil state & actions dari custom hook
   const {
     otp,
     waktuTersisa,
-    isTimerAktif,
-    bisaKirimUlang,
     isLoading,
     fieldError,
     globalError,
-    successMessage,
+    verifySuccessMessage,
     setUserId,
-    setSuccessMessage,
+    setVerifySuccessMessage,
     handleOtpChange,
     handleOtpSubmit,
     handleKirimUlang,
     formatWaktu,
+    resendSuccessMessage,
+    setResendSuccessMessage,
   } = useVerifikasiOTPForm();
-  /** 🔄 Ambil userId dari localStorage ketika pertama kali masuk halaman */
+
+  // cek userId hanya sekali
   useEffect(() => {
     const storedUserId = localStorage.getItem('userId');
     if (!storedUserId) {
-      navigate('/register'); // kalau tidak ada userId, paksa ke halaman daftar ulang
+      error('Sesi registrasi tidak valid, silakan daftar ulang.');
+      navigate('/register');
     } else {
       setUserId(storedUserId);
     }
-  }, [navigate, setUserId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  /** 🔄 Redirect ke login setelah OTP berhasil diverifikasi */
+  // kalau sukses verifikasi → hapus userId dan redirect
   useEffect(() => {
-    if (successMessage) {
+    if (verifySuccessMessage) {
+      success(verifySuccessMessage);
       const timer = setTimeout(() => {
-        localStorage.removeItem('userId'); // hapus data sementara
+        localStorage.removeItem('userId');
+        localStorage.removeItem('otpExpiresAt');
         navigate('/login');
-        setSuccessMessage('');
+        setVerifySuccessMessage('');
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [successMessage, navigate, setSuccessMessage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verifySuccessMessage]);
 
-  /** 📌 Handler perubahan input digit OTP */
+  // kalau sukses resend → hanya tampilkan toast, tidak redirect
+  useEffect(() => {
+    if (resendSuccessMessage) {
+      success(resendSuccessMessage);
+      setResendSuccessMessage('');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resendSuccessMessage]);
+
+  // tampilkan error via toast
+  useEffect(() => {
+    if (fieldError) error(fieldError);
+    if (globalError) error(globalError);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fieldError, globalError]);
+
+  // Handle perubahan input OTP digit
   const handleChangeDigit = (index, value) => {
-    if (!/^\d*$/.test(value)) return; // hanya boleh angka
+    if (!/^\d*$/.test(value)) return; // hanya angka
     const otpArray = otp.split('');
     otpArray[index] = value;
     handleOtpChange(otpArray.join(''));
-
-    // auto focus ke kotak berikutnya
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
+    if (value && index < 5) inputRefs.current[index + 1]?.focus();
   };
 
-  /** 📌 Handler tombol Backspace untuk pindah ke kiri */
+  // Handle backspace → pindah ke input sebelumnya
   const handleBackspace = (index, e) => {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
-  /** 📌 Handler paste OTP sekaligus isi semua digit */
+  // Handle paste → isi semua digit OTP
   const handlePasteOtp = (e) => {
     e.preventDefault();
     const digits = e.clipboardData
@@ -77,8 +97,6 @@ const FormVerifikasiOTP = () => {
       .replace(/\D/g, '')
       .slice(0, 6);
     handleOtpChange(digits);
-
-    // arahkan fokus ke digit terakhir yang ditempel
     const nextIndex = Math.min(digits.length, 5);
     inputRefs.current[nextIndex]?.focus();
   };
@@ -92,7 +110,7 @@ const FormVerifikasiOTP = () => {
             : 'bg-white border-gray-200'
         } rounded-2xl border shadow-lg p-8`}
       >
-        {/* 🔹 Header */}
+        {/* Header */}
         <FormHeader
           title='Ewastepas'
           subtitle='Verifikasi OTP'
@@ -100,7 +118,6 @@ const FormVerifikasiOTP = () => {
           className='mb-6'
         />
 
-        {/* 🔹 Info instruksi */}
         <p
           className={`text-center text-md mb-6 ${
             isDarkMode ? 'text-slate-300' : 'text-gray-700'
@@ -109,18 +126,7 @@ const FormVerifikasiOTP = () => {
           Masukkan kode OTP yang dikirim ke email Anda
         </p>
 
-        {/* 🔹 Alerts */}
-        {fieldError && (
-          <Alert type='error' message={fieldError} className='mb-4' />
-        )}
-        {globalError && (
-          <Alert type='error' message={globalError} className='mb-4' />
-        )}
-        {successMessage && (
-          <Alert type='success' message={successMessage} className='mb-4' />
-        )}
-
-        {/* 🔹 Form OTP */}
+        {/* Form OTP */}
         <form onSubmit={handleOtpSubmit} className='space-y-6'>
           {/* Input 6 digit OTP */}
           <div className='flex justify-center gap-2 mb-4'>
@@ -140,16 +146,15 @@ const FormVerifikasiOTP = () => {
                   className={`w-14 h-14 text-center text-lg font-semibold border rounded-md focus:outline-none focus:ring-2 transition-colors
                     ${
                       isDarkMode
-                        ? 'bg-slate-700 border-slate-600 text-slate-100 focus:ring-green-500 focus:border-green-500'
-                        : 'bg-white border-gray-300 text-gray-900 focus:ring-green-500 focus:border-gray-500'
+                        ? 'bg-slate-700 border-slate-600 text-slate-100 focus:ring-green-500'
+                        : 'bg-white border-gray-300 text-gray-900 focus:ring-green-500'
                     }
-                    disabled:opacity-50 disabled:cursor-not-allowed
-                  `}
+                    disabled:opacity-50 disabled:cursor-not-allowed`}
                 />
               ))}
           </div>
 
-          {/* Timer OTP */}
+          {/* Timer & tombol resend */}
           {waktuTersisa > 0 ? (
             <div
               className={`${
@@ -167,11 +172,9 @@ const FormVerifikasiOTP = () => {
                 <span
                   className={`font-bold ${
                     waktuTersisa <= 60
-                      ? isTimerAktif
-                        ? isDarkMode
-                          ? 'text-red-400'
-                          : 'text-red-600'
-                        : 'text-gray-400'
+                      ? isDarkMode
+                        ? 'text-red-400'
+                        : 'text-red-600'
                       : isDarkMode
                       ? 'text-green-400'
                       : 'text-green-600'
@@ -196,28 +199,21 @@ const FormVerifikasiOTP = () => {
               >
                 Kode OTP telah kadaluarsa
               </p>
-            </div>
-          )}
-
-          {/* Tombol Kirim Ulang OTP */}
-          {bisaKirimUlang && (
-            <div className='text-center'>
               <button
                 type='button'
                 onClick={handleKirimUlang}
                 disabled={isLoading}
-                className={`text-sm transition-colors ${
+                className={`mt-2 ${
                   isDarkMode
                     ? 'text-green-400 hover:text-green-300'
                     : 'text-green-600 hover:text-green-500'
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                } text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 Kirim ulang kode OTP
               </button>
             </div>
           )}
 
-          {/* Tombol Submit Verifikasi */}
           <Button
             type='submit'
             variant='primary'
@@ -229,7 +225,7 @@ const FormVerifikasiOTP = () => {
           </Button>
         </form>
 
-        {/* 🔹 Footer */}
+        {/* Footer */}
         <div
           className={`text-center mt-6 pt-4 border-t ${
             isDarkMode ? 'border-slate-700' : 'border-gray-200'

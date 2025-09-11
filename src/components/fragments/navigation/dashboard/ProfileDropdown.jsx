@@ -1,9 +1,10 @@
-// src/components/layouts/navbar/ProfileDropdown.jsx
 import { ChevronDown, Home, LayoutDashboard, LogOut, User } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import usePengguna from '../../../../hooks/usePengguna';
+import useToast from '../../../../hooks/useToast';
+import { logout } from '../../../../services/authService';
 import { clearAuth } from '../../../../utils/authExpiredUtils';
 import {
   getDashboardPathByPeran,
@@ -11,27 +12,45 @@ import {
   getProfilePathByPeran,
 } from '../../../../utils/peranUtils';
 
-const ProfileDropdown = ({ onLogout }) => {
+const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const navigate = useNavigate();
   const location = useLocation();
   const { isDarkMode } = useDarkMode();
   const { pengguna, peran } = usePengguna();
+  const { success, error } = useToast();
 
   const profilePath = getProfilePathByPeran(peran);
-
-  const getDashboardPath = (peran) => {
-    return getDashboardPathByPeran(peran);
-  };
-
-  if (!pengguna) return null;
-
-  // 🔑 Tentukan apakah sedang di dashboard atau home
   const isInDashboard = location.pathname.startsWith('/dashboard');
 
+  // Hook selalu dipanggil, tidak conditional
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') setIsOpen(false);
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, []);
+
+  // Jangan panggil useEffect/useState setelah return
+  if (!pengguna) return null;
+
   return (
-    <div className='relative'>
+    <div className='relative' ref={dropdownRef}>
       {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -88,10 +107,12 @@ const ProfileDropdown = ({ onLogout }) => {
               : 'bg-white border-gray-200'
           }`}
         >
-          {/* Dashboard / Home (Auto-Toggle) */}
+          {/* Dashboard / Home */}
           <button
             onClick={() => {
-              const targetPath = isInDashboard ? '/' : getDashboardPath(peran);
+              const targetPath = isInDashboard
+                ? '/'
+                : getDashboardPathByPeran(peran);
               navigate(targetPath);
               setIsOpen(false);
             }}
@@ -132,12 +153,21 @@ const ProfileDropdown = ({ onLogout }) => {
 
           {/* Keluar */}
           <button
-            onClick={() => {
-              clearAuth();
-              localStorage.removeItem('pengguna');
-              localStorage.removeItem('peran');
-              if (onLogout) onLogout();
-              navigate('/login');
+            onClick={async () => {
+              try {
+                await logout();
+                clearAuth();
+                localStorage.removeItem('pengguna');
+                localStorage.removeItem('peran');
+
+                success('Anda berhasil keluar');
+
+                setTimeout(() => navigate('/login'), 1000);
+              } catch (err) {
+                error(err.message || 'Logout gagal', {
+                  position: 'top-center',
+                });
+              }
             }}
             className={`flex items-center w-full px-4 py-2 text-sm transition-colors ${
               isDarkMode

@@ -1,6 +1,6 @@
 // src/views/masyarakat/DetailLacakPenjemputan.jsx
 import { FileText, Truck } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, Card, Loading } from '../../../components/elements';
 import {
@@ -10,9 +10,7 @@ import {
 } from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
-import useMasyarakat, {
-  useMasyarakatDetail,
-} from '../../../hooks/useMasyarakat';
+import useMasyarakat from '../../../hooks/useMasyarakat';
 import useToast from '../../../hooks/useToast';
 import { formatTanggalIndonesia } from '../../../utils/dateUtils';
 import {
@@ -27,13 +25,23 @@ const DetailLacakPenjemputan = () => {
   const { id_penjemputan } = useParams();
   const navigate = useNavigate();
 
-  const { detail: detailPenjemputan, isLoading } =
-    useMasyarakatDetail(id_penjemputan);
-  const { batalkan } = useMasyarakat();
+  const {
+    detail: detailPenjemputan,
+    isLoadingDetail,
+    fetchDetail,
+    batalkan,
+  } = useMasyarakat();
 
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  if (isLoading) {
+  // Fetch detail sekali ketika id_penjemputan berubah
+  useEffect(() => {
+    if (id_penjemputan) {
+      fetchDetail(id_penjemputan);
+    }
+  }, [id_penjemputan, fetchDetail]);
+
+  if (isLoadingDetail) {
     return <Loading mode='overlay' text='Memuat detail penjemputan...' />;
   }
 
@@ -76,13 +84,13 @@ const DetailLacakPenjemputan = () => {
         <section className='mb-6'>
           <h3 className='text-xl font-bold mb-4'>Informasi Penjemputan</h3>
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 text-sm'>
-            {/* Kolom kiri: masyarakat */}
+            {/* Kolom kiri */}
             <div className='space-y-3'>
               <div>
                 <span className='text-xs font-semibold text-gray-400'>
                   Kode Penjemputan
                 </span>
-                <p className='font-mono'>{p.kode_penjemputan}</p>
+                <p className='font-normal'>{p.kode_penjemputan}</p>
               </div>
               <div>
                 <span className='text-xs font-semibold text-gray-400'>
@@ -106,7 +114,7 @@ const DetailLacakPenjemputan = () => {
               )}
             </div>
 
-            {/* Kolom kanan: kurir */}
+            {/* Kolom kanan */}
             <div className='space-y-3'>
               <div>
                 <span className='text-xs font-semibold text-gray-400'>

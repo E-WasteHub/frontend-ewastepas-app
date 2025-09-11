@@ -24,27 +24,27 @@ const DashboardLayout = ({
 
       {/* Main Content */}
       <div className='flex-1 flex flex-col lg:ml-64'>
+        {/* Navbar offset di atas */}
         <NavbarDashboard />
 
         <main className='flex-1 overflow-y-auto pt-16'>
-          <div className='p-4 lg:p-6 pb-24 lg:pb-6'>
+          <div className='px-4 mt-3 sm:px-6 lg:px-8 pb-24 lg:pb-8'>
             {showBreadcrumb && (
               <Breadcrumb customBreadcrumbs={customBreadcrumbs} />
             )}
-            {/* Content */}
-            <div className='max-w-7xl w-full mx-auto'>{children}</div>
+
+            {/* Content wrapper */}
+            <div className='max-w-7xl mx-auto w-full'>{children}</div>
           </div>
         </main>
       </div>
 
       {/* Bottom Navigation (mobile only) */}
-      <div
-        className={`${
-          isTablet || isMobile ? 'fixed' : 'hidden'
-        } bottom-0 left-0 right-0 z-40`}
-      >
-        <BottombarDashboard />
-      </div>
+      {(isTablet || isMobile) && (
+        <div className='fixed bottom-0 left-0 right-0 z-40'>
+          <BottombarDashboard />
+        </div>
+      )}
     </div>
   );
 };

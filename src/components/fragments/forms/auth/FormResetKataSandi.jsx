@@ -13,7 +13,7 @@ const FormResetKataSandi = () => {
 
   const otp = searchParams.get('otp');
 
-  // 🔹 Gunakan custom hook
+  //    Gunakan custom hook
   const {
     kataSandi,
     konfirmasiKataSandi,
@@ -27,7 +27,7 @@ const FormResetKataSandi = () => {
     clearError,
   } = useResetKataSandi();
 
-  // 🔹 Redirect ke login setelah sukses reset
+  //    Redirect ke login setelah sukses reset
   useEffect(() => {
     if (successMessage) {
       const timer = setTimeout(() => {

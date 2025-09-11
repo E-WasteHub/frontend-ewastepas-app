@@ -51,7 +51,7 @@ const useProfil = () => {
       localStorage.setItem('pengguna', JSON.stringify(pengguna));
       if (pengguna.peran) localStorage.setItem('peran', pengguna.peran);
     } catch (err) {
-      console.error('❌ Gagal ambil profil:', err);
+      console.error('  Gagal ambil profil:', err);
       setError('Gagal memuat data profil');
     } finally {
       setIsLoading(false);
@@ -122,7 +122,7 @@ const useProfil = () => {
 
       return { success: true };
     } catch (err) {
-      console.error('❌ Gagal update profil:', err);
+      console.error('  Gagal update profil:', err);
       setError('Gagal memperbarui profil');
       return { success: false, error: err.message };
     } finally {
@@ -139,7 +139,7 @@ const useProfil = () => {
       await profilService.ubahKataSandi(payload);
       return { success: true };
     } catch (err) {
-      console.error('❌ Gagal ubah password:', err);
+      console.error('  Gagal ubah password:', err);
       setError('Gagal mengubah password');
       return { success: false, error: err.message };
     } finally {
@@ -163,7 +163,7 @@ const useProfil = () => {
       setFiles({ ktp: null, sim: null });
       return { success: true };
     } catch (err) {
-      console.error('❌ Gagal upload dokumen:', err);
+      console.error('  Gagal upload dokumen:', err);
       setError('Gagal mengunggah dokumen');
       return { success: false, error: err.message };
     } finally {

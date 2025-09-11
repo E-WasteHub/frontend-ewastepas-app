@@ -14,7 +14,7 @@ export const ambilJenisByKategori = async (id_kategori = null) => {
     const response = await api.get(url);
     return response.data;
   } catch (error) {
-    console.error('❌ Error fetching jenis by kategori:', error);
+    console.error('  Error fetching jenis by kategori:', error);
     throw error;
   }
 };
@@ -25,7 +25,7 @@ export const ambilDaftarPenjemputan = async () => {
     const response = await api.get('/penjemputan');
     return response.data;
   } catch (error) {
-    console.error('❌ Error fetching daftar penjemputan:', error);
+    console.error('  Error fetching daftar penjemputan:', error);
     throw error;
   }
 };
@@ -37,7 +37,7 @@ export const ambilDetailPenjemputan = async (id_penjemputan) => {
     console.log('Detail penjemputan response:', response);
     return response.data;
   } catch (error) {
-    console.error('❌ Error fetching detail penjemputan:', error);
+    console.error('  Error fetching detail penjemputan:', error);
     throw error;
   }
 };
@@ -48,7 +48,7 @@ export const ambilRiwayatPenjemputan = async () => {
     const response = await api.get('/penjemputan/riwayat');
     return response.data;
   } catch (error) {
-    console.error('❌ Error fetching riwayat penjemputan:', error);
+    console.error('  Error fetching riwayat penjemputan:', error);
     throw error;
   }
 };
@@ -63,7 +63,7 @@ export const buatPenjemputan = async (payload) => {
     const response = await api.post('/penjemputan', payload);
     return response.data;
   } catch (error) {
-    console.error('❌ Error creating permintaan:', error);
+    console.error('  Error creating permintaan:', error);
     throw error;
   }
 };
@@ -81,7 +81,7 @@ export const updatePenjemputan = async (id_penjemputan, payload) => {
     );
     return response.data;
   } catch (error) {
-    console.error('❌ Error updating penjemputan:', error);
+    console.error('  Error updating penjemputan:', error);
     throw error;
   }
 };
@@ -95,7 +95,7 @@ export const ambilPenjemputan = async (id_penjemputan, payload) => {
     );
     return response.data;
   } catch (error) {
-    console.error('❌ Error ambil penjemputan:', error);
+    console.error('  Error ambil penjemputan:', error);
     throw error;
   }
 };
@@ -109,7 +109,7 @@ export const batalPenjemputan = async (id_penjemputan, payload) => {
     );
     return response.data;
   } catch (error) {
-    console.error('❌ Error cancelling penjemputan:', error);
+    console.error('  Error cancelling penjemputan:', error);
     throw error;
   }
 };

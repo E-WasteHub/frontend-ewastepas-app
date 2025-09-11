@@ -3,6 +3,7 @@ import { Suspense, lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Loading } from '../components/elements';
 import DashboardLayout from '../components/layouts/DashboardLayout';
+import ProtectedResetPasswordRoute from './ProtectedResetPasswordRoute';
 import ProtectedRoute from './ProtectedRoute';
 
 // ================= Public Pages =================
@@ -18,6 +19,8 @@ import RegisterView from '../pages/auth/RegisterView';
 import ResetKataSandiView from '../pages/auth/ResetKataSandiView';
 import VerifikasiAdmin from '../pages/auth/VerifikasiAdminView';
 import VerifikasiOTPView from '../pages/auth/VerifikasiOTPView';
+import NotFoundView from '../pages/NotFoundView';
+import ProtectedOtpRoute from './ProtectedOtpRoute';
 
 // ================= Admin Pages =================
 const AdminDashboardView = lazy(() =>
@@ -102,8 +105,22 @@ const AppRouter = () => {
         <Route path='/login' element={<LoginView />} />
         <Route path='/register' element={<RegisterView />} />
         <Route path='/pemulihan-akun' element={<PemulihanAkunView />} />
-        <Route path='/verifikasi-otp' element={<VerifikasiOTPView />} />
-        <Route path='/reset-kata-sandi' element={<ResetKataSandiView />} />
+        <Route
+          path='/verifikasi-otp'
+          element={
+            <ProtectedOtpRoute>
+              <VerifikasiOTPView />
+            </ProtectedOtpRoute>
+          }
+        />
+        <Route
+          path='/reset-kata-sandi'
+          element={
+            <ProtectedResetPasswordRoute>
+              <ResetKataSandiView />
+            </ProtectedResetPasswordRoute>
+          }
+        />
         <Route path='/verifikasi-admin' element={<VerifikasiAdmin />} />
 
         {/* ========= Dashboard - Admin ========= */}
@@ -343,14 +360,7 @@ const AppRouter = () => {
         />
 
         {/* ========= 404 Fallback ========= */}
-        <Route
-          path='*'
-          element={
-            <div className='p-6 text-center mx-auto flex flex-col items-center justify-center min-h-screen'>
-              Halaman tidak ditemukan
-            </div>
-          }
-        />
+        <Route path='*' element={<NotFoundView />} />
       </Routes>
     </Suspense>
   );

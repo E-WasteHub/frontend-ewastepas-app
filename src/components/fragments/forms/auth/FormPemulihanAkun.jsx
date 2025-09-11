@@ -3,14 +3,15 @@ import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import usePemulihanAkun from '../../../../hooks/auth/usePemulihanAkun';
 import useDarkMode from '../../../../hooks/useDarkMode';
-import { Alert, Button, InputForm } from '../../../elements';
+import useToast from '../../../../hooks/useToast';
+import { Button, InputForm } from '../../../elements';
 import FormHeader from '../FormHeader';
 
 const FormPemulihanAkun = () => {
   const { isDarkMode } = useDarkMode();
+  const { success, error } = useToast();
   const navigate = useNavigate();
 
-  // 🔹 Ambil state & fungsi dari custom hook
   const {
     email,
     isLoading,
@@ -23,22 +24,31 @@ const FormPemulihanAkun = () => {
     setPesanSukses,
   } = usePemulihanAkun();
 
-  // 🔹 Reset pesan/error saat halaman dibuka
+  // reset pesan saat halaman dibuka
   useEffect(() => {
     setErrorGlobal('');
     setPesanSukses('');
   }, [setErrorGlobal, setPesanSukses]);
 
-  // 🔹 Redirect ke halaman reset jika link berhasil dikirim
+  // tampilkan error / success pakai toast
+  useEffect(() => {
+    if (errorGlobal) error(errorGlobal);
+  }, [errorGlobal, error]);
+
+  useEffect(() => {
+    if (errorInput) error(errorInput);
+  }, [errorInput, error]);
+
   useEffect(() => {
     if (pesanSukses) {
+      success(pesanSukses);
       const timer = setTimeout(() => {
         setPesanSukses('');
         navigate('/reset-kata-sandi');
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [pesanSukses, navigate, setPesanSukses]);
+  }, [pesanSukses, success, navigate, setPesanSukses]);
 
   return (
     <div className='w-full max-w-md mx-auto'>
@@ -49,7 +59,7 @@ const FormPemulihanAkun = () => {
             : 'bg-white border-gray-200'
         } rounded-2xl border shadow-lg p-8`}
       >
-        {/* 🔹 Header */}
+        {/* Header */}
         <FormHeader
           title='Ewastepas'
           subtitle='Lupa Kata Sandi'
@@ -57,7 +67,7 @@ const FormPemulihanAkun = () => {
           className='mb-6'
         />
 
-        {/* 🔹 Info */}
+        {/* Info */}
         <p
           className={`text-center text-sm mb-4 ${
             isDarkMode ? 'text-slate-400' : 'text-gray-600'
@@ -66,25 +76,8 @@ const FormPemulihanAkun = () => {
           Masukkan email Anda untuk menerima link reset kata sandi
         </p>
 
-        {/* 🔹 Alerts */}
-        {pesanSukses && (
-          <Alert type='success' message={pesanSukses} className='mb-4' />
-        )}
-        {errorGlobal && (
-          <Alert
-            type='error'
-            message={errorGlobal}
-            className='mb-4'
-            onClose={() => setErrorGlobal('')}
-          />
-        )}
-        {errorInput && (
-          <Alert type='error' message={errorInput} className='mb-4' />
-        )}
-
-        {/* 🔹 Form */}
+        {/* Form */}
         <form onSubmit={kirimLinkReset} className='space-y-4'>
-          {/* Input Email */}
           <InputForm
             label='Email'
             name='email'
@@ -108,7 +101,7 @@ const FormPemulihanAkun = () => {
           </Button>
         </form>
 
-        {/* 🔹 Footer */}
+        {/* Footer */}
         <div
           className={`text-center text-sm mt-6 pt-4 border-t ${
             isDarkMode ? 'border-slate-700' : 'border-gray-200'

@@ -24,15 +24,15 @@ const AdminKelolaKategoriView = () => {
 
   const { showAlert } = useToast();
 
-  // 🔹 State Modal CRUD
+  //    State Modal CRUD
   const [crudOpen, setCrudOpen] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
 
-  // 🔹 State Confirm
+  //    State Confirm
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState(null);
 
-  // 🔹 Search state
+  //    Search state
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('');
 

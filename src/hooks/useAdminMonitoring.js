@@ -23,7 +23,7 @@ const useAdminMonitoring = (service) => {
 
       setData(rawData);
     } catch (err) {
-      console.error('❌ Gagal fetch transaksi:', err);
+      console.error('  Gagal fetch transaksi:', err);
       setError('Gagal memuat transaksi');
     } finally {
       setIsLoading(false);
@@ -45,7 +45,7 @@ const useAdminMonitoring = (service) => {
         setDetail(rawData);
         return rawData;
       } catch (err) {
-        console.error('❌ Gagal fetch detail transaksi:', err);
+        console.error('  Gagal fetch detail transaksi:', err);
         setError('Gagal memuat detail transaksi');
         return null;
       } finally {

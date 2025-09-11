@@ -13,7 +13,7 @@ import usePagination from '../../../hooks/usePagination';
 
 const itemsPerPage = 3;
 
-// 🔹 Daftar status khusus untuk Riwayat Mitra Kurir
+//    Daftar status khusus untuk Riwayat Mitra Kurir
 const statusOptionsKurir = [
   { key: 'all', label: 'Semua' },
   { key: 'Selesai', label: 'Selesai' },
@@ -25,14 +25,14 @@ const RiwayatMitraKurirView = () => {
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
 
-  // 🔹 Ambil data riwayat dari hook kurir
+  //    Ambil data riwayat dari hook kurir
   const { riwayat, isLoading } = useMitraKurir();
 
-  // 🔹 State filter + search
+  //    State filter + search
   const [pencarian, setPencarian] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
 
-  // 🔹 Filter data
+  //    Filter data
   const filteredData = useMemo(() => {
     let result = riwayat;
 
@@ -52,7 +52,7 @@ const RiwayatMitraKurirView = () => {
     return result;
   }, [riwayat, filterStatus, pencarian]);
 
-  // 🔹 Pagination
+  //    Pagination
   const { currentPage, setCurrentPage, paginatedData, totalPages } =
     usePagination(filteredData, itemsPerPage);
 

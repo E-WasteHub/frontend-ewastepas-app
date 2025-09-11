@@ -1,19 +1,19 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useLoginForm from '../../../../hooks/auth/useLoginForm';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import usePengguna from '../../../../hooks/usePengguna';
+import useToast from '../../../../hooks/useToast';
 import { getDashboardPathByPeran } from '../../../../utils/peranUtils';
-import { Alert, Button, Checkbox, InputForm } from '../../../elements';
+import { Button, Checkbox, InputForm } from '../../../elements';
 import FormHeader from '../FormHeader';
 
 const FormLogin = () => {
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
+  const location = useLocation();
   const { setPengguna } = usePengguna();
-
-  // State untuk alert
-  const [alert, setAlert] = useState({ show: false, type: '', message: '' });
+  const { success, error: errorToast, info, warning } = useToast();
 
   const {
     email,
@@ -26,63 +26,48 @@ const FormLogin = () => {
     handleLoginSubmit,
   } = useLoginForm();
 
-  // Helper function untuk show alert
-  const showAlert = (type, message) => {
-    // Clear any existing alert first
-    setAlert({ show: false, type: '', message: '' });
-
-    // Show new alert after a brief delay to ensure state update
-    setTimeout(() => {
-      setAlert({ show: true, type, message });
-    }, 100);
-
-    // Clear alert after 6 seconds to allow time for redirect messages to be seen
-    setTimeout(() => setAlert({ show: false, type: '', message: '' }), 6000);
-  };
+  // Cek apakah user di-redirect karena token expired
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('expired') === '1') {
+      warning('Sesi Anda sudah berakhir, silakan login kembali.');
+    }
+  }, [location.search, warning]);
 
   // Submit handler
   const onSubmit = async (e) => {
     e.preventDefault();
+    // Cek apakah ada proses OTP yang belum selesai
+    const pendingOtpUser = localStorage.getItem('userId');
+    if (pendingOtpUser) {
+      info(
+        'Anda memiliki proses verifikasi OTP yang belum selesai. Silakan lanjutkan verifikasi.'
+      );
+      navigate('/verifikasi-otp');
+      return;
+    }
     const res = await handleLoginSubmit(e);
 
     if (res?.data?.peran) {
       const peran = res.data.peran;
-
       if (peran === 'Admin') {
-        // 🚫 Jangan auto redirect ke dashboard
-        showAlert(
-          'info',
-          'Login berhasil! Silakan cek email Anda dan klik link verifikasi admin untuk melanjutkan.'
-        );
-        // Optional → kalau backend juga return OTP, kamu bisa langsung navigate:
-        // navigate(`/verifikasi-admin?otp=${res.otp}`);
+        info('Login berhasil! Silakan cek email untuk verifikasi.');
         return;
       }
-
-      // ✅ Non-admin langsung ke dashboard
-      showAlert(
-        'success',
-        `Selamat datang! Mengarahkan ke dashboard ${peran}...`
-      );
+      success(`Selamat datang! Mengarahkan ke dashboard ${peran}...`);
       setPengguna(res.data);
-
-      setTimeout(() => {
-        navigate(getDashboardPathByPeran(peran), { replace: true });
-      }, 2500); // Increase timeout to 2.5 seconds so user can see the alert
-    }
-
-    // Kalau backend hanya kirim message (tanpa data user)
-    else if (res?.message) {
-      showAlert('info', res.message);
+      setTimeout(
+        () => navigate(getDashboardPathByPeran(peran), { replace: true }),
+        2500
+      );
+    } else if (res?.message) {
+      info(res.message);
     }
   };
 
   useEffect(() => {
-    // Show error alert when error changes
-    if (error) {
-      showAlert('error', error);
-    }
-  }, [error]);
+    if (error) errorToast(error);
+  }, [error, errorToast]);
 
   return (
     <div className='w-full max-w-md mx-auto'>
@@ -99,11 +84,6 @@ const FormLogin = () => {
           showLogo
           className='mb-6'
         />
-
-        {/* Alert */}
-        {alert.show && (
-          <Alert type={alert.type} message={alert.message} className='mb-4' />
-        )}
 
         <form onSubmit={onSubmit} className='space-y-4'>
           <InputForm
@@ -131,7 +111,6 @@ const FormLogin = () => {
             error={errorField?.kata_sandi}
           />
 
-          {/* Remember Me & Lupa Password */}
           <div className='flex items-center justify-between text-sm'>
             <label className='flex items-center space-x-2'>
               <Checkbox
@@ -160,7 +139,7 @@ const FormLogin = () => {
             type='submit'
             variant='primary'
             isLoading={isLoading}
-            loadingText='Masuk...'
+            loadingText='Memuat...'
             className='w-full mt-6'
           >
             Masuk

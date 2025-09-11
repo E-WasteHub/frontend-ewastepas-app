@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import usePengguna from '../../../../hooks/usePengguna';
 import { menuItemsByRole } from '../../../../utils/menuUtils';
@@ -7,14 +7,11 @@ import { LogoApp } from '../../../elements/';
 const SidebarDashboard = () => {
   const { isDarkMode } = useDarkMode();
   const { peran } = usePengguna();
+  const location = useLocation();
 
-  // fallback kalau peran null
   const peranKey = peran || 'Masyarakat';
-
-  // ambil menu sesuai peran
   const menuItems = menuItemsByRole[peranKey] || menuItemsByRole['Masyarakat'];
 
-  // konfigurasi tampilan badge peran
   const peranConfig = {
     Admin: {
       label: 'Admin',
@@ -50,7 +47,7 @@ const SidebarDashboard = () => {
           isDarkMode ? 'border-slate-700' : 'border-slate-200'
         }`}
       >
-        <LogoApp size='lg' withText={true} textSize='xl' />
+        <LogoApp size='lg' withText textSize='xl' />
       </div>
 
       {/* User Role Badge */}
@@ -81,14 +78,24 @@ const SidebarDashboard = () => {
       <nav className='flex-1 px-4 pb-4 space-y-1 overflow-y-auto'>
         {menuItems.map((item) => {
           const IconComponent = item.icon;
-          const isRootDashboard = item.path.split('/').length === 3; // contoh: /dashboard/admin
+          const isRootDashboard = item.path.split('/').length === 3;
+
+          // aktif kalau: match persis, atau anaknya match
+          const isChildActive = item.children?.some((child) =>
+            location.pathname.startsWith(child.path)
+          );
+
+          const isActive =
+            (isRootDashboard && location.pathname === item.path) ||
+            (!isRootDashboard && location.pathname.startsWith(item.path)) ||
+            isChildActive;
 
           return (
             <NavLink
               key={item.path}
               to={item.path}
               end={isRootDashboard}
-              className={({ isActive }) =>
+              className={() =>
                 `group flex items-center px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive
                     ? isDarkMode

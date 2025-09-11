@@ -19,8 +19,8 @@ const ScrollToTop = () => {
   // Scroll ke atas
   const keAtas = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  const bgColor = isDarkMode ? 'bg-green-500' : 'bg-green-600';
-  const bottomPosition = isDesktop ? 'bottom-10' : 'bottom-20';
+  const warnaBg = isDarkMode ? 'bg-green-500' : 'bg-green-600';
+  const posisiButton = isDesktop ? 'bottom-10' : 'bottom-20';
 
   return (
     <AnimatePresence>
@@ -32,7 +32,7 @@ const ScrollToTop = () => {
           transition={{ duration: 0.4, ease: 'easeInOut' }}
           onClick={keAtas}
           aria-label='Scroll ke atas'
-          className={`fixed right-6 ${bottomPosition} z-50 p-3 rounded-full shadow-lg text-white transition hover:scale-110 active:scale-95 ${bgColor}`}
+          className={`fixed right-6 ${posisiButton} z-50 p-3 rounded-full shadow-lg text-white transition hover:scale-110 active:scale-95 ${warnaBg}`}
         >
           <ArrowUp className='h-6 w-6' strokeWidth={2.5} />
         </Motion.button>

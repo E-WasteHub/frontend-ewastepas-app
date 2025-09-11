@@ -52,7 +52,7 @@ const usePengguna = () => {
         setPeranState(null);
       }
     } catch (err) {
-      console.error('❌ Gagal update pengguna:', err);
+      console.error('  Gagal update pengguna:', err);
     }
   };
 
@@ -66,7 +66,7 @@ const usePengguna = () => {
         setPeranState(null);
       }
     } catch (err) {
-      console.error('❌ Gagal update peran:', err);
+      console.error('  Gagal update peran:', err);
     }
   };
 
@@ -77,7 +77,7 @@ const usePengguna = () => {
       setPenggunaState(null);
       setPeranState(null);
     } catch (err) {
-      console.error('❌ Gagal hapus pengguna:', err);
+      console.error('  Gagal hapus pengguna:', err);
     }
   };
 

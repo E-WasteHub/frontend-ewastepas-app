@@ -30,7 +30,7 @@ const PilihDropboxModal = ({ isOpen, onClose, onSelect }) => {
           setDropboxList(dropboxData);
         })
         .catch((err) => {
-          console.error('❌ Gagal ambil data modal dropbox:', err);
+          console.error('  Gagal ambil data modal dropbox:', err);
           setDaerahList([]);
           setDropboxList([]);
         })

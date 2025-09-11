@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
+// src/components/forms/auth/FormRegister.jsx
+import { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import useRegisterForm from '../../../../hooks/auth/useRegisterForm';
 import useDarkMode from '../../../../hooks/useDarkMode';
-import { Alert, Button, InputForm, Label } from '../../../elements';
+import useToast from '../../../../hooks/useToast';
+import { Button, InputForm, Label } from '../../../elements';
 import FormHeader from '../FormHeader';
 
 const FormRegister = () => {
   const { isDarkMode } = useDarkMode();
+  const { success, error } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-
-  // State untuk alert
-  const [alert, setAlert] = useState({ show: false, type: '', message: '' });
 
   const {
     form,
@@ -27,41 +27,23 @@ const FormRegister = () => {
     clearSuccess,
   } = useRegisterForm();
 
-  // Helper function untuk show alert
-  const showAlert = (type, message) => {
-    // Clear any existing alert first
-    setAlert({ show: false, type: '', message: '' });
-
-    // Show new alert after a brief delay to ensure state update
-    setTimeout(() => {
-      setAlert({ show: true, type, message });
-    }, 100);
-
-    // Clear alert after 6 seconds to allow time for redirect messages to be seen
-    setTimeout(() => setAlert({ show: false, type: '', message: '' }), 6000);
-  };
-
-  /** 🔄 Reset pesan error/sukses saat halaman dibuka ulang */
+  // reset pesan saat halaman dibuka ulang
   useEffect(() => {
     clearError();
     clearSuccess();
   }, [clearError, clearSuccess]);
 
-  /** 🔄 Show alert for errors */
+  // tampilkan error via toast
   useEffect(() => {
-    if (errorMessage) {
-      showAlert('error', errorMessage);
-    }
-  }, [errorMessage]);
+    if (errorMessage) error(errorMessage);
+  }, [errorMessage, error]);
 
-  /** 🔄 Show alert for success */
+  // tampilkan success via toast
   useEffect(() => {
-    if (successMessage) {
-      showAlert('success', successMessage);
-    }
-  }, [successMessage]);
+    if (successMessage) success(successMessage);
+  }, [successMessage, success]);
 
-  /** 🔄 Ambil peran dari query (?peran=masyarakat/mitra-kurir) */
+  // ambil peran dari query string (?peran=...)
   useEffect(() => {
     const peranParam = searchParams.get('peran');
     if (peranParam) {
@@ -72,29 +54,28 @@ const FormRegister = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  /** 🚀 Submit form untuk registrasi */
+  // submit form registrasi
   const onSubmit = async (e) => {
     e.preventDefault();
     const res = await handleSubmit();
 
     if (res?.data?.id_pengguna) {
-      // Simpan id pengguna ke localStorage (untuk verifikasi OTP nanti)
       localStorage.setItem('userId', res.data.id_pengguna);
+      localStorage.setItem('userEmail', form.email);
 
-      showAlert(
-        'success',
-        'Akun berhasil dibuat. Mengarahkan ke halaman verifikasi OTP...'
-      );
+      // simpan waktu expired OTP (5 menit)
+      const expiresAt = Date.now() + 5 * 60 * 1000;
+      localStorage.setItem('otpExpiresAt', expiresAt.toString());
 
-      // Redirect ke halaman OTP setelah sukses
+      success('Akun berhasil dibuat. Mengarahkan ke halaman verifikasi OTP...');
+
       setTimeout(() => {
         navigate('/verifikasi-otp');
         clearSuccess();
-      }, 2500); // Increase timeout to 2.5 seconds so user can see the alert
+      }, 2500);
     }
   };
 
-  /** 📌 Opsi peran (bisa ditambah sewaktu-waktu) */
   const roleOptions = [
     { value: 'Masyarakat', label: 'Masyarakat' },
     { value: 'Mitra Kurir', label: 'Mitra Kurir' },
@@ -109,7 +90,7 @@ const FormRegister = () => {
             : 'bg-white border-gray-200'
         } rounded-2xl border shadow-lg p-8`}
       >
-        {/* 🔹 Header Form */}
+        {/* Header */}
         <FormHeader
           title='Ewastepas'
           subtitle='Buat Akun Baru'
@@ -117,12 +98,7 @@ const FormRegister = () => {
           className='mb-6'
         />
 
-        {/* Alert */}
-        {alert.show && (
-          <Alert type={alert.type} message={alert.message} className='mb-4' />
-        )}
-
-        {/* 🔹 Form Register */}
+        {/* Form Register */}
         <form onSubmit={onSubmit} className='space-y-4'>
           {/* Pilih Peran */}
           <div>
@@ -151,7 +127,6 @@ const FormRegister = () => {
                 </button>
               ))}
             </div>
-
             {errorField.peran && (
               <p className='text-sm text-red-500 mt-1'>{errorField.peran}</p>
             )}
@@ -227,7 +202,7 @@ const FormRegister = () => {
           </Button>
         </form>
 
-        {/* 🔹 Footer */}
+        {/* Footer */}
         <div
           className={`text-center mt-6 pt-4 border-t ${
             isDarkMode ? 'border-slate-700' : 'border-gray-200'

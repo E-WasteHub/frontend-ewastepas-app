@@ -22,6 +22,13 @@ export const menuItemsByRole = {
       title: 'Data Master',
       icon: Database,
       path: '/dashboard/admin/data-master',
+      children: [
+        { title: 'Kelola Kategori', path: '/dashboard/admin/kelola-kategori' },
+        { title: 'Kelola Jenis', path: '/dashboard/admin/kelola-jenis' },
+        { title: 'Kelola Daerah', path: '/dashboard/admin/kelola-daerah' },
+        { title: 'Kelola Dropbox', path: '/dashboard/admin/kelola-dropbox' },
+        { title: 'Kelola Edukasi', path: '/dashboard/admin/kelola-edukasi' },
+      ],
     },
     { title: 'Transaksi', icon: History, path: '/dashboard/admin/transaksi' },
   ],
@@ -68,17 +75,28 @@ export const bottomMenuItemsByRole = {
   Admin: [
     { title: 'Dashboard', icon: Home, path: '/dashboard/admin' },
     {
-      title: 'VerifikasiAkun',
+      title: 'Verifikasi Akun',
       icon: User,
       path: '/dashboard/admin/verifikasi-akun',
     },
-    { title: 'Data', icon: Database, path: '/dashboard/admin/data-master' },
+    {
+      title: 'Data Master',
+      icon: Database,
+      path: '/dashboard/admin/data-master',
+      children: [
+        { title: 'Kelola Kategori', path: '/dashboard/admin/kelola-kategori' },
+        { title: 'Kelola Jenis', path: '/dashboard/admin/kelola-jenis' },
+        { title: 'Kelola Daerah', path: '/dashboard/admin/kelola-daerah' },
+        { title: 'Kelola Dropbox', path: '/dashboard/admin/kelola-dropbox' },
+        { title: 'Kelola Edukasi', path: '/dashboard/admin/kelola-edukasi' },
+      ],
+    },
     { title: 'Transaksi', icon: History, path: '/dashboard/admin/transaksi' },
   ],
   'Mitra Kurir': [
     { title: 'Dashboard', icon: Home, path: '/dashboard/mitra-kurir' },
     {
-      title: 'DaftarPermintaan',
+      title: 'Daftar Permintaan',
       icon: BookA,
       path: '/dashboard/mitra-kurir/daftar-permintaan',
     },
@@ -88,15 +106,27 @@ export const bottomMenuItemsByRole = {
       path: '/dashboard/mitra-kurir/permintaan-aktif',
     },
     {
-      title: 'Riwayat',
+      title: 'Riwayat Penjemputan',
       icon: History,
       path: '/dashboard/mitra-kurir/riwayat',
     },
   ],
   Masyarakat: [
     { title: 'Dashboard', icon: Home, path: '/dashboard/masyarakat' },
-    { title: 'Buat', icon: Plus, path: '/dashboard/masyarakat/penjemputan' },
-    { title: 'Lacak', icon: Search, path: '/dashboard/masyarakat/lacak' },
-    { title: 'Riwayat', icon: History, path: '/dashboard/masyarakat/riwayat' },
+    {
+      title: 'Buat Permintaan',
+      icon: Plus,
+      path: '/dashboard/masyarakat/penjemputan',
+    },
+    {
+      title: 'Lacak Penjemputan',
+      icon: Search,
+      path: '/dashboard/masyarakat/lacak',
+    },
+    {
+      title: 'Riwayat Penjemputan',
+      icon: History,
+      path: '/dashboard/masyarakat/riwayat',
+    },
   ],
 };

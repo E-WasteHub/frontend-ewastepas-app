@@ -21,7 +21,7 @@ const DashboardMitraKurirView = () => {
   const { penjemputanTersedia, stats, isLoading, error } = useMitraKurir();
 
   const safeStats = stats || {
-    tersedia: 0,
+    penjemputanTersedia: 0,
     penjemputanBulanIni: 0,
     totalPenjemputan: 0,
   };

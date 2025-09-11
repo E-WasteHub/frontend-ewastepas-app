@@ -3,10 +3,7 @@ import { useCallback, useState } from 'react';
 import * as authService from '../../services/authService';
 
 const useRegisterForm = () => {
-  /* ========================
-   * 🟣 STATE INPUT FORM
-   * Menyimpan data yang diisi user
-   * ======================== */
+  // state form
   const [form, setForm] = useState({
     nama_lengkap: '',
     email: '',
@@ -15,22 +12,13 @@ const useRegisterForm = () => {
   });
   const [peran, setPeran] = useState('');
 
-  /* ========================
-   * 🟣 STATE STATUS & FEEDBACK
-   * isLoading → loading state
-   * errorField → validasi per field
-   * errorMessage → error umum
-   * successMessage → feedback berhasil
-   * ======================== */
+  // state feedback
   const [isLoading, setIsLoading] = useState(false);
   const [errorField, setErrorField] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  /* ========================
-   * 📌 HANDLE INPUT FORM
-   * Update state ketika user mengetik
-   * ======================== */
+  // handler perubahan input
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -42,19 +30,13 @@ const useRegisterForm = () => {
     setErrorMessage('');
   };
 
-  /* ========================
-   * 📌 HANDLE PILIH PERAN
-   * (Masyarakat / Mitra Kurir / Admin)
-   * ======================== */
+  // handler perubahan select peran
   const handlePeranSelect = (value) => {
     setPeran(value);
     setErrorField((prev) => ({ ...prev, peran: '' }));
   };
 
-  /* ========================
-   * 📌 VALIDASI FORM
-   * Periksa semua field sebelum submit
-   * ======================== */
+  // validasi form
   const validateForm = () => {
     const errors = {};
 
@@ -83,10 +65,7 @@ const useRegisterForm = () => {
     return Object.keys(errors).length === 0;
   };
 
-  /* ========================
-   * 📌 SUBMIT REGISTER
-   * Kirim data ke backend jika validasi OK
-   * ======================== */
+  // handler submit form
   const handleSubmit = async () => {
     if (!validateForm()) return null;
 
@@ -110,10 +89,7 @@ const useRegisterForm = () => {
     }
   };
 
-  /* ========================
-   * 📌 HELPER: Reset pesan
-   * Bisa dipanggil dari komponen
-   * ======================== */
+  // clear feedback
   const clearError = useCallback(() => setErrorMessage(''), []);
   const clearSuccess = useCallback(() => setSuccessMessage(''), []);
 

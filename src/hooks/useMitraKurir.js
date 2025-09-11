@@ -1,3 +1,4 @@
+// useMitraKurir.js
 import { useCallback, useEffect, useState } from 'react';
 import {
   ambilDaftarPenjemputan,
@@ -13,13 +14,17 @@ import {
   hitungStatistikPenjemputan,
 } from '../utils/penjemputanUtils';
 
-export const useMitraKurir = () => {
+const useMitraKurir = () => {
   // ================== STATE ==================
-  const [daftar, setDaftar] = useState([]); // daftar permintaan baru (Diproses)
-  const [riwayat, setRiwayat] = useState([]); // riwayat + aktif
+  const [daftar, setDaftar] = useState([]);
+  const [riwayat, setRiwayat] = useState([]);
+  const [detail, setDetail] = useState(null);
+
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingDetail, setIsLoadingDetail] = useState(false);
   const [error, setError] = useState('');
+  const [errorDetail, setErrorDetail] = useState('');
 
   // ================== FETCH DATA ==================
   const fetchData = useCallback(async () => {
@@ -27,17 +32,13 @@ export const useMitraKurir = () => {
       setIsLoading(true);
       setError('');
 
-      // 🔹 Ambil daftar permintaan baru (status = Diproses)
       const daftarRes = await ambilDaftarPenjemputan();
-      const daftarRaw = ambilDataArrayAman(daftarRes);
-      setDaftar(daftarRaw);
+      setDaftar(ambilDataArrayAman(daftarRes));
 
-      // 🔹 Ambil riwayat (Diterima, Dijemput, Selesai, Dibatalkan)
       const riwayatRes = await ambilRiwayatPenjemputan();
-      const riwayatRaw = ambilDataArrayAman(riwayatRes);
-      setRiwayat(riwayatRaw);
+      setRiwayat(ambilDataArrayAman(riwayatRes));
     } catch (err) {
-      console.error('❌ Gagal fetch data kurir:', err);
+      console.error('  Gagal fetch data kurir:', err);
       setError('Gagal memuat data penjemputan');
       setDaftar([]);
       setRiwayat([]);
@@ -52,17 +53,15 @@ export const useMitraKurir = () => {
 
   // ================== SELECTOR ==================
   const penjemputanTersedia = filterPenjemputanByStatus(daftar, 'Diproses');
-
   const permintaanAktif = riwayat.find((d) =>
     ['Diterima', 'Dijemput'].includes(d.status_penjemputan)
   );
-
   const riwayatSelesai = riwayat.filter((d) =>
     ['Selesai', 'Dibatalkan'].includes(d.status_penjemputan)
   );
 
-  // Untuk Dashboard - menggunakan utils
   const statistikPenjemputan = hitungStatistikPenjemputan(riwayat);
+
   const stats = {
     penjemputanTersedia: penjemputanTersedia.length,
     penjemputanBulanIni: riwayat.filter((d) => {
@@ -74,6 +73,9 @@ export const useMitraKurir = () => {
       );
     }).length,
     totalPenjemputan: statistikPenjemputan.total,
+    diproses: statistikPenjemputan.diproses,
+    diterima: statistikPenjemputan.diterima,
+    dijemput: statistikPenjemputan.dijemput,
     selesai: statistikPenjemputan.selesai,
     dibatalkan: statistikPenjemputan.dibatalkan,
   };
@@ -81,12 +83,8 @@ export const useMitraKurir = () => {
   // ================== ACTIONS ==================
   const ambilPermintaan = async (id_penjemputan) => {
     if (permintaanAktif) {
-      return {
-        success: false,
-        error: 'Selesaikan permintaan aktif terlebih dahulu',
-      };
+      return { success: false, error: 'Selesaikan permintaan aktif dulu' };
     }
-
     try {
       setIsSubmitting(true);
       await ambilPenjemputan(id_penjemputan, {
@@ -96,7 +94,7 @@ export const useMitraKurir = () => {
       await fetchData();
       return { success: true };
     } catch (err) {
-      console.error('❌ Gagal ambil permintaan:', err);
+      console.error('  Gagal ambil permintaan:', err);
       return { success: false, error: 'Gagal mengambil permintaan' };
     } finally {
       setIsSubmitting(false);
@@ -116,7 +114,7 @@ export const useMitraKurir = () => {
       await fetchData();
       return { success: true };
     } catch (err) {
-      console.error('❌ Gagal tandai dijemput:', err);
+      console.error('  Gagal tandai dijemput:', err);
       return { success: false, error: 'Gagal menandai dijemput' };
     } finally {
       setIsSubmitting(false);
@@ -133,7 +131,7 @@ export const useMitraKurir = () => {
       await fetchData();
       return { success: true };
     } catch (err) {
-      console.error('❌ Gagal tandai selesai:', err);
+      console.error('  Gagal tandai selesai:', err);
       return { success: false, error: 'Gagal menandai selesai' };
     } finally {
       setIsSubmitting(false);
@@ -151,15 +149,33 @@ export const useMitraKurir = () => {
       await fetchData();
       return { success: true };
     } catch (err) {
-      console.error(' Gagal batalkan permintaan:', err);
+      console.error('  Gagal batalkan permintaan:', err);
       return { success: false, error: 'Gagal membatalkan permintaan' };
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // FETCH DETAIL
+  const fetchDetail = useCallback(async (id_penjemputan) => {
+    if (!id_penjemputan) return;
+    try {
+      setIsLoadingDetail(true);
+      setErrorDetail('');
+      const response = await ambilDetailPenjemputan(id_penjemputan);
+      setDetail(response.data);
+    } catch (err) {
+      console.error('  Gagal fetch detail:', err);
+      setErrorDetail('Gagal memuat detail penjemputan');
+      setDetail(null);
+    } finally {
+      setIsLoadingDetail(false);
+    }
+  }, []);
+
   // ================== RETURN ==================
   return {
+    // state utama
     penjemputanTersedia,
     permintaanAktif,
     riwayat: riwayatSelesai,
@@ -169,39 +185,19 @@ export const useMitraKurir = () => {
     error,
     isSubmitting,
 
+    // actions
     ambilPermintaan,
     tandaiDijemput,
     tandaiSelesai,
     batalkanPermintaan,
     refetch: fetchData,
+
+    // detail
+    detail,
+    isLoadingDetail,
+    errorDetail,
+    fetchDetail,
   };
-};
-
-// ================== DETAIL ==================
-export const useMitraKurirDetail = (id_penjemputan) => {
-  const [detail, setDetail] = useState(null);
-  const [isLoading, setIsLoading] = useState(!!id_penjemputan);
-  const [error, setError] = useState('');
-
-  const fetchDetail = useCallback(async () => {
-    if (!id_penjemputan) return;
-    try {
-      setIsLoading(true);
-      const response = await ambilDetailPenjemputan(id_penjemputan);
-      setDetail(response.data);
-    } catch (err) {
-      console.error('❌ Gagal fetch detail:', err);
-      setError('Gagal memuat detail penjemputan');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [id_penjemputan]);
-
-  useEffect(() => {
-    fetchDetail();
-  }, [fetchDetail]);
-
-  return { detail, isLoading, error, refetch: fetchDetail };
 };
 
 export default useMitraKurir;

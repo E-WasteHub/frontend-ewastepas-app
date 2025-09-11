@@ -19,7 +19,7 @@ const FormProfilData = ({
 
   return (
     <div className='space-y-6'>
-      {/* 🔹 Section Label */}
+      {/*    Section Label */}
       <div>
         <Label className='text-xl font-semibold'>Data Profil</Label>
         <p
@@ -31,10 +31,10 @@ const FormProfilData = ({
         </p>
       </div>
 
-      {/* 🔹 Foto Profil */}
+      {/*    Foto Profil */}
       <AvatarUpload file={gambar_pengguna} onFileChange={onPhotoChange} />
 
-      {/* 🔹 Nama Lengkap */}
+      {/*    Nama Lengkap */}
       <InputForm
         label='Nama Lengkap'
         name='nama_lengkap'
@@ -46,7 +46,7 @@ const FormProfilData = ({
         error={errors.nama_lengkap}
       />
 
-      {/* 🔹 Email */}
+      {/*    Email */}
       <InputForm
         label='Email'
         type='email'
@@ -59,7 +59,7 @@ const FormProfilData = ({
         error={errors.email}
       />
 
-      {/* 🔹 No Telepon */}
+      {/*    No Telepon */}
       <InputForm
         label='No. Telepon'
         type='tel'
@@ -72,7 +72,7 @@ const FormProfilData = ({
         error={errors.no_telepon}
       />
 
-      {/* 🔹 Alamat */}
+      {/*    Alamat */}
       <Textarea
         label='Alamat'
         name='alamat_pengguna'
@@ -84,7 +84,7 @@ const FormProfilData = ({
         error={errors.alamat_pengguna}
       />
 
-      {/* 🔹 Tombol Simpan */}
+      {/*    Tombol Simpan */}
       <Button
         onClick={onSave}
         disabled={isLoading}

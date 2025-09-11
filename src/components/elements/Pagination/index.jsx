@@ -9,14 +9,14 @@ const Pagination = ({ currentPage = 1, totalPages = 1, onPageChange }) => {
   const canPrev = currentPage > 1;
   const canNext = currentPage < totalPages;
 
-  const baseBtn =
+  const desainBtn =
     'flex items-center gap-1 px-3 py-2 rounded-lg text-sm transition-colors';
-  const activeBtn = isDarkMode
+  const aktifBtn = isDarkMode
     ? 'text-gray-200 hover:bg-gray-700'
     : 'text-gray-700 hover:bg-gray-200';
-  const disabledBtn = 'opacity-50 cursor-not-allowed';
+  const matikanBtn = 'opacity-50 cursor-not-allowed';
 
-  const textColor = isDarkMode ? 'text-gray-300' : 'text-gray-700';
+  const warnaTeks = isDarkMode ? 'text-gray-300' : 'text-gray-700';
 
   return (
     <div className='flex items-center justify-center gap-2 mt-8'>
@@ -24,13 +24,13 @@ const Pagination = ({ currentPage = 1, totalPages = 1, onPageChange }) => {
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={!canPrev}
-        className={`${baseBtn} ${canPrev ? activeBtn : disabledBtn}`}
+        className={`${desainBtn} ${canPrev ? aktifBtn : matikanBtn}`}
       >
         <ChevronLeft size={16} /> Sebelumnya
       </button>
 
       {/* Info Halaman */}
-      <span className={`px-4 py-2 text-sm font-medium ${textColor}`}>
+      <span className={`px-4 py-2 text-sm font-medium ${warnaTeks}`}>
         {currentPage} / {totalPages}
       </span>
 
@@ -38,7 +38,7 @@ const Pagination = ({ currentPage = 1, totalPages = 1, onPageChange }) => {
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={!canNext}
-        className={`${baseBtn} ${canNext ? activeBtn : disabledBtn}`}
+        className={`${desainBtn} ${canNext ? aktifBtn : matikanBtn}`}
       >
         Selanjutnya <ChevronRight size={16} />
       </button>

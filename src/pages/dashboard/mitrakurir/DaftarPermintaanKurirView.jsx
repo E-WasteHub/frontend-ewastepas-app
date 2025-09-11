@@ -45,6 +45,7 @@ const DaftarPermintaanKurirView = () => {
     setConfirmOpen(true);
   };
 
+  // handler tetap sederhana
   const handleConfirmAmbil = async () => {
     if (!selectedId) return;
     setIsSubmitting(true);
@@ -54,15 +55,12 @@ const DaftarPermintaanKurirView = () => {
     setConfirmOpen(false);
 
     if (result.success) {
-      success('Permintaan berhasil diambil ✅');
-
+      success('Permintaan berhasil diambil');
       setTimeout(() => {
-        if (permintaanAktif) {
-          navigate('/dashboard/mitra-kurir/permintaan-aktif');
-        }
+        navigate('/dashboard/mitra-kurir/permintaan-aktif');
       }, 2000);
     } else {
-      showError(result.error || 'Gagal mengambil permintaan ❌');
+      showError(result.error || 'Gagal mengambil permintaan');
     }
 
     setSelectedId(null);
@@ -126,8 +124,8 @@ const DaftarPermintaanKurirView = () => {
           <div className='text-center'>
             <p className='text-gray-500 mb-4'>
               {permintaanAktif
-                ? '✅ Tidak ada permintaan baru. Selesaikan penjemputan aktif Anda.'
-                : '🚫 Tidak ada permintaan penjemputan yang tersedia saat ini.'}
+                ? '   Tidak ada permintaan baru. Selesaikan penjemputan aktif Anda.'
+                : '    Tidak ada permintaan penjemputan yang tersedia saat ini.'}
             </p>
           </div>
         ) : (

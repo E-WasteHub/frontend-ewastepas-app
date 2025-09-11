@@ -31,7 +31,7 @@ const DropboxCrudModal = ({
           : [];
         setDaerahOptions(data);
       } catch (err) {
-        console.error('❌ Gagal ambil daftar daerah:', err);
+        console.error('  Gagal ambil daftar daerah:', err);
       }
     };
     fetchDaerah();

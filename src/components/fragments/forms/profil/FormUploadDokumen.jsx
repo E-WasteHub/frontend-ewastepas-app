@@ -5,12 +5,12 @@ import { FileUploadSingle } from '../../../fragments';
 const FormUploadDokumen = ({ files, onFileChange, onSave, isLoading }) => {
   const { isDarkMode } = useDarkMode();
 
-  // ✅ Siap upload jika KTP & SIM sudah terisi
+  //    Siap upload jika KTP & SIM sudah terisi
   const readyToUpload = !!files.ktp && !!files.sim;
 
   return (
     <div className='space-y-6'>
-      {/* 🔹 Header */}
+      {/*    Header */}
       <div>
         <h2 className='text-xl font-semibold'>Unggah Dokumen Verifikasi</h2>
         <p
@@ -22,7 +22,7 @@ const FormUploadDokumen = ({ files, onFileChange, onSave, isLoading }) => {
         </p>
       </div>
 
-      {/* 🔹 Persyaratan Dokumen */}
+      {/*    Persyaratan Dokumen */}
       <div
         className={`grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-lg ${
           isDarkMode
@@ -48,7 +48,7 @@ const FormUploadDokumen = ({ files, onFileChange, onSave, isLoading }) => {
         </div>
       </div>
 
-      {/* 🔹 Upload Area */}
+      {/*    Upload Area */}
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         <FileUploadSingle
           label='Kartu Tanda Penduduk (KTP)'
@@ -64,7 +64,7 @@ const FormUploadDokumen = ({ files, onFileChange, onSave, isLoading }) => {
         />
       </div>
 
-      {/* 🔹 Status + Button */}
+      {/*    Status + Button */}
       <div
         className={`p-4 rounded-lg ${
           readyToUpload

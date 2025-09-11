@@ -81,7 +81,7 @@ const AdminDashboardView = () => {
       name: 'Kode',
       selector: 'kode_penjemputan',
       cell: (row) => (
-        <span className='font-mono text-xs'>{row.kode_penjemputan}</span>
+        <span className='font-normal text-xs'>{row.kode_penjemputan}</span>
       ),
     },
     {

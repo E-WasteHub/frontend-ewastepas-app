@@ -17,15 +17,15 @@ const Select = ({
   const { isDarkMode } = useDarkMode();
   const isMobile = useIsMobile();
 
-  const baseStyle = isMobile
+  const dasarDesain = isMobile
     ? 'w-full rounded-lg border transition text-base px-3 py-2 focus:outline-none focus:ring-2 appearance-auto'
     : 'w-full rounded-lg border transition text-sm px-4 py-3 focus:outline-none focus:ring-2 appearance-none';
 
-  const colorStyle = isDarkMode
+  const warnaDesain = isDarkMode
     ? 'bg-slate-800 text-slate-100'
     : 'bg-white text-gray-900';
 
-  const borderStyle = disabled
+  const borderDesain = disabled
     ? isDarkMode
       ? 'border-slate-700 opacity-60 cursor-not-allowed'
       : 'border-gray-200 opacity-60 cursor-not-allowed'
@@ -49,7 +49,7 @@ const Select = ({
           onChange={(e) => onChange?.(e.target.value)}
           disabled={disabled}
           required={required}
-          className={`${baseStyle} ${colorStyle} ${borderStyle}`}
+          className={`${dasarDesain} ${warnaDesain} ${borderDesain}`}
           {...props}
         >
           {placeholder && (

@@ -13,7 +13,7 @@ const FormPenjemputan = forwardRef(
   ) => {
     const { isDarkMode } = useDarkMode();
 
-    // 🔹 State & actions dari custom hook
+    //    State & actions dari custom hook
     const {
       kategoriData,
       jenisData,
@@ -33,7 +33,7 @@ const FormPenjemputan = forwardRef(
       setDaftarSampah,
     } = usePenjemputan({ showAlert });
 
-    /** 🔄 Reset form */
+    /**   Reset form */
     const handleReset = () => {
       onInputChange('id_waktu_operasional', '');
       onInputChange('alamat_penjemputan', '');
@@ -42,7 +42,7 @@ const FormPenjemputan = forwardRef(
       onReset?.();
     };
 
-    /** 🔄 Submit form */
+    /**   Submit form */
     const handleSubmit = (e) => {
       e.preventDefault();
 
@@ -62,7 +62,7 @@ const FormPenjemputan = forwardRef(
       onSubmit(daftarSampah);
     };
 
-    // ✅ Expose methods ke parent melalui ref
+    //    Expose methods ke parent melalui ref
     useImperativeHandle(ref, () => ({
       resetForm: () => {
         setDaftarSampah([]);
@@ -81,7 +81,7 @@ const FormPenjemputan = forwardRef(
         />
 
         {/* Header */}
-        <div className='mb-6'>
+        <div className='mb-3'>
           <h2
             className={`text-2xl font-bold mb-2 ${
               isDarkMode ? 'text-white' : 'text-gray-900'

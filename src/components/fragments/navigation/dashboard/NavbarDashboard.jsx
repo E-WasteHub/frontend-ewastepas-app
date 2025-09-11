@@ -1,26 +1,22 @@
-// src/components/layouts/navbar/NavbarDashboard.jsx
-import { Moon, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import usePengguna from '../../../../hooks/usePengguna';
-import { clearAuth } from '../../../../utils/authExpiredUtils';
-import Button from '../../../elements/Button';
+import useResponsive from '../../../../hooks/useResponsive';
+import { ThemeSelector } from '../../../elements';
+import LogoApp from '../../../elements/LogoApp';
 import NotificationDropdown from './NotificationDropdown';
 import ProfileDropdown from './ProfileDropdown';
 
 const NavbarDashboard = () => {
-  const { isDarkMode, toggleTheme } = useDarkMode();
+  const { isDarkMode } = useDarkMode();
   const { pengguna, peran } = usePengguna();
+  const { isDesktop } = useResponsive();
 
   const [notifications, setNotifications] = useState([]);
 
-  // Ambil notifikasi dari backend
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        // sementara masih dummy → kalau sudah ada API ganti ke:
-        // const res = await notificationService.getAll();
-        // setNotifications(res.data);
         setNotifications([
           {
             id: 1,
@@ -50,39 +46,21 @@ const NavbarDashboard = () => {
       }`}
       style={{ zIndex: 900 }}
     >
-      <div className='px-8'>
-        <div className='flex h-16 items-center justify-end'>
-          <div className='flex items-center gap-x-4'>
+      <div className='px-4 md:px-6 lg:px-8'>
+        <div className='flex h-16 items-center justify-between lg:justify-end'>
+          {/* Logo hanya tampil di mobile/tablet */}
+          {!isDesktop && <LogoApp withText size='xl' />}
+
+          {/* Right section */}
+          <div className='flex items-center gap-x-3'>
             {/* Toggle dark mode */}
-            <Button
-              onClick={toggleTheme}
-              className='rounded-md ms-12 -mx-6'
-              variant='ghost'
-              title={isDarkMode ? 'Aktifkan Light Mode' : 'Aktifkan Dark Mode'}
-            >
-              {isDarkMode ? (
-                <Sun className='h-5 w-5' />
-              ) : (
-                <Moon className='h-5 w-5' />
-              )}
-            </Button>
+            <ThemeSelector className='h-9 w-9 flex items-center justify-center rounded-md' />
 
             {/* Notifications */}
             <NotificationDropdown notifications={notifications} />
 
-            {/* Profile → lempar data dari backend */}
-            {pengguna && (
-              <ProfileDropdown
-                pengguna={pengguna}
-                peran={peran}
-                onLogout={() => {
-                  clearAuth();
-                  localStorage.removeItem('pengguna');
-                  localStorage.removeItem('peran');
-                  window.location.href = '/login';
-                }}
-              />
-            )}
+            {/* Profile */}
+            {pengguna && <ProfileDropdown pengguna={pengguna} peran={peran} />}
           </div>
         </div>
       </div>

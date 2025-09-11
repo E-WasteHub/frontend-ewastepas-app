@@ -1,4 +1,5 @@
 import useDarkMode from '../../../hooks/useDarkMode';
+import Loading from '../Loading';
 
 const Button = ({
   children,
@@ -11,10 +12,12 @@ const Button = ({
 }) => {
   const { isDarkMode } = useDarkMode();
 
-  const baseClasses =
+  // kelas dasar untuk tombol
+  const desainDasar =
     'px-6 py-3 rounded-lg font-medium transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed';
 
-  const variantClasses = {
+  // kelas berdasarkan varian dan mode gelap/terang
+  const variantDesain = {
     primary: isDarkMode
       ? 'bg-green-500 text-white hover:bg-green-600'
       : 'bg-green-600 text-white hover:bg-green-700',
@@ -26,19 +29,17 @@ const Button = ({
       : 'bg-slate-200 border border-slate-300',
   };
 
-  const combinedClasses = `${baseClasses} ${variantClasses[variant]} ${className}`;
+  // gabungkan semua kelas
+  const gabunganDesain = `${desainDasar} ${variantDesain[variant]} ${className}`;
 
   return (
     <button
-      className={combinedClasses}
+      className={gabunganDesain}
       disabled={disabled || isLoading}
       {...props}
     >
       {isLoading ? (
-        <div className='flex items-center justify-center gap-2'>
-          <div className='animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent'></div>
-          {loadingText}
-        </div>
+        <Loading mode='button' size='sm' text={loadingText} />
       ) : (
         children
       )}

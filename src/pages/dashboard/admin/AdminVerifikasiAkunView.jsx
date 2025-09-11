@@ -13,7 +13,7 @@ import useToast from '../../../hooks/useToast';
 import { formatTanggalWaktuIndonesia } from '../../../utils/dateUtils';
 
 const AdminVerifikasiAkunView = () => {
-  useDocumentTitle('Verifikasi Akun Pengguna');
+  useDocumentTitle('Verifikasi Akun');
   const { isDarkMode } = useDarkMode();
   const { data, isLoading, error, updateStatus, fetchDetail, isSubmitting } =
     useAdminVerifikasi();
@@ -24,7 +24,7 @@ const AdminVerifikasiAkunView = () => {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('');
 
-  // 🔹 Modal Confirm
+  //    Modal Confirm
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState({
     id_pengguna: null,
@@ -34,14 +34,14 @@ const AdminVerifikasiAkunView = () => {
     confirmType: 'primary',
   });
 
-  // 🔹 Show detail dokumen
+  //    Show detail dokumen
   const handleShowDetail = async (id_pengguna) => {
     const res = await fetchDetail(id_pengguna);
     if (res) setSelectedUser(res);
   };
   const handleCloseDetail = () => setSelectedUser(null);
 
-  // 🔹 Show confirm modal
+  //    Show confirm modal
   const handleConfirmAction = (id_pengguna, status) => {
     setConfirmConfig({
       id_pengguna,
@@ -56,7 +56,7 @@ const AdminVerifikasiAkunView = () => {
     setConfirmOpen(true);
   };
 
-  // 🔹 Confirm update
+  //    Confirm update
   const handleConfirmSubmit = async () => {
     setConfirmOpen(false);
     const { id_pengguna, status } = confirmConfig;
@@ -77,7 +77,7 @@ const AdminVerifikasiAkunView = () => {
     }
   };
 
-  // 🔹 Filter data by search & filter
+  //    Filter data by search & filter
   const filteredData = useMemo(() => {
     let temp = data;
     if (search) {
@@ -93,11 +93,11 @@ const AdminVerifikasiAkunView = () => {
     return temp;
   }, [data, search, filter]);
 
-  // 🔹 Pagination
+  //    Pagination
   const { currentPage, setCurrentPage, totalPages, paginatedData } =
     usePagination(filteredData, 7);
 
-  // 🔹 Kolom tabel
+  //    Kolom tabel
   const columns = [
     {
       name: 'Tanggal Daftar',
@@ -175,7 +175,7 @@ const AdminVerifikasiAkunView = () => {
           {/* AdminTable */}
           <AdminTable columns={columns} data={paginatedData} />
 
-          {/* 🔹 Pagination */}
+          {/*    Pagination */}
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

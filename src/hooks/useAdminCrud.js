@@ -18,7 +18,7 @@ const useAdminCrud = (service) => {
       const rawData = ambilDataArrayAman(response.data, 'data');
       setData(rawData);
     } catch (err) {
-      console.error('❌ useAdminCrud: Error fetching data:', err);
+      console.error('  useAdminCrud: Error fetching data:', err);
       setError('Gagal memuat data', err);
       setData([]);
     } finally {
@@ -40,7 +40,7 @@ const useAdminCrud = (service) => {
       setMessage('Data berhasil ditambahkan');
       return { success: true, data: res };
     } catch (err) {
-      console.error('❌ Gagal tambah data:', err);
+      console.error('Gagal tambah data:', err);
       setError('Gagal menambah data');
       return { success: false, error: err.message };
     } finally {
@@ -58,7 +58,7 @@ const useAdminCrud = (service) => {
       setMessage('Data berhasil diubah');
       return { success: true, data: res };
     } catch (err) {
-      console.error('❌ Gagal update data:', err);
+      console.error('  Gagal update data:', err);
       setError('Gagal mengubah data');
       return { success: false, error: err.message };
     } finally {
@@ -76,7 +76,7 @@ const useAdminCrud = (service) => {
       setMessage('Data berhasil dihapus');
       return { success: true, data: res };
     } catch (err) {
-      console.error('❌ Gagal hapus data:', err);
+      console.error('  Gagal hapus data:', err);
       setError('Gagal menghapus data');
       return { success: false, error: err.message };
     } finally {

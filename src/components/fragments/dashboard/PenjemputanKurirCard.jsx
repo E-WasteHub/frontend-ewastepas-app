@@ -54,7 +54,7 @@ const PenjemputanKurirCard = ({
       }`}
     >
       <div className='flex items-start justify-between'>
-        {/* 🔹 Kiri: info utama */}
+        {/*    Kiri: info utama */}
         <div className='flex-1 pr-4 space-y-2'>
           <p
             className={`text-lg ${
@@ -98,7 +98,7 @@ const PenjemputanKurirCard = ({
           </p>
         </div>
 
-        {/* 🔹 Kanan: status + tombol */}
+        {/*    Kanan: status + tombol */}
         <div className='flex flex-col items-end space-y-3'>
           <span
             className={`px-2 py-0.5 text-xs font-medium rounded-full ${warnaStatusBadge(

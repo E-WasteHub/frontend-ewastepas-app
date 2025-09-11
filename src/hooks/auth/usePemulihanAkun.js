@@ -3,16 +3,16 @@ import { useState } from 'react';
 import * as authService from '../../services/authService';
 
 const usePemulihanAkun = () => {
-  /** 🔹 State utama */
+  // state form
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  /** 🔹 State feedback */
+  // state feedback
   const [errorInput, setErrorInput] = useState('');
   const [errorGlobal, setErrorGlobal] = useState('');
   const [pesanSukses, setPesanSukses] = useState('');
 
-  /** 📌 Handler perubahan input email */
+  // handler perubahan input
   const ubahEmail = (e) => {
     setEmail(e.target.value);
     if (errorInput) setErrorInput('');
@@ -20,7 +20,7 @@ const usePemulihanAkun = () => {
     if (pesanSukses) setPesanSukses('');
   };
 
-  /** 📌 Validasi email sederhana */
+  // validasi email
   const validasiEmail = (value) => {
     if (!value) return 'Email wajib diisi';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -28,7 +28,7 @@ const usePemulihanAkun = () => {
     return '';
   };
 
-  /** 📌 Kirim link reset password */
+  //  handler submit form
   const kirimLinkReset = async (e) => {
     e.preventDefault();
     const errMsg = validasiEmail(email);
@@ -60,7 +60,7 @@ const usePemulihanAkun = () => {
     errorGlobal,
     pesanSukses,
 
-    // Actions
+    // actions
     ubahEmail,
     kirimLinkReset,
     setErrorGlobal,

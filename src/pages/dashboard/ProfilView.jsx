@@ -17,7 +17,7 @@ const ProfilView = () => {
   const { isMobile } = useResponsive();
   const { success, error: showErrorToast } = useToast();
 
-  // 🔹 Ambil data & actions dari hook profil
+  //    Ambil data & actions dari hook profil
   const {
     form,
     setForm,
@@ -38,14 +38,14 @@ const ProfilView = () => {
   const handleSaveProfil = async () => {
     const result = await updateProfil();
     if (result.success) {
-      success('Profil berhasil diperbarui ✅');
+      success('Profil berhasil diperbarui   ');
 
-      // 🔄 Refresh halaman agar semua komponen ter-update
+      //   Refresh halaman agar semua komponen ter-update
       setTimeout(() => {
         window.location.reload();
       }, 3000); // Delay agar user sempat melihat toast success
     } else {
-      showErrorToast(result.error || 'Gagal memperbarui profil ❌');
+      showErrorToast(result.error || 'Gagal memperbarui profil  ');
     }
   };
 
@@ -53,9 +53,9 @@ const ProfilView = () => {
   const handleUbahKataSandi = async (payload) => {
     const result = await ubahPassword(payload);
     if (result.success) {
-      success('Kata sandi berhasil diubah ✅');
+      success('Kata sandi berhasil diubah   ');
     } else {
-      showErrorToast(result.error || 'Gagal mengubah kata sandi ❌');
+      showErrorToast(result.error || 'Gagal mengubah kata sandi  ');
     }
   };
 
@@ -63,14 +63,14 @@ const ProfilView = () => {
   const handleUploadDokumen = async () => {
     const result = await uploadDokumen();
     if (result.success) {
-      success('Dokumen berhasil diunggah ✅');
+      success('Dokumen berhasil diunggah   ');
 
-      // 🔄 Refresh halaman agar status ter-update di seluruh aplikasi
+      //   Refresh halaman agar status ter-update di seluruh aplikasi
       setTimeout(() => {
         window.location.reload();
       }, 1500); // Delay agar user sempat melihat toast success
     } else {
-      showErrorToast(result.error || 'Gagal mengunggah dokumen ❌');
+      showErrorToast(result.error || 'Gagal mengunggah dokumen  ');
     }
   };
 

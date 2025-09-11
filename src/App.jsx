@@ -18,9 +18,12 @@ const App = () => {
   useEffect(() => {
     const hasSeenSplash = sessionStorage.getItem('hasSeenSplash');
     if (hasSeenSplash) {
+      // Sudah pernah lihat splash di sesi ini → langsung skip
       setShowSplash(false);
     } else {
+      // Belum pernah → tampilkan splash sekali
       sessionStorage.setItem('hasSeenSplash', 'true');
+      setShowSplash(true);
     }
   }, []);
 
@@ -45,7 +48,6 @@ const App = () => {
 
       {/* React-Toastify Container */}
       <ToastContainer
-        position='top-right'
         autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
@@ -55,7 +57,6 @@ const App = () => {
         draggable
         pauseOnHover
         theme={isDarkMode ? 'dark' : 'light'}
-        className='mt-16'
       />
     </div>
   );

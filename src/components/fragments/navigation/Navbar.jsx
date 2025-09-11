@@ -3,7 +3,6 @@ import { Link, NavLink } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
 import usePengguna from '../../../hooks/usePengguna';
 import useResponsive from '../../../hooks/useResponsive';
-import { clearAuth } from '../../../utils/authExpiredUtils';
 import { LogoApp, ThemeSelector } from '../../elements';
 import { ProfileDropdown } from '../../fragments';
 
@@ -50,16 +49,7 @@ const Navbar = () => {
           <div className='flex items-center gap-2'>
             <ThemeSelector />
             {pengguna ? (
-              <ProfileDropdown
-                pengguna={pengguna}
-                peran={peran}
-                onLogout={() => {
-                  clearAuth();
-                  localStorage.removeItem('pengguna');
-                  localStorage.removeItem('peran');
-                  window.location.href = '/login';
-                }}
-              />
+              <ProfileDropdown pengguna={pengguna} peran={peran} />
             ) : null}
           </div>
         </div>
@@ -91,16 +81,7 @@ const Navbar = () => {
             <div className='flex items-center text-sm gap-4 ml-2'>
               <ThemeSelector />
               {pengguna ? (
-                <ProfileDropdown
-                  pengguna={pengguna}
-                  peran={peran}
-                  onLogout={() => {
-                    clearAuth();
-                    localStorage.removeItem('pengguna');
-                    localStorage.removeItem('peran');
-                    window.location.href = '/login';
-                  }}
-                />
+                <ProfileDropdown pengguna={pengguna} peran={peran} />
               ) : (
                 <>
                   <NavLink

@@ -7,17 +7,22 @@ import {
 import { ambilDataArrayAman } from '../utils/penjemputanUtils';
 
 const useMasyarakat = () => {
+  // ===== LIST DATA =====
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // ===== DashboardMasyarakat =======
+  // ===== DETAIL =====
+  const [detail, setDetail] = useState(null);
+  const [isLoadingDetail, setIsLoadingDetail] = useState(false);
+  const [errorDetail, setErrorDetail] = useState('');
+
+  // ===== FETCH LIST =====
   const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
       setError('');
       const response = await ambilRiwayatPenjemputan();
-      console.log('📦 Data riwayat penjemputan:', response.data);
       const rawData = ambilDataArrayAman(response, 'data');
       setData(rawData);
     } catch (err) {
@@ -28,9 +33,25 @@ const useMasyarakat = () => {
       setIsLoading(false);
     }
   }, []);
-  // ===== END DashboardMasyarakat =======
 
-  // ===== RiwayatMasyarakat & DashboardMasyarakat =======
+  // ===== FETCH DETAIL =====
+  const fetchDetail = useCallback(async (id_penjemputan) => {
+    if (!id_penjemputan) return;
+    try {
+      setIsLoadingDetail(true);
+      setErrorDetail('');
+      const res = await ambilDetailPenjemputan(id_penjemputan);
+      setDetail(res.data);
+    } catch (err) {
+      console.error('❌ Gagal fetch detail:', err);
+      setErrorDetail('Gagal memuat detail penjemputan');
+      setDetail(null);
+    } finally {
+      setIsLoadingDetail(false);
+    }
+  }, []);
+
+  // ===== CANCEL =====
   const batalkan = async (id_penjemputan) => {
     try {
       await batalPenjemputan(id_penjemputan, {
@@ -38,20 +59,19 @@ const useMasyarakat = () => {
         waktu_dibatalkan: new Date().toISOString(),
       });
       await fetchData();
-      return true; // ⬅️ penting
+      return true;
     } catch (err) {
       console.error('❌ Gagal batalkan penjemputan:', err);
       setError('Gagal membatalkan penjemputan');
-      return false; // ⬅️ penting
+      return false;
     }
   };
-  // ===== END RiwayatMasyarakat & DashboardMasyarakat =======
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  // ===== DashboardMasyarakat =======
+  // ===== DASHBOARD STATS =====
   const pengguna = JSON.parse(localStorage.getItem('pengguna')) || {};
   const stats = {
     totalPenjemputan: data.length,
@@ -61,32 +81,33 @@ const useMasyarakat = () => {
     totalPoin: parseInt(pengguna.poin_pengguna, 10) || 0,
   };
 
-  // ===== END DashboardMasyarakat =======
-
-  // ===== LacakPenjemputan =======
-  // daftar penjemputan aktif
+  // ===== FILTERS =====
   const daftarPenjemputan = data.filter((d) =>
     ['Diproses', 'Diterima', 'Dijemput'].includes(d.status_penjemputan)
   );
 
-  // daftar riwayat selesai/dibatalkan
   const riwayat = data.filter((d) =>
     ['Diproses', 'Diterima', 'Dijemput', 'Selesai', 'Dibatalkan'].includes(
       d.status_penjemputan
     )
   );
-  // ===== END LacakPenjemputan =======
 
   return {
-    // data umum
+    // list
     data,
     isLoading,
     error,
 
+    // detail
+    detail,
+    isLoadingDetail,
+    errorDetail,
+    fetchDetail,
+
     // dashboard
     stats,
 
-    // lacak
+    // lacak/riwayat
     daftarPenjemputan,
     riwayat,
 
@@ -95,34 +116,5 @@ const useMasyarakat = () => {
     batalkan,
   };
 };
-
-// ===== DetailLacakPenjemputan & DetailRiwayatMasyarakat =======
-export const useMasyarakatDetail = (id_penjemputan) => {
-  const [detail, setDetail] = useState(null);
-  const [isLoading, setIsLoading] = useState(!!id_penjemputan);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (!id_penjemputan) return;
-    (async () => {
-      try {
-        setIsLoading(true);
-        setError('');
-        const res = await ambilDetailPenjemputan(id_penjemputan);
-        console.log('📦 Detail penjemputan:', res.data);
-        setDetail(res.data);
-      } catch (err) {
-        console.error('❌ Gagal fetch detail:', err);
-        setError('Gagal memuat detail penjemputan');
-        setDetail(null);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [id_penjemputan]);
-
-  return { detail, isLoading, error };
-};
-// ===== END DetailLacakPenjemputan & DetailRiwayatMasyarakat =======
 
 export default useMasyarakat;

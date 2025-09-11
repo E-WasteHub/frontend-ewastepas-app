@@ -32,7 +32,7 @@ const usePenjemputan = ({ showAlert }) => {
   // file ref
   const fileInputRef = useRef(null);
 
-  // ✅ Toast hook untuk mengganti alert jika tidak ada showAlert dari parent
+  //    Toast hook untuk mengganti alert jika tidak ada showAlert dari parent
   const toast = useToast();
   const alertFunction = showAlert || toast.showAlert;
 
@@ -46,7 +46,7 @@ const usePenjemputan = ({ showAlert }) => {
         setKategoriData(res?.data?.kategori || []);
         setWaktuOperasional(res?.data?.waktu_operasional || []);
       } catch (err) {
-        console.error('❌ Gagal fetch awal:', err);
+        console.error('  Gagal fetch awal:', err);
         alertFunction('Error', 'Gagal memuat data awal', 'error');
       }
     })();
@@ -65,7 +65,7 @@ const usePenjemputan = ({ showAlert }) => {
         );
         setJenisData(res?.data?.jenis || []);
       } catch (err) {
-        console.error('❌ Gagal fetch jenis:', err);
+        console.error('  Gagal fetch jenis:', err);
         alertFunction('Error', 'Gagal memuat jenis sampah', 'error');
       }
     })();

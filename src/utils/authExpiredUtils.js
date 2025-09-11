@@ -1,29 +1,37 @@
-const TOKEN_KEY = 'token';
-const TOKEN_EXPIRES_AT = 'token_expires_at';
+const tokenKey = 'token';
+const tokenExpiresAtKey = 'token_expires_at';
 
-// Simpan token dan expired
+// Simpan token dengan expiry
 export function setTokenWithExpiry(token, expirySeconds = 12 * 60 * 60) {
   if (!token) return;
   try {
-    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(tokenKey, token);
     const expiresAt = Date.now() + expirySeconds * 1000;
-    localStorage.setItem(TOKEN_EXPIRES_AT, expiresAt.toString());
+    localStorage.setItem(tokenExpiresAtKey, expiresAt.toString());
   } catch (e) {
     console.error('setTokenWithExpiry error', e);
   }
 }
 
-export function getToken() {
-  return localStorage.getItem(TOKEN_KEY);
+// Ambil token jika belum expired
+export function getValidToken() {
+  const token = localStorage.getItem(tokenKey);
+  const expiresAt = localStorage.getItem(tokenExpiresAtKey);
+
+  if (!token || !expiresAt) return null;
+
+  if (Date.now() > parseInt(expiresAt, 10)) {
+    // sudah expired → hapus
+    clearAuth();
+    return null;
+  }
+
+  return token;
 }
 
 export function clearAuth() {
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(TOKEN_EXPIRES_AT);
+  localStorage.removeItem(tokenKey);
+  localStorage.removeItem(tokenExpiresAtKey);
+  localStorage.removeItem('pengguna');
+  localStorage.removeItem('peran');
 }
-
-export default {
-  setTokenWithExpiry,
-  getToken,
-  clearAuth,
-};

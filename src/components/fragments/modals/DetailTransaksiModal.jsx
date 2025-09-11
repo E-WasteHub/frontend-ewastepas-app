@@ -51,7 +51,7 @@ const DetailTransaksiModal = ({ isOpen, onClose, detail, selectedDetail }) => {
                 <p className='text-xs font-semibold text-gray-400'>
                   Kode Penjemputan
                 </p>
-                <p className='font-mono break-all'>{p.kode_penjemputan}</p>
+                <p className='font-normal break-all'>{p.kode_penjemputan}</p>
               </div>
               <div>
                 <p className='text-xs font-semibold text-gray-400'>

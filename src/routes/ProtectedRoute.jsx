@@ -2,19 +2,23 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { Loading } from '../components/elements';
 import usePengguna from '../hooks/usePengguna';
 import useToast from '../hooks/useToast';
+import { clearAuth, getValidToken } from '../utils/authExpiredUtils';
 import {
   getDashboardPathByPeran,
   getProfilePathByPeran,
 } from '../utils/peranUtils';
 
-/**
- * Komponen untuk melindungi rute dari akses yang tidak sah
- * Mengatur otorisasi berdasarkan peran pengguna dan status akun
- */
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { pengguna, isLoading } = usePengguna();
   const navigate = useNavigate();
   const { error, warning } = useToast();
+
+  // Cek token expired
+  const token = getValidToken();
+  if (!token) {
+    clearAuth();
+    return <Navigate to='/login' replace />;
+  }
 
   // ===== TAHAP 1: PEMERIKSAAN LOADING =====
   // Tunggu sampai data pengguna selesai dimuat

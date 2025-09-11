@@ -1,6 +1,7 @@
 // src/components/elements/SplashScreen.jsx
 import { motion as Motion } from 'motion/react';
 import { useEffect, useState } from 'react';
+import ewasteDark from '../../assets/img/ewasteDark.png';
 import ewasteLight from '../../assets/img/ewasteLight.png';
 import useDarkMode from '../../hooks/useDarkMode';
 
@@ -25,8 +26,8 @@ const SplashScreen = ({ onComplete }) => {
     <Motion.div
       className={`fixed inset-0 z-50 flex items-center justify-center ${
         isDarkMode
-          ? 'bg-gradient-to-tl from-green-400 via-green-300 to-green-600'
-          : 'bg-gradient-to-br from-green-600 via-green-500 to-green-700'
+          ? 'bg-gradient-to-br from-slate-900 via-slate-800/80 to-slate-900'
+          : 'bg-gradient-to-br from-green-50 via-white/80 to-emerald-50'
       }`}
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -42,7 +43,7 @@ const SplashScreen = ({ onComplete }) => {
         >
           <div className='w-24 h-24 mx-auto mb-4  rounded-3xl flex items-center justify-center shadow-lg'>
             <img
-              src={isDarkMode ? ewasteLight : ewasteLight}
+              src={isDarkMode ? ewasteDark : ewasteLight}
               alt='Ewastepas Logo'
               className='w-16 h-16 object-contain'
             />

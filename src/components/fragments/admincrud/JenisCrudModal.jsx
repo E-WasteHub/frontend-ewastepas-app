@@ -29,7 +29,7 @@ const JenisCrudModal = ({
           : res?.data?.data || [];
         setKategoriOptions(data);
       } catch (err) {
-        console.error('❌ Gagal fetch kategori:', err);
+        console.error('  Gagal fetch kategori:', err);
       }
     };
     fetchKategori();

@@ -15,7 +15,7 @@ import * as penjemputanService from '../../../services/penjemputanService';
 import { formatTanggalIndonesia } from '../../../utils/dateUtils';
 
 const AdminTransaksiView = () => {
-  useDocumentTitle('Monitoring Penjemputan');
+  useDocumentTitle('Monitoring Admin');
 
   const { showAlert } = useToast();
 
@@ -90,7 +90,7 @@ const AdminTransaksiView = () => {
       name: 'Kode',
       selector: 'kode_penjemputan',
       cell: (row) => (
-        <span className='font-mono text-xs'>{row.kode_penjemputan}</span>
+        <span className='font-normal text-xs'>{row.kode_penjemputan}</span>
       ),
     },
     {

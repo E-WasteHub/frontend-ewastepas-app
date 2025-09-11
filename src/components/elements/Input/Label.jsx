@@ -9,8 +9,8 @@ const Label = ({
 }) => {
   const { isDarkMode } = useDarkMode();
 
-  const baseStyle = 'block text-sm font-medium mb-1';
-  const colorStyle = error
+  const desainDasar = 'block text-sm font-medium mb-1';
+  const warnaDesain = error
     ? isDarkMode
       ? 'text-red-400'
       : 'text-red-500'
@@ -21,7 +21,7 @@ const Label = ({
   return (
     <label
       htmlFor={htmlFor}
-      className={`${baseStyle} ${colorStyle} ${className}`}
+      className={`${desainDasar} ${warnaDesain} ${className}`}
     >
       {children}
       {required && <span className='ml-1 text-red-500'>*</span>}

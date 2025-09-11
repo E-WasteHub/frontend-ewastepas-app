@@ -3,7 +3,7 @@ import useDarkMode from '../../../hooks/useDarkMode';
 import { formatTanggalWaktuIndonesia } from '../../../utils/dateUtils';
 import { Button, Card } from '../../elements';
 
-// 🔹 Map status ke warna (disatukan untuk riwayat + lacak)
+//    Map status ke warna (disatukan untuk riwayat + lacak)
 const warnaStatusBadge = (status, isDarkMode = false) => {
   const warnaMap = {
     Diproses: {
@@ -49,7 +49,7 @@ const PenjemputanMasyarakatCard = ({ req = {}, onDetail }) => {
       }`}
     >
       <div className='flex items-start justify-between'>
-        {/* 🔹 Kiri: info utama */}
+        {/*    Kiri: info utama */}
         <div className='flex-1 pr-4 space-y-2'>
           <p
             className={`text-lg ${

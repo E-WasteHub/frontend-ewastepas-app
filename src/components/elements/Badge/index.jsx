@@ -1,9 +1,9 @@
 import useDarkMode from '../../../hooks/useDarkMode';
 
 const Badge = ({
-  variant = 'solid', // bentuk: solid, soft, outline
-  intent = 'secondary', // tujuan warna: success, danger, warning, secondary
-  size = 'md', // ukuran: sm, md, lg
+  variant = 'solid',
+  intent = 'secondary',
+  size = 'md',
   className = '',
   children,
   ...props
@@ -11,14 +11,14 @@ const Badge = ({
   const { isDarkMode } = useDarkMode();
 
   // ukuran badge
-  const sizeMap = {
+  const ukuranBadge = {
     sm: 'px-2 py-0.5 text-xs',
     md: 'px-3 py-1 text-sm',
     lg: 'px-4 py-1.5 text-base',
   };
 
   // warna & tema
-  const colorMap = {
+  const warnaBadge = {
     success: {
       light: {
         solid: 'bg-green-100 text-green-700',
@@ -69,12 +69,12 @@ const Badge = ({
     },
   };
 
-  const themeMode = isDarkMode ? 'dark' : 'light';
-  const styles = colorMap[intent]?.[themeMode]?.[variant] || '';
+  const temaMode = isDarkMode ? 'dark' : 'light';
+  const styles = warnaBadge[intent]?.[temaMode]?.[variant] || '';
 
   return (
     <span
-      className={`inline-flex items-center font-medium rounded-full ${sizeMap[size]} ${styles} ${className}`}
+      className={`inline-flex items-center font-medium rounded-full ${ukuranBadge[size]} ${styles} ${className}`}
       {...props}
     >
       {children}

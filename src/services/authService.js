@@ -99,10 +99,9 @@ export const indexVerifikasiPengguna = async () => {
 };
 
 // Kirim ulang OTP (resend)
-export const resendOtp = async (id_pengguna) => {
+export const resendOtp = async (email) => {
   try {
-    // Backend may expect id_pengguna in body; adjust if your API differs
-    const response = await api.post('/akun/kirim-otp', { id_pengguna });
+    const response = await api.post('/akun/kirim-ulang-otp', { email });
     return response.data;
   } catch (error) {
     throw error.response?.data || { message: 'Gagal mengirim ulang OTP' };

@@ -1,36 +1,66 @@
-import { useCallback, useEffect, useState } from 'react';
+// src/hooks/auth/useVerifikasiOTPForm.js
+import { useEffect, useState } from 'react';
 import * as authService from '../../services/authService';
 import { formatWaktuCountdown } from '../../utils/dateUtils';
 
-const useVerifikasiOTPForm = () => {
-  /** 🔹 State utama */
-  const [otp, setOtp] = useState(''); // Menyimpan kode OTP (6 digit)
-  const [userId, setUserId] = useState(null); // ID user dari localStorage
+const OTP_EXPIRY_KEY = 'otpExpiresAt';
 
-  /** 🔹 State feedback */
-  const [fieldError, setFieldError] = useState(''); // Error khusus input OTP
-  const [globalError, setGlobalError] = useState(''); // Error umum dari backend
-  const [successMessage, setSuccessMessage] = useState(''); // Pesan sukses
+const useVerifikasiOTPForm = () => {
+  // state utama
+  const [otp, setOtp] = useState('');
+  const [userId, setUserId] = useState(null);
+  const [userEmail, setUserEmail] = useState(null);
+
+  // state feedback
+  const [fieldError, setFieldError] = useState('');
+  const [globalError, setGlobalError] = useState('');
+  const [verifySuccessMessage, setVerifySuccessMessage] = useState('');
+  const [resendSuccessMessage, setResendSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  /** 🔹 State timer */
-  const [waktuTersisa, setWaktuTersisa] = useState(300); // 5 menit
-  const [isTimerAktif, setIsTimerAktif] = useState(true);
-  const [bisaKirimUlang, setBisaKirimUlang] = useState(false);
+  // state timer
+  const [waktuTersisa, setWaktuTersisa] = useState(0);
 
-  // 📌 Handle perubahan OTP
-  const handleOtpChange = (value) => {
-    const angkaOnly = value.replace(/\D/g, '').slice(0, 6);
-    setOtp(angkaOnly);
+  useEffect(() => {
+    const email = localStorage.getItem('userEmail');
+    if (email) setUserEmail(email);
+  }, []);
 
-    if (fieldError) setFieldError('');
+  // inisialisasi timer
+  useEffect(() => {
+    const expiry = localStorage.getItem('otpExpiresAt');
+    if (expiry) {
+      const sisa = Math.max(
+        0,
+        Math.floor((parseInt(expiry, 10) - Date.now()) / 1000)
+      );
+      setWaktuTersisa(sisa);
+    }
+  }, []);
+
+  // mulai timer
+  const startTimer = (seconds) => {
+    const expiresAt = Date.now() + seconds * 1000;
+    localStorage.setItem('otpExpiresAt', expiresAt.toString());
+    setWaktuTersisa(seconds);
   };
 
-  // 📌 Submit OTP ke backend
+  // update timer setiap detik
+  useEffect(() => {
+    if (waktuTersisa <= 0) {
+      localStorage.removeItem('otpExpiresAt');
+      return;
+    }
+    // Kurangi waktu tersisa setiap detik
+    const interval = setInterval(() => {
+      setWaktuTersisa((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [waktuTersisa]);
+
+  // verifikasi OTP
   const handleOtpSubmit = async (e) => {
     if (e) e.preventDefault();
-
-    // Validasi input
     if (!otp) return setFieldError('Kode OTP wajib diisi');
     if (otp.length !== 6) return setFieldError('Kode OTP harus 6 digit');
     if (waktuTersisa <= 0) return setFieldError('Kode OTP sudah kadaluarsa');
@@ -42,8 +72,7 @@ const useVerifikasiOTPForm = () => {
         id_pengguna: userId,
         kode_otp: otp,
       });
-
-      setSuccessMessage(res.message || 'Verifikasi berhasil');
+      setVerifySuccessMessage(res.message || 'Verifikasi berhasil');
       return res;
     } catch (err) {
       setGlobalError(err.message || 'Verifikasi OTP gagal');
@@ -53,74 +82,55 @@ const useVerifikasiOTPForm = () => {
     }
   };
 
-  // 📌 Kirim ulang OTP
+  // resend OTP
   const handleKirimUlang = async () => {
-    if (!userId) {
-      setFieldError('User tidak ditemukan untuk resend OTP');
+    if (!userEmail) {
+      setFieldError('Email tidak ditemukan, silakan daftar ulang');
       return;
     }
 
     try {
-      await authService.resendOtp(userId);
-      setWaktuTersisa(300); // reset 5 menit
-      setIsTimerAktif(true);
-      setBisaKirimUlang(false);
+      setIsLoading(true);
+      const res = await authService.resendOtp(userEmail);
+      startTimer(300);
       setOtp('');
       setGlobalError('');
+      setResendSuccessMessage(
+        res.message ||
+          'Kode OTP baru berhasil dikirim ke email Anda (berlaku 5 menit).'
+      );
+      return res;
     } catch (err) {
       setGlobalError(err.message || 'Gagal mengirim ulang OTP');
+      return null;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // 📌 Jalankan timer countdown
-  const mulaiTimer = useCallback(() => {
-    if (waktuTersisa > 0 && isTimerAktif) {
-      const intervalId = setInterval(() => {
-        setWaktuTersisa((sisa) => {
-          if (sisa <= 1) {
-            setIsTimerAktif(false);
-            setBisaKirimUlang(true);
-            return 0;
-          }
-          return sisa - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(intervalId);
-    }
-  }, [waktuTersisa, isTimerAktif]);
-
-  useEffect(() => {
-    const stopTimer = mulaiTimer();
-    return stopTimer;
-  }, [mulaiTimer]);
-
-  // 📌 Format menit:detik menggunakan utils
-  const formatWaktu = () => formatWaktuCountdown(waktuTersisa);
-
   return {
-    // State
+    // state
     otp,
     userId,
     waktuTersisa,
-    isTimerAktif,
-    bisaKirimUlang,
+
+    // feedback
     isLoading,
     fieldError,
     globalError,
-    successMessage,
-
-    // Setters
+    verifySuccessMessage,
+    resendSuccessMessage,
     setUserId,
     setFieldError,
     setGlobalError,
-    setSuccessMessage,
+    setVerifySuccessMessage,
+    setResendSuccessMessage,
 
-    // Actions
-    handleOtpChange,
+    // actions
+    handleOtpChange: (val) => setOtp(val.replace(/\D/g, '').slice(0, 6)),
     handleOtpSubmit,
     handleKirimUlang,
-    formatWaktu,
+    formatWaktu: () => formatWaktuCountdown(waktuTersisa),
   };
 };
 

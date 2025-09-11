@@ -21,7 +21,7 @@ const BottomNavbar = () => {
     { to: '/panduan-aplikasi', label: 'Panduan', Icon: FileText },
   ];
 
-  // 🔹 Kalau sudah login → ganti Login jadi Dashboard sesuai peran
+  //    Kalau sudah login → ganti Login jadi Dashboard sesuai peran
   if (pengguna && peran) {
     navItems.push({
       to:

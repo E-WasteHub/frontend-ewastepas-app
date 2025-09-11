@@ -18,7 +18,7 @@ const SapaanDashboard = ({ pengguna, subtitle }) => {
 
   return (
     <div className={textColor}>
-      <h1 className='text-2xl font-bold mb-2'>
+      <h1 className='text-2xl font-bold mb-1'>
         {sapaan}, {pengguna?.nama_lengkap || 'Pengguna'}!
       </h1>
       {subtitle && <p>{subtitle}</p>}

@@ -4,7 +4,7 @@ import lightLogo from '../../../assets/img/ewasteLight.png';
 import useDarkMode from '../../../hooks/useDarkMode';
 import { useResponsive } from '../../../hooks/useResponsive';
 
-const sizeConfig = {
+const ukuranLogoApp = {
   sm: { wrapper: 'w-6 h-6', icon: 'w-4 h-4', text: 'text-sm' },
   md: { wrapper: 'w-8 h-8', icon: 'w-6 h-6', text: 'text-base' },
   lg: { wrapper: 'w-10 h-10', icon: 'w-8 h-8', text: 'text-lg' },
@@ -17,11 +17,10 @@ const LogoApp = ({ size = null, withText = false, responsive = true }) => {
   const { isMobile, isTablet } = useResponsive();
   const [imgError, setImgError] = useState(false);
 
-  // ✅ Gunakan imported assets daripada path string
   const logoSrc = isDarkMode ? darkLogo : lightLogo;
 
   // Auto responsive sizing jika size tidak diberikan dan responsive = true
-  const getResponsiveSize = () => {
+  const ambilUkuranResponsive = () => {
     if (!responsive || size) return size || 'md';
 
     if (isMobile) return 'sm';
@@ -29,17 +28,18 @@ const LogoApp = ({ size = null, withText = false, responsive = true }) => {
     return 'lg';
   };
 
-  const currentSize = sizeConfig[getResponsiveSize()] || sizeConfig.md;
+  const ukuranSekarang =
+    ukuranLogoApp[ambilUkuranResponsive()] || ukuranLogoApp.md;
   return (
     <div className={`flex items-center ${withText ? 'space-x-2' : ''}`}>
       <div
-        className={`${currentSize.wrapper} rounded-full flex items-center justify-center`}
+        className={`${ukuranSekarang.wrapper} rounded-full flex items-center justify-center`}
       >
         {!imgError ? (
           <img
             src={logoSrc}
             alt='Ewastepas Logo'
-            className={`${currentSize.icon} object-contain`}
+            className={`${ukuranSekarang.icon} object-contain`}
             onError={() => setImgError(true)}
           />
         ) : (
@@ -49,7 +49,7 @@ const LogoApp = ({ size = null, withText = false, responsive = true }) => {
 
       {withText && (
         <span
-          className={`font-semibold ${currentSize.text} ${
+          className={`font-semibold ${ukuranSekarang.text} ${
             isDarkMode ? 'text-green-400' : 'text-green-500'
           }`}
         >

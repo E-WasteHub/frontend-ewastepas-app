@@ -13,18 +13,12 @@ const Checkbox = ({
 }) => {
   const { isDarkMode } = useDarkMode();
 
-  const toggleCheckbox = () => {
-    if (!disabled && onChange) {
-      onChange({ target: { checked: !checked, name } });
-    }
-  };
-
-  const baseClasses =
-    'flex items-center justify-center w-5 h-5 rounded border-2 transition-all';
-  const stateClasses = disabled
+  const dasarDesain =
+    'relative flex items-center justify-center w-5 h-5 rounded border-2 transition-all';
+  const statusDesain = disabled
     ? 'opacity-50 cursor-not-allowed'
     : 'cursor-pointer hover:scale-105';
-  const colorClasses = checked
+  const warnaDesain = checked
     ? 'bg-green-600 border-green-600 text-white'
     : isDarkMode
     ? 'bg-slate-800 border-slate-600 hover:border-slate-500'
@@ -32,33 +26,25 @@ const Checkbox = ({
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      {/* Input asli (hidden) */}
-      <input
-        type='checkbox'
-        id={id}
-        name={name}
-        checked={checked}
-        onChange={onChange}
-        disabled={disabled}
-        className='sr-only'
-        {...props}
-      />
-
-      {/* Kotak custom */}
-      <button
-        type='button'
-        onClick={toggleCheckbox}
-        disabled={disabled}
-        className={`${baseClasses} ${stateClasses} ${colorClasses}`}
-      >
+      {/* Kotak custom + input asli overlay */}
+      <div className={`${dasarDesain} ${statusDesain} ${warnaDesain}`}>
         {checked && <Check className='w-3 h-3' strokeWidth={3} />}
-      </button>
+        <input
+          type='checkbox'
+          id={id}
+          name={name}
+          checked={checked}
+          onChange={onChange}
+          disabled={disabled}
+          className='absolute inset-0 opacity-0 cursor-pointer'
+          {...props}
+        />
+      </div>
 
-      {/* Label */}
+      {/* Label teks */}
       {label && (
         <label
           htmlFor={id}
-          onClick={toggleCheckbox}
           className={`text-sm cursor-pointer ${
             isDarkMode ? 'text-slate-300' : 'text-gray-700'
           }`}

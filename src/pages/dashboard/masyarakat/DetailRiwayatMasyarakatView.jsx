@@ -1,11 +1,12 @@
 // src/views/masyarakat/DetailRiwayatMasyarakatView.jsx
 import { FileText, Truck } from 'lucide-react';
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, Loading } from '../../../components/elements';
 import { ItemSampahCard, Timeline } from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
-import { useMasyarakatDetail } from '../../../hooks/useMasyarakat';
+import useMasyarakat from '../../../hooks/useMasyarakat';
 import { formatTanggalIndonesia } from '../../../utils/dateUtils';
 import {
   daftarLangkahStatus,
@@ -17,10 +18,20 @@ const DetailRiwayatMasyarakatView = () => {
   const { isDarkMode } = useDarkMode();
   const { id_penjemputan } = useParams();
 
-  const { detail: detailRiwayat, isLoading } =
-    useMasyarakatDetail(id_penjemputan);
+  const {
+    detail: detailRiwayat,
+    isLoadingDetail,
+    fetchDetail,
+  } = useMasyarakat();
 
-  if (isLoading) {
+  // ambil detail saat id_penjemputan berubah
+  useEffect(() => {
+    if (id_penjemputan) {
+      fetchDetail(id_penjemputan);
+    }
+  }, [id_penjemputan, fetchDetail]);
+
+  if (isLoadingDetail) {
     return <Loading mode='overlay' text='Memuat detail riwayat...' />;
   }
 
@@ -61,13 +72,13 @@ const DetailRiwayatMasyarakatView = () => {
         <section className='mb-6'>
           <h3 className='text-xl font-bold mb-4'>Informasi Penjemputan</h3>
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 text-sm'>
-            {/* Kolom kiri: masyarakat */}
+            {/* Kolom kiri */}
             <div className='space-y-3'>
               <div>
                 <span className='text-xs font-semibold text-gray-400'>
                   Kode Penjemputan
                 </span>
-                <p className='font-mono'>{p.kode_penjemputan}</p>
+                <p className='font-normal'>{p.kode_penjemputan}</p>
               </div>
               <div>
                 <span className='text-xs font-semibold text-gray-400'>
@@ -91,7 +102,7 @@ const DetailRiwayatMasyarakatView = () => {
               )}
             </div>
 
-            {/* Kolom kanan: kurir */}
+            {/* Kolom kanan */}
             <div className='space-y-3'>
               <div>
                 <span className='text-xs font-semibold text-gray-400'>

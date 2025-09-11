@@ -3,8 +3,11 @@ import { useState } from 'react';
 import * as authService from '../../services/authService';
 
 const useResetKataSandi = () => {
+  // state form
   const [kataSandi, setKataSandi] = useState('');
   const [konfirmasiKataSandi, setKonfirmasiKataSandi] = useState('');
+
+  // state feedback
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +71,7 @@ const useResetKataSandi = () => {
     try {
       setIsLoading(true);
       const res = await authService.resetPassword({
-        otp, // pastikan otp dikirim
+        otp,
         kata_sandi: kataSandi,
         konfirmasi_kata_sandi: konfirmasiKataSandi,
       });

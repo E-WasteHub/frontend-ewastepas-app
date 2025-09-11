@@ -1,10 +1,12 @@
 // src/hooks/useToast.js
 import { toast } from 'react-toastify';
+import useResponsive from './useResponsive';
 
 const useToast = () => {
+  const { isMobile, isTablet } = useResponsive();
   const showToast = (message, type = 'info', options = {}) => {
     const defaultOptions = {
-      position: 'top-right',
+      position: isMobile || isTablet ? 'bottom-center' : 'top-right',
       autoClose: 5000,
       hideProgressBar: false,
       closeOnClick: true,

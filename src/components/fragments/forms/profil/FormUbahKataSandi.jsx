@@ -1,23 +1,48 @@
+// src/components/forms/auth/FormUbahKataSandi.jsx
 import { Lock } from 'lucide-react';
 import { useState } from 'react';
+import useToast from '../../../../hooks/useToast';
 import { Button, InputForm, Loading } from '../../../elements';
 
 const FormUbahKataSandi = ({ isLoading, onSave }) => {
+  const { error } = useToast();
   const [form, setForm] = useState({
     kata_sandi_lama: '',
     kata_sandi_baru: '',
     konfirmasi_kata_sandi: '',
   });
 
+  // update field
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  // validasi sederhana
+  const validateForm = () => {
+    if (
+      !form.kata_sandi_lama ||
+      !form.kata_sandi_baru ||
+      !form.konfirmasi_kata_sandi
+    ) {
+      error('Semua field wajib diisi');
+      return false;
+    }
+    if (form.kata_sandi_baru.length < 6) {
+      error('Password baru minimal 6 karakter');
+      return false;
+    }
+    if (form.kata_sandi_baru !== form.konfirmasi_kata_sandi) {
+      error('Konfirmasi password tidak sesuai');
+      return false;
+    }
+    return true;
+  };
+
+  // submit form
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (onSave) {
-      onSave(form);
-    }
+    if (!validateForm()) return;
+    if (onSave) onSave(form);
   };
 
   return (

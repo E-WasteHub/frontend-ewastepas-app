@@ -19,7 +19,7 @@ const useAdminVerifikasi = () => {
       const rawData = ambilDataArrayAman(response);
       setData(rawData);
     } catch (err) {
-      console.error('❌ Gagal fetch akun belum verifikasi:', err);
+      console.error('  Gagal fetch akun belum verifikasi:', err);
       setError('Gagal memuat data akun belum diverifikasi');
       setData([]);
     } finally {
@@ -44,7 +44,7 @@ const useAdminVerifikasi = () => {
       setDetail(result);
       return result;
     } catch (err) {
-      console.error('❌ Gagal fetch detail akun:', err);
+      console.error('  Gagal fetch detail akun:', err);
       setError('Gagal memuat detail akun');
       setDetail(null);
       return null;
@@ -73,7 +73,7 @@ const useAdminVerifikasi = () => {
         throw new Error(response?.message || 'Update gagal');
       }
     } catch (err) {
-      console.error('❌ Gagal update status akun:', err);
+      console.error('  Gagal update status akun:', err);
       setError('Gagal memperbarui status akun');
       return { success: false, error: err.message };
     } finally {

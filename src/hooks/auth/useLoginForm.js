@@ -3,17 +3,17 @@ import * as authService from '../../services/authService';
 import { setTokenWithExpiry } from '../../utils/authExpiredUtils';
 
 const useLoginForm = () => {
-  // --- State Form ---
+  // state form
   const [email, setEmail] = useState('');
   const [kata_sandi, setKataSandi] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
-  // --- State UI ---
+  // state feedback
   const [isLoading, setIsLoading] = useState(false);
   const [globalError, setGlobalError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
 
-  // --- Init remembered email ---
+  // inisialisasi email jika ada di localStorage
   useEffect(() => {
     const rememberedEmail = localStorage.getItem('rememberedEmail');
     if (rememberedEmail) {
@@ -22,7 +22,7 @@ const useLoginForm = () => {
     }
   }, []);
 
-  // --- Handler Input ---
+  // handler perubahan input
   const handleInputChange = (e) => {
     const { name, value, checked } = e.target;
 
@@ -35,7 +35,7 @@ const useLoginForm = () => {
     setGlobalError('');
   };
 
-  // --- Validasi frontend ---
+  // validasi form
   const validateForm = () => {
     const errors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -51,7 +51,7 @@ const useLoginForm = () => {
     return Object.keys(errors).length === 0;
   };
 
-  // --- Submit login ---
+  // handler submit form
   const handleLoginSubmit = async (e) => {
     if (e) e.preventDefault();
     if (!validateForm()) return;
@@ -64,8 +64,8 @@ const useLoginForm = () => {
       const res = await authService.login({ email, kata_sandi });
 
       if (res?.token) {
-        const DEFAULT_TTL = 12 * 60 * 60; // 12 jam
-        setTokenWithExpiry(res.token, DEFAULT_TTL);
+        const defaultTTL = 12 * 60 * 60;
+        setTokenWithExpiry(res.token, defaultTTL);
 
         if (res.data) {
           localStorage.setItem('pengguna', JSON.stringify(res.data));
@@ -85,9 +85,15 @@ const useLoginForm = () => {
   };
 
   return {
+    // State
     email,
     kata_sandi,
     rememberMe,
+    // Actions
+    setEmail,
+    setKataSandi,
+    setRememberMe,
+    // Feedback
     isLoading,
     error: globalError,
     errorField: fieldErrors,

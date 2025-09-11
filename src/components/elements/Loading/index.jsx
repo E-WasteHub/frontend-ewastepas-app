@@ -1,6 +1,6 @@
 import { Loader2 } from 'lucide-react';
 
-const sizeConfig = {
+const ukuranLoading = {
   sm: 'w-4 h-4',
   md: 'w-6 h-6',
   lg: 'w-8 h-8',
@@ -8,7 +8,7 @@ const sizeConfig = {
 };
 
 const Loading = ({ size = 'md', text, mode = 'inline', className = '' }) => {
-  // 🔹 Mode Overlay → full screen
+  //    Mode Overlay → full screen
   if (mode === 'overlay') {
     return (
       <div className='fixed inset-0 z-[2000] flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm'>
@@ -18,25 +18,25 @@ const Loading = ({ size = 'md', text, mode = 'inline', className = '' }) => {
     );
   }
 
-  // 🔹 Mode Inline → biasanya di card/section
+  //    Mode Inline → biasanya di card/section
   if (mode === 'inline') {
     return (
       <div
         className={`flex flex-col items-center justify-center p-4 ${className}`}
       >
         <Loader2
-          className={`${sizeConfig[size]} animate-spin text-green-600`}
+          className={`${ukuranLoading[size]} animate-spin text-green-600`}
         />
         {text && <p className='mt-2 text-sm text-gray-600'>{text}</p>}
       </div>
     );
   }
 
-  // 🔹 Mode Button → untuk di dalam tombol (inline row, kecil)
+  //    Mode Button → untuk di dalam tombol (inline row, kecil)
   if (mode === 'button') {
     return (
-      <span className={`flex items-center gap-2 ${className}`}>
-        <Loader2 className={`${sizeConfig[size]} animate-spin text-white`} />
+      <span className={`flex items-center justify-center gap-2 ${className}`}>
+        <Loader2 className={`${ukuranLoading[size]} animate-spin text-white`} />
         {text && <span>{text}</span>}
       </span>
     );
