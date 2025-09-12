@@ -4,6 +4,7 @@ import {
   AdminTable,
   ConfirmModal,
   FilterCrud,
+  HeaderDashboard,
   JenisCrudModal,
 } from '../../../components/fragments';
 import useAdminCrud from '../../../hooks/useAdminCrud';
@@ -94,7 +95,6 @@ const AdminKelolaJenisView = () => {
 
   // Handler Hapus
   const handleDelete = async () => {
-    console.log('🟢 handleDelete terpanggil, target:', confirmTarget);
     if (!confirmTarget) return;
 
     const res = await hapus(confirmTarget);
@@ -155,13 +155,10 @@ const AdminKelolaJenisView = () => {
 
   return (
     <div className='max-w-7xl mx-auto p-6 space-y-6'>
-      <div className='space-y-2'>
-        <h1 className='text-2xl font-bold'>Kelola Jenis Sampah</h1>
-        <p className='text-gray-600'>
-          Kelola jenis-jenis sampah elektronik berdasarkan kategori yang
-          tersedia
-        </p>
-      </div>
+      <HeaderDashboard
+        title='Kelola Jenis Sampah'
+        subtitle='Kelola jenis-jenis sampah elektronik berdasarkan kategori yang tersedia'
+      />
 
       {isLoading ? (
         <Loading mode='inline' text='Memuat data...' />

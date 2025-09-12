@@ -1,18 +1,15 @@
-// src/hooks/usePemulihanAkun.js
+// src/hooks/auth/usePemulihanAkun.js
 import { useState } from 'react';
 import * as authService from '../../services/authService';
 
 const usePemulihanAkun = () => {
-  // state form
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // state feedback
   const [errorInput, setErrorInput] = useState('');
   const [errorGlobal, setErrorGlobal] = useState('');
   const [pesanSukses, setPesanSukses] = useState('');
 
-  // handler perubahan input
   const ubahEmail = (e) => {
     setEmail(e.target.value);
     if (errorInput) setErrorInput('');
@@ -20,7 +17,6 @@ const usePemulihanAkun = () => {
     if (pesanSukses) setPesanSukses('');
   };
 
-  // validasi email
   const validasiEmail = (value) => {
     if (!value) return 'Email wajib diisi';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -28,10 +24,10 @@ const usePemulihanAkun = () => {
     return '';
   };
 
-  //  handler submit form
   const kirimLinkReset = async (e) => {
     e.preventDefault();
-    const errMsg = validasiEmail(email);
+
+    const errMsg = validasiEmail(email?.trim());
     if (errMsg) {
       setErrorInput(errMsg);
       return;
@@ -42,9 +38,14 @@ const usePemulihanAkun = () => {
       setErrorGlobal('');
       setPesanSukses('');
 
-      const res = await authService.sendResetLink(email);
-      setPesanSukses(res.message || 'Link reset berhasil dikirim');
-      setEmail('');
+      const res = await authService.sendResetLink(email.trim());
+
+      if (res.success) {
+        setPesanSukses(res.message || 'Link reset berhasil dikirim');
+        setEmail('');
+      } else {
+        setErrorGlobal(res.message || 'Gagal mengirim link reset');
+      }
     } catch (err) {
       setErrorGlobal(err.message || 'Gagal mengirim link reset');
     } finally {
@@ -53,14 +54,11 @@ const usePemulihanAkun = () => {
   };
 
   return {
-    // State
     email,
     isLoading,
     errorInput,
     errorGlobal,
     pesanSukses,
-
-    // actions
     ubahEmail,
     kirimLinkReset,
     setErrorGlobal,

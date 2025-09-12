@@ -1,9 +1,9 @@
-// src/components/elements/SplashScreen.jsx
+// src/components/elements/SplashScreen/SplashScreen.jsx
 import { motion as Motion } from 'motion/react';
 import { useEffect, useState } from 'react';
-import ewasteDark from '../../assets/img/ewasteDark.png';
-import ewasteLight from '../../assets/img/ewasteLight.png';
-import useDarkMode from '../../hooks/useDarkMode';
+import ewasteDark from '../../../assets/img/ewasteDark.png';
+import ewasteLight from '../../../assets/img/ewasteLight.png';
+import useDarkMode from '../../../hooks/useDarkMode';
 
 const SplashScreen = ({ onComplete }) => {
   const [isVisible, setIsVisible] = useState(true);

@@ -3,13 +3,15 @@ import { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import useResetKataSandi from '../../../../hooks/auth/useResetKataSandi';
 import useDarkMode from '../../../../hooks/useDarkMode';
-import { Alert, Button, InputForm } from '../../../elements';
+import useToast from '../../../../hooks/useToast';
+import { Button, InputForm } from '../../../elements';
 import FormHeader from '../FormHeader';
 
 const FormResetKataSandi = () => {
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { showToast } = useToast();
 
   const otp = searchParams.get('otp');
 
@@ -24,18 +26,25 @@ const FormResetKataSandi = () => {
     handleInputKataSandi,
     handleInputKonfirmasiKataSandi,
     handleSubmitReset,
-    clearError,
   } = useResetKataSandi();
 
   //    Redirect ke login setelah sukses reset
   useEffect(() => {
     if (successMessage) {
+      showToast(successMessage, 'success');
       const timer = setTimeout(() => {
         navigate('/login');
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [successMessage, navigate]);
+  }, [successMessage, navigate, showToast]);
+
+  //    Tampilkan toast untuk error
+  useEffect(() => {
+    if (error) {
+      showToast(error, 'error');
+    }
+  }, [error, showToast]);
 
   return (
     <div className='w-full max-w-md mx-auto'>
@@ -62,19 +71,6 @@ const FormResetKataSandi = () => {
         >
           Masukkan kata sandi baru Anda dan konfirmasi kata sandi
         </p>
-
-        {/* Alerts */}
-        {successMessage && (
-          <Alert type='success' message={successMessage} className='mb-4' />
-        )}
-        {error && (
-          <Alert
-            type='error'
-            message={error}
-            className='mb-4'
-            onClose={clearError}
-          />
-        )}
 
         {/* Form */}
         <form onSubmit={(e) => handleSubmitReset(e, otp)} className='space-y-4'>

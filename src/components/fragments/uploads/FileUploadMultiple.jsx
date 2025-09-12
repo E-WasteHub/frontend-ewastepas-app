@@ -40,7 +40,7 @@ const FileUploadMultiple = ({
           onChange={(newFiles) => onFilesChange([...files, ...newFiles])}
         />
       ) : (
-        <div className='grid grid-cols-2 grid-cols-3 grid-cols-4 gap-3'>
+        <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3'>
           {files.map((file, i) => (
             <div key={i} className='relative'>
               <img

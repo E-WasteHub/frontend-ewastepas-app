@@ -9,7 +9,7 @@ const ProtectedResetPasswordRoute = ({ children }) => {
   const token = params.get('token');
 
   if (!token) {
-    error('Link reset kata sandi tidak valid atau sudah kedaluwarsa.');
+    error('Silahkan masukkan email anda terlebih dahulu.');
     return <Navigate to='/pemulihan-akun' replace />;
   }
 

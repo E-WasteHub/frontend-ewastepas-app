@@ -1,5 +1,4 @@
 // Alert & Feedback
-export { default as Alert } from './Alert';
 export { default as Message } from './Message';
 
 // Data Display

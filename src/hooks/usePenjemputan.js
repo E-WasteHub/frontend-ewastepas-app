@@ -95,10 +95,10 @@ const usePenjemputan = ({ showAlert }) => {
 
     const newSampah = {
       id: Date.now(),
-      id_kategori: tempSampah.id_kategori,
+      id_kategori: String(tempSampah.id_kategori),
       nama_kategori_sampah: kategori?.nama_kategori || 'Kategori',
       poin_per_unit: kategori?.poin_kategori || 0,
-      id_jenis: tempSampah.id_jenis,
+      id_jenis: String(tempSampah.id_jenis),
       nama_jenis_sampah: jenis?.nama_jenis || 'Jenis',
       jumlah_sampah: Number(tempSampah.jumlah_sampah),
       catatan_sampah: tempSampah.catatan_sampah,
@@ -150,6 +150,36 @@ const usePenjemputan = ({ showAlert }) => {
   const totalJumlah = hitungTotalJumlahSampah(daftarSampah);
   const estimasiPoin = hitungEstimasiPoin(daftarSampah);
 
+  // bentuk FormData untuk dikirim ke backend
+  const buildFormData = (formDataUmum) => {
+    const fd = new FormData();
+
+    fd.append(
+      'id_waktu_operasional',
+      String(formDataUmum.id_waktu_operasional || '')
+    );
+    fd.append('alamat_penjemputan', formDataUmum.alamat_penjemputan || '');
+    fd.append('catatan', formDataUmum.catatan || '');
+
+    // fallback jika daftarSampah undefined
+    const sampahList = Array.isArray(daftarSampah) ? daftarSampah : [];
+
+    const sampahData = sampahList.map((s) => ({
+      id_kategori: String(s.id_kategori || ''),
+      id_jenis: String(s.id_jenis || ''),
+      jumlah_sampah: Number(s.jumlah_sampah || 0),
+      catatan_sampah: s.catatan_sampah || '',
+    }));
+
+    fd.append('sampah', JSON.stringify(sampahData));
+
+    if (daftarSampah[0]?.gambar instanceof File) {
+      fd.append('gambar', daftarSampah[0].gambar);
+    }
+
+    return fd;
+  };
+
   return {
     // state
     kategoriData,
@@ -172,6 +202,9 @@ const usePenjemputan = ({ showAlert }) => {
     handleHapusSampah,
     handleUploadFoto,
     handleFileChange,
+
+    // utils
+    buildFormData,
   };
 };
 

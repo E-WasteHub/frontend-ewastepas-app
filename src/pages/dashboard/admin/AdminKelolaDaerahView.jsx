@@ -6,6 +6,7 @@ import {
   ConfirmModal,
   DaerahCrudModal,
   FilterCrud,
+  HeaderDashboard,
 } from '../../../components/fragments';
 import useAdminCrud from '../../../hooks/useAdminCrud';
 import usePagination from '../../../hooks/usePagination';
@@ -131,12 +132,10 @@ const AdminKelolaDaerahView = () => {
 
   return (
     <div className='max-w-7xl mx-auto p-6 space-y-6'>
-      <div className='space-y-2'>
-        <h1 className='text-2xl font-bold'>Kelola Daerah</h1>
-        <p className='text-gray-600'>
-          Kelola daftar daerah untuk penempatan dropbox dan layanan penjemputan
-        </p>
-      </div>
+      <HeaderDashboard
+        title='Kelola Daerah'
+        subtitle='Kelola daftar daerah untuk penempatan dropbox dan layanan penjemputan'
+      />
 
       {isLoading ? (
         <Loading mode='inline' text='Memuat data...' />

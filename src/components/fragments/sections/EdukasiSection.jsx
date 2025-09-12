@@ -23,6 +23,7 @@ const EdukasiSection = () => {
         setIsLoading(true);
         setError('');
         const edukasiData = await getEdukasiList();
+        console.log('Edukasi data fetched:', edukasiData);
         setData(edukasiData || []);
       } catch (err) {
         setError(err.message || 'Gagal memuat data edukasi');
@@ -104,15 +105,13 @@ const EdukasiSection = () => {
                     }`}
                   >
                     {/* Gambar Thumbnail */}
-                    {item.gambar && (
-                      <div className='w-full aspect-[16/9]'>
-                        <img
-                          src={item.gambar}
-                          alt={item.judul_konten}
-                          className='w-full h-full object-cover'
-                        />
-                      </div>
-                    )}
+                    <div className='w-full aspect-[16/9]'>
+                      <img
+                        src={item.gambar_url}
+                        alt={item.judul_konten}
+                        className='w-full h-full object-cover'
+                      />
+                    </div>
 
                     {/* Konten dalam card */}
                     <div className='p-6 text-center'>

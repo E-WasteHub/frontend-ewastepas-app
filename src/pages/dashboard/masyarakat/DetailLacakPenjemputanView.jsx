@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button, Card, Loading } from '../../../components/elements';
 import {
   ConfirmModal,
+  HeaderDashboard,
   ItemSampahCard,
   Timeline,
 } from '../../../components/fragments';
@@ -63,16 +64,10 @@ const DetailLacakPenjemputan = () => {
       }`}
     >
       {/* Header */}
-      <header className='mb-2'>
-        <h1 className='text-2xl font-bold'>Detail Penjemputan</h1>
-        <p
-          className={`text-sm ${
-            isDarkMode ? 'text-gray-300' : 'text-gray-500'
-          }`}
-        >
-          Detail lengkap untuk penjemputan sampah elektronik.
-        </p>
-      </header>
+      <HeaderDashboard
+        title='Detail Penjemputan'
+        subtitle='Detail lengkap untuk penjemputan sampah elektronik.'
+      />
 
       {/* Card utama */}
       <Card

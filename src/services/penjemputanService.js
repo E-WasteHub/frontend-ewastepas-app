@@ -58,13 +58,14 @@ export const ambilRiwayatPenjemputan = async () => {
 ================================= */
 
 // Buat permintaan penjemputan (masyarakat)
-export const buatPenjemputan = async (payload) => {
+export const buatPenjemputan = async (formData) => {
   try {
-    const response = await api.post('/penjemputan', payload);
+    const response = await api.post('/penjemputan', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     return response.data;
   } catch (error) {
-    console.error('  Error creating permintaan:', error);
-    throw error;
+    throw error.response?.data || { message: 'Gagal membuat permintaan' };
   }
 };
 

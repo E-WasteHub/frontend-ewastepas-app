@@ -10,25 +10,11 @@ const ItemSampahCard = ({ data, isDarkMode }) => (
     `}
   >
     {/* Foto */}
-    {data.gambar ? (
-      <img
-        src={data.gambar}
-        alt={data.jenis}
-        className='w-20 h-20 rounded-lg object-cover shadow-md'
-      />
-    ) : (
-      <div
-        className={`w-20 h-20 flex items-center justify-center rounded-lg text-xs shadow-inner
-          ${
-            isDarkMode
-              ? 'bg-slate-600 text-gray-400'
-              : 'bg-gray-200 text-gray-500'
-          }
-        `}
-      >
-        No Foto
-      </div>
-    )}
+    <img
+      src={data.gambar_url}
+      alt={data.nama_jenis}
+      className='w-20 h-20 rounded-lg object-cover shadow-md'
+    />
 
     {/* Detail */}
     <div className='flex-1 text-sm'>

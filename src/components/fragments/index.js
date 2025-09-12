@@ -10,6 +10,7 @@ export { default as AdminTable } from './dashboard/AdminTable';
 export { default as DataMasterCard } from './dashboard/DataMasterCard';
 export { default as FilterCard } from './dashboard/FilterCard';
 export { default as FilterCrud } from './dashboard/FilterCrud';
+export { default as HeaderDashboard } from './dashboard/HeaderDashboard';
 export { default as PenjemputanKurirCard } from './dashboard/PenjemputanKurirCard';
 export { default as PenjemputanMasyarakatCard } from './dashboard/PenjemputanMasyarakatCard';
 export { default as SapaanDashboard } from './dashboard/SapaanDashboard';
@@ -24,7 +25,6 @@ export { default as FileUploadMultiple } from './uploads/FileUploadMultiple';
 export { default as FileUploadSingle } from './uploads/FileUploadSingle';
 
 // Reusable Modals
-export { default as AlertModal } from './modals/AlertModal';
 export { default as ConfirmModal } from './modals/ConfirmModal';
 export { default as DetailTransaksiModal } from './modals/DetailTransaksiModal';
 export { default as PilihDropboxModal } from './modals/PilihDropboxModal';

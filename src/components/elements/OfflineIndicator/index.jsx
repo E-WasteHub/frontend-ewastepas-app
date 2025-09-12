@@ -1,7 +1,7 @@
-// src/components/elements/OfflineIndicator.jsx
+// src/components/elements/OfflineIndicator/OfflineIndicator.jsx
 import { WifiOff } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
-import usePWA from '../../hooks/usePWA';
+import usePWA from '../../../hooks/usePWA';
 
 const OfflineIndicator = () => {
   const { isOnline } = usePWA();

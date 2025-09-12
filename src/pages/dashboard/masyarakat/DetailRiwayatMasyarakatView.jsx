@@ -3,7 +3,11 @@ import { FileText, Truck } from 'lucide-react';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, Loading } from '../../../components/elements';
-import { ItemSampahCard, Timeline } from '../../../components/fragments';
+import {
+  HeaderDashboard,
+  ItemSampahCard,
+  Timeline,
+} from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import useMasyarakat from '../../../hooks/useMasyarakat';
@@ -51,16 +55,10 @@ const DetailRiwayatMasyarakatView = () => {
       }`}
     >
       {/* Header */}
-      <header className='mb-2'>
-        <h1 className='text-2xl font-bold'>Detail Riwayat Penjemputan</h1>
-        <p
-          className={`text-sm ${
-            isDarkMode ? 'text-gray-300' : 'text-gray-500'
-          }`}
-        >
-          Detail lengkap untuk riwayat penjemputan sampah elektronik.
-        </p>
-      </header>
+      <HeaderDashboard
+        title='Detail Riwayat Penjemputan'
+        subtitle='Detail lengkap untuk riwayat penjemputan sampah elektronik.'
+      />
 
       {/* Card utama */}
       <Card

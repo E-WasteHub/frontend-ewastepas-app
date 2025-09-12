@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, Loading, Pagination } from '../../../components/elements';
 import {
   FilterCard,
+  HeaderDashboard,
   PenjemputanMasyarakatCard,
 } from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
@@ -64,20 +65,10 @@ const LacakPenjemputanView = () => {
   return (
     <div className='max-w-7xl mx-auto px-4 space-y-6'>
       {/* Header */}
-      <h2
-        className={`text-2xl font-bold ${
-          isDarkMode ? 'text-white' : 'text-gray-900'
-        }`}
-      >
-        Lacak Penjemputan
-        <p
-          className={`text-lg font-normal ${
-            isDarkMode ? 'text-gray-400' : 'text-gray-600'
-          }`}
-        >
-          Pantau status permintaan penjemputan sampah elektronik Anda
-        </p>
-      </h2>
+      <HeaderDashboard
+        title='Lacak Penjemputan'
+        subtitle='Pantau status permintaan penjemputan sampah elektronik Anda'
+      />
 
       {/* Grid layout */}
       <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>

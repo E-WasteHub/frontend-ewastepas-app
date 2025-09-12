@@ -64,9 +64,11 @@ export const verifyOtp = async (payload) => {
 export const sendResetLink = async (email) => {
   try {
     const response = await api.post('/pemulihan/kirim-otp', { email });
-    return response.data;
+    return { success: true, ...response.data };
   } catch (error) {
-    throw error.response?.data || { message: 'Gagal mengirim reset link' };
+    const msg = error.response?.data?.message;
+    const success = /terkirim/i.test(msg);
+    return { success, message: msg || 'Gagal mengirim reset link' };
   }
 };
 

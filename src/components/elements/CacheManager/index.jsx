@@ -1,9 +1,9 @@
-// src/components/elements/CacheManager.jsx
+// src/components/elements/CacheManager/CacheManager.jsx
 import { AlertCircle, CheckCircle, Download, Info, Trash2 } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import { useState } from 'react';
-import useDarkMode from '../../hooks/useDarkMode';
-import useOfflineEdukasi from '../../hooks/useOfflineEdukasi';
+import useDarkMode from '../../../hooks/useDarkMode';
+import useOfflineEdukasi from '../../../hooks/useOfflineEdukasi';
 
 const CacheManager = ({ className = '' }) => {
   const { isDarkMode } = useDarkMode();

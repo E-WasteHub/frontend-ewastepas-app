@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, Loading, Pagination } from '../../../components/elements';
 import {
   FilterCard,
+  HeaderDashboard,
   PenjemputanKurirCard,
 } from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
@@ -59,20 +60,10 @@ const RiwayatMitraKurirView = () => {
   return (
     <div className='max-w-7xl mx-auto px-4 space-y-6'>
       {/* Header */}
-      <h2
-        className={`text-2xl font-bold ${
-          isDarkMode ? 'text-white' : 'text-gray-900'
-        }`}
-      >
-        Riwayat Penjemputan
-        <p
-          className={`text-lg font-normal ${
-            isDarkMode ? 'text-gray-400' : 'text-gray-600'
-          }`}
-        >
-          Daftar riwayat penjemputan yang telah Anda kerjakan.
-        </p>
-      </h2>
+      <HeaderDashboard
+        title='Riwayat Penjemputan'
+        subtitle='Daftar riwayat penjemputan yang telah Anda kerjakan.'
+      />
 
       {/* Layout grid */}
       <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>

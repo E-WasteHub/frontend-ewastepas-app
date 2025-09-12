@@ -1,7 +1,8 @@
 // src/views/dashboard/mitra-kurir/DashboardMitraKurirView.jsx
 import { ArrowRight, Package, Star, Truck } from 'lucide-react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Alert, Card, Loading } from '../../../components/elements';
+import { Card, Loading } from '../../../components/elements';
 import {
   PenjemputanKurirCard,
   SapaanDashboard,
@@ -11,14 +12,23 @@ import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import useMitraKurir from '../../../hooks/useMitraKurir';
 import usePengguna from '../../../hooks/usePengguna';
+import useToast from '../../../hooks/useToast';
 
 const DashboardMitraKurirView = () => {
   useDocumentTitle('Dashboard Mitra Kurir');
   const { isDarkMode } = useDarkMode();
   const { pengguna } = usePengguna();
+  const { error: showError } = useToast();
 
   // data dan actions
   const { penjemputanTersedia, stats, isLoading, error } = useMitraKurir();
+
+  // Show error toast when error occurs
+  useEffect(() => {
+    if (error) {
+      showError(error);
+    }
+  }, [error, showError]);
 
   const safeStats = stats || {
     penjemputanTersedia: 0,
@@ -41,7 +51,6 @@ const DashboardMitraKurirView = () => {
           </span>
         }
       />
-      {error && <Alert type='error' message={error} />}
 
       {/* Statistik Card */}
       <div className={`grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6`}>

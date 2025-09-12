@@ -6,6 +6,7 @@ import {
   AdminTable,
   DetailTransaksiModal,
   FilterCrud,
+  HeaderDashboard,
 } from '../../../components/fragments';
 import useAdminMonitoring from '../../../hooks/useAdminMonitoring';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
@@ -149,12 +150,10 @@ const AdminTransaksiView = () => {
   return (
     <div className='max-w-7xl mx-auto space-y-6'>
       {/* Header */}
-      <div>
-        <h1 className='text-2xl font-bold'>Monitoring Penjemputan</h1>
-        <p className='text-sm text-gray-600 mt-1'>
-          Pantau semua transaksi penjemputan sampah elektronik secara real-time
-        </p>
-      </div>
+      <HeaderDashboard
+        title='Monitoring Penjemputan'
+        subtitle='Pantau semua transaksi penjemputan sampah elektronik secara real-time'
+      />
 
       {/* Filter dan Search */}
       <FilterCrud

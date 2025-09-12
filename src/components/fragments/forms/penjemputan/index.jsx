@@ -1,17 +1,19 @@
 // src/components/fragments/forms/penjemputan/index.jsx
-import { forwardRef, useImperativeHandle } from 'react';
+import { forwardRef, useImperativeHandle, useState } from 'react';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import usePenjemputan from '../../../../hooks/usePenjemputan';
+import * as penjemputanService from '../../../../services/penjemputanService';
 import { Button, Card, Label, Select, Textarea } from '../../../elements';
+import HeaderDashboard from '../../dashboard/HeaderDashboard';
 import DaftarSampah from './DaftarSampah';
 import ModalTambahSampah from './ModalTambahSampah';
 
 const FormPenjemputan = forwardRef(
-  (
-    { formData, onInputChange, isSubmitting, showAlert, onSubmit, onReset },
-    ref
-  ) => {
+  ({ formData, onInputChange, showAlert, onReset }, ref) => {
     const { isDarkMode } = useDarkMode();
+
+    // State loading internal
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     //    State & actions dari custom hook
     const {
@@ -31,6 +33,8 @@ const FormPenjemputan = forwardRef(
       fileInputRef,
       handleFileChange,
       setDaftarSampah,
+      // util untuk build FormData
+      buildFormData,
     } = usePenjemputan({ showAlert });
 
     /**   Reset form */
@@ -42,8 +46,8 @@ const FormPenjemputan = forwardRef(
       onReset?.();
     };
 
-    /**   Submit form */
-    const handleSubmit = (e) => {
+    // Handle submit form
+    const handleSubmit = async (e) => {
       e.preventDefault();
 
       if (daftarSampah.length === 0) {
@@ -59,10 +63,34 @@ const FormPenjemputan = forwardRef(
         return;
       }
 
-      onSubmit(daftarSampah);
-    };
+      setIsSubmitting(true);
+      try {
+        // bentuk FormData dari hook
+        const fd = buildFormData(formData);
 
-    //    Expose methods ke parent melalui ref
+        // panggil service dengan FormData
+        await penjemputanService.buatPenjemputan(fd);
+
+        showAlert?.(
+          'Berhasil',
+          'Permintaan penjemputan berhasil dibuat',
+          'success'
+        );
+        handleReset();
+      } catch (err) {
+        console.error('Error submit:', err);
+        showAlert?.(
+          'Error',
+          err.response?.data?.message ||
+            err.message ||
+            'Gagal membuat permintaan penjemputan',
+          'error'
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+    // Expose methods ke parent melalui ref
     useImperativeHandle(ref, () => ({
       resetForm: () => {
         setDaftarSampah([]);
@@ -70,7 +98,7 @@ const FormPenjemputan = forwardRef(
     }));
 
     return (
-      <form onSubmit={handleSubmit} className='max-w-7xl mx-auto'>
+      <form onSubmit={handleSubmit} className='max-w-7xl mx-auto space-y-3'>
         {/* Hidden Input untuk Upload Foto */}
         <input
           ref={fileInputRef}
@@ -81,18 +109,10 @@ const FormPenjemputan = forwardRef(
         />
 
         {/* Header */}
-        <div className='mb-3'>
-          <h2
-            className={`text-2xl font-bold mb-2 ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`}
-          >
-            Mengajukan Permintaan Penjemputan
-          </h2>
-          <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
-            Form permintaan untuk penjemputan sampah elektronik
-          </p>
-        </div>
+        <HeaderDashboard
+          title='Mengajukan Permintaan'
+          subtitle='Form permintaan untuk penjemputan sampah elektronik'
+        />
 
         <Card>
           <Card.Body className='p-8'>

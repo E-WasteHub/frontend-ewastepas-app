@@ -6,6 +6,7 @@ import {
   ConfirmModal,
   EdukasiCrudModal,
   FilterCrud,
+  HeaderDashboard,
 } from '../../../components/fragments';
 import useAdminCrud from '../../../hooks/useAdminCrud';
 import usePagination from '../../../hooks/usePagination';
@@ -150,13 +151,10 @@ const AdminKelolaEdukasiView = () => {
 
   return (
     <div className='max-w-7xl mx-auto p-6 space-y-6'>
-      <div className='space-y-2'>
-        <h1 className='text-2xl font-bold'>Kelola Edukasi</h1>
-        <p className='text-gray-600'>
-          Kelola konten edukasi tentang pengelolaan sampah elektronik yang ramah
-          lingkungan
-        </p>
-      </div>
+      <HeaderDashboard
+        title='Kelola Edukasi'
+        subtitle='Kelola konten edukasi tentang pengelolaan sampah elektronik yang ramah lingkungan'
+      />
 
       {isLoading ? (
         <Loading mode='inline' text='Memuat data...' />

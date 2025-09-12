@@ -1,6 +1,6 @@
 // src/components/fragments/forms/auth/FormPemulihanAkun.jsx
 import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import usePemulihanAkun from '../../../../hooks/auth/usePemulihanAkun';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import useToast from '../../../../hooks/useToast';
@@ -10,7 +10,6 @@ import FormHeader from '../FormHeader';
 const FormPemulihanAkun = () => {
   const { isDarkMode } = useDarkMode();
   const { success, error } = useToast();
-  const navigate = useNavigate();
 
   const {
     email,
@@ -30,25 +29,21 @@ const FormPemulihanAkun = () => {
     setPesanSukses('');
   }, [setErrorGlobal, setPesanSukses]);
 
-  // tampilkan error / success pakai toast
+  // tampilkan error global pakai toast
   useEffect(() => {
     if (errorGlobal) error(errorGlobal);
   }, [errorGlobal, error]);
 
-  useEffect(() => {
-    if (errorInput) error(errorInput);
-  }, [errorInput, error]);
-
+  // tampilkan sukses pakai toast + redirect
   useEffect(() => {
     if (pesanSukses) {
       success(pesanSukses);
       const timer = setTimeout(() => {
         setPesanSukses('');
-        navigate('/reset-kata-sandi');
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [pesanSukses, success, navigate, setPesanSukses]);
+  }, [pesanSukses, success, setPesanSukses]);
 
   return (
     <div className='w-full max-w-md mx-auto'>
@@ -59,7 +54,6 @@ const FormPemulihanAkun = () => {
             : 'bg-white border-gray-200'
         } rounded-2xl border shadow-lg p-8`}
       >
-        {/* Header */}
         <FormHeader
           title='Ewastepas'
           subtitle='Lupa Kata Sandi'
@@ -67,7 +61,6 @@ const FormPemulihanAkun = () => {
           className='mb-6'
         />
 
-        {/* Info */}
         <p
           className={`text-center text-sm mb-4 ${
             isDarkMode ? 'text-slate-400' : 'text-gray-600'
@@ -76,7 +69,6 @@ const FormPemulihanAkun = () => {
           Masukkan email Anda untuk menerima link reset kata sandi
         </p>
 
-        {/* Form */}
         <form onSubmit={kirimLinkReset} className='space-y-4'>
           <InputForm
             label='Email'
@@ -101,7 +93,6 @@ const FormPemulihanAkun = () => {
           </Button>
         </form>
 
-        {/* Footer */}
         <div
           className={`text-center text-sm mt-6 pt-4 border-t ${
             isDarkMode ? 'border-slate-700' : 'border-gray-200'

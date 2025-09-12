@@ -161,15 +161,13 @@ const EdukasiView = () => {
                             : 'bg-white border-slate-200'
                         }`}
                       >
-                        {topic.gambar && (
-                          <div className='w-full h-48'>
-                            <img
-                              src={topic.gambar}
-                              alt={topic.judul_konten}
-                              className='w-full h-full object-cover'
-                            />
-                          </div>
-                        )}
+                        <div className='w-full h-48'>
+                          <img
+                            src={topic.gambar_url}
+                            alt={topic.judul_konten}
+                            className='w-full h-full object-cover'
+                          />
+                        </div>
                         <div className='flex flex-col text-center flex-1 p-6'>
                           <h3
                             className={`text-lg font-semibold mb-3 ${

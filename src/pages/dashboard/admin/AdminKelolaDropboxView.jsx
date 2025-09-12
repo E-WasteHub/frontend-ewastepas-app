@@ -6,6 +6,7 @@ import {
   ConfirmModal,
   DropboxCrudModal,
   FilterCrud,
+  HeaderDashboard,
 } from '../../../components/fragments';
 import useAdminCrud from '../../../hooks/useAdminCrud';
 import usePagination from '../../../hooks/usePagination';
@@ -150,13 +151,10 @@ const AdminKelolaDropboxView = () => {
 
   return (
     <div className='max-w-7xl mx-auto p-6 space-y-6'>
-      <div className='space-y-2'>
-        <h1 className='text-2xl font-bold'>Kelola Dropbox</h1>
-        <p className='text-gray-600'>
-          Kelola lokasi dropbox untuk pengumpulan sampah elektronik di berbagai
-          daerah
-        </p>
-      </div>
+      <HeaderDashboard
+        title='Kelola Dropbox'
+        subtitle='Kelola lokasi dropbox untuk pengumpulan sampah elektronik di berbagai daerah'
+      />
 
       {isLoading ? (
         <Loading mode='inline' text='Memuat data...' />

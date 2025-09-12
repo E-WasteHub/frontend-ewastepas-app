@@ -4,6 +4,7 @@ import {
   AdminTable,
   ConfirmModal,
   FilterCrud,
+  HeaderDashboard,
   KategoriCrudModal,
 } from '../../../components/fragments';
 import useAdminCrud from '../../../hooks/useAdminCrud';
@@ -136,12 +137,10 @@ const AdminKelolaKategoriView = () => {
 
   return (
     <div className='max-w-7xl mx-auto p-6 space-y-6'>
-      <div className='space-y-2'>
-        <h1 className='text-2xl font-bold'>Kelola Kategori</h1>
-        <p className='text-gray-600'>
-          Kelola kategori sampah elektronik dan poin reward yang diberikan
-        </p>
-      </div>
+      <HeaderDashboard
+        title='Kelola Kategori'
+        subtitle='Kelola kategori sampah elektronik dan poin reward yang diberikan'
+      />
 
       {isLoading ? (
         <Loading mode='inline' text='Memuat data...' />

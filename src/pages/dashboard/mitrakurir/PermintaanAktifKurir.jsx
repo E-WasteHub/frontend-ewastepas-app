@@ -1,9 +1,10 @@
 // src/views/kurir/PermintaanAktifKurir.jsx
 import { FileText, Truck } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Alert, Button, Card, Loading } from '../../../components/elements';
+import { Button, Card, Loading } from '../../../components/elements';
 import {
   ConfirmModal,
+  HeaderDashboard,
   ItemSampahCard,
   PilihDropboxModal,
   Timeline,
@@ -18,7 +19,7 @@ import { daftarLangkahStatus } from '../../../utils/penjemputanUtils';
 const PermintaanAktifKurir = () => {
   useDocumentTitle('Permintaan Aktif Kurir');
   const { isDarkMode } = useDarkMode();
-  const { showAlert } = useToast();
+  const { showAlert, error: showError } = useToast();
 
   const {
     permintaanAktif,
@@ -42,6 +43,19 @@ const PermintaanAktifKurir = () => {
       fetchDetail(permintaanAktif.id_penjemputan);
     }
   }, [permintaanAktif, fetchDetail]);
+
+  // Show error toasts when errors occur
+  useEffect(() => {
+    if (error) {
+      showError(error);
+    }
+  }, [error, showError]);
+
+  useEffect(() => {
+    if (errorDetail) {
+      showError(errorDetail);
+    }
+  }, [errorDetail, showError]);
 
   if (isLoading) {
     return <Loading mode='overlay' text='Memuat data...' />;
@@ -70,20 +84,10 @@ const PermintaanAktifKurir = () => {
       }`}
     >
       {/* Header */}
-      <header className='mb-2'>
-        <h1 className='text-2xl font-bold'>Permintaan Aktif Penjemputan</h1>
-        <p
-          className={`text-sm ${
-            isDarkMode ? 'text-gray-300' : 'text-gray-500'
-          }`}
-        >
-          Detail permintaan penjemputan yang sedang berjalan.
-        </p>
-      </header>
-
-      {/* Error Messages */}
-      {error && <Alert type='error' message={error} />}
-      {errorDetail && <Alert type='error' message={errorDetail} />}
+      <HeaderDashboard
+        title='Permintaan Aktif Penjemputan'
+        subtitle='Detail permintaan penjemputan yang sedang berjalan.'
+      />
 
       <Card
         className={`p-6 shadow-md rounded-xl ${

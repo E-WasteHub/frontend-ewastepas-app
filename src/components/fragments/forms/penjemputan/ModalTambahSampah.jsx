@@ -1,6 +1,7 @@
 // src/components/fragments/forms/penjemputan/ModalTambahSampah.jsx
 import useDarkMode from '../../../../hooks/useDarkMode';
 import { Button, Input, Label, Textarea } from '../../../elements';
+import FileUploadSingle from '../../uploads/FileUploadSingle';
 
 const ModalTambahSampah = ({
   isOpen,
@@ -46,19 +47,16 @@ const ModalTambahSampah = ({
           </div>
 
           <div>
-            <Label>Foto (opsional)</Label>
-            <Input
-              type='file'
+            <FileUploadSingle
+              label='Foto (opsional)'
+              file={tempSampah.gambar}
               accept='image/*'
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  setTempSampah((p) => ({
-                    ...p,
-                    gambar: file,
-                    previewUrl: URL.createObjectURL(file),
-                  }));
-                }
+              onFileChange={(file) => {
+                setTempSampah((p) => ({
+                  ...p,
+                  gambar: file,
+                  previewUrl: file ? URL.createObjectURL(file) : null,
+                }));
               }}
             />
           </div>

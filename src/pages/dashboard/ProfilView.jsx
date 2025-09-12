@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Alert } from '../../components/elements';
+import { useEffect, useState } from 'react';
 import {
   FormProfilData,
   FormUbahKataSandi,
@@ -33,6 +32,13 @@ const ProfilView = () => {
 
   // ===== STATE UI =====
   const [activeTab, setActiveTab] = useState('profil');
+
+  // ===== HANDLE ERROR WITH TOAST =====
+  useEffect(() => {
+    if (error) {
+      showErrorToast(error);
+    }
+  }, [error, showErrorToast]);
 
   // ===== HANDLER: SIMPAN PROFIL =====
   const handleSaveProfil = async () => {
@@ -133,8 +139,6 @@ const ProfilView = () => {
               : 'bg-white text-gray-900'
           }`}
         >
-          {error && <Alert type='error' message={error} />}
-
           {activeTab === 'profil' && (
             <FormProfilData
               {...form}

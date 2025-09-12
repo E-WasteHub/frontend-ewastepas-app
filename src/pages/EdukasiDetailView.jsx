@@ -132,15 +132,13 @@ const EdukasiDetailView = () => {
           </Link>
 
           {/* Thumbnail */}
-          {artikel.gambar && (
-            <div className='mb-6'>
-              <img
-                src={artikel.gambar}
-                alt={artikel.judul_konten}
-                className='w-full h-64 object-cover rounded-lg'
-              />
-            </div>
-          )}
+          <div className='mb-6'>
+            <img
+              src={artikel.gambar_url}
+              alt={artikel.judul_konten}
+              className='w-full h-64 object-cover rounded-lg'
+            />
+          </div>
 
           {/* Judul (pakai Tailwind responsive) */}
           <h1

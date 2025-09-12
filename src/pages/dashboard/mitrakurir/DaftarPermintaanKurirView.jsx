@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, Loading, Pagination } from '../../../components/elements';
 import {
   ConfirmModal,
+  HeaderDashboard,
   PenjemputanKurirCard,
 } from '../../../components/fragments';
 import useDarkMode from '../../../hooks/useDarkMode';
@@ -73,23 +74,14 @@ const DaftarPermintaanKurirView = () => {
     <div className='max-w-6xl mx-auto'>
       {/* Header */}
       <div className='flex justify-between items-center mb-4'>
-        <div>
-          <h2
-            className={`text-2xl font-bold ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`}
-          >
-            Daftar Permintaan Penjemputan
-          </h2>
-          <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
-            Lihat semua permintaan penjemputan yang tersedia
-            {totalItems > 0 && (
-              <span className='ml-2'>
-                ({totalItems} total, halaman {currentPage} dari {totalPages})
-              </span>
-            )}
-          </p>
-        </div>
+        <HeaderDashboard
+          title='Daftar Permintaan Penjemputan'
+          subtitle={`Lihat semua permintaan penjemputan yang tersedia${
+            totalItems > 0
+              ? ` (${totalItems} total, halaman ${currentPage} dari ${totalPages})`
+              : ''
+          }`}
+        />
       </div>
 
       <Card className='p-6 space-y-6'>

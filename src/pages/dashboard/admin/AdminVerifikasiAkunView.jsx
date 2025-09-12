@@ -4,6 +4,7 @@ import {
   AdminTable,
   ConfirmModal,
   FilterCrud,
+  HeaderDashboard,
 } from '../../../components/fragments';
 import useAdminVerifikasi from '../../../hooks/useAdminVerifikasi';
 import useDarkMode from '../../../hooks/useDarkMode';
@@ -143,18 +144,12 @@ const AdminVerifikasiAkunView = () => {
   ];
 
   return (
-    <div className='max-w-7xl mx-auto p-6 space-y-6'>
+    <div className='max-w-7xl mx-auto p-6 space-y-3'>
       {/* Header */}
-      <header className='mb-4'>
-        <h1 className='text-2xl mb-1 font-bold'>Verifikasi Akun Pengguna</h1>
-        <p
-          className={`${
-            isDarkMode ? 'text-gray-300' : 'text-gray-500'
-          } text-sm md:text-base`}
-        >
-          Daftar lengkap untuk proses verifikasi akun pengguna.
-        </p>
-      </header>
+      <HeaderDashboard
+        title='Verifikasi Akun Pengguna'
+        subtitle='Daftar lengkap untuk proses verifikasi akun pengguna.'
+      />
 
       {isLoading ? (
         <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
