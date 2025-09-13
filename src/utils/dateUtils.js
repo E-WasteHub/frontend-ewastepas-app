@@ -25,6 +25,7 @@ export const formatTanggalWaktuIndonesia = (tanggal) => {
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
+    timeZone: 'Asia/Jakarta',
   });
 };
 
@@ -49,6 +50,7 @@ export const formatWaktuIndonesia = (tanggal) => {
   return waktuTanggal.toLocaleTimeString('id-ID', {
     hour: '2-digit',
     minute: '2-digit',
+    timeZone: 'Asia/Jakarta',
   });
 };
 

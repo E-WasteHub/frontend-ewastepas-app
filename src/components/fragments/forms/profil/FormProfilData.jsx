@@ -1,4 +1,5 @@
-// src/components/fragments/forms/auth/FormProfilData.jsx
+// src/components/fragments/forms/profil/FormProfilData.jsx
+import { useRef } from 'react';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import { Button, InputForm, Label, Loading, Textarea } from '../../../elements';
 import { AvatarUpload } from '../../../fragments';
@@ -16,6 +17,25 @@ const FormProfilData = ({
   errors = {},
 }) => {
   const { isDarkMode } = useDarkMode();
+  const lastClickRef = useRef(0);
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Debounce button clicks
+    const now = Date.now();
+    if (now - lastClickRef.current < 2000) {
+      console.log('⚠️ Button clicked too quickly, ignoring...');
+      return;
+    }
+
+    if (!isLoading) {
+      lastClickRef.current = now;
+      console.log('��� Button clicked, triggering save...');
+      onSave();
+    }
+  };
 
   return (
     <div className='space-y-6'>
@@ -32,7 +52,12 @@ const FormProfilData = ({
       </div>
 
       {/*    Foto Profil */}
-      <AvatarUpload file={gambar_pengguna} onFileChange={onPhotoChange} />
+      <AvatarUpload
+        currentImage={gambar_pengguna}
+        onImageChange={onPhotoChange}
+        isLoading={isLoading}
+        disabled={isLoading}
+      />
 
       {/*    Nama Lengkap */}
       <InputForm
@@ -54,7 +79,7 @@ const FormProfilData = ({
         placeholder='Masukkan email'
         value={email}
         onChange={(e) => onChange('email', e.target.value)}
-        disabled={isLoading}
+        disabled
         required
         error={errors.email}
       />
@@ -66,9 +91,12 @@ const FormProfilData = ({
         name='no_telepon'
         placeholder='Masukkan nomor telepon'
         value={no_telepon}
-        onChange={(e) => onChange('no_telepon', e.target.value)}
+        onChange={(e) => {
+          // Filter hanya angka + batasi panjang
+          const value = e.target.value.replace(/[^0-9+]/g, '').slice(0, 15);
+          onChange('no_telepon', value);
+        }}
         disabled={isLoading}
-        required
         error={errors.no_telepon}
       />
 
@@ -86,8 +114,9 @@ const FormProfilData = ({
 
       {/*    Tombol Simpan */}
       <Button
-        onClick={onSave}
+        onClick={handleSave}
         disabled={isLoading}
+        type='button'
         className='w-full flex items-center justify-center gap-2'
       >
         {isLoading ? (

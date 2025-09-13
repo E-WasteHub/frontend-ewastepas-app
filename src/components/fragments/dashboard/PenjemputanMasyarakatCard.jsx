@@ -70,7 +70,7 @@ const PenjemputanMasyarakatCard = ({ req = {}, onDetail }) => {
               isDarkMode ? 'text-gray-400 text-xs' : 'text-gray-500 text-xs'
             }
           >
-            {formatTanggalWaktuIndonesia(req.waktu_ditambah)}
+            {formatTanggalWaktuIndonesia(req.waktu_diubah)}
           </p>
 
           <p

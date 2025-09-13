@@ -98,7 +98,7 @@ const EdukasiSection = () => {
                   className='block h-full'
                 >
                   <div
-                    className={`border w-full rounded-xl overflow-hidden hover:border-green-500 hover:shadow-lg transition-all duration-300 h-full ${
+                    className={`border w-full rounded-xl overflow-hidden shadow-md hover:border-green-500 hover:shadow-xl transition-all duration-300 h-full ${
                       isDarkMode
                         ? 'bg-slate-800 border-slate-700'
                         : 'bg-white border-slate-200'

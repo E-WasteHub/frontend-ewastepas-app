@@ -1,13 +1,13 @@
 // src/components/fragments/forms/penjemputan/ModalTambahSampah.jsx
 import useDarkMode from '../../../../hooks/useDarkMode';
 import { Button, Input, Label, Textarea } from '../../../elements';
-import FileUploadSingle from '../../uploads/FileUploadSingle';
+import SampahUpload from '../../uploads/SampahUpload';
 
 const ModalTambahSampah = ({
   isOpen,
   onClose,
-  tempSampah,
-  setTempSampah,
+  draftSampah,
+  setDraftSampah,
   onSave,
 }) => {
   const { isDarkMode } = useDarkMode();
@@ -23,45 +23,75 @@ const ModalTambahSampah = ({
         <h3 className='text-lg font-bold mb-4'>Detail Sampah</h3>
 
         <div className='space-y-3'>
+          {/* Jumlah */}
           <div>
             <Label required>Jumlah</Label>
             <Input
               type='number'
               min='1'
-              value={tempSampah.jumlah_sampah}
+              value={draftSampah.jumlah_sampah}
               onChange={(e) =>
-                setTempSampah((p) => ({ ...p, jumlah_sampah: e.target.value }))
+                setDraftSampah((p) => ({ ...p, jumlah_sampah: e.target.value }))
               }
             />
           </div>
 
+          {/* Catatan */}
           <div>
             <Label>Catatan Kondisi</Label>
             <Textarea
               rows={2}
-              value={tempSampah.catatan_sampah}
+              value={draftSampah.catatan_sampah}
               onChange={(e) =>
-                setTempSampah((p) => ({ ...p, catatan_sampah: e.target.value }))
+                setDraftSampah((p) => ({
+                  ...p,
+                  catatan_sampah: e.target.value,
+                }))
               }
             />
           </div>
 
+          {/* Foto */}
           <div>
-            <FileUploadSingle
-              label='Foto (opsional)'
-              file={tempSampah.gambar}
-              accept='image/*'
-              onFileChange={(file) => {
-                setTempSampah((p) => ({
-                  ...p,
-                  gambar: file,
-                  previewUrl: file ? URL.createObjectURL(file) : null,
-                }));
+            <SampahUpload
+              gambarSampah={
+                draftSampah.file
+                  ? [
+                      {
+                        file: draftSampah.file,
+                        url: draftSampah.previewUrl,
+                        name: draftSampah.file?.name || 'Preview',
+                        size: draftSampah.file?.size,
+                        id: 'draft-image',
+                      },
+                    ]
+                  : []
+              }
+              onGambarChange={(images) => {
+                if (images.length === 0) {
+                  // User cleared all images
+                  setDraftSampah((p) => ({
+                    ...p,
+                    file: null,
+                    previewUrl: null,
+                  }));
+                } else {
+                  // User added/updated image
+                  const latestImage = images[images.length - 1];
+                  setDraftSampah((p) => ({
+                    ...p,
+                    file: latestImage?.file || null,
+                    previewUrl: latestImage?.url || null,
+                  }));
+                }
               }}
+              maxImages={1}
+              required={false}
             />
           </div>
         </div>
 
+        {/* Action */}
         <div className='flex justify-end gap-3 mt-6 flex-wrap sm:flex-nowrap'>
           <Button variant='secondary' onClick={onClose}>
             Batal

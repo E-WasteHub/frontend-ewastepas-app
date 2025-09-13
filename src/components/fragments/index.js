@@ -19,13 +19,15 @@ export { default as StatCard } from './dashboard/StatCard';
 // Reusable Components Form
 export { default as FormHeader } from './forms/FormHeader';
 
-// Reuseble uploads
+// Reusable Upload Components
 export { default as AvatarUpload } from './uploads/AvatarUpload';
-export { default as FileUploadMultiple } from './uploads/FileUploadMultiple';
-export { default as FileUploadSingle } from './uploads/FileUploadSingle';
+export { default as DokumenUpload } from './uploads/DokumenUpload';
+export { default as EdukasiUpload } from './uploads/EdukasiUpload';
+export { default as SampahUpload } from './uploads/SampahUpload';
 
 // Reusable Modals
 export { default as ConfirmModal } from './modals/ConfirmModal';
+export { default as DetailAkunModal } from './modals/DetailAkunModal';
 export { default as DetailTransaksiModal } from './modals/DetailTransaksiModal';
 export { default as PilihDropboxModal } from './modals/PilihDropboxModal';
 // Forms Auth
@@ -38,7 +40,7 @@ export { default as FormVerifikasiOTP } from './forms/auth/FormVerifikasiOTP';
 // Form Profil
 export { default as FormProfilData } from './forms/profil/FormProfilData';
 export { default as FormUbahKataSandi } from './forms/profil/FormUbahKataSandi';
-export { default as FormUploadDokumen } from './forms/profil/FormUploadDokumen';
+export { default as FormUnggahDokumen } from './forms/profil/FormUnggahDokumen';
 
 // Form Penjemputan
 export { default as FormPenjemputan } from './forms/penjemputan';

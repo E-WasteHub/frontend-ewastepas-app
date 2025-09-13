@@ -1,12 +1,4 @@
-/**
- * 🟣 HOOK KHUSUS PROFIL
- * Mengelola:
- * - Data profil
- * - Update profil
- * - Ubah password
- * - Upload dokumen (khusus mitra-kurir)
- */
-
+// src/hooks/useProfil.js
 import { useCallback, useEffect, useState } from 'react';
 import * as profilService from '../services/profilService';
 import { detectPeranFromPath } from '../utils/peranUtils';
@@ -18,41 +10,50 @@ const useProfil = () => {
     email: '',
     no_telepon: '',
     alamat_pengguna: '',
-    gambar_pengguna: null,
+    gambar_pengguna: '', // bisa File atau URL string
   });
+
   const [files, setFiles] = useState({ ktp: null, sim: null });
   const [peran, setPeran] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  // ===== FETCH PROFIL (ProfilView) =====
+  // ===== FETCH PROFIL =====
   const fetchProfil = useCallback(async () => {
     try {
       setIsLoading(true);
       setError('');
 
-      const res = await profilService.selectProfil();
-      // kalau ada res.data → ambil itu, kalau nggak → res
+      const res = await profilService.ambilProfil();
       const pengguna = res.data || res;
 
-      console.log('📦 Profil pengguna:', pengguna);
+      console.log('📦 Data profil:', pengguna);
 
       setForm({
         nama_lengkap: pengguna.nama_lengkap || '',
         email: pengguna.email || '',
         no_telepon: pengguna.no_telepon || '',
         alamat_pengguna: pengguna.alamat_pengguna || '',
-        gambar_pengguna: pengguna.gambar_pengguna || null,
+        gambar_pengguna: pengguna.url_gambar_pengguna,
+        status_pengguna: pengguna.status_pengguna || 'Belum Aktif',
       });
 
       setPeran(pengguna.peran || detectPeranFromPath(window.location.pathname));
 
-      localStorage.setItem('pengguna', JSON.stringify(pengguna));
+      // Simpan di localStorage untuk konsistensi
+      localStorage.setItem(
+        'pengguna',
+        JSON.stringify({
+          ...pengguna,
+          url_gambar_pengguna: pengguna.url_gambar_pengguna,
+        })
+      );
       if (pengguna.peran) localStorage.setItem('peran', pengguna.peran);
     } catch (err) {
-      console.error('  Gagal ambil profil:', err);
       setError('Gagal memuat data profil');
+      console.error('❌ fetchProfil error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -64,69 +65,69 @@ const useProfil = () => {
 
   // ===== UPDATE PROFIL =====
   const updateProfil = async () => {
+    if (isUpdating || isLoading) {
+      return { success: false, error: 'Update sedang berlangsung' };
+    }
+
     try {
+      setIsUpdating(true);
       setIsLoading(true);
       setError('');
 
-      // Payload utama tanpa gambar
-      const payload = {
-        nama_lengkap: form.nama_lengkap,
-        email: form.email,
-        no_telepon: form.no_telepon,
-        alamat_pengguna: form.alamat_pengguna,
-      };
+      let payload;
+      if (form.gambar_pengguna instanceof File) {
+        const formData = new FormData();
+        formData.append('nama_lengkap', form.nama_lengkap);
+        formData.append('email', form.email);
+        formData.append('no_telepon', form.no_telepon);
+        formData.append('alamat_pengguna', form.alamat_pengguna);
+        formData.append('gambar_pengguna', form.gambar_pengguna);
+        payload = formData;
+      } else {
+        payload = {
+          nama_lengkap: form.nama_lengkap,
+          email: form.email,
+          no_telepon: form.no_telepon,
+          alamat_pengguna: form.alamat_pengguna,
+        };
 
-      // 🚧 Jika backend sudah support gambar, aktifkan ini:
-      /*
-    if (form.gambar_pengguna) {
-      // Kalau backend pakai form-data:
-      const formData = new FormData();
-      formData.append('nama_lengkap', form.nama_lengkap);
-      formData.append('email', form.email);
-      formData.append('no_telepon', form.no_telepon);
-      formData.append('alamat_pengguna', form.alamat_pengguna);
-      formData.append('gambar_pengguna', form.gambar_pengguna);
+        console.log('📤 JSON payload yang dikirim:', payload);
+      }
 
-      const res = await profilService.updateProfil(formData);
+      const res = await profilService.ubahProfil(payload);
       const data = res.data || res;
 
-      setForm({
-        nama_lengkap: data.nama_lengkap || '',
-        email: data.email || '',
-        no_telepon: data.no_telepon || '',
-        alamat_pengguna: data.alamat_pengguna || '',
-        gambar_pengguna: data.gambar_pengguna || null,
+      // 🔍 Debug respons backend
+      console.log('📦 Response update profil:', data);
+      console.log('🖼️ Backend return gambar:', {
+        gambar_pengguna: data.gambar_pengguna,
+        url_gambar_pengguna: data.url_gambar_pengguna,
       });
 
-      localStorage.setItem('pengguna', JSON.stringify(data));
-      if (data.peran) localStorage.setItem('peran', data.peran);
+      // Update state dengan data backend (pakai url_gambar_pengguna)
+      setForm((prev) => ({
+        ...prev,
+        ...data,
+        gambar_pengguna: data.url_gambar_pengguna || prev.gambar_pengguna,
+      }));
 
-      return { success: true };
-    }
-    */
-
-      // === Default sekarang (tanpa gambar) ===
-      const res = await profilService.updateProfil(payload);
-      const data = res.data || res;
-
-      setForm({
-        nama_lengkap: data.nama_lengkap || '',
-        email: data.email || '',
-        no_telepon: data.no_telepon || '',
-        alamat_pengguna: data.alamat_pengguna || '',
-        // gambar_pengguna: data.gambar_pengguna || null,
-      });
-
-      localStorage.setItem('pengguna', JSON.stringify(data));
-      if (data.peran) localStorage.setItem('peran', data.peran);
+      // Update localStorage juga
+      localStorage.setItem(
+        'pengguna',
+        JSON.stringify({
+          ...data,
+          url_gambar_pengguna: data.url_gambar_pengguna || form.gambar_pengguna,
+        })
+      );
 
       return { success: true };
     } catch (err) {
-      console.error('  Gagal update profil:', err);
+      console.error('❌ Gagal update profil:', err);
       setError('Gagal memperbarui profil');
       return { success: false, error: err.message };
     } finally {
       setIsLoading(false);
+      setIsUpdating(false);
     }
   };
 
@@ -135,11 +136,10 @@ const useProfil = () => {
     try {
       setIsLoading(true);
       setError('');
-
       await profilService.ubahKataSandi(payload);
       return { success: true };
     } catch (err) {
-      console.error('  Gagal ubah password:', err);
+      console.error('❌ Gagal ubah password:', err);
       setError('Gagal mengubah password');
       return { success: false, error: err.message };
     } finally {
@@ -148,22 +148,43 @@ const useProfil = () => {
   };
 
   // ===== UPLOAD DOKUMEN (khusus mitra-kurir) =====
-  const uploadDokumen = async () => {
+  const unggahDokumen = async () => {
     try {
       setIsLoading(true);
       setError('');
 
-      const payload = {
-        nama_dokumen_ktp: files.ktp ? files.ktp.name : null,
-        nama_dokumen_sim: files.sim ? files.sim.name : null,
-      };
+      const formData = new FormData();
+      if (files.ktp) formData.append('nama_dokumen_ktp', files.ktp);
+      if (files.sim) formData.append('nama_dokumen_sim', files.sim);
 
-      await profilService.uploadDokumen(payload);
+      const res = await profilService.unggahDokumen(formData);
+      const data = res.data || res;
 
-      setFiles({ ktp: null, sim: null });
-      return { success: true };
+      console.log('📦 Dokumen berhasil diunggah:', data);
+
+      if (data.status_pengguna) {
+        const currentPengguna = JSON.parse(
+          localStorage.getItem('pengguna') || '{}'
+        );
+        const updatedPengguna = {
+          ...currentPengguna,
+          status_pengguna: data.status_pengguna,
+        };
+        localStorage.setItem('pengguna', JSON.stringify(updatedPengguna));
+
+        // Notify komponen lain
+        window.dispatchEvent(
+          new CustomEvent('profileUpdated', {
+            detail: { type: 'documentUpload', data: updatedPengguna },
+          })
+        );
+      }
+
+      setFiles({ ktp: null, sim: null }); // reset file state
+
+      return { success: true, data };
     } catch (err) {
-      console.error('  Gagal upload dokumen:', err);
+      console.error('❌ Gagal upload dokumen:', err);
       setError('Gagal mengunggah dokumen');
       return { success: false, error: err.message };
     } finally {
@@ -183,7 +204,7 @@ const useProfil = () => {
     fetchProfil,
     updateProfil,
     ubahPassword,
-    uploadDokumen,
+    unggahDokumen,
   };
 };
 

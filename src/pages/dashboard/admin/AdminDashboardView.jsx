@@ -1,5 +1,5 @@
 import { Package, UserCheck, Users } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Loading } from '../../../components/elements';
 import {
   AdminTable,
@@ -13,6 +13,7 @@ import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import usePagination from '../../../hooks/usePagination';
 import usePengguna from '../../../hooks/usePengguna';
 import * as penjemputanService from '../../../services/penjemputanService';
+import { ambilSemuaDataBelumVerifikasi } from '../../../services/verifikasiService';
 import { formatTanggalIndonesia } from '../../../utils/dateUtils';
 
 const AdminDashboardView = () => {
@@ -24,6 +25,15 @@ const AdminDashboardView = () => {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('');
 
+  // State untuk statistik
+  const [statistik, setStatistik] = useState({
+    belumTerverifikasi: 0,
+    totalPenjemputan: 0,
+    penjemputanHariIni: 0,
+    penjemputanBulanIni: 0,
+    isLoadingStats: true,
+  });
+
   // pakai hook monitoring transaksi
   const {
     data: transaksi,
@@ -31,11 +41,53 @@ const AdminDashboardView = () => {
     error,
   } = useAdminMonitoring(penjemputanService);
 
-  // TODO: Implementasi statistik real dari API
+  // Ambil data statistik
+  useEffect(() => {
+    const fetchStatistik = async () => {
+      try {
+        const [verifikasiData, penjemputanData] = await Promise.all([
+          ambilSemuaDataBelumVerifikasi(),
+          penjemputanService.ambilDaftarPenjemputan(),
+        ]);
+
+        // Hitung statistik dari data yang didapat
+        const totalPenjemputan = penjemputanData?.data?.length || 0;
+        const belumTerverifikasi = verifikasiData?.data?.length || 0;
+
+        // Filter penjemputan hari ini
+        const today = new Date().toISOString().split('T')[0];
+        const penjemputanHariIni =
+          penjemputanData?.data?.filter((item) =>
+            item.waktu_ditambah?.startsWith(today)
+          ).length || 0;
+
+        // Filter penjemputan bulan ini
+        const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+        const penjemputanBulanIni =
+          penjemputanData?.data?.filter((item) =>
+            item.waktu_ditambah?.startsWith(currentMonth)
+          ).length || 0;
+
+        setStatistik({
+          belumTerverifikasi,
+          totalPenjemputan,
+          penjemputanHariIni,
+          penjemputanBulanIni,
+          isLoadingStats: false,
+        });
+      } catch (error) {
+        console.error('Error fetching statistik:', error);
+        setStatistik((prev) => ({ ...prev, isLoadingStats: false }));
+      }
+    };
+
+    fetchStatistik();
+  }, []);
+
   const statistikData = {
-    belumTerverifikasi: 0,
-    jumlahDatamaster: 0,
-    totalPengguna: 0, // FIXME: isi nanti dari API penggunaService
+    belumTerverifikasi: statistik.belumTerverifikasi,
+    jumlahPenjemputanHariIni: statistik.penjemputanHariIni,
+    jumlahPenjemputanBulanIni: statistik.penjemputanBulanIni,
     totalTransaksi: Array.isArray(transaksi) ? transaksi.length : 0,
   };
 
@@ -146,20 +198,32 @@ const AdminDashboardView = () => {
         {/* Statistik - Responsive Grid */}
         <div className='text-green-500 grid grid-cols-1 md:grid-cols-3 gap-6 mb-6'>
           <StatCard
-            label='Jumlah Yang Belum Terverifikasi'
-            value={statistikData.belumTerverifikasi}
+            label='Belum Terverifikasi'
+            value={
+              statistik.isLoadingStats
+                ? 'Loading...'
+                : statistikData.belumTerverifikasi
+            }
             icon={<UserCheck className='w-6 h-6' />}
             useCard={false}
           />
           <StatCard
-            label='Jumlah Datamaster'
-            value={statistikData.jumlahDatamaster}
+            label='Penjemputan Hari Ini'
+            value={
+              statistik.isLoadingStats
+                ? 'Loading...'
+                : statistikData.jumlahPenjemputanHariIni
+            }
             icon={<Package className='w-6 h-6' />}
             useCard={false}
           />
           <StatCard
-            label='Total Pengguna'
-            value={statistikData.totalPengguna}
+            label='Penjemputan Bulan Ini'
+            value={
+              statistik.isLoadingStats
+                ? 'Loading...'
+                : statistikData.jumlahPenjemputanBulanIni
+            }
             icon={<Users className='w-6 h-6' />}
             useCard={false}
           />

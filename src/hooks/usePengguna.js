@@ -5,7 +5,8 @@ const usePengguna = () => {
   const [peran, setPeranState] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
+  // Function untuk load data dari localStorage
+  const loadFromStorage = () => {
     try {
       const savedPengguna = localStorage.getItem('pengguna');
       const savedPeran = localStorage.getItem('peran');
@@ -29,10 +30,40 @@ const usePengguna = () => {
       console.error('Error parsing pengguna data:', error);
       setPenggunaState(null);
       setPeranState(null);
-    } finally {
-      // apapun hasilnya, loading harus selesai
-      setIsLoading(false);
     }
+  };
+
+  useEffect(() => {
+    // Load initial data
+    loadFromStorage();
+    setIsLoading(false);
+
+    // Listen untuk custom profile update events
+    const handleProfileUpdate = (event) => {
+      console.log('🔄 Profile update event detected:', event.detail.type);
+      // Debounce untuk prevent multiple calls
+      setTimeout(() => {
+        loadFromStorage();
+      }, 100);
+    };
+
+    // Listen untuk storage changes dari tab/window lain
+    const handleStorageChange = (event) => {
+      if (event.key === 'pengguna' || event.key === 'peran') {
+        console.log('🔄 Storage change detected:', event.key);
+        loadFromStorage();
+      }
+    };
+
+    // Add event listeners
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+    window.addEventListener('storage', handleStorageChange);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const setPengguna = (data) => {
@@ -45,14 +76,28 @@ const usePengguna = () => {
           localStorage.setItem('peran', data.peran);
           setPeranState(data.peran);
         }
+
+        // Dispatch custom event untuk notify komponen lain
+        window.dispatchEvent(
+          new CustomEvent('profileUpdated', {
+            detail: { type: 'profileUpdate', data },
+          })
+        );
       } else {
         localStorage.removeItem('pengguna');
         localStorage.removeItem('peran');
         setPenggunaState(null);
         setPeranState(null);
+
+        // Dispatch event untuk profile cleared
+        window.dispatchEvent(
+          new CustomEvent('profileUpdated', {
+            detail: { type: 'profileCleared' },
+          })
+        );
       }
     } catch (err) {
-      console.error('  Gagal update pengguna:', err);
+      console.error('❌ Gagal update pengguna:', err);
     }
   };
 

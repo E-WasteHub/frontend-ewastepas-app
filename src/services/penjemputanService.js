@@ -1,10 +1,6 @@
 // src/services/penjemputanService.js
 import api from './api';
 
-/* ===============================
-   📌 READ / GET
-================================= */
-
 // Ambil semua kategori & jenis sampah
 export const ambilJenisByKategori = async (id_kategori = null) => {
   try {
@@ -53,10 +49,6 @@ export const ambilRiwayatPenjemputan = async () => {
   }
 };
 
-/* ===============================
-   📌 CREATE
-================================= */
-
 // Buat permintaan penjemputan (masyarakat)
 export const buatPenjemputan = async (formData) => {
   try {
@@ -68,10 +60,6 @@ export const buatPenjemputan = async (formData) => {
     throw error.response?.data || { message: 'Gagal membuat permintaan' };
   }
 };
-
-/* ===============================
-   📌 UPDATE / ACTION
-================================= */
 
 // Update status penjemputan (dipakai kurir/masyarakat/admin)
 export const updatePenjemputan = async (id_penjemputan, payload) => {

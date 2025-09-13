@@ -60,9 +60,9 @@ const ProfileDropdown = () => {
             : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
         }`}
       >
-        {pengguna.avatar ? (
+        {pengguna.url_gambar_pengguna ? (
           <img
-            src={pengguna.avatar}
+            src={pengguna.url_gambar_pengguna}
             alt={pengguna.nama_lengkap}
             className='h-8 w-8 rounded-full object-cover'
           />

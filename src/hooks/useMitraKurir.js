@@ -124,10 +124,14 @@ const useMitraKurir = () => {
   const tandaiSelesai = async (id_penjemputan) => {
     try {
       setIsSubmitting(true);
-      await updatePenjemputan(id_penjemputan, {
+      // Update status ke selesai
+      const updateResponse = await updatePenjemputan(id_penjemputan, {
         status_penjemputan: 'Selesai',
         waktu_selesai: new Date().toISOString(),
       });
+
+      console.log('✅ Penjemputan marked as Selesai:', updateResponse);
+
       await fetchData();
       return { success: true };
     } catch (err) {

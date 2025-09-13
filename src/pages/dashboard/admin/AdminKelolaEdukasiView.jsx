@@ -46,9 +46,9 @@ const AdminKelolaEdukasiView = () => {
         item.isi_konten?.toLowerCase().includes(search.toLowerCase());
       let matchFilter = true;
       if (filter === 'with-image') {
-        matchFilter = !!item.gambar;
+        matchFilter = !!(item.gambar_url || item.gambar);
       } else if (filter === 'without-image') {
-        matchFilter = !item.gambar;
+        matchFilter = !(item.gambar_url || item.gambar);
       }
       return matchSearch && matchFilter;
     });
@@ -60,23 +60,35 @@ const AdminKelolaEdukasiView = () => {
 
   // Tambah / Ubah
   const handleCrudSubmit = async (formValues) => {
-    if (editTarget) {
-      const res = await ubah(editTarget.id_konten, formValues);
+    console.log('🔄 handleCrudSubmit called with:', {
+      isEdit: !!editTarget,
+      editTargetId: editTarget?.id_konten,
+      dataType: formValues instanceof FormData ? 'FormData' : 'Object',
+      formDataEntries:
+        formValues instanceof FormData
+          ? Array.from(formValues.entries())
+          : formValues,
+    });
+
+    try {
+      let res;
+      if (editTarget) {
+        res = await ubah(editTarget.id_konten, formValues);
+        console.log('✅ Edit response:', res);
+        showAlert('Berhasil', 'Konten edukasi berhasil diperbarui', 'success');
+      } else {
+        res = await tambah(formValues);
+        console.log('✅ Add response:', res);
+        showAlert('Berhasil', 'Konten edukasi berhasil ditambahkan', 'success');
+      }
+    } catch (error) {
+      console.error('❌ handleCrudSubmit error:', error);
       showAlert(
-        res.success ? 'Berhasil' : 'Gagal',
-        res.success
-          ? 'Konten edukasi berhasil diperbarui'
-          : res.error || 'Konten edukasi gagal diperbarui',
-        res.success ? 'success' : 'error'
-      );
-    } else {
-      const res = await tambah(formValues);
-      showAlert(
-        res.success ? 'Berhasil' : 'Gagal',
-        res.success
-          ? 'Konten edukasi berhasil ditambahkan'
-          : res.error || 'Konten edukasi gagal ditambahkan',
-        res.success ? 'success' : 'error'
+        'Gagal',
+        error.response?.data?.message ||
+          error.message ||
+          'Terjadi kesalahan saat menyimpan data',
+        'error'
       );
     }
 
@@ -87,14 +99,20 @@ const AdminKelolaEdukasiView = () => {
   // Hapus
   const handleDelete = async () => {
     if (!confirmTarget) return;
-    const res = await hapus(confirmTarget);
-    showAlert(
-      res.success ? 'Berhasil' : 'Gagal',
-      res.success
-        ? 'Konten edukasi berhasil dihapus'
-        : res.error || 'Konten edukasi gagal dihapus',
-      res.success ? 'success' : 'error'
-    );
+    try {
+      const res = await hapus(confirmTarget);
+      console.log('✅ Delete response:', res);
+      showAlert('Berhasil', 'Konten edukasi berhasil dihapus', 'success');
+    } catch (error) {
+      console.error('❌ Delete error:', error);
+      showAlert(
+        'Gagal',
+        error.response?.data?.message ||
+          error.message ||
+          'Konten edukasi gagal dihapus',
+        'error'
+      );
+    }
     setConfirmOpen(false);
   };
 
@@ -111,16 +129,22 @@ const AdminKelolaEdukasiView = () => {
     },
     {
       name: 'Gambar',
-      cell: (row) =>
-        row.gambar ? (
+      cell: (row) => {
+        const imageUrl = row.gambar_url || row.gambar;
+        return imageUrl ? (
           <img
-            src={row.gambar}
+            src={imageUrl}
             alt={row.judul_konten}
             className='h-12 w-12 object-cover rounded'
+            onError={(e) => {
+              console.warn('Image failed to load:', imageUrl);
+              e.target.style.display = 'none';
+            }}
           />
         ) : (
           '-'
-        ),
+        );
+      },
     },
     {
       name: 'Aksi',

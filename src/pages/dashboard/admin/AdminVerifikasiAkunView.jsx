@@ -1,13 +1,13 @@
 import { useMemo, useState } from 'react';
-import { Button, Modal, Pagination } from '../../../components/elements';
+import { Pagination } from '../../../components/elements';
 import {
   AdminTable,
   ConfirmModal,
+  DetailAkunModal,
   FilterCrud,
   HeaderDashboard,
 } from '../../../components/fragments';
 import useAdminVerifikasi from '../../../hooks/useAdminVerifikasi';
-import useDarkMode from '../../../hooks/useDarkMode';
 import useDocumentTitle from '../../../hooks/useDocumentTitle';
 import usePagination from '../../../hooks/usePagination';
 import useToast from '../../../hooks/useToast';
@@ -15,7 +15,6 @@ import { formatTanggalWaktuIndonesia } from '../../../utils/dateUtils';
 
 const AdminVerifikasiAkunView = () => {
   useDocumentTitle('Verifikasi Akun');
-  const { isDarkMode } = useDarkMode();
   const { data, isLoading, error, updateStatus, fetchDetail, isSubmitting } =
     useAdminVerifikasi();
 
@@ -37,8 +36,15 @@ const AdminVerifikasiAkunView = () => {
 
   //    Show detail dokumen
   const handleShowDetail = async (id_pengguna) => {
+    console.log('🔍 Fetching detail for user:', id_pengguna);
     const res = await fetchDetail(id_pengguna);
-    if (res) setSelectedUser(res);
+    console.log('🔍 Detail result:', res);
+    if (res) {
+      console.log('🔍 Setting selectedUser:', res);
+      console.log('🔍 KTP URL:', res.url_dokumen_ktp);
+      console.log('🔍 SIM URL:', res.url_dokumen_sim);
+      setSelectedUser(res);
+    }
   };
   const handleCloseDetail = () => setSelectedUser(null);
 
@@ -128,7 +134,9 @@ const AdminVerifikasiAkunView = () => {
                 Verifikasi
               </button>
               <button
-                onClick={() => handleConfirmAction(row.id_pengguna, 'Ditolak')}
+                onClick={() =>
+                  handleConfirmAction(row.id_pengguna, 'Belum Selesai')
+                }
                 disabled={isSubmitting}
                 className='px-3 py-1 text-xs font-medium rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-50'
               >
@@ -152,9 +160,7 @@ const AdminVerifikasiAkunView = () => {
       />
 
       {isLoading ? (
-        <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-          Memuat data...
-        </p>
+        <p className='text-gray-500'>Memuat data...</p>
       ) : error ? (
         <p className='text-red-500'>Terjadi kesalahan: {error}</p>
       ) : (
@@ -180,26 +186,11 @@ const AdminVerifikasiAkunView = () => {
       )}
 
       {/* Detail Modal */}
-      <Modal
+      <DetailAkunModal
         isOpen={!!selectedUser}
         onClose={handleCloseDetail}
-        title='Detail Dokumen'
-      >
-        {selectedUser?.dokumen_url ? (
-          <img
-            src={selectedUser.dokumen_url}
-            alt='Dokumen'
-            className='w-full rounded border'
-          />
-        ) : (
-          <p className='text-gray-500'>Tidak ada dokumen yang tersedia</p>
-        )}
-        <div className='flex justify-end mt-4'>
-          <Button onClick={handleCloseDetail} variant='secondary'>
-            Tutup
-          </Button>
-        </div>
-      </Modal>
+        selectedUser={selectedUser}
+      />
 
       {/* Confirm Modal */}
       <ConfirmModal

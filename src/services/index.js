@@ -18,3 +18,6 @@ export * from './konversiPoinService';
 
 // Edukasi
 export * from './edukasiService';
+
+// Verifikasi
+export * from './verifikasiService';

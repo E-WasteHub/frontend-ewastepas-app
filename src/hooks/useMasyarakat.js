@@ -73,12 +73,16 @@ const useMasyarakat = () => {
 
   // ===== DASHBOARD STATS =====
   const pengguna = JSON.parse(localStorage.getItem('pengguna')) || {};
+
+  // Gunakan poinRealtime jika ada, fallback ke localStorage
+  const totalPoin = parseInt(pengguna.poin_pengguna, 10) || 0;
+
   const stats = {
     totalPenjemputan: data.length,
     sedangBerlangsung: data.filter((d) =>
       ['Diproses', 'Diterima', 'Dijemput'].includes(d.status_penjemputan)
     ).length,
-    totalPoin: parseInt(pengguna.poin_pengguna, 10) || 0,
+    totalPoin,
   };
 
   // ===== FILTERS =====

@@ -11,89 +11,113 @@ import ModalTambahSampah from './ModalTambahSampah';
 const FormPenjemputan = forwardRef(
   ({ formData, onInputChange, showAlert, onReset }, ref) => {
     const { isDarkMode } = useDarkMode();
-
-    // State loading internal
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    //    State & actions dari custom hook
+    // hooks penjemputan
     const {
-      kategoriData,
-      jenisData,
-      waktuOperasional,
+      kategoriList,
+      jenisList,
+      waktuOperasionalList,
       daftarSampah,
-      tempSampah,
+      draftSampah,
       isModalOpen,
       totalJumlah,
       estimasiPoin,
-      setTempSampah,
+      setDraftSampah,
       setIsModalOpen,
-      handleTambahSampah,
-      handleHapusSampah,
-      handleUploadFoto,
-      fileInputRef,
+      addSampah,
+      removeSampah,
+      triggerUploadFoto,
       handleFileChange,
-      setDaftarSampah,
-      // util untuk build FormData
+      resetSampah,
+      fileInputRef,
       buildFormData,
     } = usePenjemputan({ showAlert });
 
-    /**   Reset form */
+    /* --------------------------- HANDLER: Reset Form -------------------------- */
     const handleReset = () => {
       onInputChange('id_waktu_operasional', '');
       onInputChange('alamat_penjemputan', '');
       onInputChange('catatan', '');
-      setDaftarSampah([]);
+      resetSampah();
       onReset?.();
     };
 
-    // Handle submit form
+    /* -------------------------- HANDLER: Submit Form -------------------------- */
     const handleSubmit = async (e) => {
       e.preventDefault();
 
-      if (daftarSampah.length === 0) {
-        showAlert?.(
-          'Validasi Gagal',
-          'Tambah minimal 1 sampah dulu.',
-          'warning'
-        );
-        return;
-      }
-      if (!formData.id_waktu_operasional || !formData.alamat_penjemputan) {
-        showAlert?.('Validasi Gagal', 'Lengkapi data wajib.', 'warning');
-        return;
-      }
+      if (isSubmitting) return;
 
-      setIsSubmitting(true);
       try {
-        // bentuk FormData dari hook
+        setIsSubmitting(true);
+
+        // Validasi form
+        if (!formData.id_waktu_operasional || !formData.alamat_penjemputan) {
+          showAlert('Peringatan', 'Lengkapi data penjemputan', 'warning');
+          return;
+        }
+        if (daftarSampah.length === 0) {
+          showAlert('Peringatan', 'Tambahkan minimal 1 sampah', 'warning');
+          return;
+        }
+
+        // Kirim data ke API
         const fd = buildFormData(formData);
+        const res = await penjemputanService.buatPenjemputan(fd);
 
-        // panggil service dengan FormData
-        await penjemputanService.buatPenjemputan(fd);
+        // Handle response sesuai struktur API baru
+        if (res?.data?.penjemputan) {
+          const { penjemputan, sampah } = res.data;
 
-        showAlert?.(
-          'Berhasil',
-          'Permintaan penjemputan berhasil dibuat',
-          'success'
-        );
-        handleReset();
+          // Success message dengan informasi lengkap
+          showAlert(
+            'Berhasil',
+            res.message || 'Permintaan penjemputan berhasil dibuat',
+            'success'
+          );
+
+          // Tampilkan informasi kode penjemputan
+          if (penjemputan.kode_penjemputan) {
+            setTimeout(() => {
+              showAlert(
+                'Kode Penjemputan',
+                `Kode: ${penjemputan.kode_penjemputan}\nStatus: ${penjemputan.status_penjemputan}\nEstimasi Poin: ${penjemputan.poin_penjemputan}`,
+                'info'
+              );
+            }, 1000);
+          }
+
+          console.log('✅ Penjemputan berhasil dibuat:', {
+            penjemputan,
+            sampah: sampah || [],
+            totalSampah: sampah?.length || 0,
+          });
+
+          // Reset form setelah berhasil
+          handleReset();
+        } else {
+          throw new Error('Format response tidak sesuai');
+        }
       } catch (err) {
-        console.error('Error submit:', err);
-        showAlert?.(
-          'Error',
-          err.response?.data?.message ||
-            err.message ||
-            'Gagal membuat permintaan penjemputan',
-          'error'
-        );
+        console.error('❌ Submit error:', err);
+        const errorMessage =
+          err?.response?.data?.message ||
+          err.message ||
+          'Gagal membuat permintaan penjemputan';
+        showAlert('Error', errorMessage, 'error');
       } finally {
         setIsSubmitting(false);
       }
     };
-    // Expose methods ke parent melalui ref
+
+    // expose reset ke parent
     useImperativeHandle(ref, () => ({
       resetForm: () => {
-        setDaftarSampah([]);
+        handleReset();
+      },
+      submitForm: () => {
+        handleSubmit();
       },
     }));
 
@@ -117,22 +141,22 @@ const FormPenjemputan = forwardRef(
         <Card>
           <Card.Body className='p-8'>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
-              {/* Kiri: Input Data Penjemputan */}
+              {/* --------------------- Kiri: Input Data Penjemputan --------------------- */}
               <div className='space-y-4'>
                 {/* Pilih kategori */}
                 <div>
                   <Label required>Kategori Sampah</Label>
                   <Select
-                    value={tempSampah.id_kategori}
+                    value={draftSampah.id_kategori}
                     onChange={(val) =>
-                      setTempSampah((p) => ({
+                      setDraftSampah((p) => ({
                         ...p,
                         id_kategori: val,
                         id_jenis: '',
                       }))
                     }
                     placeholder='Pilih kategori...'
-                    options={kategoriData.map((k) => ({
+                    options={kategoriList.map((k) => ({
                       value: k.id_kategori.toString(),
                       label: `${k.nama_kategori} (${
                         k.poin_kategori || 0
@@ -146,19 +170,19 @@ const FormPenjemputan = forwardRef(
                   <div className='flex-1'>
                     <Label required>Jenis Sampah</Label>
                     <Select
-                      value={tempSampah.id_jenis}
+                      value={draftSampah.id_jenis}
                       onChange={(val) =>
-                        setTempSampah((p) => ({ ...p, id_jenis: val }))
+                        setDraftSampah((p) => ({ ...p, id_jenis: val }))
                       }
-                      disabled={!tempSampah.id_kategori}
+                      disabled={!draftSampah.id_kategori}
                       placeholder={
-                        tempSampah.id_kategori
+                        draftSampah.id_kategori
                           ? 'Pilih jenis sampah...'
                           : 'Pilih kategori dulu'
                       }
-                      options={jenisData.map((item) => ({
-                        value: item.id_jenis.toString(),
-                        label: item.nama_jenis,
+                      options={jenisList.map((j) => ({
+                        value: j.id_jenis.toString(),
+                        label: j.nama_jenis,
                       }))}
                     />
                   </div>
@@ -176,11 +200,10 @@ const FormPenjemputan = forwardRef(
                       onInputChange('id_waktu_operasional', Number(val))
                     }
                     placeholder='Pilih waktu operasional...'
-                    options={waktuOperasional.map((w) => ({
+                    options={waktuOperasionalList.map((w) => ({
                       value: w.id_waktu_operasional.toString(),
                       label: w.waktu_operasional,
                     }))}
-                    className='w-full'
                   />
                 </div>
 
@@ -207,15 +230,15 @@ const FormPenjemputan = forwardRef(
                 </div>
               </div>
 
-              {/* Kanan: Daftar Sampah */}
+              {/* ---------------------- Kanan: Daftar Sampah ---------------------- */}
               <DaftarSampah
                 daftarSampah={daftarSampah}
                 totalJumlah={totalJumlah}
                 estimasiPoin={estimasiPoin}
                 isDarkMode={isDarkMode}
                 isSubmitting={isSubmitting}
-                onHapus={handleHapusSampah}
-                onUpload={handleUploadFoto}
+                onHapus={removeSampah}
+                onUpload={triggerUploadFoto}
               />
             </div>
 
@@ -243,9 +266,9 @@ const FormPenjemputan = forwardRef(
         <ModalTambahSampah
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          tempSampah={tempSampah}
-          setTempSampah={setTempSampah}
-          onSave={handleTambahSampah}
+          draftSampah={draftSampah}
+          setDraftSampah={setDraftSampah}
+          onSave={addSampah}
         />
       </form>
     );
@@ -253,5 +276,4 @@ const FormPenjemputan = forwardRef(
 );
 
 FormPenjemputan.displayName = 'FormPenjemputan';
-
 export default FormPenjemputan;

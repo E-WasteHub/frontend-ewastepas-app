@@ -10,7 +10,6 @@ export { default as LogoApp } from './LogoApp';
 
 // Form Components
 export { default as Checkbox } from './Checkbox';
-export { default as FileUpload } from './FileUpload';
 export { default as InputForm } from './Input/index';
 export { default as Input } from './Input/Input';
 export { default as Label } from './Input/Label';

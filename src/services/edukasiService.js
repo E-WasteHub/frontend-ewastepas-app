@@ -15,24 +15,22 @@ export const ambilSemuaEdukasi = async () => {
 
 // Tambah edukasi
 export const tambahEdukasi = async (payload) => {
-  try {
-    const response = await api.post('/konten-edukasi', payload);
-    return response.data;
-  } catch (error) {
-    console.error('Error creating edukasi:', error);
-    throw error;
+  const config = {};
+  if (payload instanceof FormData) {
+    config.headers = { 'Content-Type': 'multipart/form-data' };
   }
+  const response = await api.post('/konten-edukasi', payload, config);
+  return response.data;
 };
 
 // Update edukasi
 export const ubahEdukasi = async (id, payload) => {
-  try {
-    const response = await api.put(`/konten-edukasi/${id}`, payload);
-    return response.data;
-  } catch (error) {
-    console.error('Error updating edukasi:', error);
-    throw error;
+  let config = {};
+  if (payload instanceof FormData) {
+    config.headers = { 'Content-Type': 'multipart/form-data' };
   }
+  const response = await api.put(`/konten-edukasi/${id}`, payload, config);
+  return response.data;
 };
 
 // Hapus edukasi
@@ -59,7 +57,18 @@ export const detailEdukasi = async (id) => {
 
 export const ambilSemua = async () => api.get('/konten-edukasi');
 export const detail = async (id) => api.get(`/konten-edukasi/${id}`);
-export const tambah = async (payload) => api.post('/konten-edukasi', payload);
-export const ubah = async (id, payload) =>
-  api.put(`/konten-edukasi/${id}`, payload);
+export const tambah = async (payload) => {
+  const config = {};
+  if (payload instanceof FormData) {
+    config.headers = { 'Content-Type': 'multipart/form-data' };
+  }
+  return api.post('/konten-edukasi', payload, config);
+};
+export const ubah = async (id, payload) => {
+  const config = {};
+  if (payload instanceof FormData) {
+    config.headers = { 'Content-Type': 'multipart/form-data' };
+  }
+  return api.put(`/konten-edukasi/${id}`, payload, config);
+};
 export const hapus = async (id) => api.delete(`/konten-edukasi/${id}`);
