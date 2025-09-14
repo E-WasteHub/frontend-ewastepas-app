@@ -45,19 +45,14 @@ const EdukasiCrudModal = ({
     formData.append('isi_konten', isi.trim());
 
     if (gambarFile) {
-      // user upload gambar baru
+      // Admin upload gambar baru
       formData.append('gambar', gambarFile);
     } else if (gambar) {
-      // user tetap pakai gambar lama → kirim placeholder agar backend tidak reset
+      // Admin tidak ganti gambar, tetap pakai yang lama
       formData.append('gambar_url', gambar);
-    } else {
-      // user hapus gambar → fallback ke default
-      formData.append(
-        'gambar',
-        new Blob([], { type: 'image/png' }),
-        'empty.png'
-      );
     }
+    // ❌ kalau admin hapus gambar, jangan kirim apapun
+    // biar backend otomatis fallback ke default
 
     onSubmit(formData);
   };

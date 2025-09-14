@@ -26,6 +26,5 @@ export { default as Modal } from './Modal';
 export { default as ScrollToTop } from './ScrollToTop';
 
 // PWA Components
-export { default as CacheManager } from './CacheManager';
 export { default as OfflineIndicator } from './OfflineIndicator';
 export { default as SplashScreen } from './SplashScreen';

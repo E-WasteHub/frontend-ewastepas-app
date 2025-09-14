@@ -1,17 +1,16 @@
 // src/views/EdukasiDetailView.jsx
-import { ArrowLeft, BookOpen, WifiOff } from 'lucide-react';
+import { ArrowLeft, BookOpen } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Loading } from '../components/elements';
 import MainLayout from '../components/layouts/MainLayout';
 import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-import useOfflineEdukasi from '../hooks/useOfflineEdukasi';
+import * as edukasiService from '../services/edukasiService';
 
 const EdukasiDetailView = () => {
   const { id } = useParams();
   const { isDarkMode } = useDarkMode();
-  const { isOnline, getEdukasiDetail, isEdukasiCached } = useOfflineEdukasi();
 
   const [artikel, setArtikel] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,9 +23,11 @@ const EdukasiDetailView = () => {
       try {
         setIsLoading(true);
         setError('');
-        const data = await getEdukasiDetail(id);
+        const res = await edukasiService.detailEdukasi(id);
+        const data = res.data || res;
         setArtikel(data);
       } catch (err) {
+        console.error('Error fetching edukasi detail:', err);
         setError(err.message || 'Gagal memuat detail edukasi');
       } finally {
         setIsLoading(false);
@@ -34,7 +35,7 @@ const EdukasiDetailView = () => {
     };
 
     if (id) fetchDetail();
-  }, [id, getEdukasiDetail]);
+  }, [id]);
 
   if (isLoading) {
     return <Loading mode='overlay' text='Loading artikel...' />;
@@ -61,41 +62,7 @@ const EdukasiDetailView = () => {
               Kembali ke Edukasi
             </Link>
 
-            {!isOnline ? (
-              <div
-                className={`border rounded-lg p-8 ${
-                  isDarkMode
-                    ? 'bg-amber-900/20 border-amber-700'
-                    : 'bg-amber-50 border-amber-200'
-                }`}
-              >
-                <WifiOff className='w-16 h-16 mx-auto mb-4 text-amber-600' />
-                <h2
-                  className={`text-xl font-semibold mb-4 ${
-                    isDarkMode ? 'text-amber-400' : 'text-amber-800'
-                  }`}
-                >
-                  Konten Tidak Tersedia Offline
-                </h2>
-                <p
-                  className={`mb-4 ${
-                    isDarkMode ? 'text-amber-300' : 'text-amber-700'
-                  }`}
-                >
-                  {error}
-                </p>
-                <p
-                  className={`text-sm ${
-                    isDarkMode ? 'text-amber-400' : 'text-amber-600'
-                  }`}
-                >
-                  Sambungkan internet atau kembali ke halaman edukasi untuk
-                  menyimpan konten offline
-                </p>
-              </div>
-            ) : (
-              <p className='text-red-500 py-10'>{error}</p>
-            )}
+            <p className='text-red-500 py-10'>{error}</p>
           </div>
         </section>
       </MainLayout>
@@ -104,9 +71,11 @@ const EdukasiDetailView = () => {
 
   if (!artikel) {
     return (
-      <p className='text-center text-slate-500 py-10'>
-        Artikel tidak ditemukan
-      </p>
+      <MainLayout>
+        <p className='text-center text-slate-500 py-10'>
+          Artikel tidak ditemukan
+        </p>
+      </MainLayout>
     );
   }
 
@@ -134,13 +103,16 @@ const EdukasiDetailView = () => {
           {/* Thumbnail */}
           <div className='mb-6'>
             <img
-              src={artikel.gambar_url}
+              src={
+                artikel.gambar_url ||
+                'http://be.ewastepas.my.id/public/images/no-image.jpg'
+              } // ✅ fallback
               alt={artikel.judul_konten}
               className='w-full h-64 object-cover rounded-lg'
             />
           </div>
 
-          {/* Judul (pakai Tailwind responsive) */}
+          {/* Judul */}
           <h1
             className={`font-bold mb-6 ${
               isDarkMode ? 'text-white' : 'text-slate-900'
@@ -157,25 +129,12 @@ const EdukasiDetailView = () => {
             dangerouslySetInnerHTML={{ __html: artikel.isi_konten }}
           />
 
-          {/* Footer dengan status offline */}
+          {/* Footer */}
           <div className='mt-10 flex items-center justify-between'>
             <div className='flex items-center gap-2 text-sm text-slate-500'>
               <BookOpen className='w-4 h-4' />
               Artikel edukasi dari Ewastepas
             </div>
-
-            {!isOnline && isEdukasiCached(id) && (
-              <div
-                className={`flex items-center gap-2 text-sm px-3 py-1 rounded-full ${
-                  isDarkMode
-                    ? 'bg-amber-900/30 text-amber-400'
-                    : 'bg-amber-100 text-amber-700'
-                }`}
-              >
-                <WifiOff className='w-3 h-3' />
-                Disimpan offline
-              </div>
-            )}
           </div>
         </div>
       </section>

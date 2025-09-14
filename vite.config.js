@@ -10,7 +10,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       devOptions: {
-        enabled: true, // aktifkan PWA di mode development
+        enabled: true,
         type: 'module',
         navigateFallback: 'index.html',
       },
@@ -28,24 +28,6 @@ export default defineConfig({
         start_url: '/',
         lang: 'id',
         icons: [
-          { src: '/icons/icon-48x48.png', sizes: '48x48', type: 'image/png' },
-          { src: '/icons/icon-72x72.png', sizes: '72x72', type: 'image/png' },
-          { src: '/icons/icon-96x96.png', sizes: '96x96', type: 'image/png' },
-          {
-            src: '/icons/icon-128x128.png',
-            sizes: '128x128',
-            type: 'image/png',
-          },
-          {
-            src: '/icons/icon-144x144.png',
-            sizes: '144x144',
-            type: 'image/png',
-          },
-          {
-            src: '/icons/icon-152x152.png',
-            sizes: '152x152',
-            type: 'image/png',
-          },
           {
             src: '/icons/icon-192x192.png',
             sizes: '192x192',
@@ -53,44 +35,17 @@ export default defineConfig({
             purpose: 'any maskable',
           },
           {
-            src: '/icons/icon-256x256.png',
-            sizes: '256x256',
-            type: 'image/png',
-          },
-          {
-            src: '/icons/icon-384x384.png',
-            sizes: '384x384',
-            type: 'image/png',
-          },
-          {
             src: '/icons/icon-512x512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable',
           },
         ],
-        screenshots: [
-          {
-            src: '/icons/icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-          },
-        ],
-        categories: ['education', 'environmental', 'utilities'],
-        shortcuts: [
-          {
-            name: 'Edukasi',
-            short_name: 'Edukasi',
-            description: 'Akses konten edukasi sampah elektronik',
-            url: '/edukasi',
-            icons: [{ src: '/icons/icon-192x192.png', sizes: '192x192' }],
-          },
-        ],
       },
       workbox: {
         runtimeCaching: [
           {
-            // Cache halaman edukasi
+            // Halaman edukasi → tetap bisa diakses offline
             urlPattern: ({ url }) => url.pathname.startsWith('/edukasi'),
             handler: 'CacheFirst',
             options: {
@@ -102,50 +57,47 @@ export default defineConfig({
             },
           },
           {
-            // Cache API konten edukasi
+            // API edukasi → selalu coba fetch baru dulu, fallback ke cache
             urlPattern: ({ url }) => url.pathname.includes('/konten-edukasi'),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'edukasi-api-cache',
+              networkTimeoutSeconds: 3,
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 hari
+                maxAgeSeconds: 60 * 60 * 24 * 7,
               },
-              networkTimeoutSeconds: 3,
               cacheableResponse: { statuses: [0, 200] },
             },
           },
           {
-            // Cache gambar edukasi
-            urlPattern: ({ request }) =>
+            urlPattern: ({ request, url }) =>
               request.destination === 'image' &&
-              request.url.includes('edukasi'),
+              url.hostname === 'be.ewastepas.my.id' &&
+              url.pathname.startsWith('/uploads/konten'),
             handler: 'CacheFirst',
             options: {
-              cacheName: 'edukasi-images-cache',
+              cacheName: 'edukasi-gambar-cache',
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 * 30, // 30 hari
               },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
             },
           },
         ],
-        skipWaiting: false, // jangan langsung aktifkan SW baru
-        clientsClaim: false, // jangan langsung ambil alih kontrol client
+        // biar update SW lebih aman, nggak langsung replace
+        skipWaiting: false,
+        clientsClaim: false,
       },
     }),
   ],
 
-  // Konfigurasi server untuk development
-  server: {
-    host: true, // biar bisa diakses lewat IP LAN
-    port: 5173, // default port vite, bisa diubah sesuai kebutuhan
-    strictPort: true, // kalau port dipakai, jangan auto ganti
-  },
-
-  // Optimasi build
+  // Build optimization
   build: {
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {
         manualChunks: {

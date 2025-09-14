@@ -125,7 +125,10 @@ const AdminKelolaEdukasiView = () => {
     {
       name: 'Isi Konten',
       selector: 'isi_konten',
-      cell: (row) => row.isi_konten?.slice(0, 50) + '...' || '-',
+      cell: (row) =>
+        row.isi_konten
+          ? row.isi_konten.replace(/<[^>]+>/g, '').slice(0, 50) + '...'
+          : '-',
     },
     {
       name: 'Gambar',

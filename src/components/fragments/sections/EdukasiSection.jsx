@@ -4,14 +4,14 @@ import { motion as Motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
-import useOfflineEdukasi from '../../../hooks/useOfflineEdukasi';
+import * as edukasiService from '../../../services/edukasiService';
+import getLatestEdukasi from '../../../utils/getLatestEdukasi';
+import { stripHtml } from '../../../utils/stripHtml';
 import { Badge } from '../../elements';
 
 const EdukasiSection = () => {
   const { isDarkMode } = useDarkMode();
-  const { getEdukasiList } = useOfflineEdukasi();
 
-  // state lokal
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -22,9 +22,8 @@ const EdukasiSection = () => {
       try {
         setIsLoading(true);
         setError('');
-        const edukasiData = await getEdukasiList();
-        console.log('Edukasi data fetched:', edukasiData);
-        setData(edukasiData || []);
+        const edukasiData = await edukasiService.ambilSemuaEdukasi();
+        setData(edukasiData?.data || []);
       } catch (err) {
         setError(err.message || 'Gagal memuat data edukasi');
       } finally {
@@ -33,11 +32,10 @@ const EdukasiSection = () => {
     };
 
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // hanya ambil 4 edukasi terbaru
-  const edukasiPreview = Array.isArray(data) ? data.slice(0, 4) : [];
+  const edukasiPreview = getLatestEdukasi(data, 4);
 
   return (
     <section
@@ -98,7 +96,7 @@ const EdukasiSection = () => {
                   className='block h-full'
                 >
                   <div
-                    className={`border w-full rounded-xl overflow-hidden shadow-md hover:border-green-500 hover:shadow-xl transition-all duration-300 h-full ${
+                    className={`border w-full rounded-xl overflow-hidden shadow-md hover:border-green-500 hover:shadow-xl transition-all duration-300 h-full flex flex-col ${
                       isDarkMode
                         ? 'bg-slate-800 border-slate-700'
                         : 'bg-white border-slate-200'
@@ -114,7 +112,7 @@ const EdukasiSection = () => {
                     </div>
 
                     {/* Konten dalam card */}
-                    <div className='p-6 text-center'>
+                    <div className='p-6 flex flex-col flex-1 text-center'>
                       <h3
                         className={`text-lg font-semibold mb-3 ${
                           isDarkMode ? 'text-white' : 'text-slate-900'
@@ -124,15 +122,15 @@ const EdukasiSection = () => {
                       </h3>
 
                       <p
-                        className={`text-sm leading-relaxed mb-4 line-clamp-3 ${
+                        className={`text-sm leading-relaxed mb-4 line-clamp-3 flex-1 ${
                           isDarkMode ? 'text-slate-400' : 'text-slate-600'
                         }`}
                       >
-                        {item.isi_konten.substring(0, 100)}...
+                        {stripHtml(item.isi_konten).substring(0, 100)}...
                       </p>
 
                       <div
-                        className={`text-xs font-medium ${
+                        className={`text-xs font-medium mt-auto ${
                           isDarkMode ? 'text-green-400' : 'text-green-600'
                         }`}
                       >
