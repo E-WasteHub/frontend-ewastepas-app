@@ -11,19 +11,19 @@ const Modal = ({ isOpen, onClose, title, children }) => {
   const bgDesain = isDarkMode
     ? 'bg-slate-800 text-slate-100'
     : 'bg-white text-gray-800';
-  const tutupHover = isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-gray-200';
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 ${
-        isMobile ? 'px-2' : 'px-4'
+      className={`fixed inset-0 z-50 flex justify-center bg-black/50 overflow-y-auto ${
+        isMobile ? 'px-2 py-6' : 'px-4 py-10'
       }`}
       onClick={onClose}
     >
       <div
-        className={`rounded-lg shadow-lg w-full max-w-md relative ${
-          isMobile ? 'm-3' : 'm-6'
+        className={`relative rounded-lg shadow-lg w-full ${
+          isMobile ? 'max-w-lg' : 'max-w-3xl'
         } ${bgDesain}`}
+        style={{ margin: 'auto' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -39,13 +39,6 @@ const Modal = ({ isOpen, onClose, title, children }) => {
               {title}
             </h2>
           )}
-          <button
-            onClick={onClose}
-            aria-label='Close modal'
-            className={`p-1 rounded-full transition-colors ${tutupHover}`}
-          >
-            <X size={20} />
-          </button>
         </div>
 
         {/* Content */}

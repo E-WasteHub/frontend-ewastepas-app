@@ -13,6 +13,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
     "axios": "^1.11.0",
+    "jodit-react": "^5.2.19",
     "lucide-react": "^0.527.0",
     "motion": "^12.23.12",
     "react": "^19.1.0",

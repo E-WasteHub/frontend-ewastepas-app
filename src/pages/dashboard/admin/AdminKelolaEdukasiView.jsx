@@ -131,18 +131,18 @@ const AdminKelolaEdukasiView = () => {
       name: 'Gambar',
       cell: (row) => {
         const imageUrl = row.gambar_url || row.gambar;
-        return imageUrl ? (
+        const fallbackImage =
+          'http://34.128.104.134:3000/public/images/no-image.jpg';
+        return (
           <img
-            src={imageUrl}
+            src={imageUrl || fallbackImage}
             alt={row.judul_konten}
             className='h-12 w-12 object-cover rounded'
             onError={(e) => {
               console.warn('Image failed to load:', imageUrl);
-              e.target.style.display = 'none';
+              e.currentTarget.src = fallbackImage;
             }}
           />
-        ) : (
-          '-'
         );
       },
     },

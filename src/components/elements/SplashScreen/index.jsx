@@ -65,7 +65,7 @@ const SplashScreen = ({ onComplete }) => {
           </h1>
           <p
             className={`text-base ${
-              isDarkMode ? 'text-green-100' : 'text-green-50'
+              isDarkMode ? 'text-white' : 'text-slate-900'
             }`}
           >
             Antar Jemput Sampah Elektronik
@@ -79,7 +79,11 @@ const SplashScreen = ({ onComplete }) => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.6 }}
         >
-          <div className='w-8 h-8 mx-auto border-2 border-white border-t-transparent rounded-full animate-spin'></div>
+          <div
+            className={`w-8 h-8 mx-auto border-2 ${
+              isDarkMode ? 'border-white' : 'border-slate-900'
+            } border-t-transparent rounded-full animate-spin`}
+          ></div>
         </Motion.div>
       </div>
     </Motion.div>

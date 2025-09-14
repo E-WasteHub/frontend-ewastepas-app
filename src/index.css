@@ -35,3 +35,19 @@
     -webkit-text-fill-color: theme('colors.slate.100') !important;
   }
 }
+
+/* Jodit Editor */
+.jodit_theme_dark {
+  background-color: rgb(15 23 42) !important; /* slate-900 */
+  color: #f1f5f9 !important; /* slate-100 */
+}
+
+.jodit_theme_dark .jodit-wysiwyg {
+  background-color: rgb(15 23 42) !important;
+  color: #f1f5f9 !important;
+}
+
+.jodit_theme_dark .jodit-toolbar__box {
+  background-color: rgb(30 41 59) !important; /* slate-800 */
+  border-color: rgb(51 65 85) !important; /* slate-700 */
+}

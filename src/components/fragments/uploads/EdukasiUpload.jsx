@@ -1,7 +1,12 @@
+// src/components/fragments/EdukasiUpload.jsx
 import { Camera, Upload, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import useDarkMode from '../../../hooks/useDarkMode';
 import Modal from '../../elements/Modal';
+import useToast from '../../../hooks/useToast';
+
+// fallback default no-image
+const fallbackImage = 'http://34.128.104.134:3000/public/images/no-image.jpg';
 
 const EdukasiUpload = ({
   currentImage,
@@ -15,17 +20,18 @@ const EdukasiUpload = ({
   const [previewImage, setPreviewImage] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const fileInputRef = useRef(null);
+  const { showAlert } = useToast();
 
+  /* ---------------------- HANDLERS ---------------------- */
   const handleFileSelect = (file) => {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      alert('File harus berupa gambar');
+      showAlert('File harus berupa gambar');
       return;
     }
-
     if (file.size > 5 * 1024 * 1024) {
-      alert('Ukuran file maksimal 5MB');
+      showAlert('Ukuran file maksimal 5MB');
       return;
     }
 
@@ -35,7 +41,6 @@ const EdukasiUpload = ({
 
     const imageUrl = URL.createObjectURL(file);
     setPreviewImage(imageUrl);
-
     onImageChange?.(file);
   };
 
@@ -54,20 +59,12 @@ const EdukasiUpload = ({
       URL.revokeObjectURL(previewImage);
     }
     setPreviewImage(null);
-    fileInputRef.current.value = '';
+    onImageChange?.(null);
     onRemove?.();
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const handlePreviewImage = () => {
-    setShowPreview(true);
-  };
-
-  // Reset preview kalau currentImage berubah (misalnya setelah save berhasil)
-  useEffect(() => {
-    if (currentImage) setPreviewImage(null);
-  }, [currentImage]);
-
-  // Cleanup blob URL
+  /* ---------------------- EFFECTS ---------------------- */
   useEffect(() => {
     return () => {
       if (previewImage?.startsWith('blob:')) {
@@ -76,6 +73,7 @@ const EdukasiUpload = ({
     };
   }, [previewImage]);
 
+  /* ---------------------- DISPLAY ---------------------- */
   const displayImage = previewImage || currentImage;
 
   return (
@@ -95,93 +93,59 @@ const EdukasiUpload = ({
         </h3>
       </div>
 
-      {/* Upload Area - Show only when no image */}
-      {!displayImage ? (
-        <div
-          className={`
-            border-2 border-dashed rounded-lg p-6 transition-all duration-200 cursor-pointer
-            ${
-              isDarkMode
-                ? 'border-gray-600 bg-gray-800 hover:border-gray-500'
-                : 'border-gray-300 bg-gray-50 hover:border-gray-400'
-            }
-            ${disabled || isLoading ? 'opacity-50 cursor-not-allowed' : ''}
-          `}
-          onClick={handleClick}
-        >
-          <div className='text-center space-y-4'>
-            <div
-              className={`
-                rounded-full inline-block p-4
-                ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}
-              `}
-            >
-              <Upload
-                size={32}
-                className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}
-              />
-            </div>
+      {/* Upload Area / Preview */}
+      {displayImage ? (
+        <div className='relative w-full'>
+          <div
+            className={`relative rounded-lg overflow-hidden border-2 w-full h-64 ${
+              isDarkMode ? 'border-gray-600' : 'border-gray-300'
+            }`}
+          >
+            <img
+              src={displayImage}
+              alt='Preview gambar edukasi'
+              className='w-full h-full object-cover cursor-pointer'
+              onClick={() => setShowPreview(true)}
+              onError={(e) => (e.currentTarget.src = fallbackImage)}
+            />
 
-            <div>
-              <p
-                className={`font-medium ${
-                  isDarkMode ? 'text-white' : 'text-gray-900'
-                }`}
-              >
-                {isLoading ? 'Mengunggah...' : 'Upload Gambar Edukasi'}
-              </p>
-              <p
-                className={`mt-1 text-sm ${
-                  isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                }`}
-              >
-                Klik untuk memilih gambar (JPG, PNG, GIF hingga 5MB)
-              </p>
-            </div>
+            {!disabled && !isLoading && (
+              <div className='absolute top-2 left-2 right-2 flex justify-between'>
+                <button
+                  type='button'
+                  onClick={handleClick}
+                  className='p-1 bg-emerald-500 bg-opacity-80 text-white rounded-full hover:bg-opacity-100 transition-colors'
+                >
+                  <Camera size={14} />
+                </button>
+                <button
+                  type='button'
+                  onClick={handleRemove}
+                  className='p-1 bg-red-500 bg-opacity-80 text-white rounded-full hover:bg-opacity-100 transition-colors'
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       ) : (
-        /* Single Image Preview */
-        <div className='space-y-3'>
-          <div className='relative w-full'>
-            <div
-              className={`
-                relative rounded-lg overflow-hidden border-2 w-full h-64
-                ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}
-              `}
-            >
-              <img
-                src={displayImage}
-                alt='Preview gambar edukasi'
-                className='w-full h-full object-cover cursor-pointer'
-                onClick={handlePreviewImage}
-                onError={(e) => (e.target.src = '/fallback.png')}
-              />
-
-              {/* Top Action Buttons */}
-              {!disabled && !isLoading && (
-                <div className='absolute top-2 left-2 right-2 flex justify-between'>
-                  {/* Replace Photo Button */}
-                  <button
-                    type='button'
-                    onClick={handleClick}
-                    className='p-1 bg-emerald-500 bg-opacity-80 text-white rounded-full hover:bg-opacity-100 transition-colors'
-                  >
-                    <Camera size={14} />
-                  </button>
-
-                  {/* Remove Button */}
-                  <button
-                    type='button'
-                    onClick={handleRemove}
-                    className='p-1 bg-red-500 bg-opacity-80 text-white rounded-full hover:bg-opacity-100 transition-colors'
-                  >
-                    <X size={14} />
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
+        // Jika kosong → kasih info jelas
+        <div
+          className={`
+            border-2 border-dashed rounded-lg p-6 text-center cursor-pointer
+            ${
+              isDarkMode
+                ? 'border-gray-600 bg-gray-800'
+                : 'border-gray-300 bg-gray-50'
+            }
+          `}
+          onClick={handleClick}
+        >
+          <Upload size={32} className='mx-auto text-gray-400' />
+          <p className='mt-2 text-sm text-gray-500'>
+            Belum ada gambar (akan otomatis pakai default)
+          </p>
         </div>
       )}
 
@@ -204,9 +168,10 @@ const EdukasiUpload = ({
         <div className='text-center space-y-4'>
           <div className='flex justify-center'>
             <img
-              src={displayImage}
+              src={displayImage || fallbackImage}
               alt='Preview gambar edukasi'
               className='max-w-full max-h-96 rounded-lg'
+              onError={(e) => (e.currentTarget.src = fallbackImage)}
             />
           </div>
         </div>

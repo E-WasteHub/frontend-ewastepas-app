@@ -1,6 +1,7 @@
-// src/components/fragments/admincrud/EdukasiCrudModal.jsx
-import { useEffect, useState } from 'react';
-import { Button, InputForm, Modal, Textarea } from '../../elements';
+import JoditEditor from 'jodit-react';
+import { useEffect, useRef, useState } from 'react';
+import useDarkMode from '../../../hooks/useDarkMode';
+import { Button, InputForm, Modal } from '../../elements';
 import { EdukasiUpload } from '../../fragments';
 
 const EdukasiCrudModal = ({
@@ -11,6 +12,9 @@ const EdukasiCrudModal = ({
   title = 'Form Edukasi',
   isLoading = false,
 }) => {
+  const { isDarkMode } = useDarkMode();
+  const editor = useRef(null);
+
   const [judul, setJudul] = useState('');
   const [isi, setIsi] = useState('');
   const [gambar, setGambar] = useState('');
@@ -20,9 +24,8 @@ const EdukasiCrudModal = ({
     if (initialData) {
       setJudul(initialData.judul_konten || '');
       setIsi(initialData.isi_konten || '');
-      // Support both 'gambar' and 'gambar_url' dari backend
       setGambar(initialData.gambar_url || initialData.gambar || '');
-      setGambarFile(null); // Reset file ketika edit
+      setGambarFile(null);
     } else {
       setJudul('');
       setIsi('');
@@ -37,47 +40,26 @@ const EdukasiCrudModal = ({
       return;
     }
 
+    const formData = new FormData();
+    formData.append('judul_konten', judul.trim());
+    formData.append('isi_konten', isi.trim());
+
     if (gambarFile) {
-      // Ada file baru → pakai FormData
-      const formData = new FormData();
-      formData.append('judul_konten', judul.trim());
-      formData.append('isi_konten', isi.trim());
+      // user upload gambar baru
       formData.append('gambar', gambarFile);
-
-      // Debug isi formData
-      for (let [key, value] of formData.entries()) {
-        console.log(
-          `${key}:`,
-          value instanceof File ? `File: ${value.name}` : value
-        );
-      }
-
-      onSubmit(formData);
+    } else if (gambar) {
+      // user tetap pakai gambar lama → kirim placeholder agar backend tidak reset
+      formData.append('gambar_url', gambar);
     } else {
-      // Tidak ada file baru → kirim JSON
-      const jsonData = {
-        judul_konten: judul.trim(),
-        isi_konten: isi.trim(),
-      };
-      if (gambar) jsonData.gambar_url = gambar;
-
-      console.log('📤 Submit JSON:', jsonData);
-      onSubmit(jsonData);
+      // user hapus gambar → fallback ke default
+      formData.append(
+        'gambar',
+        new Blob([], { type: 'image/png' }),
+        'empty.png'
+      );
     }
-  };
 
-  const handleImageChange = (file) => {
-    console.log('📸 Image changed in modal:', file);
-    setGambarFile(file);
-    // Reset URL gambar lama ketika ada file baru
-    if (file) {
-      setGambar('');
-    }
-  };
-
-  const handleImageRemove = () => {
-    setGambarFile(null);
-    setGambar('');
+    onSubmit(formData);
   };
 
   return (
@@ -92,20 +74,48 @@ const EdukasiCrudModal = ({
           placeholder='Masukkan judul konten'
         />
 
-        <Textarea
-          label='Isi Konten'
-          name='isi_konten'
-          value={isi}
-          onChange={(e) => setIsi(e.target.value)}
-          rows={5}
-          placeholder='Tuliskan isi konten edukasi'
-          required
-        />
+        {/* Isi Konten pakai Jodit */}
+        <div className='space-y-1'>
+          <label className='block text-sm font-medium mb-1'>Isi Konten</label>
+          <JoditEditor
+            ref={editor}
+            value={isi}
+            config={{
+              minHeight: 200,
+              theme: isDarkMode ? 'dark' : 'default',
+              toolbarAdaptive: false,
+              buttons: [
+                'bold',
+                'italic',
+                'underline',
+                '|',
+                'ul',
+                'ol',
+                '|',
+                'left',
+                'center',
+                'right',
+                'justify',
+              ],
+            }}
+            onBlur={(newContent) => setIsi(newContent)}
+          />
+        </div>
 
         <EdukasiUpload
           currentImage={gambar}
-          onImageChange={handleImageChange}
-          onRemove={handleImageRemove}
+          onImageChange={(file) => {
+            if (file) {
+              setGambarFile(file);
+              setGambar('');
+            } else {
+              setGambarFile(null);
+            }
+          }}
+          onRemove={() => {
+            setGambarFile(null);
+            setGambar('');
+          }}
           isLoading={isLoading}
         />
 
