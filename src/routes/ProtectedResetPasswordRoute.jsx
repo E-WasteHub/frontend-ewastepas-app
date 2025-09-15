@@ -6,9 +6,9 @@ const ProtectedResetPasswordRoute = ({ children }) => {
   const location = useLocation();
   const { error } = useToast();
   const params = new URLSearchParams(location.search);
-  const token = params.get('token');
+  const otp = params.get('otp');
 
-  if (!token) {
+  if (!otp) {
     error('Silahkan masukkan email anda terlebih dahulu.');
     return <Navigate to='/pemulihan-akun' replace />;
   }

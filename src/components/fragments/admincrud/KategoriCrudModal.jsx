@@ -1,3 +1,4 @@
+// src/components/fragments/admincrud/KategoriCrudModal.jsx
 import { useEffect, useState } from 'react';
 import { Button, InputForm, Modal } from '../../elements';
 
@@ -8,21 +9,23 @@ const KategoriCrudModal = ({
   initialData,
   isLoading,
 }) => {
-  const [formValues, setFormValues] = useState({
+  // State lokal untuk form kategori
+  const [kategoriData, setKategoriData] = useState({
     nama_kategori: '',
     poin_kategori: '',
     deskripsi_kategori: '',
   });
 
+  // Isi form saat mode edit
   useEffect(() => {
     if (initialData) {
-      setFormValues({
+      setKategoriData({
         nama_kategori: initialData.nama_kategori || '',
         poin_kategori: initialData.poin_kategori || '',
         deskripsi_kategori: initialData.deskripsi_kategori || '',
       });
     } else {
-      setFormValues({
+      setKategoriData({
         nama_kategori: '',
         poin_kategori: '',
         deskripsi_kategori: '',
@@ -30,13 +33,16 @@ const KategoriCrudModal = ({
     }
   }, [initialData]);
 
+  // Handle input perubahan
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormValues((prev) => ({ ...prev, [name]: value }));
+    setKategoriData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = () => {
-    onSubmit(formValues);
+  // Saat form disubmit
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(kategoriData);
   };
 
   return (
@@ -45,11 +51,11 @@ const KategoriCrudModal = ({
       onClose={onClose}
       title={initialData ? 'Edit Kategori' : 'Tambah Kategori'}
     >
-      <div className='space-y-4'>
+      <form onSubmit={handleSubmit} className='space-y-4'>
         <InputForm
           label='Nama Kategori'
           name='nama_kategori'
-          value={formValues.nama_kategori}
+          value={kategoriData.nama_kategori}
           onChange={handleChange}
           required
         />
@@ -57,7 +63,7 @@ const KategoriCrudModal = ({
           label='Poin Kategori'
           name='poin_kategori'
           type='number'
-          value={formValues.poin_kategori}
+          value={kategoriData.poin_kategori}
           onChange={handleChange}
           required
         />
@@ -65,19 +71,20 @@ const KategoriCrudModal = ({
           label='Deskripsi Kategori'
           name='deskripsi_kategori'
           type='text'
-          value={formValues.deskripsi_kategori}
+          value={kategoriData.deskripsi_kategori}
           onChange={handleChange}
         />
 
+        {/* Tombol aksi */}
         <div className='flex justify-end gap-2'>
-          <Button variant='secondary' onClick={onClose}>
+          <Button variant='secondary' type='button' onClick={onClose}>
             Batal
           </Button>
-          <Button onClick={handleSubmit} disabled={isLoading}>
+          <Button type='submit' disabled={isLoading}>
             {isLoading ? 'Menyimpan...' : 'Simpan'}
           </Button>
         </div>
-      </div>
+      </form>
     </Modal>
   );
 };

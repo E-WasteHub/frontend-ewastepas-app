@@ -8,7 +8,7 @@ const ukuranLoading = {
 };
 
 const Loading = ({ size = 'md', text, mode = 'inline', className = '' }) => {
-  //    Mode Overlay → full screen
+  // Mode Overlay → full screen
   if (mode === 'overlay') {
     return (
       <div className='fixed inset-0 z-[2000] flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm'>
@@ -18,7 +18,7 @@ const Loading = ({ size = 'md', text, mode = 'inline', className = '' }) => {
     );
   }
 
-  //    Mode Inline → biasanya di card/section
+  // Mode Inline → biasanya di card/section
   if (mode === 'inline') {
     return (
       <div
@@ -32,7 +32,7 @@ const Loading = ({ size = 'md', text, mode = 'inline', className = '' }) => {
     );
   }
 
-  //    Mode Button → untuk di dalam tombol (inline row, kecil)
+  // Mode Button → untuk di dalam tombol (inline row, kecil)
   if (mode === 'button') {
     return (
       <span className={`flex items-center justify-center gap-2 ${className}`}>

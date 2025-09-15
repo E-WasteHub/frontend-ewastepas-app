@@ -1,70 +1,52 @@
 // src/services/api.js
 import axios from 'axios';
-import { clearAuth, getValidToken } from '../utils/authExpiredUtils';
+import { ambilValidToken, clearAuth } from '../utils/authExpiredUtils';
 
-// === 1. Buat instance axios global ===
-// Semua request API akan lewat sini, jadi gampang dikontrol
+// Axios instance global
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-  timeout: 10000, // batas waktu 10 detik
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  timeout: 10000,
+  headers: { 'Content-Type': 'application/json' },
 });
 
-// === Flag global untuk hindari spam redirect ===
+// Cegah redirect berulang
 let isRedirecting = false;
 
-// === 2. Interceptor Request ===
-// Dipanggil sebelum request dikirim ke server
+// Request: tambahkan token jika ada
 api.interceptors.request.use(
   (config) => {
     try {
-      // Ambil token valid dari localStorage
-      const token = getValidToken();
-
-      // Kalau ada & masih valid → tempelin ke header
-      if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
-      }
-    } catch (e) {
-      console.error('Error attaching token', e);
+      const token = ambilValidToken();
+      if (token) config.headers['Authorization'] = `Bearer ${token}`;
+    } catch (err) {
+      console.error('Token error:', err);
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// === 3. Interceptor Response ===
-// Dipanggil kalau ada response dari server (sukses/gagal)
+// Response: handle error 401/403
 api.interceptors.response.use(
-  (response) => response, // sukses → langsung return response
+  (response) => response,
   (error) => {
     try {
       const status = error.response?.status;
+      const currentPath = window.location.pathname;
 
-      // Kalau status 401/403 → token invalid/expired
       if ((status === 401 || status === 403) && !isRedirecting) {
-        console.warn(
-          'API unauthorized — clearing auth and redirecting to /login'
-        );
+        if (currentPath === '/login') return Promise.reject(error);
 
-        isRedirecting = true; // aktifkan flag biar ga spam redirect
-        clearAuth(); // hapus token & expiry
-
-        if (typeof window !== 'undefined') {
-          // Paksa redirect ke login
-          window.location.href = '/login';
-        }
-
-        // Lempar error dengan pesan yang jelas
+        console.warn('Unauthorized, redirect ke /login');
+        isRedirecting = true;
+        clearAuth();
+        window.location.href = '/login';
         return Promise.reject(new Error('Unauthorized - logged out'));
       }
-    } catch (e) {
-      console.error('Error handling API unauthorized:', e);
+    } catch (err) {
+      console.error('Response handler error:', err);
     }
 
-    // Kalau error lain (bukan 401/403) → log biasa
     console.error('API Error:', error.response?.data || error.message);
     return Promise.reject(error);
   }

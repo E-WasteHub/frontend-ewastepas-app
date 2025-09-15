@@ -17,15 +17,19 @@ const Select = ({
   const { isDarkMode } = useDarkMode();
   const isMobile = useIsMobile();
 
-  const dasarDesain = isMobile
-    ? 'w-full rounded-lg border transition text-base px-3 py-2 focus:outline-none focus:ring-2 appearance-auto'
-    : 'w-full rounded-lg border transition text-sm px-4 py-3 focus:outline-none focus:ring-2 appearance-none';
+  // base style
+  const baseStyle = `w-full rounded-lg border transition focus:outline-none focus:ring-2`;
 
-  const warnaDesain = isDarkMode
+  // ukuran responsif
+  const ukuranStyle = isMobile
+    ? 'text-base px-3 py-2 appearance-auto'
+    : 'text-sm px-4 py-3 appearance-none';
+
+  const warnaStyle = isDarkMode
     ? 'bg-slate-800 text-slate-100'
     : 'bg-white text-gray-900';
 
-  const borderDesain = disabled
+  const borderStyle = disabled
     ? isDarkMode
       ? 'border-slate-700 opacity-60 cursor-not-allowed'
       : 'border-gray-200 opacity-60 cursor-not-allowed'
@@ -42,14 +46,14 @@ const Select = ({
         </Label>
       )}
 
-      {/* Select box */}
+      {/* Wrapper Select */}
       <div className='relative'>
         <select
           value={value}
           onChange={(e) => onChange?.(e.target.value)}
           disabled={disabled}
           required={required}
-          className={`${dasarDesain} ${warnaDesain} ${borderDesain}`}
+          className={`${baseStyle} ${ukuranStyle} ${warnaStyle} ${borderStyle}`}
           {...props}
         >
           {placeholder && (
@@ -57,7 +61,6 @@ const Select = ({
               {placeholder}
             </option>
           )}
-
           {options.map((opt, i) => (
             <option key={i} value={opt.value}>
               {opt.label}
@@ -65,7 +68,7 @@ const Select = ({
           ))}
         </select>
 
-        {/* Panah dropdown - Hanya tampil di desktop */}
+        {/* Chevron hanya di desktop/tablet */}
         {!isMobile && (
           <div className='absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none'>
             <ChevronDown

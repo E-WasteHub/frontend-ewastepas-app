@@ -59,7 +59,7 @@ const DetailLacakPenjemputan = () => {
 
   return (
     <div
-      className={`max-w-7xl mx-auto space-y-6 ${
+      className={`max-w-7xl mx-auto space-y-3 ${
         isDarkMode ? 'bg-slate-900 text-white' : 'bg-gray-50 text-gray-900'
       }`}
     >
@@ -71,13 +71,13 @@ const DetailLacakPenjemputan = () => {
 
       {/* Card utama */}
       <Card
-        className={`p-6 shadow-md rounded-xl ${
+        className={`p-5 shadow-md rounded-xl ${
           isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white'
         }`}
       >
         {/* Info penjemputan */}
-        <section className='mb-6'>
-          <h3 className='text-xl font-bold mb-4'>Informasi Penjemputan</h3>
+        <section className='mb-3'>
+          <h3 className='text-xl font-bold mb-2'>Informasi Penjemputan</h3>
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 text-sm'>
             {/* Kolom kiri */}
             <div className='space-y-3'>

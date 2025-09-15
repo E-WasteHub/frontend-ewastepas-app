@@ -2,19 +2,6 @@
 import useDarkMode from '../../../hooks/useDarkMode';
 import { Card } from '../../elements';
 
-/**
- * Komponen StatCard Universal
- * ---------------------------
- * Komponen statistik yang dapat digunakan di semua dashboard (Masyarakat, Kurir, Admin).
- * Menggabungkan semua varian StatCard menjadi satu komponen yang fleksibel.
- *
- * Props:
- * - label (string): Nama statistik, contoh: "Total Poin"
- * - value (string|number): Nilai statistik
- * - icon (ReactNode): Ikon (misal dari lucide-react)
- * - color (string): Warna teks untuk value, default: "text-green-500"
- * - useCard (boolean): Apakah menggunakan Card wrapper, default: true
- */
 const StatCard = ({
   label,
   value,

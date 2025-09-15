@@ -2,7 +2,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { Loading } from '../components/elements';
 import usePengguna from '../hooks/usePengguna';
 import useToast from '../hooks/useToast';
-import { clearAuth, getValidToken } from '../utils/authExpiredUtils';
+import { ambilValidToken, clearAuth } from '../utils/authExpiredUtils';
 import {
   getDashboardPathByPeran,
   getProfilePathByPeran,
@@ -14,7 +14,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   const { error, warning } = useToast();
 
   // Cek token expired
-  const token = getValidToken();
+  const token = ambilValidToken();
   if (!token) {
     clearAuth();
     return <Navigate to='/login' replace />;

@@ -2,7 +2,7 @@ import useDarkMode from '../../../hooks/useDarkMode';
 
 const Badge = ({
   variant = 'solid',
-  intent = 'secondary',
+  status = 'secondary',
   size = 'md',
   className = '',
   children,
@@ -55,6 +55,18 @@ const Badge = ({
         outline: 'border border-yellow-500/50 text-yellow-300',
       },
     },
+    info: {
+      light: {
+        solid: 'bg-blue-100 text-blue-700',
+        soft: 'bg-blue-50 text-blue-700 border border-blue-200',
+        outline: 'border border-blue-300 text-blue-700',
+      },
+      dark: {
+        solid: 'bg-blue-600/30 text-blue-300',
+        soft: 'bg-blue-500/10 text-blue-400 border border-blue-600/30',
+        outline: 'border border-blue-500/50 text-blue-300',
+      },
+    },
     secondary: {
       light: {
         solid: 'bg-gray-200 text-gray-700',
@@ -70,7 +82,7 @@ const Badge = ({
   };
 
   const temaMode = isDarkMode ? 'dark' : 'light';
-  const styles = warnaBadge[intent]?.[temaMode]?.[variant] || '';
+  const styles = warnaBadge[status]?.[temaMode]?.[variant] || '';
 
   return (
     <span

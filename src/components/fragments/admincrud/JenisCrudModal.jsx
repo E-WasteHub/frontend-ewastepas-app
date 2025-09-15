@@ -1,8 +1,7 @@
 // src/components/fragments/admincrud/JenisCrudModal.jsx
 import { useEffect, useState } from 'react';
 import * as kategoriService from '../../../services/kategoriService';
-import { Button, InputForm, Modal } from '../../elements';
-import Select from '../../elements/Select';
+import { Button, InputForm, Modal, Select } from '../../elements';
 
 const JenisCrudModal = ({
   isOpen,
@@ -12,39 +11,42 @@ const JenisCrudModal = ({
   title = 'Form Jenis',
   isLoading = false,
 }) => {
-  const [formValues, setFormValues] = useState({
+  // State lokal untuk form
+  const [jenisData, setjenisData] = useState({
     nama_jenis: '',
     deskripsi_jenis: '',
     id_kategori: '',
   });
   const [kategoriOptions, setKategoriOptions] = useState([]);
 
-  // load kategori untuk select
+  // Ambil daftar kategori untuk dropdown
   useEffect(() => {
-    const fetchKategori = async () => {
+    const ambilKategori = async () => {
       try {
         const res = await kategoriService.ambilSemua();
         const data = Array.isArray(res?.data)
           ? res.data
-          : res?.data?.data || [];
+          : Array.isArray(res?.data?.data)
+          ? res.data.data
+          : [];
         setKategoriOptions(data);
       } catch (err) {
-        console.error('  Gagal fetch kategori:', err);
+        console.error('Gagal mengambil kategori:', err);
       }
     };
-    fetchKategori();
+    ambilKategori();
   }, []);
 
-  // isi ulang jika ada initialData
+  // Isi ulang form jika ada initialData (mode edit)
   useEffect(() => {
     if (initialData) {
-      setFormValues({
+      setjenisData({
         nama_jenis: initialData.nama_jenis || '',
         deskripsi_jenis: initialData.deskripsi_jenis || '',
         id_kategori: initialData.id_kategori || '',
       });
     } else {
-      setFormValues({
+      setjenisData({
         nama_jenis: '',
         deskripsi_jenis: '',
         id_kategori: '',
@@ -52,23 +54,33 @@ const JenisCrudModal = ({
     }
   }, [initialData]);
 
+  // Handler perubahan input
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormValues((prev) => ({ ...prev, [name]: value }));
+    setjenisData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = () => {
-    onSubmit(formValues);
+  // Saat form disubmit
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!jenisData.nama_jenis.trim() || !jenisData.id_kategori) return;
+
+    onSubmit({
+      ...jenisData,
+      nama_jenis: jenisData.nama_jenis.trim(),
+      deskripsi_jenis: jenisData.deskripsi_jenis.trim(),
+      id_kategori: parseInt(jenisData.id_kategori, 10),
+    });
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      <div className='space-y-4'>
+      <form onSubmit={handleSubmit} className='space-y-4'>
         {/* Nama Jenis */}
         <InputForm
           label='Nama Jenis'
           name='nama_jenis'
-          value={formValues.nama_jenis}
+          value={jenisData.nama_jenis}
           onChange={handleChange}
           placeholder='Masukkan nama jenis'
           required
@@ -78,7 +90,7 @@ const JenisCrudModal = ({
         <InputForm
           label='Deskripsi Jenis'
           name='deskripsi_jenis'
-          value={formValues.deskripsi_jenis}
+          value={jenisData.deskripsi_jenis}
           onChange={handleChange}
           placeholder='Masukkan deskripsi jenis'
           required
@@ -87,9 +99,9 @@ const JenisCrudModal = ({
         {/* Pilih Kategori */}
         <Select
           label='Kategori'
-          value={formValues.id_kategori}
+          value={jenisData.id_kategori}
           onChange={(value) =>
-            setFormValues((prev) => ({ ...prev, id_kategori: value }))
+            setjenisData((prev) => ({ ...prev, id_kategori: value }))
           }
           options={kategoriOptions.map((k) => ({
             value: k.id_kategori,
@@ -100,20 +112,22 @@ const JenisCrudModal = ({
         />
 
         {/* Tombol Aksi */}
-        <div className='flex justify-end gap-2 mt-4'>
-          <Button variant='secondary' onClick={onClose}>
+        <div className='flex justify-end gap-2'>
+          <Button type='button' variant='secondary' onClick={onClose}>
             Batal
           </Button>
           <Button
-            onClick={handleSubmit}
+            type='submit'
             disabled={
-              isLoading || !formValues.nama_jenis || !formValues.id_kategori
+              isLoading ||
+              !jenisData.nama_jenis.trim() ||
+              !jenisData.id_kategori
             }
           >
             {isLoading ? 'Menyimpan...' : 'Simpan'}
           </Button>
         </div>
-      </div>
+      </form>
     </Modal>
   );
 };

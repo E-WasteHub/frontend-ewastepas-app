@@ -3,65 +3,75 @@ import { useState } from 'react';
 import * as authService from '../../services/authService';
 
 const usePemulihanAkun = () => {
+  // state form
   const [email, setEmail] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
-  const [errorInput, setErrorInput] = useState('');
-  const [errorGlobal, setErrorGlobal] = useState('');
+  // state status
+  const [isLoading, setIsLoading] = useState(false);
+  const [pesanErrorField, setPesanErrorField] = useState('');
+  const [pesanErrorGlobal, setPesanErrorGlobal] = useState('');
   const [pesanSukses, setPesanSukses] = useState('');
 
-  const ubahEmail = (e) => {
+  // handler perubahan input
+  const handleUbahEmail = (e) => {
     setEmail(e.target.value);
-    if (errorInput) setErrorInput('');
-    if (errorGlobal) setErrorGlobal('');
+    if (pesanErrorField) setPesanErrorField('');
+    if (pesanErrorGlobal) setPesanErrorGlobal('');
     if (pesanSukses) setPesanSukses('');
   };
 
+  // validasi email sederhana
   const validasiEmail = (value) => {
     if (!value) return 'Email wajib diisi';
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(value)) return 'Format email tidak valid';
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!regex.test(value)) return 'Format email tidak valid';
     return '';
   };
 
-  const kirimLinkReset = async (e) => {
+  // handler submit kirim link reset
+  const handleKirimLinkReset = async (e) => {
     e.preventDefault();
 
-    const errMsg = validasiEmail(email?.trim());
+    const errMsg = validasiEmail(email.trim());
     if (errMsg) {
-      setErrorInput(errMsg);
+      setPesanErrorField(errMsg);
       return;
     }
 
     try {
       setIsLoading(true);
-      setErrorGlobal('');
+      setPesanErrorGlobal('');
       setPesanSukses('');
 
-      const res = await authService.sendResetLink(email.trim());
+      const res = await authService.kirimResetLink(email.trim());
 
       if (res.success) {
         setPesanSukses(res.message || 'Link reset berhasil dikirim');
         setEmail('');
       } else {
-        setErrorGlobal(res.message || 'Gagal mengirim link reset');
+        setPesanErrorGlobal(res.message || 'Gagal mengirim link reset');
       }
     } catch (err) {
-      setErrorGlobal(err.message || 'Gagal mengirim link reset');
+      setPesanErrorGlobal(err.message || 'Gagal mengirim link reset');
     } finally {
       setIsLoading(false);
     }
   };
 
   return {
+    // data
     email,
     isLoading,
-    errorInput,
-    errorGlobal,
+    pesanErrorField,
+    pesanErrorGlobal,
     pesanSukses,
-    ubahEmail,
-    kirimLinkReset,
-    setErrorGlobal,
+
+    // actions
+    handleUbahEmail,
+    handleKirimLinkReset,
+
+    // setter langsung (jika perlu)
+    setPesanErrorGlobal,
     setPesanSukses,
   };
 };

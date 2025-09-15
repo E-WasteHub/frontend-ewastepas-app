@@ -1,9 +1,9 @@
 // src/components/auth/FormResetKataSandi.jsx
 import { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import useResetKataSandi from '../../../../hooks/auth/useResetKataSandi';
-import useDarkMode from '../../../../hooks/useDarkMode';
-import useToast from '../../../../hooks/useToast';
+
+import { useDarkMode, useResetKataSandi, useToast } from '../../../../hooks';
+
 import { Button, InputForm } from '../../../elements';
 import FormHeader from '../FormHeader';
 
@@ -15,36 +15,31 @@ const FormResetKataSandi = () => {
 
   const otp = searchParams.get('otp');
 
-  //    Gunakan custom hook
   const {
-    kataSandi,
-    konfirmasiKataSandi,
+    form,
     isLoading,
-    error,
-    errorField,
-    successMessage,
-    handleInputKataSandi,
-    handleInputKonfirmasiKataSandi,
+    pesanErrorGlobal,
+    pesanErrorField,
+    pesanSukses,
+    handleInputChange,
     handleSubmitReset,
   } = useResetKataSandi();
 
-  //    Redirect ke login setelah sukses reset
+  // Redirect ke login setelah reset sukses
   useEffect(() => {
-    if (successMessage) {
-      showToast(successMessage, 'success');
+    if (pesanSukses) {
+      showToast(pesanSukses, 'success');
       const timer = setTimeout(() => {
         navigate('/login');
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [successMessage, navigate, showToast]);
+  }, [pesanSukses, navigate, showToast]);
 
-  //    Tampilkan toast untuk error
+  // Tampilkan error melalui toast
   useEffect(() => {
-    if (error) {
-      showToast(error, 'error');
-    }
-  }, [error, showToast]);
+    if (pesanErrorGlobal) showToast(pesanErrorGlobal, 'error');
+  }, [pesanErrorGlobal, showToast]);
 
   return (
     <div className='w-full max-w-md mx-auto'>
@@ -69,7 +64,7 @@ const FormResetKataSandi = () => {
             isDarkMode ? 'text-slate-400' : 'text-gray-600'
           }`}
         >
-          Masukkan kata sandi baru Anda dan konfirmasi kata sandi
+          Masukkan kata sandi baru Anda dan konfirmasi ulang
         </p>
 
         {/* Form */}
@@ -77,13 +72,13 @@ const FormResetKataSandi = () => {
           <InputForm
             type='password'
             label='Kata Sandi Baru'
-            name='kataSandi'
+            name='kata_sandi'
             placeholder='Masukkan kata sandi baru'
-            value={kataSandi}
-            onChange={handleInputKataSandi}
+            value={form.kata_sandi}
+            onChange={handleInputChange}
             disabled={isLoading}
             required
-            error={errorField === 'kataSandi' ? error : ''}
+            error={pesanErrorField.kata_sandi}
             showPasswordToggle
             autoComplete='new-password'
             className='text-sm'
@@ -92,13 +87,13 @@ const FormResetKataSandi = () => {
           <InputForm
             type='password'
             label='Konfirmasi Kata Sandi'
-            name='konfirmasiKataSandi'
+            name='konfirmasi_kata_sandi'
             placeholder='Konfirmasi kata sandi baru'
-            value={konfirmasiKataSandi}
-            onChange={handleInputKonfirmasiKataSandi}
+            value={form.konfirmasi_kata_sandi}
+            onChange={handleInputChange}
             disabled={isLoading}
             required
-            error={errorField === 'konfirmasiKataSandi' ? error : ''}
+            error={pesanErrorField.konfirmasi_kata_sandi}
             showPasswordToggle
             autoComplete='new-password'
             className='text-sm'

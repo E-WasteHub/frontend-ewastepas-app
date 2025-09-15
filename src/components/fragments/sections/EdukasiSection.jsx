@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
 import * as edukasiService from '../../../services/edukasiService';
 import getLatestEdukasi from '../../../utils/getLatestEdukasi';
-import { stripHtml } from '../../../utils/stripHtml';
+import { stripHtmlUtils } from '../../../utils/stripHtmlUtils';
 import { Badge } from '../../elements';
 
 const EdukasiSection = () => {
@@ -126,7 +126,7 @@ const EdukasiSection = () => {
                           isDarkMode ? 'text-slate-400' : 'text-slate-600'
                         }`}
                       >
-                        {stripHtml(item.isi_konten).substring(0, 100)}...
+                        {stripHtmlUtils(item.isi_konten).substring(0, 100)}...
                       </p>
 
                       <div

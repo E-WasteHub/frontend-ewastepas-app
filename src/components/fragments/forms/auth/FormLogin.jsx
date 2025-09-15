@@ -1,32 +1,39 @@
+// src/components/fragments/forms/auth/FormLogin.jsx
 import { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import useLoginForm from '../../../../hooks/auth/useLoginForm';
-import useDarkMode from '../../../../hooks/useDarkMode';
-import usePengguna from '../../../../hooks/usePengguna';
-import useToast from '../../../../hooks/useToast';
+
+import {
+  useDarkMode,
+  useLoginForm,
+  usePengguna,
+  useToast,
+} from '../../../../hooks';
 import { getDashboardPathByPeran } from '../../../../utils/peranUtils';
-import { Button, Checkbox, InputForm } from '../../../elements';
+
+import { Button, Checkbox, InputForm, Message } from '../../../elements';
 import FormHeader from '../FormHeader';
 
 const FormLogin = () => {
+  // Hooks context dan utilitas
   const { isDarkMode } = useDarkMode();
+  const { setPengguna } = usePengguna();
+  const { success, info, warning } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
-  const { setPengguna } = usePengguna();
-  const { success, error: errorToast, info, warning } = useToast();
 
+  // State & actions dari custom hook login
   const {
     email,
     kata_sandi,
+    ingatSaya,
     isLoading,
-    errorField,
-    error,
-    rememberMe,
-    handleInputChange,
-    handleLoginSubmit,
+    pesanErrorGlobal,
+    pesanErrorField,
+    handlePerubahanInput,
+    handleSubmitLogin,
   } = useLoginForm();
 
-  // Cek apakah user di-redirect karena token expired
+  // Cek status sesi expired via query param
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get('expired') === '1') {
@@ -34,49 +41,52 @@ const FormLogin = () => {
     }
   }, [location.search, warning]);
 
-  // Submit handler
-  const onSubmit = async (e) => {
+  // Handler submit form login
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Cek apakah ada proses OTP yang belum selesai
-    const pendingOtpUser = localStorage.getItem('userId');
-    if (pendingOtpUser) {
+
+    // Jika ada proses OTP pending
+    const userIdPending = localStorage.getItem('userId');
+    if (userIdPending) {
       info(
-        'Anda memiliki proses verifikasi OTP yang belum selesai. Silakan lanjutkan verifikasi.'
+        'Anda memiliki proses verifikasi OTP yang belum selesai. Silakan lanjutkan.'
       );
       navigate('/verifikasi-otp');
       return;
     }
-    const res = await handleLoginSubmit(e);
 
-    if (res?.data?.peran) {
-      const peran = res.data.peran;
-      if (peran === 'Admin') {
-        info('Login berhasil! Silakan cek email untuk verifikasi.');
-        return;
-      }
-      success(`Selamat datang! Mengarahkan ke dashboard ${peran}...`);
-      setPengguna(res.data);
-      setTimeout(
-        () => navigate(getDashboardPathByPeran(peran), { replace: true }),
-        2500
-      );
-    } else if (res?.message) {
-      info(res.message);
+    const response = await handleSubmitLogin(e);
+    if (response?.data?.peran) {
+      handleLoginBerhasil(response.data);
     }
   };
 
-  useEffect(() => {
-    if (error) errorToast(error);
-  }, [error, errorToast]);
+  // Handler jika login berhasil
+  const handleLoginBerhasil = (dataPengguna) => {
+    const { peran } = dataPengguna;
+
+    if (peran === 'Admin') {
+      info('Login berhasil! Silakan cek email untuk kode verifikasi.');
+      return;
+    }
+
+    success(`Selamat datang! Mengarahkan ke dashboard ${peran}...`);
+    setPengguna(dataPengguna);
+
+    setTimeout(() => {
+      const dashboardPath = getDashboardPathByPeran(peran);
+      navigate(dashboardPath, { replace: true });
+    }, 2500);
+  };
 
   return (
     <div className='w-full max-w-md mx-auto'>
       <div
-        className={`${
+        className={`rounded-2xl border shadow-lg p-8 ${
           isDarkMode
             ? 'bg-slate-800 border-slate-700'
             : 'bg-white border-gray-200'
-        } rounded-2xl border shadow-lg p-8`}
+        }`}
       >
         <FormHeader
           title='Ewastepas'
@@ -85,17 +95,32 @@ const FormLogin = () => {
           className='mb-6'
         />
 
-        <form onSubmit={onSubmit} className='space-y-4'>
+        {/* Pesan error global */}
+        {pesanErrorGlobal && (
+          <Message
+            type='error'
+            className={`text-center my-3 rounded-2xl p-4 ${
+              isDarkMode
+                ? 'bg-red-300 border-red-400 text-red-700'
+                : 'bg-red-200 border-red-600 text-red-800'
+            }`}
+          >
+            {pesanErrorGlobal}
+          </Message>
+        )}
+
+        {/* Form login */}
+        <form onSubmit={handleSubmit} className='space-y-4' noValidate>
           <InputForm
             label='Email'
             name='email'
             type='email'
             placeholder='Masukkan email Anda'
             value={email}
-            onChange={handleInputChange}
+            onChange={handlePerubahanInput}
             disabled={isLoading}
             required
-            error={errorField?.email}
+            error={pesanErrorField.email}
           />
 
           <InputForm
@@ -104,32 +129,34 @@ const FormLogin = () => {
             type='password'
             placeholder='Masukkan kata sandi Anda'
             value={kata_sandi}
-            onChange={handleInputChange}
+            onChange={handlePerubahanInput}
             disabled={isLoading}
             required
             showPasswordToggle
-            error={errorField?.kata_sandi}
+            error={pesanErrorField.kata_sandi}
           />
 
+          {/* Ingat saya + link lupa password */}
           <div className='flex items-center justify-between text-sm'>
             <label className='flex items-center space-x-2'>
               <Checkbox
                 name='rememberMe'
-                checked={rememberMe}
-                onChange={handleInputChange}
+                checked={ingatSaya}
+                onChange={handlePerubahanInput}
                 disabled={isLoading}
               />
               <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>
                 Ingat saya
               </span>
             </label>
+
             <Link
               to='/pemulihan-akun'
-              className={`${
+              className={`font-medium transition-colors ${
                 isDarkMode
                   ? 'text-green-400 hover:text-green-300'
                   : 'text-green-600 hover:text-green-500'
-              } transition-colors`}
+              }`}
             >
               Lupa kata sandi?
             </Link>
@@ -139,13 +166,15 @@ const FormLogin = () => {
             type='submit'
             variant='primary'
             isLoading={isLoading}
-            loadingText='Memuat...'
+            loadingText='Memproses login...'
+            disabled={isLoading || !email.trim() || !kata_sandi.trim()}
             className='w-full mt-6'
           >
             Masuk
           </Button>
         </form>
 
+        {/* Link registrasi */}
         <div
           className={`text-center text-sm mt-6 pt-4 border-t ${
             isDarkMode ? 'border-slate-700' : 'border-gray-200'
@@ -155,11 +184,11 @@ const FormLogin = () => {
             Belum punya akun?{' '}
             <Link
               to='/register'
-              className={`${
+              className={`font-semibold transition-colors ${
                 isDarkMode
                   ? 'text-green-400 hover:text-green-300'
                   : 'text-green-600 hover:text-green-500'
-              } font-semibold transition-colors`}
+              }`}
             >
               Daftar di sini
             </Link>

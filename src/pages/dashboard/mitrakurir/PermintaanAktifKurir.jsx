@@ -79,7 +79,7 @@ const PermintaanAktifKurir = () => {
 
   return (
     <div
-      className={`max-w-7xl mx-auto space-y-6 ${
+      className={`max-w-7xl mx-auto space-y-3 ${
         isDarkMode ? 'bg-slate-900 text-white' : 'bg-gray-50 text-gray-900'
       }`}
     >
@@ -95,8 +95,8 @@ const PermintaanAktifKurir = () => {
         }`}
       >
         {/* Informasi Penjemputan */}
-        <section className='mb-6'>
-          <h3 className='text-xl font-bold mb-4'>Informasi Penjemputan</h3>
+        <section className='mb-3'>
+          <h3 className='text-xl font-bold mb-2'>Informasi Penjemputan</h3>
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 text-sm'>
             {/* Kolom kiri */}
             <div className='space-y-3'>

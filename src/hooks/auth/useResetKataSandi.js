@@ -4,103 +4,95 @@ import * as authService from '../../services/authService';
 
 const useResetKataSandi = () => {
   // state form
-  const [kataSandi, setKataSandi] = useState('');
-  const [konfirmasiKataSandi, setKonfirmasiKataSandi] = useState('');
+  const [form, setForm] = useState({
+    kata_sandi: '',
+    konfirmasi_kata_sandi: '',
+  });
 
-  // state feedback
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  // state status
   const [isLoading, setIsLoading] = useState(false);
-  const [errorField, setErrorField] = useState('');
+  const [pesanErrorField, setPesanErrorField] = useState({});
+  const [pesanErrorGlobal, setPesanErrorGlobal] = useState('');
+  const [pesanSukses, setPesanSukses] = useState('');
 
-  // input kata sandi
-  const handleInputKataSandi = (e) => {
-    setKataSandi(e.target.value);
-    setError('');
-    setErrorField('');
-    setSuccessMessage('');
+  // handler perubahan input
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+
+    // Reset error & pesan terkait
+    if (pesanErrorField[name]) {
+      setPesanErrorField((prev) => ({ ...prev, [name]: '' }));
+    }
+    if (pesanErrorGlobal) setPesanErrorGlobal('');
+    if (pesanSukses) setPesanSukses('');
   };
 
-  // input konfirmasi kata sandi
-  const handleInputKonfirmasiKataSandi = (e) => {
-    setKonfirmasiKataSandi(e.target.value);
-    setError('');
-    setErrorField('');
-    setSuccessMessage('');
+  // validasi form sebelum submit
+  const validateForm = () => {
+    const errors = {};
+
+    if (!form.kata_sandi) {
+      errors.kata_sandi = 'Kata sandi baru wajib diisi';
+    } else if (form.kata_sandi.length < 6) {
+      errors.kata_sandi = 'Kata sandi minimal 6 karakter';
+    }
+
+    if (!form.konfirmasi_kata_sandi) {
+      errors.konfirmasi_kata_sandi = 'Konfirmasi kata sandi wajib diisi';
+    } else if (form.kataSandi !== form.konfirmasi_kata_sandi) {
+      errors.konfirmasi_kata_sandi = 'Konfirmasi kata sandi tidak cocok';
+    }
+
+    setPesanErrorField(errors);
+    return Object.keys(errors).length === 0;
   };
 
-  // clear error
-  const clearError = () => {
-    setError('');
-    setErrorField('');
-  };
-
-  // clear success
-  const clearSuccess = () => {
-    setSuccessMessage('');
-  };
-
-  // submit reset
+  // handle submit reset
   const handleSubmitReset = async (e, otp) => {
-    e.preventDefault();
-    setError('');
-    setSuccessMessage('');
+    if (e) e.preventDefault();
+    setPesanErrorGlobal('');
+    setPesanSukses('');
+    setPesanErrorField({});
 
-    // validasi input
-    if (!kataSandi) {
-      setError('Kata sandi baru wajib diisi');
-      setErrorField('kataSandi');
-      return;
-    }
-    if (kataSandi.length < 6) {
-      setError('Kata sandi minimal 6 karakter');
-      setErrorField('kataSandi');
-      return;
-    }
-    if (!konfirmasiKataSandi) {
-      setError('Konfirmasi kata sandi wajib diisi');
-      setErrorField('konfirmasiKataSandi');
-      return;
-    }
-    if (kataSandi !== konfirmasiKataSandi) {
-      setError('Konfirmasi kata sandi tidak cocok');
-      setErrorField('konfirmasiKataSandi');
-      return;
-    }
+    if (!validateForm()) return null;
 
     try {
       setIsLoading(true);
+
       const res = await authService.resetPassword({
         otp,
-        kata_sandi: kataSandi,
-        konfirmasi_kata_sandi: konfirmasiKataSandi,
+        kata_sandi: form.kata_sandi,
+        konfirmasi_kata_sandi: form.konfirmasi_kata_sandi,
       });
-      setSuccessMessage(res.message || 'Reset kata sandi berhasil');
-      setKataSandi('');
-      setKonfirmasiKataSandi('');
+
+      setPesanSukses(res.message || 'Reset kata sandi berhasil');
+      setForm({ kata_sandi: '', konfirmasi_kata_sandi: '' });
+
+      return res;
     } catch (err) {
-      setError(err.message || 'Reset kata sandi gagal');
+      setPesanErrorGlobal(err.message || 'Reset kata sandi gagal');
+      return null;
     } finally {
       setIsLoading(false);
     }
   };
 
   return {
-    // state
-    kataSandi,
-    konfirmasiKataSandi,
+    // Data
+    form,
     isLoading,
-    error,
-    errorField,
-    successMessage,
-    // actions
-    handleInputKataSandi,
-    handleInputKonfirmasiKataSandi,
+    pesanErrorField,
+    pesanErrorGlobal,
+    pesanSukses,
+
+    // Actions
+    handleInputChange,
     handleSubmitReset,
-    clearError,
-    clearSuccess,
-    setError,
-    setSuccessMessage,
+
+    // Setters opsional
+    setPesanErrorGlobal,
+    setPesanSukses,
   };
 };
 

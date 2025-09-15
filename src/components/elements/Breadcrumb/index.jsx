@@ -1,14 +1,15 @@
 import { Link, useLocation } from 'react-router-dom';
 import usePengguna from '../../../hooks/usePengguna';
 import { menuItemsByRole } from '../../../utils/menuUtils';
+import { getDashboardPathByPeran } from '../../../utils/peranUtils';
 
-// rekursif cari path di menu
-const findBreadcrumb = (items, pathname) => {
-  for (const item of items) {
+// cari breadcrumb berdasarkan path aktif
+const cariBreadcrumb = (menu, pathname) => {
+  for (const item of menu) {
     if (item.path === pathname) return [item];
     if (item.children) {
-      const child = findBreadcrumb(item.children, pathname);
-      if (child.length) return [item, ...child];
+      const childBreadcrumb = cariBreadcrumb(item.children, pathname);
+      if (childBreadcrumb.length) return [item, ...childBreadcrumb];
     }
   }
   return [];
@@ -19,31 +20,26 @@ const Breadcrumb = () => {
   const { peran } = usePengguna();
   const role = peran || 'Masyarakat';
 
-  const menuItems = menuItemsByRole[role] || [];
+  // ambil menu sesuai role
+  const menu = menuItemsByRole[role] || [];
 
-  const breadcrumbItems = findBreadcrumb(menuItems, location.pathname);
+  // cari breadcrumb aktif
+  const breadcrumb = cariBreadcrumb(menu, location.pathname);
 
-  // root dashboard sesuai role
-  const rootDashboardPath =
-    role === 'Admin'
-      ? '/dashboard/admin'
-      : role === 'Mitra Kurir'
-      ? '/dashboard/mitra-kurir'
-      : '/dashboard/masyarakat';
-
+  // root dashboard sesuai peran
+  const rootDashboardPath = getDashboardPathByPeran(role);
   const dashboardItem = { title: 'Dashboard', path: rootDashboardPath };
 
-  // cegah double dashboard
-  const finalItems =
-    breadcrumbItems.length === 0 ||
-    breadcrumbItems[0].path !== rootDashboardPath
-      ? [dashboardItem, ...breadcrumbItems]
-      : breadcrumbItems;
+  // pastikan Dashboard selalu ada di paling depan, tapi tidak double kalau sudah ada
+  const breadcrumbFinal =
+    breadcrumb.length === 0 || breadcrumb[0].path !== rootDashboardPath
+      ? [dashboardItem, ...breadcrumb]
+      : breadcrumb;
 
   return (
-    <nav className='mb-4 px-8'>
+    <nav className='mb-2 px-8'>
       <ul className='flex items-center gap-2 text-sm'>
-        {finalItems.map((item, index) => (
+        {breadcrumbFinal.map((item, index) => (
           <li key={item.path} className='flex items-center gap-2'>
             <Link
               to={item.path}
@@ -51,7 +47,7 @@ const Breadcrumb = () => {
             >
               {item.title}
             </Link>
-            {index < finalItems.length - 1 && <span>/</span>}
+            {index < breadcrumbFinal.length - 1 && <span>/</span>}
           </li>
         ))}
       </ul>

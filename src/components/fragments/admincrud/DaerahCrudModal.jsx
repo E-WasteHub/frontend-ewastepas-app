@@ -10,8 +10,10 @@ const DaerahCrudModal = ({
   title = 'Form Daerah',
   isLoading = false,
 }) => {
+  // State lokal untuk form
   const [namaDaerah, setNamaDaerah] = useState('');
 
+  // Isi form saat mode edit
   useEffect(() => {
     if (initialData) {
       setNamaDaerah(initialData.nama_daerah || '');
@@ -20,13 +22,17 @@ const DaerahCrudModal = ({
     }
   }, [initialData]);
 
-  const handleSubmit = () => {
-    onSubmit({ nama_daerah: namaDaerah });
+  // Saat form disubmit
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!namaDaerah.trim()) return;
+    onSubmit({ nama_daerah: namaDaerah.trim() });
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      <div className='space-y-4'>
+      <form onSubmit={handleSubmit} className='space-y-4'>
+        {/* Input nama daerah */}
         <InputForm
           label='Nama Daerah'
           name='nama_daerah'
@@ -36,15 +42,16 @@ const DaerahCrudModal = ({
           placeholder='Masukkan nama daerah'
         />
 
+        {/* Tombol aksi */}
         <div className='flex justify-end gap-2'>
-          <Button variant='secondary' onClick={onClose}>
+          <Button type='button' variant='secondary' onClick={onClose}>
             Batal
           </Button>
-          <Button onClick={handleSubmit} disabled={isLoading || !namaDaerah}>
+          <Button type='submit' disabled={isLoading || !namaDaerah.trim()}>
             {isLoading ? 'Menyimpan...' : 'Simpan'}
           </Button>
         </div>
-      </div>
+      </form>
     </Modal>
   );
 };

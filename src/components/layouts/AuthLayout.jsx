@@ -1,6 +1,7 @@
 import { ArrowLeft, Moon, Sun } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import useDarkMode from '../../hooks/useDarkMode';
+import { ThemeSelector } from '../elements';
 
 const BackButton = ({ isDarkMode }) => (
   <Link
@@ -16,18 +17,9 @@ const BackButton = ({ isDarkMode }) => (
   </Link>
 );
 
-const ThemeToggleButton = ({ isDarkMode, toggleTheme }) => (
-  <button
-    onClick={toggleTheme}
-    className={`p-2.5 rounded-lg transition-all duration-200 backdrop-blur-md border ${
-      isDarkMode
-        ? 'text-slate-300 hover:text-white bg-slate-800/90 hover:bg-slate-700/90 border-slate-700/50'
-        : 'text-slate-700 hover:text-slate-900 bg-white/90 hover:bg-white border-gray-200/50'
-    }`}
-    aria-label='Toggle theme'
-  >
-    {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-  </button>
+const ThemeToggleButton = () => (
+  // Theme Dark / Light
+  <ThemeSelector />
 );
 
 const AuthLayout = ({ children }) => {

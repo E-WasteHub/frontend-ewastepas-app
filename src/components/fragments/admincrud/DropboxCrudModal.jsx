@@ -1,8 +1,7 @@
 // src/components/fragments/admincrud/DropboxCrudModal.jsx
 import { useEffect, useState } from 'react';
 import * as daerahService from '../../../services/daerahService';
-import { Button, InputForm, Modal } from '../../elements';
-import Select from '../../elements/Select';
+import { Button, InputForm, Modal, Select } from '../../elements';
 
 const DropboxCrudModal = ({
   isOpen,
@@ -12,18 +11,18 @@ const DropboxCrudModal = ({
   title = 'Form Dropbox',
   isLoading = false,
 }) => {
+  // State lokal untuk form
   const [namaDropbox, setNamaDropbox] = useState('');
   const [longitude, setLongitude] = useState('');
   const [latitude, setLatitude] = useState('');
   const [idDaerah, setIdDaerah] = useState('');
   const [daerahOptions, setDaerahOptions] = useState([]);
 
+  // Ambil daftar daerah untuk dropdown
   useEffect(() => {
-    // ambil daftar daerah untuk dropdown
-    const fetchDaerah = async () => {
+    const ambilDaerah = async () => {
       try {
         const res = await daerahService.ambilSemua();
-        // Menggunakan pola yang sama seperti useAdminCrud
         const data = Array.isArray(res?.data?.data)
           ? res.data.data
           : Array.isArray(res?.data)
@@ -31,12 +30,13 @@ const DropboxCrudModal = ({
           : [];
         setDaerahOptions(data);
       } catch (err) {
-        console.error('  Gagal ambil daftar daerah:', err);
+        console.error('Gagal mengambil daftar daerah:', err);
       }
     };
-    fetchDaerah();
+    ambilDaerah();
   }, []);
 
+  // Isi form saat mode edit
   useEffect(() => {
     if (initialData) {
       setNamaDropbox(initialData.nama_dropbox || '');
@@ -51,9 +51,13 @@ const DropboxCrudModal = ({
     }
   }, [initialData]);
 
-  const handleSubmit = () => {
+  // Saat form disubmit
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!namaDropbox.trim() || !longitude || !latitude || !idDaerah) return;
+
     onSubmit({
-      nama_dropbox: namaDropbox,
+      nama_dropbox: namaDropbox.trim(),
       longitude: parseFloat(longitude),
       latitude: parseFloat(latitude),
       id_daerah: parseInt(idDaerah, 10),
@@ -62,7 +66,8 @@ const DropboxCrudModal = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      <div className='space-y-4'>
+      <form onSubmit={handleSubmit} className='space-y-4'>
+        {/* Input nama dropbox */}
         <InputForm
           label='Nama Dropbox'
           name='nama_dropbox'
@@ -72,6 +77,7 @@ const DropboxCrudModal = ({
           placeholder='Masukkan nama dropbox'
         />
 
+        {/* Input koordinat */}
         <InputForm
           label='Longitude'
           name='longitude'
@@ -94,32 +100,38 @@ const DropboxCrudModal = ({
           placeholder='Contoh: -6.914744'
         />
 
+        {/* Pilih daerah */}
         <Select
           label='Daerah'
           value={idDaerah}
           onChange={setIdDaerah}
-          options={daerahOptions.map((daerah) => ({
-            value: daerah.id_daerah,
-            label: daerah.nama_daerah,
+          options={daerahOptions.map((d) => ({
+            value: d.id_daerah,
+            label: d.nama_daerah,
           }))}
-          placeholder='Pilih Daerah'
+          placeholder='Pilih daerah'
           required
         />
 
+        {/* Tombol aksi */}
         <div className='flex justify-end gap-2'>
-          <Button variant='secondary' onClick={onClose}>
+          <Button type='button' variant='secondary' onClick={onClose}>
             Batal
           </Button>
           <Button
-            onClick={handleSubmit}
+            type='submit'
             disabled={
-              isLoading || !namaDropbox || !longitude || !latitude || !idDaerah
+              isLoading ||
+              !namaDropbox.trim() ||
+              !longitude ||
+              !latitude ||
+              !idDaerah
             }
           >
             {isLoading ? 'Menyimpan...' : 'Simpan'}
           </Button>
         </div>
-      </div>
+      </form>
     </Modal>
   );
 };

@@ -1,9 +1,7 @@
 // src/components/forms/auth/FormRegister.jsx
 import { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import useRegisterForm from '../../../../hooks/auth/useRegisterForm';
-import useDarkMode from '../../../../hooks/useDarkMode';
-import useToast from '../../../../hooks/useToast';
+import { useDarkMode, useRegisterForm, useToast } from '../../../../hooks';
 import { Button, InputForm, Label } from '../../../elements';
 import FormHeader from '../FormHeader';
 
@@ -18,8 +16,8 @@ const FormRegister = () => {
     peran,
     isLoading,
     errorField,
-    errorMessage,
-    successMessage,
+    pesanError,
+    pesanSukses,
     handleChange,
     handlePeranSelect,
     handleSubmit,
@@ -27,53 +25,44 @@ const FormRegister = () => {
     clearSuccess,
   } = useRegisterForm();
 
-  // reset pesan saat halaman dibuka ulang
+  // Reset pesan saat mount
   useEffect(() => {
     clearError();
     clearSuccess();
   }, [clearError, clearSuccess]);
 
-  // tampilkan error via toast
-  useEffect(() => {
-    if (errorMessage) error(errorMessage);
-  }, [errorMessage, error]);
-
-  // tampilkan success via toast
-  useEffect(() => {
-    if (successMessage) success(successMessage);
-  }, [successMessage, success]);
-
-  // ambil peran dari query string (?peran=...)
+  // Ambil peran dari query string (?peran=...)
   useEffect(() => {
     const peranParam = searchParams.get('peran');
-    if (peranParam) {
-      handlePeranSelect(peranParam);
-    } else {
-      handlePeranSelect('');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+    handlePeranSelect(peranParam || '');
+  }, [searchParams, handlePeranSelect]);
 
-  // submit form registrasi
+  // Tampilkan error via toast
+  useEffect(() => {
+    if (pesanError) error(pesanError);
+  }, [pesanError, error]);
+
+  // Tampilkan sukses via toast
+  useEffect(() => {
+    if (pesanSukses) success(pesanSukses);
+  }, [pesanSukses, success]);
+
+  // Submit register
   const onSubmit = async (e) => {
     e.preventDefault();
     const res = await handleSubmit();
+    if (!res?.data?.id_pengguna) return;
 
-    if (res?.data?.id_pengguna) {
-      localStorage.setItem('userId', res.data.id_pengguna);
-      localStorage.setItem('userEmail', form.email);
+    // Simpan info OTP di localStorage
+    localStorage.setItem('userId', res.data.id_pengguna);
+    localStorage.setItem('userEmail', form.email);
 
-      // simpan waktu expired OTP (5 menit)
-      const expiresAt = Date.now() + 5 * 60 * 1000;
-      localStorage.setItem('otpExpiresAt', expiresAt.toString());
+    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 menit
+    localStorage.setItem('otpExpiresAt', expiresAt.toString());
 
-      success('Akun berhasil dibuat. Mengarahkan ke halaman verifikasi OTP...');
-
-      setTimeout(() => {
-        navigate('/verifikasi-otp');
-        clearSuccess();
-      }, 2500);
-    }
+    // Toast sukses lalu redirect
+    success('Akun berhasil dibuat. Silakan verifikasi OTP.');
+    setTimeout(() => navigate('/verifikasi-otp'), 2000);
   };
 
   const roleOptions = [
@@ -84,13 +73,12 @@ const FormRegister = () => {
   return (
     <div className='w-full max-w-lg mx-auto mt-4'>
       <div
-        className={`${
+        className={`rounded-2xl border shadow-lg p-8 ${
           isDarkMode
             ? 'bg-slate-800 border-slate-700'
             : 'bg-white border-gray-200'
-        } rounded-2xl border shadow-lg p-8`}
+        }`}
       >
-        {/* Header */}
         <FormHeader
           title='Ewastepas'
           subtitle='Buat Akun Baru'
@@ -216,11 +204,11 @@ const FormRegister = () => {
             Sudah punya akun?{' '}
             <Link
               to='/login'
-              className={`${
+              className={`font-medium transition-colors ${
                 isDarkMode
                   ? 'text-green-400 hover:text-green-300'
                   : 'text-green-600 hover:text-green-500'
-              } font-medium transition-colors`}
+              }`}
             >
               Masuk di sini
             </Link>

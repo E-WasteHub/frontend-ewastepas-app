@@ -1,104 +1,164 @@
-import { useEffect, useState } from 'react';
-import * as authService from '../../services/authService';
+// src/hooks/auth/useLoginForm.js
+import { useCallback, useEffect, useState } from 'react';
+import { login } from '../../services/authService';
 import { setTokenWithExpiry } from '../../utils/authExpiredUtils';
 
 const useLoginForm = () => {
   // state form
-  const [email, setEmail] = useState('');
-  const [kata_sandi, setKataSandi] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    kata_sandi: '',
+    ingatSaya: false,
+  });
 
-  // state feedback
-  const [isLoading, setIsLoading] = useState(false);
-  const [globalError, setGlobalError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState({});
+  // state status
+  const [status, setStatus] = useState({
+    isLoading: false,
+    pesanErrorGlobal: '',
+    pesanErrorField: {},
+  });
 
-  // inisialisasi email jika ada di localStorage
+  // ambil email tersimpan (ingat saya)
   useEffect(() => {
     const rememberedEmail = localStorage.getItem('rememberedEmail');
     if (rememberedEmail) {
-      setEmail(rememberedEmail);
-      setRememberMe(true);
+      setFormData((prev) => ({
+        ...prev,
+        email: rememberedEmail,
+        ingatSaya: true,
+      }));
     }
   }, []);
 
-  // handler perubahan input
-  const handleInputChange = (e) => {
-    const { name, value, checked } = e.target;
+  // auto-clear pesan error global setelah 5 detik
+  useEffect(() => {
+    if (!status.pesanErrorGlobal) return;
+    const timer = setTimeout(() => {
+      setStatus((prev) => ({ ...prev, pesanErrorGlobal: '' }));
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [status.pesanErrorGlobal]);
 
-    if (name === 'email') setEmail(value);
-    if (name === 'kata_sandi') setKataSandi(value);
-    if (name === 'rememberMe') setRememberMe(checked);
+  // handler input
+  const handlePerubahanInput = useCallback(
+    (e) => {
+      const { name, value, type, checked } = e.target;
+      const newValue = type === 'checkbox' ? checked : value;
 
-    // Clear error saat user mengubah field
-    setFieldErrors((prev) => ({ ...prev, [name]: '' }));
-    setGlobalError('');
-  };
+      setFormData((prev) => ({ ...prev, [name]: newValue }));
 
-  // validasi form
-  const validateForm = () => {
-    const errors = {};
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      // reset error field jika ada
+      if (status.pesanErrorField[name]) {
+        setStatus((prev) => ({
+          ...prev,
+          pesanErrorField: { ...prev.pesanErrorField, [name]: '' },
+        }));
+      }
+    },
+    [status.pesanErrorField]
+  );
 
-    if (!email) errors.email = 'Email wajib diisi';
-    else if (!emailRegex.test(email)) errors.email = 'Format email tidak valid';
+  // ingat email di localStorage
+  const handleRememberEmail = useCallback(() => {
+    if (formData.ingatSaya) {
+      localStorage.setItem('rememberedEmail', formData.email);
+    } else {
+      localStorage.removeItem('rememberedEmail');
+    }
+  }, [formData.email, formData.ingatSaya]);
 
-    if (!kata_sandi) errors.kata_sandi = 'Kata sandi wajib diisi';
-    else if (kata_sandi.length < 6)
-      errors.kata_sandi = 'Kata sandi minimal 6 karakter';
+  // simpan data login
+  const simpanDataLogin = useCallback((data, token) => {
+    const TTL = 12 * 60 * 60; // 12 jam
+    setTokenWithExpiry(token, TTL);
 
-    setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
+    localStorage.setItem('pengguna', JSON.stringify(data));
+    localStorage.setItem('peran', data.peran?.trim() || '');
+  }, []);
 
-  // handler submit form
-  const handleLoginSubmit = async (e) => {
-    if (e) e.preventDefault();
-    if (!validateForm()) return;
+  // submit login
+  const handleSubmitLogin = useCallback(
+    async (e) => {
+      if (e) e.preventDefault();
 
-    try {
-      setIsLoading(true);
-      setGlobalError('');
-      localStorage.clear();
-
-      const res = await authService.login({ email, kata_sandi });
-
-      if (res?.token) {
-        const defaultTTL = 12 * 60 * 60;
-        setTokenWithExpiry(res.token, defaultTTL);
-
-        if (res.data) {
-          localStorage.setItem('pengguna', JSON.stringify(res.data));
-          localStorage.setItem('peran', res.data.peran?.trim());
-        }
+      // validasi sederhana
+      if (!formData.email.includes('@')) {
+        setStatus((prev) => ({
+          ...prev,
+          pesanErrorField: {
+            ...prev.pesanErrorField,
+            email: 'Gunakan format email yang valid',
+          },
+        }));
+        return null;
       }
 
-      if (rememberMe) localStorage.setItem('rememberedEmail', email);
-      else localStorage.removeItem('rememberedEmail');
+      try {
+        setStatus({
+          isLoading: true,
+          pesanErrorGlobal: '',
+          pesanErrorField: {},
+        });
 
-      return res;
-    } catch (err) {
-      setGlobalError(err.message || 'Login gagal');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        const response = await login({
+          email: formData.email,
+          kata_sandi: formData.kata_sandi,
+        });
+
+        if (!response?.token) {
+          throw new Error('Token tidak ditemukan dalam response');
+        }
+
+        // clear localStorage kecuali email yang diingat
+        const rememberedEmail = localStorage.getItem('rememberedEmail');
+        localStorage.clear();
+        if (rememberedEmail) {
+          localStorage.setItem('rememberedEmail', rememberedEmail);
+        }
+
+        simpanDataLogin(response.data, response.token);
+        handleRememberEmail();
+
+        return response;
+      } catch (err) {
+        setStatus((prev) => ({
+          ...prev,
+          pesanErrorGlobal: err.message || 'Login gagal',
+          isLoading: false,
+        }));
+        return null;
+      } finally {
+        setStatus((prev) => ({ ...prev, isLoading: false }));
+      }
+    },
+    [formData.email, formData.kata_sandi, simpanDataLogin, handleRememberEmail]
+  );
+
+  // reset form
+  const resetForm = useCallback(() => {
+    setFormData({
+      email: localStorage.getItem('rememberedEmail') || '',
+      kata_sandi: '',
+      ingatSaya: Boolean(localStorage.getItem('rememberedEmail')),
+    });
+    setStatus({ isLoading: false, pesanErrorGlobal: '', pesanErrorField: {} });
+  }, []);
 
   return {
-    // State
-    email,
-    kata_sandi,
-    rememberMe,
-    // Actions
-    setEmail,
-    setKataSandi,
-    setRememberMe,
-    // Feedback
-    isLoading,
-    error: globalError,
-    errorField: fieldErrors,
-    handleInputChange,
-    handleLoginSubmit,
+    // data
+    email: formData.email,
+    kata_sandi: formData.kata_sandi,
+    ingatSaya: formData.ingatSaya,
+
+    // status
+    isLoading: status.isLoading,
+    pesanErrorGlobal: status.pesanErrorGlobal,
+    pesanErrorField: status.pesanErrorField,
+
+    // actions
+    handlePerubahanInput,
+    handleSubmitLogin,
+    resetForm,
   };
 };
 

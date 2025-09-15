@@ -10,7 +10,7 @@ import useDarkMode from '../hooks/useDarkMode';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import * as edukasiService from '../services/edukasiService';
 import getLatestEdukasi from '../utils/getLatestEdukasi';
-import { stripHtml } from '../utils/stripHtml';
+import { stripHtmlUtils } from '../utils/stripHtmlUtils';
 
 const EdukasiView = () => {
   useDocumentTitle('Edukasi | Ewastepas');
@@ -141,7 +141,8 @@ const EdukasiView = () => {
                               isDarkMode ? 'text-slate-400' : 'text-slate-600'
                             }`}
                           >
-                            {stripHtml(topic.isi_konten).substring(0, 150)}...
+                            {stripHtmlUtils(topic.isi_konten).substring(0, 100)}
+                            ...
                           </p>
 
                           <div className='flex items-center justify-end text-sm mt-4'>

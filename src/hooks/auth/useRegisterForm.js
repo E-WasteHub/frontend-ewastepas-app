@@ -12,31 +12,29 @@ const useRegisterForm = () => {
   });
   const [peran, setPeran] = useState('');
 
-  // state feedback
+  // state feedback UI
   const [isLoading, setIsLoading] = useState(false);
   const [errorField, setErrorField] = useState({});
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [pesanError, setPesanError] = useState('');
+  const [pesanSukses, setPesanSukses] = useState('');
 
-  // handler perubahan input
+  // handler input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
 
-    // reset error hanya untuk field yang diubah
     if (errorField[name]) {
       setErrorField((prev) => ({ ...prev, [name]: '' }));
     }
-    setErrorMessage('');
+    setPesanError('');
   };
 
-  // handler perubahan select peran
   const handlePeranSelect = (value) => {
     setPeran(value);
     setErrorField((prev) => ({ ...prev, peran: '' }));
   };
 
-  // validasi form
+  // validasi form sebelum submit
   const validateForm = () => {
     const errors = {};
 
@@ -65,33 +63,29 @@ const useRegisterForm = () => {
     return Object.keys(errors).length === 0;
   };
 
-  // handler submit form
+  // handle submit form
   const handleSubmit = async () => {
     if (!validateForm()) return null;
 
     try {
       setIsLoading(true);
-      setErrorMessage('');
-      setSuccessMessage('');
+      setPesanError('');
+      setPesanSukses('');
 
-      const res = await authService.register({
-        ...form,
-        peran,
-      });
-
-      setSuccessMessage(res.message || 'Registrasi berhasil');
+      const res = await authService.register({ ...form, peran });
+      setPesanSukses(res.message || 'Registrasi berhasil');
       return res;
     } catch (err) {
-      setErrorMessage(err.message || 'Registrasi gagal');
+      setPesanError(err.message || 'Registrasi gagal');
       return null;
     } finally {
       setIsLoading(false);
     }
   };
 
-  // clear feedback
-  const clearError = useCallback(() => setErrorMessage(''), []);
-  const clearSuccess = useCallback(() => setSuccessMessage(''), []);
+  // helper untuk clear pesan
+  const clearError = useCallback(() => setPesanError(''), []);
+  const clearSuccess = useCallback(() => setPesanSukses(''), []);
 
   return {
     // Data form
@@ -101,8 +95,8 @@ const useRegisterForm = () => {
     // Status
     isLoading,
     errorField,
-    errorMessage,
-    successMessage,
+    pesanError,
+    pesanSukses,
 
     // Actions
     handleChange,

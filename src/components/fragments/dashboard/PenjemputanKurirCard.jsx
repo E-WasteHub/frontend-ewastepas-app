@@ -1,39 +1,14 @@
-// src/components/fragments/kurir/PenjemputanKurirCard.jsx
 import useDarkMode from '../../../hooks/useDarkMode';
 import { formatTanggalWaktuIndonesia } from '../../../utils/dateUtils';
-import { Button, Card } from '../../elements';
+import { Badge, Button, Card } from '../../elements';
 
-// Utility: warna badge status
-const warnaStatusBadge = (status, isDarkMode = false) => {
-  const warnaMap = {
-    Diproses: {
-      light: 'bg-yellow-100 text-yellow-800',
-      dark: 'bg-yellow-500/20 text-yellow-300',
-    },
-    Diterima: {
-      light: 'bg-blue-100 text-blue-800',
-      dark: 'bg-blue-500/20 text-blue-300',
-    },
-    Dijemput: {
-      light: 'bg-purple-100 text-purple-800',
-      dark: 'bg-purple-500/20 text-purple-300',
-    },
-    Selesai: {
-      light: 'bg-green-100 text-green-800',
-      dark: 'bg-green-500/20 text-green-300',
-    },
-    Dibatalkan: {
-      light: 'bg-red-100 text-red-800',
-      dark: 'bg-red-500/20 text-red-300',
-    },
-  };
-
-  const entry = warnaMap[status];
-  if (entry) return isDarkMode ? entry.dark : entry.light;
-
-  return isDarkMode
-    ? 'bg-gray-600/30 text-gray-300'
-    : 'bg-gray-100 text-gray-700';
+// Peta status penjemputan ke style badge
+const statusBadgeMap = {
+  Diproses: 'warning',
+  Diterima: 'info',
+  Dijemput: 'secondary',
+  Selesai: 'success',
+  Dibatalkan: 'danger',
 };
 
 const PenjemputanKurirCard = ({
@@ -54,7 +29,7 @@ const PenjemputanKurirCard = ({
       }`}
     >
       <div className='flex items-start justify-between'>
-        {/*    Kiri: info utama */}
+        {/* Kiri: info utama */}
         <div className='flex-1 pr-4 space-y-2'>
           <p
             className={`text-lg ${
@@ -98,16 +73,14 @@ const PenjemputanKurirCard = ({
           </p>
         </div>
 
-        {/*    Kanan: status + tombol */}
+        {/* Kanan: status + tombol */}
         <div className='flex flex-col items-end space-y-3'>
-          <span
-            className={`px-2 py-0.5 text-xs font-medium rounded-full ${warnaStatusBadge(
-              req.status_penjemputan,
-              isDarkMode
-            )}`}
+          <Badge
+            status={statusBadgeMap[req.status_penjemputan] || 'secondary'}
+            size='sm'
           >
             {req.status_penjemputan}
-          </span>
+          </Badge>
 
           {/* Jika dari daftar → tombol Ambil */}
           {!isAktif && req.status_penjemputan === 'Diproses' && onAmbil && (

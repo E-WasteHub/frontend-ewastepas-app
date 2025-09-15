@@ -5,22 +5,23 @@ import ewasteDark from '../../../assets/img/ewasteDark.png';
 import ewasteLight from '../../../assets/img/ewasteLight.png';
 import useDarkMode from '../../../hooks/useDarkMode';
 
-const SplashScreen = ({ onComplete }) => {
-  const [isVisible, setIsVisible] = useState(true);
+const SplashScreen = ({ selesaiSplash }) => {
+  const [tampilSplash, setTampilSplash] = useState(true);
   const { isDarkMode } = useDarkMode();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(false);
+    // Auto hilang setelah 2 detik
+    const waktuTunda = setTimeout(() => {
+      setTampilSplash(false);
       setTimeout(() => {
-        onComplete?.();
+        selesaiSplash?.();
       }, 500);
     }, 2000);
 
-    return () => clearTimeout(timer);
-  }, [onComplete]);
+    return () => clearTimeout(waktuTunda);
+  }, [selesaiSplash]);
 
-  if (!isVisible) return null;
+  if (!tampilSplash) return null;
 
   return (
     <Motion.div
@@ -34,14 +35,14 @@ const SplashScreen = ({ onComplete }) => {
       transition={{ duration: 0.5 }}
     >
       <div className='text-center'>
-        {/* Logo Container */}
+        {/* Animasi Logo */}
         <Motion.div
           className='mb-6'
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
-          <div className='w-24 h-24 mx-auto mb-4  rounded-3xl flex items-center justify-center shadow-lg'>
+          <div className='w-24 h-24 mx-auto mb-4 rounded-3xl flex items-center justify-center shadow-lg'>
             <img
               src={isDarkMode ? ewasteDark : ewasteLight}
               alt='Ewastepas Logo'
@@ -50,7 +51,7 @@ const SplashScreen = ({ onComplete }) => {
           </div>
         </Motion.div>
 
-        {/* App Name */}
+        {/* Animasi Nama Aplikasi */}
         <Motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -72,7 +73,7 @@ const SplashScreen = ({ onComplete }) => {
           </p>
         </Motion.div>
 
-        {/* Simple Loading Indicator */}
+        {/* Animasi Loading */}
         <Motion.div
           className='mt-8'
           initial={{ opacity: 0 }}
@@ -83,7 +84,7 @@ const SplashScreen = ({ onComplete }) => {
             className={`w-8 h-8 mx-auto border-2 ${
               isDarkMode ? 'border-white' : 'border-slate-900'
             } border-t-transparent rounded-full animate-spin`}
-          ></div>
+          />
         </Motion.div>
       </div>
     </Motion.div>

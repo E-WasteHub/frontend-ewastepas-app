@@ -1,50 +1,18 @@
-import { BookOpen, Box, FolderKanban, ListChecks, MapPin } from 'lucide-react';
+// src/components/fragments/dashboard/DataMasterCard.jsx
 import { Link } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
 import { Card } from '../../elements';
-
-const menus = [
-  {
-    title: 'Kelola Kategori',
-    link: '/dashboard/admin/kelola-kategori',
-    icon: FolderKanban,
-    desc: 'Kelola kategori sampah elektronik',
-  },
-  {
-    title: 'Kelola Jenis',
-    link: '/dashboard/admin/kelola-jenis',
-    icon: ListChecks,
-    desc: 'Definisikan jenis-jenis sampah elektronik',
-  },
-  {
-    title: 'Kelola Daerah',
-    link: '/dashboard/admin/kelola-daerah',
-    icon: MapPin,
-    desc: 'Kelola cakupan wilayah dan area layanan',
-  },
-  {
-    title: 'Kelola Dropbox',
-    link: '/dashboard/admin/kelola-dropbox',
-    icon: Box,
-    desc: 'Atur titik dropbox sampah elektronik',
-  },
-  {
-    title: 'Kelola Edukasi',
-    link: '/dashboard/admin/kelola-edukasi',
-    icon: BookOpen,
-    desc: 'Kelola materi edukasi terkait e-waste',
-  },
-];
+import { adminMasterMenus } from '../../../utils/menuUtils';
 
 const DataMasterCard = () => {
   const { isDarkMode } = useDarkMode();
 
   return (
     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
-      {menus.map((menu, idx) => {
+      {adminMasterMenus.map((menu) => {
         const Icon = menu.icon;
         return (
-          <Link key={idx} to={menu.link} className='block'>
+          <Link key={menu.path} to={menu.path} className='block'>
             <Card className='cursor-pointer hover:shadow-lg transition-shadow duration-300'>
               <Card.Body className='flex flex-col items-center text-center space-y-2'>
                 <Icon className='w-10 h-10 text-green-600' />
@@ -54,7 +22,7 @@ const DataMasterCard = () => {
                     isDarkMode ? 'text-gray-400' : 'text-gray-500'
                   }`}
                 >
-                  {menu.desc}
+                  {menu.description}
                 </p>
               </Card.Body>
             </Card>

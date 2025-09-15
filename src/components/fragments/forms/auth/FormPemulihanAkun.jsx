@@ -1,9 +1,9 @@
 // src/components/fragments/forms/auth/FormPemulihanAkun.jsx
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import usePemulihanAkun from '../../../../hooks/auth/usePemulihanAkun';
-import useDarkMode from '../../../../hooks/useDarkMode';
-import useToast from '../../../../hooks/useToast';
+
+import { useDarkMode, usePemulihanAkun, useToast } from '../../../../hooks';
+
 import { Button, InputForm } from '../../../elements';
 import FormHeader from '../FormHeader';
 
@@ -14,33 +14,31 @@ const FormPemulihanAkun = () => {
   const {
     email,
     isLoading,
-    errorGlobal,
-    errorInput,
+    pesanErrorField,
+    pesanErrorGlobal,
     pesanSukses,
-    ubahEmail,
-    kirimLinkReset,
-    setErrorGlobal,
+    handleUbahEmail,
+    handleKirimLinkReset,
+    setPesanErrorGlobal,
     setPesanSukses,
   } = usePemulihanAkun();
 
-  // reset pesan saat halaman dibuka
+  // Reset pesan saat halaman dibuka
   useEffect(() => {
-    setErrorGlobal('');
+    setPesanErrorGlobal('');
     setPesanSukses('');
-  }, [setErrorGlobal, setPesanSukses]);
+  }, [setPesanErrorGlobal, setPesanSukses]);
 
-  // tampilkan error global pakai toast
+  // Tampilkan error global dengan toast
   useEffect(() => {
-    if (errorGlobal) error(errorGlobal);
-  }, [errorGlobal, error]);
+    if (pesanErrorGlobal) error(pesanErrorGlobal);
+  }, [pesanErrorGlobal, error]);
 
-  // tampilkan sukses pakai toast + redirect
+  // Tampilkan pesan sukses dengan toast dan auto-reset setelah delay
   useEffect(() => {
     if (pesanSukses) {
       success(pesanSukses);
-      const timer = setTimeout(() => {
-        setPesanSukses('');
-      }, 2000);
+      const timer = setTimeout(() => setPesanSukses(''), 2000);
       return () => clearTimeout(timer);
     }
   }, [pesanSukses, success, setPesanSukses]);
@@ -48,11 +46,11 @@ const FormPemulihanAkun = () => {
   return (
     <div className='w-full max-w-md mx-auto'>
       <div
-        className={`${
+        className={`rounded-2xl border shadow-lg p-8 ${
           isDarkMode
             ? 'bg-slate-800 border-slate-700'
             : 'bg-white border-gray-200'
-        } rounded-2xl border shadow-lg p-8`}
+        }`}
       >
         <FormHeader
           title='Ewastepas'
@@ -69,17 +67,17 @@ const FormPemulihanAkun = () => {
           Masukkan email Anda untuk menerima link reset kata sandi
         </p>
 
-        <form onSubmit={kirimLinkReset} className='space-y-4'>
+        <form onSubmit={handleKirimLinkReset} className='space-y-4' noValidate>
           <InputForm
             label='Email'
             name='email'
             type='email'
             placeholder='Masukkan email Anda'
             value={email}
-            onChange={ubahEmail}
+            onChange={handleUbahEmail}
             disabled={isLoading}
             required
-            error={errorInput}
+            error={pesanErrorField}
           />
 
           <Button
@@ -87,7 +85,7 @@ const FormPemulihanAkun = () => {
             variant='primary'
             isLoading={isLoading}
             loadingText='Mengirim...'
-            className='w-full mt-6'
+            className='w-full my-3'
           >
             Kirim Link Reset
           </Button>
@@ -102,11 +100,11 @@ const FormPemulihanAkun = () => {
             Ingat kata sandi?{' '}
             <Link
               to='/login'
-              className={`${
+              className={`font-medium transition-colors ${
                 isDarkMode
                   ? 'text-green-400 hover:text-green-300'
                   : 'text-green-600 hover:text-green-500'
-              } font-medium transition-colors`}
+              }`}
             >
               Kembali ke halaman masuk
             </Link>
