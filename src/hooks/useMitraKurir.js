@@ -3,10 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   ambilDaftarPenjemputan,
   ambilDetailPenjemputan,
-  ambilPenjemputan,
   ambilRiwayatPenjemputan,
-  batalPenjemputan,
-  updatePenjemputan,
+  ubahStatusPenjemputan,
 } from '../services/penjemputanService';
 import {
   ambilDataArrayAman,
@@ -87,7 +85,7 @@ const useMitraKurir = () => {
     }
     try {
       setIsSubmitting(true);
-      await ambilPenjemputan(id_penjemputan, {
+      await ubahStatusPenjemputan(id_penjemputan, {
         status_penjemputan: 'Diterima',
         waktu_diterima: new Date().toISOString(),
       });
@@ -110,7 +108,7 @@ const useMitraKurir = () => {
       };
       if (id_dropbox) payload.id_dropbox = id_dropbox;
 
-      await updatePenjemputan(id_penjemputan, payload);
+      await ubahStatusPenjemputan(id_penjemputan, payload);
       await fetchData();
       return { success: true };
     } catch (err) {
@@ -124,19 +122,16 @@ const useMitraKurir = () => {
   const tandaiSelesai = async (id_penjemputan) => {
     try {
       setIsSubmitting(true);
-      // Update status ke selesai
-      const updateResponse = await updatePenjemputan(id_penjemputan, {
+      // update status ke selesai
+      await ubahStatusPenjemputan(id_penjemputan, {
         status_penjemputan: 'Selesai',
         waktu_selesai: new Date().toISOString(),
       });
 
-      console.log('✅ Penjemputan marked as Selesai:', updateResponse);
-
       await fetchData();
       return { success: true };
-    } catch (err) {
-      console.error('  Gagal tandai selesai:', err);
-      return { success: false, error: 'Gagal menandai selesai' };
+    } catch {
+      return { success: false, error: 'gagal menandai selesai' };
     } finally {
       setIsSubmitting(false);
     }
@@ -145,7 +140,7 @@ const useMitraKurir = () => {
   const batalkanPermintaan = async (id_penjemputan) => {
     try {
       setIsSubmitting(true);
-      await batalPenjemputan(id_penjemputan, {
+      await ubahStatusPenjemputan(id_penjemputan, {
         status_penjemputan: 'Dibatalkan',
         id_kurir: null,
         waktu_dibatalkan: new Date().toISOString(),

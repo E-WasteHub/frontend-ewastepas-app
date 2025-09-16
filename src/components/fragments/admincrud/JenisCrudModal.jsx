@@ -107,7 +107,7 @@ const JenisCrudModal = ({
             value: k.id_kategori,
             label: k.nama_kategori,
           }))}
-          placeholder='-- Pilih Kategori --'
+          placeholder='Pilih Kategori'
           required
         />
 

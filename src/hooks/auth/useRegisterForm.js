@@ -29,10 +29,10 @@ const useRegisterForm = () => {
     setPesanError('');
   };
 
-  const handlePeranSelect = (value) => {
+  const handlePeranSelect = useCallback((value) => {
     setPeran(value);
     setErrorField((prev) => ({ ...prev, peran: '' }));
-  };
+  }, []);
 
   // validasi form sebelum submit
   const validateForm = () => {

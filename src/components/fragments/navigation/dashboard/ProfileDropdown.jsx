@@ -5,11 +5,11 @@ import useDarkMode from '../../../../hooks/useDarkMode';
 import usePengguna from '../../../../hooks/usePengguna';
 import useToast from '../../../../hooks/useToast';
 import { logout } from '../../../../services/authService';
-import { clearAuth } from '../../../../utils/authExpiredUtils';
+import { hapusAutentikasi } from '../../../../utils/authExpiredUtils';
 import {
-  getDashboardPathByPeran,
-  getPeranDisplayName,
-  getProfilePathByPeran,
+  dapatkanNamaTampilanPeran,
+  dapatkanPathDashboardBerdasarkanPeran,
+  dapatkanPathProfilBerdasarkanPeran,
 } from '../../../../utils/peranUtils';
 
 const ProfileDropdown = () => {
@@ -22,7 +22,7 @@ const ProfileDropdown = () => {
   const { pengguna, peran } = usePengguna();
   const { success, error } = useToast();
 
-  const profilePath = getProfilePathByPeran(peran);
+  const profilePath = dapatkanPathProfilBerdasarkanPeran(peran);
   const isInDashboard = location.pathname.startsWith('/dashboard');
 
   // Hook selalu dipanggil, tidak conditional
@@ -88,7 +88,7 @@ const ProfileDropdown = () => {
               isDarkMode ? 'text-gray-400' : 'text-gray-500'
             }`}
           >
-            {getPeranDisplayName(peran)}
+            {dapatkanNamaTampilanPeran(peran)}
           </p>
         </div>
         <ChevronDown
@@ -112,7 +112,7 @@ const ProfileDropdown = () => {
             onClick={() => {
               const targetPath = isInDashboard
                 ? '/'
-                : getDashboardPathByPeran(peran);
+                : dapatkanPathDashboardBerdasarkanPeran(peran);
               navigate(targetPath);
               setIsOpen(false);
             }}
@@ -156,7 +156,7 @@ const ProfileDropdown = () => {
             onClick={async () => {
               try {
                 await logout();
-                clearAuth();
+                hapusAutentikasi();
                 localStorage.removeItem('pengguna');
                 localStorage.removeItem('peran');
 

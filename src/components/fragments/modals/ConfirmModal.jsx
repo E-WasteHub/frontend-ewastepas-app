@@ -5,10 +5,10 @@ const ConfirmModal = ({
   isOpen,
   onClose,
   onConfirm,
-  title = 'Konfirmasi',
-  message = 'Apakah Anda yakin?',
-  confirmText = 'Ya',
-  cancelText = 'Batal',
+  title = 'konfirmasi',
+  message = 'apakah anda yakin?',
+  confirmText = 'ya',
+  cancelText = 'batal',
   confirmType = 'danger',
   isLoading = false,
 }) => {
@@ -39,7 +39,7 @@ const ConfirmModal = ({
           disabled={isLoading}
           className={confirmStyles[confirmType]}
         >
-          {isLoading ? 'Memproses...' : confirmText}
+          {isLoading ? 'memproses...' : confirmText}
         </Button>
       </div>
     </Modal>

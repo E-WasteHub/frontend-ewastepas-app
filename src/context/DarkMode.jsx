@@ -1,34 +1,34 @@
 import { createContext, useEffect, useState } from 'react';
 
-const DarkModeConText = createContext();
+const DarkModeContext = createContext();
 
-const DarkModeConTextProvider = ({ children }) => {
-  // Function to detect system preference
-  const getSystemPreference = () => {
+const DarkModeProvider = ({ children }) => {
+  // deteksi preferensi sistem
+  const dapatkanPreferensiSistem = () => {
     if (typeof window !== 'undefined') {
       return window.matchMedia('(prefers-color-scheme: dark)').matches;
     }
     return false;
   };
 
-  // Function to get initial theme
-  const getInitialTheme = () => {
+  // dapatkan tema awal
+  const dapatkanTemaAwal = () => {
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme');
+      const temaTersimpan = localStorage.getItem('theme');
 
-      if (savedTheme) {
-        return savedTheme === 'dark';
+      if (temaTersimpan) {
+        return temaTersimpan === 'dark';
       }
 
-      // If no saved preference, use system preference
-      return getSystemPreference();
+      // jika tidak ada preferensi tersimpan, gunakan preferensi sistem
+      return dapatkanPreferensiSistem();
     }
     return false;
   };
 
-  const [isDarkMode, setIsDarkModeState] = useState(getInitialTheme);
+  const [isDarkMode, setIsDarkModeState] = useState(dapatkanTemaAwal);
 
-  // Custom setter that also updates localStorage
+  // setter kustom yang juga memperbarui localstorage
   const setIsDarkMode = (value) => {
     setIsDarkModeState(value);
     if (typeof window !== 'undefined') {
@@ -36,7 +36,7 @@ const DarkModeConTextProvider = ({ children }) => {
     }
   };
 
-  // Apply theme to document
+  // terapkan tema ke dokumen
   useEffect(() => {
     if (typeof window !== 'undefined') {
       if (isDarkMode) {
@@ -48,11 +48,11 @@ const DarkModeConTextProvider = ({ children }) => {
   }, [isDarkMode]);
 
   return (
-    <DarkModeConText.Provider value={{ isDarkMode, setIsDarkMode }}>
+    <DarkModeContext.Provider value={{ isDarkMode, setIsDarkMode }}>
       {children}
-    </DarkModeConText.Provider>
+    </DarkModeContext.Provider>
   );
 };
 
-export const DarkMode = DarkModeConText;
-export default DarkModeConTextProvider;
+export const DarkMode = DarkModeContext;
+export default DarkModeProvider;

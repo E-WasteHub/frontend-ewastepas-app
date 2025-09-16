@@ -158,19 +158,19 @@ const AdminKelolaKategoriView = () => {
             data={paginatedData}
             topContent={
               <FilterCrud
-                search={search}
-                setSearch={setSearch}
+                pencarian={search}
+                setPencarian={setSearch}
                 filter={filter}
                 setFilter={setFilter}
                 placeholder='Cari kategori...'
-                filterOptions={[
+                opsiFilter={[
                   { value: '1', label: 'Poin ≥ 1' },
                   { value: '5', label: 'Poin ≥ 5' },
                   { value: '10', label: 'Poin ≥ 10' },
                   { value: '20', label: 'Poin ≥ 20' },
                 ]}
-                filterLabel='Filter Poin'
-                onAdd={() => {
+                labelFilter='Filter Poin'
+                onTambah={() => {
                   setEditTarget(null);
                   setCrudOpen(true);
                 }}

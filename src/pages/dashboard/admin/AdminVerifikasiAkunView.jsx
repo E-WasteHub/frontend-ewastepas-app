@@ -34,15 +34,10 @@ const AdminVerifikasiAkunView = () => {
     confirmType: 'primary',
   });
 
-  //    Show detail dokumen
+  // tampilkan detail dokumen
   const handleShowDetail = async (id_pengguna) => {
-    console.log('🔍 Fetching detail for user:', id_pengguna);
     const res = await fetchDetail(id_pengguna);
-    console.log('🔍 Detail result:', res);
     if (res) {
-      console.log('🔍 Setting selectedUser:', res);
-      console.log('🔍 KTP URL:', res.url_dokumen_ktp);
-      console.log('🔍 SIM URL:', res.url_dokumen_sim);
       setSelectedUser(res);
     }
   };
@@ -122,7 +117,7 @@ const AdminVerifikasiAkunView = () => {
             <>
               <button
                 onClick={() => handleShowDetail(row.id_pengguna)}
-                className='px-3 py-1 text-xs font-medium rounded bg-blue-600 text-white hover:bg-blue-700'
+                className='px-3 py-1 text-xs font-medium rounded bg-sky-600 text-white hover:bg-sky-700'
               >
                 Detail
               </button>

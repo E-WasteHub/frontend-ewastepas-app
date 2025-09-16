@@ -1,35 +1,33 @@
 // src/hooks/useProfil.js
 import { useCallback, useEffect, useState } from 'react';
 import * as profilService from '../services/profilService';
-import { detectPeranFromPath } from '../utils/peranUtils';
+import { deteksiPeranDariPath } from '../utils/peranUtils';
 
 const useProfil = () => {
-  // ===== STATE UTAMA =====
+  // state utama
   const [form, setForm] = useState({
     nama_lengkap: '',
     email: '',
     no_telepon: '',
     alamat_pengguna: '',
-    gambar_pengguna: '', // bisa File atau URL string
+    gambar_pengguna: '',
   });
 
   const [files, setFiles] = useState({ ktp: null, sim: null });
   const [peran, setPeran] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [pesanError, setPesanError] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // ===== FETCH PROFIL =====
+  // ambil data profil
   const fetchProfil = useCallback(async () => {
     try {
       setIsLoading(true);
-      setError('');
+      setPesanError('');
 
       const res = await profilService.ambilProfil();
       const pengguna = res.data || res;
-
-      console.log('📦 Data profil:', pengguna);
 
       setForm({
         nama_lengkap: pengguna.nama_lengkap || '',
@@ -40,9 +38,11 @@ const useProfil = () => {
         status_pengguna: pengguna.status_pengguna || 'Belum Aktif',
       });
 
-      setPeran(pengguna.peran || detectPeranFromPath(window.location.pathname));
+      setPeran(
+        pengguna.peran || deteksiPeranDariPath(window.location.pathname)
+      );
 
-      // Simpan di localStorage untuk konsistensi
+      // simpan di localstorage untuk konsistensi
       localStorage.setItem(
         'pengguna',
         JSON.stringify({
@@ -51,9 +51,8 @@ const useProfil = () => {
         })
       );
       if (pengguna.peran) localStorage.setItem('peran', pengguna.peran);
-    } catch (err) {
-      setError('Gagal memuat data profil');
-      console.error('❌ fetchProfil error:', err);
+    } catch {
+      setPesanError('Gagal memuat data profil');
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +62,7 @@ const useProfil = () => {
     fetchProfil();
   }, [fetchProfil]);
 
-  // ===== UPDATE PROFIL =====
+  // update profil
   const updateProfil = async () => {
     if (isUpdating || isLoading) {
       return { success: false, error: 'Update sedang berlangsung' };
@@ -72,7 +71,7 @@ const useProfil = () => {
     try {
       setIsUpdating(true);
       setIsLoading(true);
-      setError('');
+      setPesanError('');
 
       let payload;
       if (form.gambar_pengguna instanceof File) {
@@ -90,28 +89,19 @@ const useProfil = () => {
           no_telepon: form.no_telepon,
           alamat_pengguna: form.alamat_pengguna,
         };
-
-        console.log('📤 JSON payload yang dikirim:', payload);
       }
 
       const res = await profilService.ubahProfil(payload);
       const data = res.data || res;
 
-      // 🔍 Debug respons backend
-      console.log('📦 Response update profil:', data);
-      console.log('🖼️ Backend return gambar:', {
-        gambar_pengguna: data.gambar_pengguna,
-        url_gambar_pengguna: data.url_gambar_pengguna,
-      });
-
-      // Update state dengan data backend (pakai url_gambar_pengguna)
+      // update state dengan data terbaru
       setForm((prev) => ({
         ...prev,
         ...data,
         gambar_pengguna: data.url_gambar_pengguna || prev.gambar_pengguna,
       }));
 
-      // Update localStorage juga
+      // update localstorage
       localStorage.setItem(
         'pengguna',
         JSON.stringify({
@@ -122,8 +112,7 @@ const useProfil = () => {
 
       return { success: true };
     } catch (err) {
-      console.error('❌ Gagal update profil:', err);
-      setError('Gagal memperbarui profil');
+      setPesanError('Gagal memperbarui profil');
       return { success: false, error: err.message };
     } finally {
       setIsLoading(false);
@@ -131,27 +120,26 @@ const useProfil = () => {
     }
   };
 
-  // ===== UBAH PASSWORD =====
+  // ubah password
   const ubahPassword = async (payload) => {
     try {
       setIsLoading(true);
-      setError('');
+      setPesanError('');
       await profilService.ubahKataSandi(payload);
       return { success: true };
     } catch (err) {
-      console.error('❌ Gagal ubah password:', err);
-      setError('Gagal mengubah password');
+      setPesanError('Gagal mengubah password');
       return { success: false, error: err.message };
     } finally {
       setIsLoading(false);
     }
   };
 
-  // ===== UPLOAD DOKUMEN (khusus mitra-kurir) =====
+  // unggah dokumen (khusus mitra-kurir)
   const unggahDokumen = async () => {
     try {
       setIsLoading(true);
-      setError('');
+      setPesanError('');
 
       const formData = new FormData();
       if (files.ktp) formData.append('nama_dokumen_ktp', files.ktp);
@@ -159,8 +147,6 @@ const useProfil = () => {
 
       const res = await profilService.unggahDokumen(formData);
       const data = res.data || res;
-
-      console.log('📦 Dokumen berhasil diunggah:', data);
 
       if (data.status_pengguna) {
         const currentPengguna = JSON.parse(
@@ -172,7 +158,7 @@ const useProfil = () => {
         };
         localStorage.setItem('pengguna', JSON.stringify(updatedPengguna));
 
-        // Notify komponen lain
+        // trigger event agar komponen lain tahu
         window.dispatchEvent(
           new CustomEvent('profileUpdated', {
             detail: { type: 'documentUpload', data: updatedPengguna },
@@ -180,19 +166,18 @@ const useProfil = () => {
         );
       }
 
-      setFiles({ ktp: null, sim: null }); // reset file state
+      setFiles({ ktp: null, sim: null });
 
       return { success: true, data };
     } catch (err) {
-      console.error('❌ Gagal upload dokumen:', err);
-      setError('Gagal mengunggah dokumen');
+      setPesanError('Gagal mengunggah dokumen');
       return { success: false, error: err.message };
     } finally {
       setIsLoading(false);
     }
   };
 
-  // ===== RETURN HOOK =====
+  // expose hook
   return {
     form,
     setForm,
@@ -200,7 +185,7 @@ const useProfil = () => {
     setFiles,
     peran,
     isLoading,
-    error,
+    pesanError,
     fetchProfil,
     updateProfil,
     ubahPassword,

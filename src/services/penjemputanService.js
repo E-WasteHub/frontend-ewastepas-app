@@ -1,7 +1,8 @@
 // src/services/penjemputanService.js
+import { ambilPesanError } from '../utils/errorUtils';
 import api from './api';
 
-// Ambil semua kategori & jenis sampah
+// ambil semua kategori & jenis sampah
 export const ambilJenisByKategori = async (id_kategori = null) => {
   try {
     const url = id_kategori
@@ -10,46 +11,52 @@ export const ambilJenisByKategori = async (id_kategori = null) => {
     const response = await api.get(url);
     return response.data;
   } catch (error) {
-    console.error('  Error fetching jenis by kategori:', error);
-    throw error;
+    throw {
+      message: ambilPesanError(
+        error,
+        'Gagal memuat data kategori/jenis sampah'
+      ),
+    };
   }
 };
 
-// Ambil daftar permintaan penjemputan (list untuk kurir)
+// ambil daftar permintaan penjemputan (list untuk kurir/masyarakat)
 export const ambilDaftarPenjemputan = async () => {
   try {
     const response = await api.get('/penjemputan');
     return response.data;
   } catch (error) {
-    console.error('  Error fetching daftar penjemputan:', error);
-    throw error;
+    throw {
+      message: ambilPesanError(error, 'Gagal memuat daftar penjemputan'),
+    };
   }
 };
 
-// Ambil detail penjemputan + pelacakan
+// ambil detail penjemputan + pelacakan
 export const ambilDetailPenjemputan = async (id_penjemputan) => {
   try {
     const response = await api.get(`/penjemputan/${id_penjemputan}`);
-    console.log('Detail penjemputan response:', response);
     return response.data;
   } catch (error) {
-    console.error('  Error fetching detail penjemputan:', error);
-    throw error;
+    throw {
+      message: ambilPesanError(error, 'Gagal memuat detail penjemputan'),
+    };
   }
 };
 
-// Ambil riwayat penjemputan (masyarakat/kurir)
+// ambil riwayat penjemputan (masyarakat/kurir)
 export const ambilRiwayatPenjemputan = async () => {
   try {
     const response = await api.get('/penjemputan/riwayat');
     return response.data;
   } catch (error) {
-    console.error('  Error fetching riwayat penjemputan:', error);
-    throw error;
+    throw {
+      message: ambilPesanError(error, 'Gagal memuat riwayat penjemputan'),
+    };
   }
 };
 
-// Buat permintaan penjemputan (masyarakat)
+// buat permintaan penjemputan (masyarakat)
 export const buatPenjemputan = async (formData) => {
   try {
     const response = await api.post('/penjemputan', formData, {
@@ -57,12 +64,14 @@ export const buatPenjemputan = async (formData) => {
     });
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: 'Gagal membuat permintaan' };
+    throw {
+      message: ambilPesanError(error, 'Gagal membuat permintaan penjemputan'),
+    };
   }
 };
 
-// Update status penjemputan (dipakai kurir/masyarakat/admin)
-export const updatePenjemputan = async (id_penjemputan, payload) => {
+// update status penjemputan (dipakai kurir/masyarakat/admin)
+export const ubahStatusPenjemputan = async (id_penjemputan, payload) => {
   try {
     const response = await api.put(
       `/penjemputan/${id_penjemputan}/status`,
@@ -70,40 +79,37 @@ export const updatePenjemputan = async (id_penjemputan, payload) => {
     );
     return response.data;
   } catch (error) {
-    console.error('  Error updating penjemputan:', error);
-    throw error;
+    throw {
+      message: ambilPesanError(error, 'Gagal memperbarui status penjemputan'),
+    };
   }
 };
 
-// Ambil penjemputan oleh kurir (alias "terima permintaan")
-export const ambilPenjemputan = async (id_penjemputan, payload) => {
+// untuk digunakan di hooks useAdminCrud (monitoring transaksi admin)
+export const ambilSemuaTransaksi = async () => {
   try {
-    const response = await api.put(
-      `/penjemputan/${id_penjemputan}/status`,
-      payload
-    );
+    const response = await api.get('/penjemputan');
     return response.data;
   } catch (error) {
-    console.error('  Error ambil penjemputan:', error);
-    throw error;
+    throw {
+      message: ambilPesanError(
+        error,
+        'Gagal memuat semua transaksi penjemputan'
+      ),
+    };
   }
 };
 
-// Batalkan penjemputan (oleh masyarakat/kurir/admin)
-export const batalPenjemputan = async (id_penjemputan, payload) => {
+export const detailTransaksi = async (id_penjemputan) => {
   try {
-    const response = await api.put(
-      `/penjemputan/${id_penjemputan}/status`,
-      payload
-    );
+    const response = await api.get(`/penjemputan/${id_penjemputan}`);
     return response.data;
   } catch (error) {
-    console.error('  Error cancelling penjemputan:', error);
-    throw error;
+    throw {
+      message: ambilPesanError(
+        error,
+        'Gagal memuat detail transaksi penjemputan'
+      ),
+    };
   }
 };
-
-// untuk digunakan dihooks useAdminCrud(Kebutuhan Monitoring Transaksi Admin)
-export const ambilSemua = async () => api.get('/penjemputan');
-export const detail = async (id_penjemputan) =>
-  api.get(`/penjemputan/${id_penjemputan}`);

@@ -1,4 +1,4 @@
-import useDarkMode from '../../../hooks/useDarkMode';
+import { useDarkMode } from '../../../hooks';
 import { formatTanggalWaktuIndonesia } from '../../../utils/dateUtils';
 import { Badge, Button, Card } from '../../elements';
 

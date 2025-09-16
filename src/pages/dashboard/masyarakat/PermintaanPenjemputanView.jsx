@@ -14,14 +14,16 @@ const PermintaanPenjemputanView = () => {
     alamat_penjemputan: '',
     catatan: '',
   };
+
   const [formData, setFormData] = useState(initialForm);
 
-  // handle input formData umum
-  const handleInputChange = (field, value) => {
+  // ubah input form utama
+  const ubahInputForm = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleReset = () => {
+  // reset form utama
+  const resetFormUtama = () => {
     setFormData(initialForm);
   };
 
@@ -29,8 +31,8 @@ const PermintaanPenjemputanView = () => {
     <FormPenjemputan
       ref={formRef}
       formData={formData}
-      onInputChange={handleInputChange}
-      onReset={handleReset}
+      onInputChange={ubahInputForm}
+      onReset={resetFormUtama}
       showAlert={showAlert}
     />
   );

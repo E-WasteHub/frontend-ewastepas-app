@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import * as authService from '../../services/authService';
-import { setTokenWithExpiry } from '../../utils/authExpiredUtils';
+import { simpanTokenDenganExpiry } from '../../utils/authExpiredUtils';
 
 const VerifikasiAdmin = () => {
   const [status, setStatus] = useState('Memverifikasi...');
@@ -24,7 +24,7 @@ const VerifikasiAdmin = () => {
         if (res.token) {
           // simpan token dengan expiry (12 jam sesuai backend)
           const DEFAULT_TTL = 12 * 60 * 60; // 43200s (12 jam)
-          setTokenWithExpiry(res.token, DEFAULT_TTL);
+          simpanTokenDenganExpiry(res.token, DEFAULT_TTL);
 
           // simpan pengguna & peran
           localStorage.setItem('pengguna', JSON.stringify(res.data));

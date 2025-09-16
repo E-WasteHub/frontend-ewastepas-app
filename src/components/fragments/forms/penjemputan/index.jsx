@@ -19,22 +19,22 @@ const FormPenjemputan = forwardRef(
       jenisList,
       waktuOperasionalList,
       daftarSampah,
-      draftSampah,
+      sampahSementara,
       isModalOpen,
       totalJumlah,
       estimasiPoin,
-      setDraftSampah,
+      setSampahSementara,
       setIsModalOpen,
-      addSampah,
-      removeSampah,
-      triggerUploadFoto,
+      tambahSampah,
+      hapusSampah,
+      bukaUploadFoto,
       handleFileChange,
       resetSampah,
       fileInputRef,
-      buildFormData,
+      buatFormData,
     } = usePenjemputan({ showAlert });
 
-    /* --------------------------- HANDLER: Reset Form -------------------------- */
+    // reset form
     const handleReset = () => {
       onInputChange('id_waktu_operasional', '');
       onInputChange('alamat_penjemputan', '');
@@ -43,16 +43,15 @@ const FormPenjemputan = forwardRef(
       onReset?.();
     };
 
-    /* -------------------------- HANDLER: Submit Form -------------------------- */
+    // submit form
     const handleSubmit = async (e) => {
       e.preventDefault();
-
       if (isSubmitting) return;
 
       try {
         setIsSubmitting(true);
 
-        // Validasi form
+        // validasi input
         if (!formData.id_waktu_operasional || !formData.alamat_penjemputan) {
           showAlert('Peringatan', 'Lengkapi data penjemputan', 'warning');
           return;
@@ -62,22 +61,20 @@ const FormPenjemputan = forwardRef(
           return;
         }
 
-        // Kirim data ke API
-        const fd = buildFormData(formData);
+        // kirim data ke api
+        const fd = buatFormData(formData);
         const res = await penjemputanService.buatPenjemputan(fd);
 
-        // Handle response sesuai struktur API baru
         if (res?.data?.penjemputan) {
-          const { penjemputan, sampah } = res.data;
+          const { penjemputan } = res.data;
 
-          // Success message dengan informasi lengkap
           showAlert(
             'Berhasil',
             res.message || 'Permintaan penjemputan berhasil dibuat',
             'success'
           );
 
-          // Tampilkan informasi kode penjemputan
+          // tampilkan kode penjemputan
           if (penjemputan.kode_penjemputan) {
             setTimeout(() => {
               showAlert(
@@ -88,19 +85,12 @@ const FormPenjemputan = forwardRef(
             }, 1000);
           }
 
-          console.log('✅ Penjemputan berhasil dibuat:', {
-            penjemputan,
-            sampah: sampah || [],
-            totalSampah: sampah?.length || 0,
-          });
-
-          // Reset form setelah berhasil
+          // reset form setelah berhasil
           handleReset();
         } else {
           throw new Error('Format response tidak sesuai');
         }
       } catch (err) {
-        console.error('❌ Submit error:', err);
         const errorMessage =
           err?.response?.data?.message ||
           err.message ||
@@ -111,7 +101,7 @@ const FormPenjemputan = forwardRef(
       }
     };
 
-    // expose reset ke parent
+    // expose fungsi ke parent
     useImperativeHandle(ref, () => ({
       resetForm: () => {
         handleReset();
@@ -123,7 +113,7 @@ const FormPenjemputan = forwardRef(
 
     return (
       <form onSubmit={handleSubmit} className='max-w-7xl mx-auto space-y-3'>
-        {/* Hidden Input untuk Upload Foto */}
+        {/* hidden input upload foto */}
         <input
           ref={fileInputRef}
           type='file'
@@ -132,7 +122,7 @@ const FormPenjemputan = forwardRef(
           onChange={handleFileChange}
         />
 
-        {/* Header */}
+        {/* header */}
         <HeaderDashboard
           title='Mengajukan Permintaan'
           subtitle='Form permintaan untuk penjemputan sampah elektronik'
@@ -141,15 +131,14 @@ const FormPenjemputan = forwardRef(
         <Card>
           <Card.Body className='p-8'>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
-              {/* --------------------- Kiri: Input Data Penjemputan --------------------- */}
               <div className='space-y-4'>
-                {/* Pilih kategori */}
+                {/* pilih kategori */}
                 <div>
                   <Label required>Kategori Sampah</Label>
                   <Select
-                    value={draftSampah.id_kategori}
+                    value={sampahSementara.id_kategori}
                     onChange={(val) =>
-                      setDraftSampah((p) => ({
+                      setSampahSementara((p) => ({
                         ...p,
                         id_kategori: val,
                         id_jenis: '',
@@ -165,18 +154,18 @@ const FormPenjemputan = forwardRef(
                   />
                 </div>
 
-                {/* Pilih jenis */}
+                {/* pilih jenis */}
                 <div className='flex items-end gap-3'>
                   <div className='flex-1'>
                     <Label required>Jenis Sampah</Label>
                     <Select
-                      value={draftSampah.id_jenis}
+                      value={sampahSementara.id_jenis}
                       onChange={(val) =>
-                        setDraftSampah((p) => ({ ...p, id_jenis: val }))
+                        setSampahSementara((p) => ({ ...p, id_jenis: val }))
                       }
-                      disabled={!draftSampah.id_kategori}
+                      disabled={!sampahSementara.id_kategori}
                       placeholder={
-                        draftSampah.id_kategori
+                        sampahSementara.id_kategori
                           ? 'Pilih jenis sampah...'
                           : 'Pilih kategori dulu'
                       }
@@ -191,7 +180,7 @@ const FormPenjemputan = forwardRef(
                   </Button>
                 </div>
 
-                {/* Waktu operasional */}
+                {/* waktu operasional */}
                 <div>
                   <Label required>Waktu Operasional</Label>
                   <Select
@@ -207,7 +196,7 @@ const FormPenjemputan = forwardRef(
                   />
                 </div>
 
-                {/* Alamat */}
+                {/* alamat */}
                 <div>
                   <Label required>Alamat Penjemputan</Label>
                   <Textarea
@@ -219,7 +208,7 @@ const FormPenjemputan = forwardRef(
                   />
                 </div>
 
-                {/* Catatan */}
+                {/* catatan */}
                 <div>
                   <Label>Catatan untuk Kurir</Label>
                   <Textarea
@@ -230,19 +219,18 @@ const FormPenjemputan = forwardRef(
                 </div>
               </div>
 
-              {/* ---------------------- Kanan: Daftar Sampah ---------------------- */}
               <DaftarSampah
                 daftarSampah={daftarSampah}
                 totalJumlah={totalJumlah}
                 estimasiPoin={estimasiPoin}
                 isDarkMode={isDarkMode}
                 isSubmitting={isSubmitting}
-                onHapus={removeSampah}
-                onUpload={triggerUploadFoto}
+                onHapus={hapusSampah}
+                onUpload={bukaUploadFoto}
               />
             </div>
 
-            {/* Action Buttons */}
+            {/* action buttons */}
             <div className='flex justify-end gap-3 mt-6'>
               <Button
                 type='button'
@@ -262,13 +250,13 @@ const FormPenjemputan = forwardRef(
           </Card.Body>
         </Card>
 
-        {/* Modal Tambah Sampah */}
+        {/* modal tambah sampah */}
         <ModalTambahSampah
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          draftSampah={draftSampah}
-          setDraftSampah={setDraftSampah}
-          onSave={addSampah}
+          sampahSementara={sampahSementara}
+          setSampahSementara={setSampahSementara}
+          onSave={tambahSampah}
         />
       </form>
     );

@@ -1,5 +1,5 @@
 // util untuk deteksi peran dari path
-export const detectPeranFromPath = (pathname, fallback = 'Masyarakat') => {
+export const deteksiPeranDariPath = (pathname, fallback = 'Masyarakat') => {
   if (pathname.startsWith('/dashboard/admin')) return 'Admin';
   if (pathname.startsWith('/dashboard/mitra-kurir')) return 'Mitra Kurir';
   if (pathname.startsWith('/dashboard/masyarakat')) return 'Masyarakat';
@@ -7,7 +7,7 @@ export const detectPeranFromPath = (pathname, fallback = 'Masyarakat') => {
 };
 
 // untuk tampilan nama peran
-export const getPeranDisplayName = (peran) => {
+export const dapatkanNamaTampilanPeran = (peran) => {
   switch (peran) {
     case 'Admin':
       return 'Admin';
@@ -20,7 +20,7 @@ export const getPeranDisplayName = (peran) => {
 };
 
 // ambil path dashboard sesuai peran
-export const getDashboardPathByPeran = (peran) => {
+export const dapatkanPathDashboardBerdasarkanPeran = (peran) => {
   switch (peran) {
     case 'Admin':
       return '/dashboard/admin';
@@ -33,7 +33,7 @@ export const getDashboardPathByPeran = (peran) => {
 };
 
 // untuk ambil path profil sesuai peran
-export const getProfilePathByPeran = (peran) => {
+export const dapatkanPathProfilBerdasarkanPeran = (peran) => {
   switch (peran) {
     case 'Admin':
       return '/dashboard/admin/profil';

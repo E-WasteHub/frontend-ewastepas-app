@@ -1,5 +1,5 @@
 // src/components/fragments/dashboard/HeaderDashboard.jsx
-import useDarkMode from '../../../hooks/useDarkMode';
+import { useDarkMode } from '../../../hooks';
 
 const HeaderDashboard = ({ title, subtitle, className = '' }) => {
   const { isDarkMode } = useDarkMode();

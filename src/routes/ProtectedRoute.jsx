@@ -2,10 +2,10 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { Loading } from '../components/elements';
 import usePengguna from '../hooks/usePengguna';
 import useToast from '../hooks/useToast';
-import { ambilValidToken, clearAuth } from '../utils/authExpiredUtils';
+import { ambilTokenValid, hapusAutentikasi } from '../utils/authExpiredUtils';
 import {
-  getDashboardPathByPeran,
-  getProfilePathByPeran,
+  dapatkanPathDashboardBerdasarkanPeran,
+  dapatkanPathProfilBerdasarkanPeran,
 } from '../utils/peranUtils';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -14,9 +14,9 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   const { error, warning } = useToast();
 
   // Cek token expired
-  const token = ambilValidToken();
+  const token = ambilTokenValid();
   if (!token) {
-    clearAuth();
+    hapusAutentikasi();
     return <Navigate to='/login' replace />;
   }
 
@@ -42,7 +42,9 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     );
 
     setTimeout(() => {
-      navigate(getDashboardPathByPeran(currentRole), { replace: true });
+      navigate(dapatkanPathDashboardBerdasarkanPeran(currentRole), {
+        replace: true,
+      });
     }, 2000);
 
     return (
@@ -53,7 +55,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   // ===== TAHAP 4: PEMERIKSAAN KHUSUS MITRA KURIR =====
   // Mitra Kurir memiliki validasi status tambahan sebelum dapat mengakses fitur
   if (currentRole === 'Mitra Kurir' && pengguna.status_pengguna !== 'Aktif') {
-    const profilePath = getProfilePathByPeran(currentRole);
+    const profilePath = dapatkanPathProfilBerdasarkanPeran(currentRole);
 
     // Cegah redirect loop - jika sudah di halaman profil, izinkan akses
     const isCurrentlyOnProfile = window.location.pathname === profilePath;

@@ -38,19 +38,17 @@ const usePengguna = () => {
     loadFromStorage();
     setIsLoading(false);
 
-    // Listen untuk custom profile update events
-    const handleProfileUpdate = (event) => {
-      console.log('🔄 Profile update event detected:', event.detail.type);
-      // Debounce untuk prevent multiple calls
+    // listen untuk custom profile update events
+    const handleProfileUpdate = () => {
+      // debounce untuk prevent multiple calls
       setTimeout(() => {
         loadFromStorage();
       }, 100);
     };
 
-    // Listen untuk storage changes dari tab/window lain
+    // listen untuk storage changes dari tab/window lain
     const handleStorageChange = (event) => {
       if (event.key === 'pengguna' || event.key === 'peran') {
-        console.log('🔄 Storage change detected:', event.key);
         loadFromStorage();
       }
     };

@@ -1,5 +1,5 @@
 // src/components/fragments/dashboard/StatCard.jsx
-import useDarkMode from '../../../hooks/useDarkMode';
+import { useDarkMode } from '../../../hooks';
 import { Card } from '../../elements';
 
 const StatCard = ({

@@ -4,18 +4,18 @@ import { Button, Loading } from '../../../elements';
 import { DokumenUpload } from '../../../fragments';
 
 const FormUnggahDokumen = ({
-  berkas, // { ktp: File|null, sim: File|null }
-  onBerkasChange, // (jenisFile, file) => void
-  onSimpan, // () => void
+  berkas,
+  onBerkasChange,
+  onUnggah,
   isLoading,
-  statusPengguna, // 'Aktif' | 'Menunggu Verifikasi' | 'Belum Aktif'
+  statusPengguna,
 }) => {
   const { isDarkMode } = useDarkMode();
 
-  // Cek apakah siap upload
-  const siapUpload = !!berkas.ktp && !!berkas.sim;
+  // cek apakah kedua dokumen sudah siap diunggah
+  const siapUnggah = !!berkas.ktp && !!berkas.sim;
 
-  // ==== STATUS: Sudah Aktif ====
+  // status: sudah aktif
   if (statusPengguna === 'Aktif') {
     return (
       <div
@@ -33,7 +33,7 @@ const FormUnggahDokumen = ({
     );
   }
 
-  // ==== STATUS: Menunggu Verifikasi ====
+  // status: menunggu verifikasi
   if (statusPengguna === 'Menunggu Verifikasi') {
     return (
       <div
@@ -51,10 +51,10 @@ const FormUnggahDokumen = ({
     );
   }
 
-  // ==== STATUS: Belum Upload / Belum Selesai ====
+  // status: belum unggah / belum lengkap
   return (
     <div className='space-y-6'>
-      {/* Header Section */}
+      {/* header */}
       <div>
         <h2
           className={`text-xl font-semibold ${
@@ -72,7 +72,7 @@ const FormUnggahDokumen = ({
         </p>
       </div>
 
-      {/* Panduan Upload */}
+      {/* panduan unggah */}
       <div
         className={`grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-lg ${
           isDarkMode
@@ -98,33 +98,30 @@ const FormUnggahDokumen = ({
         </div>
       </div>
 
-      {/* Area Upload Dokumen */}
+      {/* area unggah dokumen */}
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-        {/* Upload KTP */}
         <DokumenUpload
           jenisDokumen='KTP'
-          dokumenSaatIni={null} // Tidak ada dokumen existing untuk upload baru
+          dokumenSaatIni={null}
           onDokumenChange={(file) => onBerkasChange('ktp', file)}
           isLoading={isLoading}
           disabled={isLoading}
-          required={true}
+          required
         />
-
-        {/* Upload SIM */}
         <DokumenUpload
           jenisDokumen='SIM'
-          dokumenSaatIni={null} // Tidak ada dokumen existing untuk upload baru
+          dokumenSaatIni={null}
           onDokumenChange={(file) => onBerkasChange('sim', file)}
           isLoading={isLoading}
           disabled={isLoading}
-          required={true}
+          required
         />
       </div>
 
-      {/* Status Upload dan Tombol Submit */}
+      {/* status unggah + tombol */}
       <div
         className={`p-4 rounded-lg border ${
-          siapUpload
+          siapUnggah
             ? isDarkMode
               ? 'bg-slate-700 border-slate-600'
               : 'bg-gray-50 border-gray-200'
@@ -135,7 +132,7 @@ const FormUnggahDokumen = ({
       >
         <p
           className={`text-sm mb-3 ${
-            siapUpload
+            siapUnggah
               ? isDarkMode
                 ? 'text-green-400'
                 : 'text-green-600'
@@ -144,14 +141,14 @@ const FormUnggahDokumen = ({
               : 'text-red-600'
           }`}
         >
-          {siapUpload
+          {siapUnggah
             ? '✅ Kedua dokumen sudah siap diunggah.'
             : '⚠️ Harap unggah kedua dokumen untuk melanjutkan.'}
         </p>
 
         <Button
-          onClick={onSimpan}
-          disabled={isLoading || !siapUpload}
+          onClick={onUnggah}
+          disabled={isLoading || !siapUnggah}
           className={`
             w-full text-white flex items-center justify-center gap-2
             disabled:opacity-50 disabled:cursor-not-allowed

@@ -49,7 +49,7 @@ const KategoriSection = () => {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <Badge variant='solid' intent='success' size='md' className='mb-4'>
+          <Badge variant='solid' status='success' size='md' className='mb-4'>
             <Layers className='mr-1.5 h-4 w-4' />
             Kategori Sampah Elektronik
           </Badge>
@@ -110,7 +110,7 @@ const KategoriSection = () => {
                   >
                     <Badge
                       variant='outline'
-                      intent='success'
+                      status='success'
                       size='sm'
                       className='text-xs'
                     >

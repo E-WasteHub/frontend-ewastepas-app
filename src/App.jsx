@@ -1,52 +1,52 @@
 import { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 import { OfflineIndicator, SplashScreen } from './components/elements';
 import useDarkMode from './hooks/useDarkMode';
 import AppRouter from './routes';
 
 const App = () => {
   const { isDarkMode } = useDarkMode();
-  const [showSplash, setShowSplash] = useState(true);
+  const [tampilkanSplash, setTampilkanSplash] = useState(true);
 
-  // Handle splash screen completion
-  const handleSplashComplete = () => {
-    setShowSplash(false);
+  // tangani penyelesaian splash screen
+  const handleSplashSelesai = () => {
+    setTampilkanSplash(false);
   };
 
-  // Show splash screen on first load
+  // tampilkan splash screen saat pertama kali dimuat
   useEffect(() => {
-    const hasSeenSplash = sessionStorage.getItem('hasSeenSplash');
-    if (hasSeenSplash) {
-      // Sudah pernah lihat splash di sesi ini → langsung skip
-      setShowSplash(false);
+    const sudahLihatSplash = sessionStorage.getItem('hasSeenSplash');
+
+    if (sudahLihatSplash) {
+      // sudah pernah lihat splash di sesi ini
+      setTampilkanSplash(false);
     } else {
-      // Belum pernah → tampilkan splash sekali
+      // belum pernah melihat splash
       sessionStorage.setItem('hasSeenSplash', 'true');
-      setShowSplash(true);
+      setTampilkanSplash(true);
     }
   }, []);
 
-  return (
-    <div
-      className={`min-h-screen transition-colors duration-300 overflow-x-hidden ${
-        isDarkMode ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'
-      }`}
-    >
-      {/* Splash Screen */}
-      {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+  const classNameUtama = `min-h-screen transition-colors duration-300 overflow-x-hidden ${
+    isDarkMode ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'
+  }`;
 
-      {/* Main App */}
-      {!showSplash && (
+  return (
+    <div className={classNameUtama}>
+      {/* splash screen */}
+      {tampilkanSplash && <SplashScreen onComplete={handleSplashSelesai} />}
+
+      {/* aplikasi utama */}
+      {!tampilkanSplash && (
         <>
           <AppRouter />
-
-          {/* PWA Components */}
           <OfflineIndicator />
         </>
       )}
 
-      {/* React-Toastify Container */}
+      {/* kontainer notifikasi toast */}
       <ToastContainer
         autoClose={5000}
         hideProgressBar={false}

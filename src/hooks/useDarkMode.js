@@ -5,12 +5,12 @@ const useDarkMode = () => {
   const context = useContext(DarkMode);
 
   if (context === undefined) {
-    throw new Error('useDarkMode must be used within a DarkModeProvider');
+    throw new Error('useDarkMode harus digunakan dalam DarkModeProvider');
   }
 
-  // Helper functions
-  const setLightMode = () => context.setIsDarkMode(false);
-  const setDarkMode = () => context.setIsDarkMode(true);
+  // fungsi helper
+  const setModeTerang = () => context.setIsDarkMode(false);
+  const setModeGelap = () => context.setIsDarkMode(true);
 
   const toggleTheme = () => {
     context.setIsDarkMode(!context.isDarkMode);
@@ -19,8 +19,8 @@ const useDarkMode = () => {
   return {
     isDarkMode: context.isDarkMode,
     setIsDarkMode: context.setIsDarkMode,
-    setLightMode,
-    setDarkMode,
+    setModeTerang,
+    setModeGelap,
     toggleTheme,
   };
 };

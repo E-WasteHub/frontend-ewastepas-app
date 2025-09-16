@@ -1,65 +1,100 @@
 // src/services/daerahService.js
 
+import { ambilPesanError } from '../utils/errorUtils';
 import api from './api';
 
-// Ambil semua daerah
+// ambil semua daerah
 export const ambilSemuaDaerah = async () => {
   try {
     const response = await api.get('/daerah');
     return response.data;
   } catch (error) {
-    console.error('Error fetching all daerah:', error);
-    throw error;
+    throw { message: ambilPesanError(error, 'gagal memuat data daerah') };
   }
 };
 
-// Tambah daerah baru
+// tambah daerah baru
 export const tambahDaerah = async (payload) => {
   try {
     const response = await api.post('/daerah', payload);
     return response.data;
   } catch (error) {
-    console.error('Error creating daerah:', error);
-    throw error;
+    throw { message: ambilPesanError(error, 'gagal menambah daerah') };
   }
 };
 
-// Update daerah
+// update daerah
 export const ubahDaerah = async (id_daerah, payload) => {
   try {
     const response = await api.put(`/daerah/${id_daerah}`, payload);
     return response.data;
   } catch (error) {
-    console.error('Error updating daerah:', error);
-    throw error;
+    throw { message: ambilPesanError(error, 'gagal mengubah daerah') };
   }
 };
 
-// Hapus daerah
+// hapus daerah
 export const hapusDaerah = async (id_daerah) => {
   try {
     const response = await api.delete(`/daerah/${id_daerah}`);
     return response.data;
   } catch (error) {
-    console.error('Error deleting daerah:', error);
-    throw error;
+    throw { message: ambilPesanError(error, 'gagal menghapus daerah') };
   }
 };
 
-// Ambil 1 daerah
+// ambil 1 daerah
 export const ambilSatuDaerah = async (id_daerah) => {
   try {
     const response = await api.get(`/daerah/${id_daerah}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching single daerah:', error);
-    throw error;
+    throw { message: ambilPesanError(error, 'gagal memuat detail daerah') };
   }
 };
 
-export const ambilSemua = async () => api.get('/daerah');
-export const detail = async (id_daerah) => api.get(`/daerah/${id_daerah}`);
-export const tambah = async (payload) => api.post('/daerah', payload);
-export const ubah = async (id_daerah, payload) =>
-  api.put(`/daerah/${id_daerah}`, payload);
-export const hapus = async (id_daerah) => api.delete(`/daerah/${id_daerah}`);
+// fungsi versi singkat untuk kompatibilitas
+export const ambilSemua = async () => {
+  try {
+    const response = await api.get('/daerah');
+    return response;
+  } catch (error) {
+    throw { message: ambilPesanError(error, 'gagal memuat data daerah') };
+  }
+};
+
+export const detail = async (id_daerah) => {
+  try {
+    const response = await api.get(`/daerah/${id_daerah}`);
+    return response;
+  } catch (error) {
+    throw { message: ambilPesanError(error, 'gagal memuat detail daerah') };
+  }
+};
+
+export const tambah = async (payload) => {
+  try {
+    const response = await api.post('/daerah', payload);
+    return response;
+  } catch (error) {
+    throw { message: ambilPesanError(error, 'gagal menambah daerah') };
+  }
+};
+
+export const ubah = async (id_daerah, payload) => {
+  try {
+    const response = await api.put(`/daerah/${id_daerah}`, payload);
+    return response;
+  } catch (error) {
+    throw { message: ambilPesanError(error, 'gagal mengubah daerah') };
+  }
+};
+
+export const hapus = async (id_daerah) => {
+  try {
+    const response = await api.delete(`/daerah/${id_daerah}`);
+    return response;
+  } catch (error) {
+    throw { message: ambilPesanError(error, 'gagal menghapus daerah') };
+  }
+};

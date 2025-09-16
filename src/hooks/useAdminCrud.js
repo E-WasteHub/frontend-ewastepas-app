@@ -1,5 +1,5 @@
-// src/hooks/useAdminCrud.js
 import { useCallback, useEffect, useState } from 'react';
+
 import { ambilDataArrayAman } from '../utils/penjemputanUtils';
 
 const useAdminCrud = (service) => {
@@ -9,7 +9,7 @@ const useAdminCrud = (service) => {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
-  // ===== Helper: Sort by created_at kalau ada =====
+  // helper: sort by created_at kalau ada
   const sortByCreatedAt = (arr) => {
     if (!Array.isArray(arr)) return [];
     return [...arr].sort((a, b) => {
@@ -20,16 +20,15 @@ const useAdminCrud = (service) => {
     });
   };
 
-  // ===== Fetch Data =====
+  // ambil data
   const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await service.ambilSemua();
       const rawData = ambilDataArrayAman(response.data, 'data');
       setData(sortByCreatedAt(rawData));
-    } catch (err) {
-      console.error('❌ useAdminCrud: Error fetching data:', err);
-      setError('Gagal memuat data', err);
+    } catch {
+      setError('gagal memuat data');
       setData([]);
     } finally {
       setIsLoading(false);
@@ -40,14 +39,14 @@ const useAdminCrud = (service) => {
     fetchData();
   }, [fetchData]);
 
-  // ===== Tambah Data =====
+  // tambah data
   const tambah = async (payload) => {
     try {
       setIsSubmitting(true);
       setError('');
       const res = await service.tambah(payload);
 
-      // Jika backend mengembalikan data baru, unshift ke atas
+      // jika backend mengembalikan data baru, unshift ke atas
       const newItem = res?.data?.data || res?.data;
       if (newItem) {
         setData((prev) => sortByCreatedAt([newItem, ...prev]));
@@ -56,47 +55,44 @@ const useAdminCrud = (service) => {
         await fetchData();
       }
 
-      setMessage('Data berhasil ditambahkan');
+      setMessage('data berhasil ditambahkan');
       return { success: true, data: res };
     } catch (err) {
-      console.error('❌ Gagal tambah data:', err);
-      setError('Gagal menambah data');
+      setError('gagal menambah data');
       return { success: false, error: err.message };
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // ===== Ubah Data =====
+  // ubah data
   const ubah = async (id, payload) => {
     try {
       setIsSubmitting(true);
       setError('');
       const res = await service.ubah(id, payload);
       await fetchData();
-      setMessage('Data berhasil diubah');
+      setMessage('data berhasil diubah');
       return { success: true, data: res };
     } catch (err) {
-      console.error('❌ Gagal update data:', err);
-      setError('Gagal mengubah data');
+      setError('gagal mengubah data');
       return { success: false, error: err.message };
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // ===== Hapus Data =====
+  // hapus data
   const hapus = async (id) => {
     try {
       setIsSubmitting(true);
       setError('');
       const res = await service.hapus(id);
       await fetchData();
-      setMessage('Data berhasil dihapus');
+      setMessage('data berhasil dihapus');
       return { success: true, data: res };
     } catch (err) {
-      console.error('❌ Gagal hapus data:', err);
-      setError('Gagal menghapus data');
+      setError('gagal menghapus data');
       return { success: false, error: err.message };
     } finally {
       setIsSubmitting(false);

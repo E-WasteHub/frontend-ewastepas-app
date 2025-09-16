@@ -1,5 +1,4 @@
 // src/views/admin/transaksi/AdminTransaksiView.jsx
-import { Eye } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Loading, Pagination } from '../../../components/elements';
 import {
@@ -38,7 +37,9 @@ const AdminTransaksiView = () => {
 
   // Filter transaksi berdasarkan search dan filter
   const filteredData = useMemo(() => {
+    if (!transaksi?.length) return [];
     if (!search && !filter) return transaksi;
+
     return transaksi.filter((item) => {
       const matchSearch =
         !search ||
@@ -56,7 +57,7 @@ const AdminTransaksiView = () => {
 
   // Filter options berdasarkan status
   const filterOptions = [
-    { value: '', label: 'Semua' },
+    { value: '', label: 'Semua Status' },
     { value: 'Diproses', label: 'Diproses' },
     { value: 'Diterima', label: 'Diterima' },
     { value: 'Dijemput', label: 'Dijemput' },
@@ -139,9 +140,9 @@ const AdminTransaksiView = () => {
       cell: (row) => (
         <button
           onClick={() => showDetailModal(row)}
-          className='flex items-center gap-1 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition'
+          className='flex items-center gap-1 px-2 py-1 text-xs bg-sky-600 text-white rounded hover:bg-sky-700 transition'
         >
-          <Eye size={12} /> Detail
+          Detail
         </button>
       ),
     },
@@ -157,13 +158,13 @@ const AdminTransaksiView = () => {
 
       {/* Filter dan Search */}
       <FilterCrud
-        search={search}
-        setSearch={setSearch}
+        pencarian={search}
+        setPencarian={setSearch}
         filter={filter}
         setFilter={setFilter}
         placeholder='Cari kode, masyarakat, atau kurir...'
-        filterOptions={filterOptions}
-        filterLabel='Status'
+        opsiFilter={filterOptions}
+        labelFilter='Filter Status'
       />
 
       {/* Tabel */}

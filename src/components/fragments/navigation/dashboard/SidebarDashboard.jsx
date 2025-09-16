@@ -1,7 +1,7 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import usePengguna from '../../../../hooks/usePengguna';
-import { menuItemsByRole } from '../../../../utils/menuUtils';
+import { itemMenuBerdasarkanPeran } from '../../../../utils/menuUtils';
 import { LogoApp } from '../../../elements/';
 
 const SidebarDashboard = () => {
@@ -10,7 +10,9 @@ const SidebarDashboard = () => {
   const location = useLocation();
 
   const peranKey = peran || 'Masyarakat';
-  const menuItems = menuItemsByRole[peranKey] || menuItemsByRole['Masyarakat'];
+  const menuItems =
+    itemMenuBerdasarkanPeran[peranKey] ||
+    itemMenuBerdasarkanPeran['Masyarakat'];
 
   const peranConfig = {
     Admin: {
@@ -77,23 +79,23 @@ const SidebarDashboard = () => {
       {/* Navigation */}
       <nav className='flex-1 px-4 pb-4 space-y-1 overflow-y-auto'>
         {menuItems.map((item) => {
-          const IconComponent = item.icon;
-          const isRootDashboard = item.path.split('/').length === 3;
+          const IconComponent = item.ikon;
+          const isRootDashboard = item.jalur.split('/').length === 3;
 
           // aktif kalau: match persis, atau anaknya match
-          const isChildActive = item.children?.some((child) =>
-            location.pathname.startsWith(child.path)
+          const isChildActive = item.anak?.some((child) =>
+            location.pathname.startsWith(child.jalur)
           );
 
           const isActive =
-            (isRootDashboard && location.pathname === item.path) ||
-            (!isRootDashboard && location.pathname.startsWith(item.path)) ||
+            (isRootDashboard && location.pathname === item.jalur) ||
+            (!isRootDashboard && location.pathname.startsWith(item.jalur)) ||
             isChildActive;
 
           return (
             <NavLink
-              key={item.path}
-              to={item.path}
+              key={item.jalur}
+              to={item.jalur}
               end={isRootDashboard}
               className={() =>
                 `group flex items-center px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
@@ -108,7 +110,7 @@ const SidebarDashboard = () => {
               }
             >
               <IconComponent className='mr-3 h-5 w-5' />
-              <span className='truncate'>{item.title}</span>
+              <span className='truncate'>{item.judul}</span>
             </NavLink>
           );
         })}

@@ -1,67 +1,100 @@
 // src/services/dropboxService.js
 
+import { ambilPesanError } from '../utils/errorUtils';
 import api from './api';
 
-// Ambil semua dropbox
+// ambil semua dropbox
 export const ambilSemuaDropbox = async () => {
   try {
     const response = await api.get('/dropbox');
     return response.data;
   } catch (error) {
-    console.error('Error fetching all dropbox:', error);
-    throw error;
+    throw { message: ambilPesanError(error, 'gagal memuat data dropbox') };
   }
 };
 
-// Tambah dropbox baru
+// tambah dropbox baru
 export const tambahDropbox = async (payload) => {
   try {
     const response = await api.post('/dropbox', payload);
     return response.data;
   } catch (error) {
-    console.error('Error creating dropbox:', error);
-    throw error;
+    throw { message: ambilPesanError(error, 'gagal menambah dropbox') };
   }
 };
 
-// Update dropbox
+// update dropbox
 export const ubahDropbox = async (id_dropbox, payload) => {
   try {
     const response = await api.put(`/dropbox/${id_dropbox}`, payload);
     return response.data;
   } catch (error) {
-    console.error('Error updating dropbox:', error);
-    throw error;
+    throw { message: ambilPesanError(error, 'gagal mengubah dropbox') };
   }
 };
 
-// Hapus dropbox
+// hapus dropbox
 export const hapusDropbox = async (id_dropbox) => {
   try {
     const response = await api.delete(`/dropbox/${id_dropbox}`);
     return response.data;
   } catch (error) {
-    console.error('Error deleting dropbox:', error);
-    throw error;
+    throw { message: ambilPesanError(error, 'gagal menghapus dropbox') };
   }
 };
 
-// Ambil 1 dropbox
+// ambil 1 dropbox
 export const ambilSatuDropbox = async (id_dropbox) => {
   try {
     const response = await api.get(`/dropbox/${id_dropbox}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching single dropbox:', error);
-    throw error;
+    throw { message: ambilPesanError(error, 'gagal memuat detail dropbox') };
   }
 };
 
-// dropboxService.js
+// fungsi versi singkat untuk kompatibilitas
+export const ambilSemua = async () => {
+  try {
+    const response = await api.get('/dropbox');
+    return response;
+  } catch (error) {
+    throw { message: ambilPesanError(error, 'gagal memuat data dropbox') };
+  }
+};
 
-export const ambilSemua = async () => api.get('/dropbox');
-export const detail = async (id_dropbox) => api.get(`/dropbox/${id_dropbox}`);
-export const tambah = async (payload) => api.post('/dropbox', payload);
-export const ubah = async (id_dropbox, payload) =>
-  api.put(`/dropbox/${id_dropbox}`, payload);
-export const hapus = async (id_dropbox) => api.delete(`/dropbox/${id_dropbox}`);
+export const detail = async (id_dropbox) => {
+  try {
+    const response = await api.get(`/dropbox/${id_dropbox}`);
+    return response;
+  } catch (error) {
+    throw { message: ambilPesanError(error, 'gagal memuat detail dropbox') };
+  }
+};
+
+export const tambah = async (payload) => {
+  try {
+    const response = await api.post('/dropbox', payload);
+    return response;
+  } catch (error) {
+    throw { message: ambilPesanError(error, 'gagal menambah dropbox') };
+  }
+};
+
+export const ubah = async (id_dropbox, payload) => {
+  try {
+    const response = await api.put(`/dropbox/${id_dropbox}`, payload);
+    return response;
+  } catch (error) {
+    throw { message: ambilPesanError(error, 'gagal mengubah dropbox') };
+  }
+};
+
+export const hapus = async (id_dropbox) => {
+  try {
+    const response = await api.delete(`/dropbox/${id_dropbox}`);
+    return response;
+  } catch (error) {
+    throw { message: ambilPesanError(error, 'gagal menghapus dropbox') };
+  }
+};

@@ -1,4 +1,3 @@
-// hooks/useResponsive.js
 import { useMediaQuery } from 'react-responsive';
 
 export const useResponsive = () => {
@@ -9,7 +8,7 @@ export const useResponsive = () => {
   return { isMobile, isTablet, isDesktop };
 };
 
-// Shortcut hooks (opsional)
+// hooks shortcut tambahan
 export const useIsMobile = () => useMediaQuery({ maxWidth: 720 });
 export const useIsTablet = () =>
   useMediaQuery({ minWidth: 721, maxWidth: 1023 });

@@ -58,36 +58,22 @@ const AdminKelolaEdukasiView = () => {
   const { currentPage, setCurrentPage, totalPages, paginatedData } =
     usePagination(filteredData, 7);
 
-  // Tambah / Ubah
+  // tambah atau ubah
   const handleCrudSubmit = async (formValues) => {
-    console.log('🔄 handleCrudSubmit called with:', {
-      isEdit: !!editTarget,
-      editTargetId: editTarget?.id_konten,
-      dataType: formValues instanceof FormData ? 'FormData' : 'Object',
-      formDataEntries:
-        formValues instanceof FormData
-          ? Array.from(formValues.entries())
-          : formValues,
-    });
-
     try {
-      let res;
       if (editTarget) {
-        res = await ubah(editTarget.id_konten, formValues);
-        console.log('✅ Edit response:', res);
-        showAlert('Berhasil', 'Konten edukasi berhasil diperbarui', 'success');
+        await ubah(editTarget.id_konten, formValues);
+        showAlert('berhasil', 'konten edukasi berhasil diperbarui', 'success');
       } else {
-        res = await tambah(formValues);
-        console.log('✅ Add response:', res);
-        showAlert('Berhasil', 'Konten edukasi berhasil ditambahkan', 'success');
+        await tambah(formValues);
+        showAlert('berhasil', 'konten edukasi berhasil ditambahkan', 'success');
       }
     } catch (error) {
-      console.error('❌ handleCrudSubmit error:', error);
       showAlert(
-        'Gagal',
+        'gagal',
         error.response?.data?.message ||
           error.message ||
-          'Terjadi kesalahan saat menyimpan data',
+          'terjadi kesalahan saat menyimpan data',
         'error'
       );
     }
@@ -96,20 +82,18 @@ const AdminKelolaEdukasiView = () => {
     setEditTarget(null);
   };
 
-  // Hapus
+  // hapus
   const handleDelete = async () => {
     if (!confirmTarget) return;
     try {
-      const res = await hapus(confirmTarget);
-      console.log('✅ Delete response:', res);
-      showAlert('Berhasil', 'Konten edukasi berhasil dihapus', 'success');
+      await hapus(confirmTarget);
+      showAlert('berhasil', 'konten edukasi berhasil dihapus', 'success');
     } catch (error) {
-      console.error('❌ Delete error:', error);
       showAlert(
-        'Gagal',
+        'gagal',
         error.response?.data?.message ||
           error.message ||
-          'Konten edukasi gagal dihapus',
+          'konten edukasi gagal dihapus',
         'error'
       );
     }
@@ -199,17 +183,17 @@ const AdminKelolaEdukasiView = () => {
             data={paginatedData}
             topContent={
               <FilterCrud
-                search={search}
-                setSearch={setSearch}
+                pencarian={search}
+                setPencarian={setSearch}
                 filter={filter}
                 setFilter={setFilter}
                 placeholder='Cari konten edukasi...'
-                filterOptions={[
+                opsiFilter={[
                   { value: 'with-image', label: 'Dengan Gambar' },
                   { value: 'without-image', label: 'Tanpa Gambar' },
                 ]}
-                filterLabel='Filter Gambar'
-                onAdd={() => {
+                labelFilter='Filter Gambar'
+                onTambah={() => {
                   setEditTarget(null);
                   setCrudOpen(true);
                 }}

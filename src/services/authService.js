@@ -1,17 +1,7 @@
-// src/services/authService.js
+import { ambilPesanError } from '../utils/errorUtils';
 import api from './api';
 
-// Helper: ambil pesan error dari response atau error object
-const ambilPesanError = (error, defaultMessage) => {
-  return (
-    error?.response?.data?.error?.message || // wrapper backend
-    error?.response?.data?.message || // pesan langsung
-    error?.message || // axios error
-    defaultMessage
-  );
-};
-
-/** Login pengguna */
+// login pengguna
 export const login = async (payload) => {
   try {
     const res = await api.post('/masuk', {
@@ -20,21 +10,21 @@ export const login = async (payload) => {
     });
     return res.data;
   } catch (error) {
-    throw { message: ambilPesanError(error, 'Login gagal') };
+    throw { message: ambilPesanError(error, 'login gagal') };
   }
 };
 
-/** Logout pengguna */
+// logout pengguna
 export const logout = async () => {
   try {
     const res = await api.post('/keluar');
     return res.data;
   } catch (error) {
-    throw { message: ambilPesanError(error, 'Logout gagal') };
+    throw { message: ambilPesanError(error, 'logout gagal') };
   }
 };
 
-/** Registrasi akun baru */
+// registrasi akun baru
 export const register = async (payload) => {
   try {
     const res = await api.post('/akun/daftar', {

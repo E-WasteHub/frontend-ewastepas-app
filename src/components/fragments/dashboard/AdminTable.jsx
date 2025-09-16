@@ -1,6 +1,4 @@
-// src/components/fragments/dashboard/AdminTable.jsx
-import useDarkMode from '../../../hooks/useDarkMode';
-import useResponsive from '../../../hooks/useResponsive';
+import { useDarkMode, useResponsive } from '../../../hooks';
 
 const AdminTable = ({ columns = [], data = [], topContent }) => {
   const { isDarkMode } = useDarkMode();
@@ -98,7 +96,9 @@ const AdminTable = ({ columns = [], data = [], topContent }) => {
               {data.map((row, idx) => (
                 <tr
                   key={row.id || idx}
-                  className='transition hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                  className={`transition ${
+                    isDarkMode ? 'hover:bg-slate-700/50' : 'hover:bg-slate-100'
+                  }`}
                 >
                   {columns.map((col, i) => (
                     <td key={i} className='px-4 py-3'>

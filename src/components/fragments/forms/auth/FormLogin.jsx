@@ -8,7 +8,7 @@ import {
   usePengguna,
   useToast,
 } from '../../../../hooks';
-import { getDashboardPathByPeran } from '../../../../utils/peranUtils';
+import { dapatkanPathDashboardBerdasarkanPeran } from '../../../../utils/peranUtils';
 
 import { Button, Checkbox, InputForm, Message } from '../../../elements';
 import FormHeader from '../FormHeader';
@@ -45,7 +45,6 @@ const FormLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Jika ada proses OTP pending
     const userIdPending = localStorage.getItem('userId');
     if (userIdPending) {
       info(
@@ -56,6 +55,15 @@ const FormLogin = () => {
     }
 
     const response = await handleSubmitLogin(e);
+
+    if (response?.data?.peran === 'Admin') {
+      info(
+        response.message ||
+          'Login berhasil! Silakan cek email untuk kode verifikasi.'
+      );
+      return;
+    }
+
     if (response?.data?.peran) {
       handleLoginBerhasil(response.data);
     }
@@ -74,7 +82,7 @@ const FormLogin = () => {
     setPengguna(dataPengguna);
 
     setTimeout(() => {
-      const dashboardPath = getDashboardPathByPeran(peran);
+      const dashboardPath = dapatkanPathDashboardBerdasarkanPeran(peran);
       navigate(dashboardPath, { replace: true });
     }, 2500);
   };

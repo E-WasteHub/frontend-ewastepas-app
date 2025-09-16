@@ -1,7 +1,7 @@
 // src/components/fragments/admincrud/EdukasiCrudModal.jsx
 import JoditEditor from 'jodit-react';
 import { useEffect, useRef, useState } from 'react';
-import useDarkMode from '../../../hooks/useDarkMode';
+import { useDarkMode } from '../../../hooks';
 import { Button, InputForm, Modal } from '../../elements';
 import { EdukasiUpload } from '../../fragments';
 

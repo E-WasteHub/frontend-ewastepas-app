@@ -1,32 +1,32 @@
-// src/services/api.js
 import axios from 'axios';
-import { ambilValidToken, clearAuth } from '../utils/authExpiredUtils';
 
-// Axios instance global
+import { ambilTokenValid, hapusAutentikasi } from '../utils/authExpiredUtils';
+
+// axios instance global
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   timeout: 10000,
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Cegah redirect berulang
+// cegah redirect berulang
 let isRedirecting = false;
 
-// Request: tambahkan token jika ada
+// request: tambahkan token jika ada
 api.interceptors.request.use(
   (config) => {
     try {
-      const token = ambilValidToken();
+      const token = ambilTokenValid();
       if (token) config.headers['Authorization'] = `Bearer ${token}`;
-    } catch (err) {
-      console.error('Token error:', err);
+    } catch {
+      // token error diabaikan
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response: handle error 401/403
+// response: handle error 401/403
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -39,7 +39,7 @@ api.interceptors.response.use(
 
         console.warn('Unauthorized, redirect ke /login');
         isRedirecting = true;
-        clearAuth();
+        hapusAutentikasi();
         window.location.href = '/login';
         return Promise.reject(new Error('Unauthorized - logged out'));
       }

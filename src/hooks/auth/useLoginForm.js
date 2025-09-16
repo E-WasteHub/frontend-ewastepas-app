@@ -1,7 +1,7 @@
 // src/hooks/auth/useLoginForm.js
 import { useCallback, useEffect, useState } from 'react';
 import { login } from '../../services/authService';
-import { setTokenWithExpiry } from '../../utils/authExpiredUtils';
+import { simpanTokenDenganExpiry } from '../../utils/authExpiredUtils';
 
 const useLoginForm = () => {
   // state form
@@ -70,7 +70,7 @@ const useLoginForm = () => {
   // simpan data login
   const simpanDataLogin = useCallback((data, token) => {
     const TTL = 12 * 60 * 60; // 12 jam
-    setTokenWithExpiry(token, TTL);
+    simpanTokenDenganExpiry(token, TTL);
 
     localStorage.setItem('pengguna', JSON.stringify(data));
     localStorage.setItem('peran', data.peran?.trim() || '');
@@ -81,7 +81,6 @@ const useLoginForm = () => {
     async (e) => {
       if (e) e.preventDefault();
 
-      // validasi sederhana
       if (!formData.email.includes('@')) {
         setStatus((prev) => ({
           ...prev,
@@ -105,11 +104,21 @@ const useLoginForm = () => {
           kata_sandi: formData.kata_sandi,
         });
 
+        // cek response untuk kasus OTP (Admin)
+        if (response?.message?.includes('OTP')) {
+          // kalau admin, balikin langsung responsenya tanpa token
+          return {
+            success: true,
+            data: { peran: 'Admin' },
+            message: response.message,
+          };
+        }
+
+        // cek token ada/tidak
         if (!response?.token) {
           throw new Error('Token tidak ditemukan dalam response');
         }
 
-        // clear localStorage kecuali email yang diingat
         const rememberedEmail = localStorage.getItem('rememberedEmail');
         localStorage.clear();
         if (rememberedEmail) {

@@ -172,14 +172,14 @@ const AdminKelolaDropboxView = () => {
             data={paginatedData}
             topContent={
               <FilterCrud
-                search={search}
-                setSearch={setSearch}
+                pencarian={search}
+                setPencarian={setSearch}
                 filter={filter}
                 setFilter={setFilter}
                 placeholder='Cari dropbox...'
-                filterOptions={areaOptions}
-                filterLabel='Filter Daerah'
-                onAdd={() => {
+                opsiFilter={areaOptions}
+                labelFilter='Filter Daerah'
+                onTambah={() => {
                   setEditTarget(null);
                   setCrudOpen(true);
                 }}

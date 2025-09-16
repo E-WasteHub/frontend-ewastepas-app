@@ -1,15 +1,16 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import useDarkMode from '../../../../hooks/useDarkMode';
-import { bottomMenuItemsByRole } from '../../../../utils/menuUtils';
-import { detectPeranFromPath } from '../../../../utils/peranUtils';
+import { itemMenuBawahBerdasarkanPeran } from '../../../../utils/menuUtils';
+import { deteksiPeranDariPath } from '../../../../utils/peranUtils';
 
 const BottombarDashboard = ({ userRole = 'Masyarakat' }) => {
   const location = useLocation();
   const { isDarkMode } = useDarkMode();
 
-  const currentPeran = detectPeranFromPath(location.pathname, userRole);
+  const currentPeran = deteksiPeranDariPath(location.pathname, userRole);
   const navItems =
-    bottomMenuItemsByRole[currentPeran] || bottomMenuItemsByRole['Masyarakat'];
+    itemMenuBawahBerdasarkanPeran[currentPeran] ||
+    itemMenuBawahBerdasarkanPeran['Masyarakat'];
 
   const bgColor = isDarkMode
     ? 'bg-slate-900/95 border-slate-700'
@@ -21,21 +22,21 @@ const BottombarDashboard = ({ userRole = 'Masyarakat' }) => {
     >
       <div className='flex h-16 items-center px-2'>
         {navItems.map((item) => {
-          const IconComponent = item.icon;
-          const isRootDashboard = item.path.split('/').length === 3;
+          const IconComponent = item.ikon;
+          const isRootDashboard = item.jalur.split('/').length === 3;
 
           // cek apakah salah satu child aktif
-          const isChildActive = item.children?.some((child) =>
-            location.pathname.startsWith(child.path)
+          const isChildActive = item.anak?.some((child) =>
+            location.pathname.startsWith(child.jalur)
           );
 
           return (
             <NavLink
-              key={item.path}
-              to={item.path}
+              key={item.jalur}
+              to={item.jalur}
               end={isRootDashboard}
               className='flex flex-col items-center justify-center flex-1 py-2 px-1 mx-1 rounded-lg transition-all duration-200'
-              aria-label={item.title}
+              aria-label={item.judul}
             >
               {({ isActive }) => {
                 // kalau child aktif, override isActive jadi true
@@ -63,7 +64,7 @@ const BottombarDashboard = ({ userRole = 'Masyarakat' }) => {
                           : `font-normal ${inactiveColor}`
                       }`}
                     >
-                      {item.title}
+                      {item.judul}
                     </span>
                   </>
                 );

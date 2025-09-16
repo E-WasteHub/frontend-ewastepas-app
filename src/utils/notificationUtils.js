@@ -1,6 +1,5 @@
-// utils/notificationUtils.js
-export const notificationsByRole = {
-  admin: [
+export const notifikasiByPeran = {
+  Admin: [
     {
       id: 1,
       title: 'Verifikasi Akun Baru',
@@ -16,7 +15,7 @@ export const notificationsByRole = {
       isRead: false,
     },
   ],
-  'mitra-kurir': [
+  'Mitra Kurir': [
     {
       id: 1,
       title: 'Permintaan Penjemputan Baru',
@@ -25,7 +24,7 @@ export const notificationsByRole = {
       isRead: false,
     },
   ],
-  masyarakat: [
+  Masyarakat: [
     {
       id: 1,
       title: 'Penjemputan Berhasil',

@@ -153,17 +153,17 @@ const AdminKelolaDaerahView = () => {
             data={paginatedData}
             topContent={
               <FilterCrud
-                search={search}
-                setSearch={setSearch}
+                pencarian={search}
+                setPencarian={setSearch}
                 filter={filter}
                 setFilter={setFilter}
                 placeholder='Cari daerah...'
-                filterOptions={[
+                opsiFilter={[
                   { value: 'A-M', label: 'A - M' },
                   { value: 'N-Z', label: 'N - Z' },
                 ]}
-                filterLabel='Filter Abjad'
-                onAdd={() => {
+                labelFilter='Filter Abjad'
+                onTambah={() => {
                   setEditTarget(null);
                   setCrudOpen(true);
                 }}

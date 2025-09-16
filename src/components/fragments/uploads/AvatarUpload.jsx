@@ -1,6 +1,7 @@
 import { Camera, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import useDarkMode from '../../../hooks/useDarkMode';
+import useToast from '../../../hooks/useToast';
 import Modal from '../../elements/Modal';
 
 const AvatarUpload = ({
@@ -10,49 +11,43 @@ const AvatarUpload = ({
   disabled = false,
 }) => {
   const { isDarkMode } = useDarkMode();
+  const { error } = useToast();
   const [previewImage, setPreviewImage] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const fileInputRef = useRef(null);
 
+  // pilih file baru
   const handleFileSelect = (file) => {
     if (!file) return;
 
-    console.log('📸 File dipilih:', file.name, file.size, file.type);
-
-    // Validasi file
     if (!file.type.startsWith('image/')) {
-      alert('File harus berupa gambar');
+      error('File harus berupa gambar (JPEG/PNG)');
       return;
     }
-
     if (file.size > 5 * 1024 * 1024) {
-      // 5MB
-      alert('Ukuran file maksimal 5MB');
+      error('Ukuran file maksimal 5MB');
       return;
     }
 
-    // Cleanup preview lama jika ada
+    // cleanup blob lama
     if (previewImage && previewImage.startsWith('blob:')) {
       URL.revokeObjectURL(previewImage);
     }
 
     const imageUrl = URL.createObjectURL(file);
-    console.log('📸 Preview URL dibuat:', imageUrl);
     setPreviewImage(imageUrl);
 
-    // Safety check untuk onImageChange
     if (typeof onImageChange === 'function') {
       onImageChange(file);
-    } else {
-      console.warn('⚠️ onImageChange prop tidak tersedia atau bukan function');
     }
   };
 
+  // klik tombol kamera
   const handleClick = () => {
-    if (disabled) return;
-    fileInputRef.current?.click();
+    if (!disabled) fileInputRef.current?.click();
   };
 
+  // input file berubah
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     handleFileSelect(file);
@@ -60,10 +55,9 @@ const AvatarUpload = ({
 
   const displayImage = previewImage || currentImage || null;
 
-  // Reset preview hanya kalau backend balikin URL baru
+  // reset preview saat backend balikin url baru
   useEffect(() => {
     if (currentImage && typeof currentImage === 'string') {
-      // Kalau currentImage berubah dan beda dari preview sebelumnya, reset preview
       if (previewImage && previewImage.startsWith('blob:')) {
         URL.revokeObjectURL(previewImage);
         setPreviewImage(null);
@@ -72,7 +66,7 @@ const AvatarUpload = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentImage]);
 
-  // Cleanup preview blob
+  // cleanup blob saat unmount
   useEffect(() => {
     return () => {
       if (previewImage && previewImage.startsWith('blob:')) {
@@ -83,7 +77,7 @@ const AvatarUpload = ({
 
   return (
     <div className='flex flex-col items-start space-y-3'>
-      {/* Avatar Circle */}
+      {/* avatar circle */}
       <div className='relative'>
         <div
           className={`
@@ -99,7 +93,7 @@ const AvatarUpload = ({
             <>
               <img
                 src={displayImage}
-                alt='Avatar'
+                alt='foto profil pengguna'
                 className={`w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity ${
                   isLoading ? 'opacity-50' : ''
                 }`}
@@ -126,7 +120,7 @@ const AvatarUpload = ({
           )}
         </div>
 
-        {/* Camera Button */}
+        {/* tombol kamera */}
         {!disabled && (
           <button
             type='button'
@@ -147,7 +141,7 @@ const AvatarUpload = ({
         )}
       </div>
 
-      {/* File Input */}
+      {/* input file */}
       <input
         ref={fileInputRef}
         type='file'
@@ -157,7 +151,7 @@ const AvatarUpload = ({
         disabled={disabled}
       />
 
-      {/* Preview Modal */}
+      {/* modal preview */}
       {showPreview && displayImage && (
         <Modal
           isOpen={showPreview}
@@ -167,7 +161,7 @@ const AvatarUpload = ({
           <div className='flex justify-center'>
             <img
               src={displayImage}
-              alt='Preview foto profil'
+              alt='preview foto profil'
               className='max-w-full max-h-96 rounded-lg'
             />
           </div>

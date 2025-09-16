@@ -1,6 +1,7 @@
 import { FileText, Upload } from 'lucide-react';
 import { useRef, useState } from 'react';
 import useDarkMode from '../../../hooks/useDarkMode';
+import useToast from '../../../hooks/useToast';
 import Modal from '../../elements/Modal';
 
 const DokumenUpload = ({
@@ -10,52 +11,48 @@ const DokumenUpload = ({
   disabled = false,
 }) => {
   const { isDarkMode } = useDarkMode();
+  const { error } = useToast(); // pakai toast error
   const [previewImage, setPreviewImage] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const fileInputRef = useRef(null);
 
-  const handleFileSelect = (file) => {
+  const pilihFile = (file) => {
     if (!file) return;
 
-    // Validasi file
+    // validasi file gambar
     if (!file.type.startsWith('image/')) {
-      alert('File harus berupa gambar');
+      error('File harus berupa gambar (JPEG/PNG)');
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      alert('Ukuran file maksimal 10MB');
+      error('Ukuran file maksimal 10MB');
       return;
     }
 
     const imageUrl = URL.createObjectURL(file);
     setPreviewImage(imageUrl);
 
-    // Safety check untuk onDokumenChange
     if (typeof onDokumenChange === 'function') {
       onDokumenChange(file);
-    } else {
-      console.warn(
-        '⚠️ onDokumenChange prop tidak tersedia atau bukan function'
-      );
     }
   };
 
-  const handleClick = () => {
+  const bukaInput = () => {
     if (disabled) return;
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e) => {
+  const ubahFile = (e) => {
     const file = e.target.files[0];
-    handleFileSelect(file);
+    pilihFile(file);
   };
 
   const displayImage = previewImage || dokumenSaatIni;
 
   return (
     <div className='space-y-3'>
-      {/* Header */}
+      {/* header */}
       <div className='flex items-center space-x-2'>
         <FileText
           size={16}
@@ -70,7 +67,7 @@ const DokumenUpload = ({
         </h3>
       </div>
 
-      {/* Upload Area */}
+      {/* upload area */}
       <div
         className={`
           relative border-2 border-dashed rounded-lg p-4 transition-all cursor-pointer
@@ -81,10 +78,9 @@ const DokumenUpload = ({
           }
           ${disabled ? 'opacity-60 cursor-not-allowed' : ''}
         `}
-        onClick={handleClick}
+        onClick={bukaInput}
       >
         {displayImage ? (
-          /* Image Preview */
           <div className='space-y-3'>
             <div className='flex justify-center'>
               <img
@@ -106,7 +102,6 @@ const DokumenUpload = ({
             </p>
           </div>
         ) : (
-          /* Upload Placeholder */
           <div className='text-center space-y-2'>
             <div
               className={`p-3 rounded-full inline-block ${
@@ -138,17 +133,17 @@ const DokumenUpload = ({
         )}
       </div>
 
-      {/* File Input */}
+      {/* input file */}
       <input
         ref={fileInputRef}
         type='file'
         accept='image/*'
-        onChange={handleFileChange}
+        onChange={ubahFile}
         className='hidden'
         disabled={disabled}
       />
 
-      {/* Preview Modal */}
+      {/* modal preview */}
       {showPreview && displayImage && (
         <Modal
           isOpen={showPreview}

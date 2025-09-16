@@ -1,4 +1,3 @@
-// src/hooks/usePWA.js
 import { useEffect, useState } from 'react';
 
 const usePWA = () => {

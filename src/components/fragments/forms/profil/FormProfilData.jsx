@@ -1,4 +1,3 @@
-// src/components/fragments/forms/profil/FormProfilData.jsx
 import { useRef } from 'react';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import { Button, InputForm, Label, Loading, Textarea } from '../../../elements';
@@ -19,27 +18,25 @@ const FormProfilData = ({
   const { isDarkMode } = useDarkMode();
   const lastClickRef = useRef(0);
 
-  const handleSave = (e) => {
+  // simpan profil dengan debounce klik
+  const simpanProfil = (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // Debounce button clicks
     const now = Date.now();
     if (now - lastClickRef.current < 2000) {
-      console.log('⚠️ Button clicked too quickly, ignoring...');
       return;
     }
 
     if (!isLoading) {
       lastClickRef.current = now;
-      console.log('��� Button clicked, triggering save...');
       onSave();
     }
   };
 
   return (
     <div className='space-y-6'>
-      {/*    Section Label */}
+      {/* section label */}
       <div>
         <Label className='text-xl font-semibold'>Data Profil</Label>
         <p
@@ -51,7 +48,7 @@ const FormProfilData = ({
         </p>
       </div>
 
-      {/*    Foto Profil */}
+      {/* foto profil */}
       <AvatarUpload
         currentImage={gambar_pengguna}
         onImageChange={onPhotoChange}
@@ -59,7 +56,7 @@ const FormProfilData = ({
         disabled={isLoading}
       />
 
-      {/*    Nama Lengkap */}
+      {/* nama lengkap */}
       <InputForm
         label='Nama Lengkap'
         name='nama_lengkap'
@@ -71,7 +68,7 @@ const FormProfilData = ({
         error={errors.nama_lengkap}
       />
 
-      {/*    Email */}
+      {/* email */}
       <InputForm
         label='Email'
         type='email'
@@ -84,7 +81,7 @@ const FormProfilData = ({
         error={errors.email}
       />
 
-      {/*    No Telepon */}
+      {/* no telepon */}
       <InputForm
         label='No. Telepon'
         type='tel'
@@ -92,7 +89,6 @@ const FormProfilData = ({
         placeholder='Masukkan nomor telepon'
         value={no_telepon}
         onChange={(e) => {
-          // Filter hanya angka + batasi panjang
           const value = e.target.value.replace(/[^0-9+]/g, '').slice(0, 15);
           onChange('no_telepon', value);
         }}
@@ -100,7 +96,7 @@ const FormProfilData = ({
         error={errors.no_telepon}
       />
 
-      {/*    Alamat */}
+      {/* alamat */}
       <Textarea
         label='Alamat'
         name='alamat_pengguna'
@@ -112,9 +108,9 @@ const FormProfilData = ({
         error={errors.alamat_pengguna}
       />
 
-      {/*    Tombol Simpan */}
+      {/* tombol simpan */}
       <Button
-        onClick={handleSave}
+        onClick={simpanProfil}
         disabled={isLoading}
         type='button'
         className='w-full flex items-center justify-center gap-2'

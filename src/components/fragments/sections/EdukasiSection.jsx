@@ -52,7 +52,7 @@ const EdukasiSection = () => {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <Badge variant='solid' intent='success' size='md' className='mb-4'>
+          <Badge variant='solid' status='success' size='md' className='mb-4'>
             <Sparkles className='w-4 h-4 mr-1.5' />
             Edukasi Ewastepas
           </Badge>

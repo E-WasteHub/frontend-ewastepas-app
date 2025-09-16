@@ -16,124 +16,128 @@ import {
 } from 'lucide-react';
 
 // Master data menu khusus Admin (juga dipakai di DataMasterCard)
-export const adminMasterMenus = [
+export const menuMasterAdmin = [
   {
-    title: 'Kelola Kategori',
-    path: '/dashboard/admin/kelola-kategori',
-    icon: FolderKanban,
-    description: 'Kelola kategori sampah elektronik',
+    judul: 'Kelola Kategori',
+    jalur: '/dashboard/admin/kelola-kategori',
+    ikon: FolderKanban,
+    deskripsi: 'Kelola kategori sampah elektronik',
   },
   {
-    title: 'Kelola Jenis',
-    path: '/dashboard/admin/kelola-jenis',
-    icon: ListChecks,
-    description: 'Definisikan jenis-jenis sampah elektronik',
+    judul: 'Kelola Jenis',
+    jalur: '/dashboard/admin/kelola-jenis',
+    ikon: ListChecks,
+    deskripsi: 'Definisikan jenis-jenis sampah elektronik',
   },
   {
-    title: 'Kelola Daerah',
-    path: '/dashboard/admin/kelola-daerah',
-    icon: MapPin,
-    description: 'Kelola cakupan wilayah dan area layanan',
+    judul: 'Kelola Daerah',
+    jalur: '/dashboard/admin/kelola-daerah',
+    ikon: MapPin,
+    deskripsi: 'Kelola cakupan wilayah dan area layanan',
   },
   {
-    title: 'Kelola Dropbox',
-    path: '/dashboard/admin/kelola-dropbox',
-    icon: Box,
-    description: 'Atur titik dropbox sampah elektronik',
+    judul: 'Kelola Dropbox',
+    jalur: '/dashboard/admin/kelola-dropbox',
+    ikon: Box,
+    deskripsi: 'Atur titik dropbox sampah elektronik',
   },
   {
-    title: 'Kelola Edukasi',
-    path: '/dashboard/admin/kelola-edukasi',
-    icon: BookOpen,
-    description: 'Kelola materi edukasi terkait e-waste',
+    judul: 'Kelola Edukasi',
+    jalur: '/dashboard/admin/kelola-edukasi',
+    ikon: BookOpen,
+    deskripsi: 'Kelola materi edukasi terkait e-waste',
   },
 ];
 
 // Sidebar menu (desktop)
-export const menuItemsByRole = {
+export const itemMenuBerdasarkanPeran = {
   Admin: [
-    { title: 'Dashboard', icon: Home, path: '/dashboard/admin' },
+    { judul: 'Dashboard', ikon: Home, jalur: '/dashboard/admin' },
     {
-      title: 'Verifikasi Akun',
-      icon: User,
-      path: '/dashboard/admin/verifikasi-akun',
+      judul: 'Verifikasi Akun',
+      ikon: User,
+      jalur: '/dashboard/admin/verifikasi-akun',
     },
     {
-      title: 'Data Master',
-      icon: Database,
-      path: '/dashboard/admin/data-master',
-      children: adminMasterMenus.map((m) => ({ title: m.title, path: m.path })),
+      judul: 'Data Master',
+      ikon: Database,
+      jalur: '/dashboard/admin/data-master',
+      anak: menuMasterAdmin.map((m) => ({ judul: m.judul, jalur: m.jalur })),
     },
-    { title: 'Transaksi', icon: History, path: '/dashboard/admin/transaksi' },
+    { judul: 'Transaksi', ikon: History, jalur: '/dashboard/admin/transaksi' },
   ],
   'Mitra Kurir': [
-    { title: 'Dashboard', icon: Home, path: '/dashboard/mitra-kurir' },
+    { judul: 'Dashboard', ikon: Home, jalur: '/dashboard/mitra-kurir' },
     {
-      title: 'Daftar Permintaan',
-      icon: BookA,
-      path: '/dashboard/mitra-kurir/daftar-permintaan',
+      judul: 'Daftar Permintaan',
+      ikon: BookA,
+      jalur: '/dashboard/mitra-kurir/daftar-permintaan',
     },
     {
-      title: 'Permintaan Aktif',
-      icon: BookAlertIcon,
-      path: '/dashboard/mitra-kurir/permintaan-aktif',
+      judul: 'Permintaan Aktif',
+      ikon: BookAlertIcon,
+      jalur: '/dashboard/mitra-kurir/permintaan-aktif',
     },
     {
-      title: 'Riwayat Penjemputan',
-      icon: History,
-      path: '/dashboard/mitra-kurir/riwayat',
+      judul: 'Riwayat Penjemputan',
+      ikon: History,
+      jalur: '/dashboard/mitra-kurir/riwayat',
     },
   ],
   Masyarakat: [
-    { title: 'Dashboard', icon: Home, path: '/dashboard/masyarakat' },
+    { judul: 'Dashboard', ikon: Home, jalur: '/dashboard/masyarakat' },
     {
-      title: 'Buat Permintaan',
-      icon: Plus,
-      path: '/dashboard/masyarakat/penjemputan',
+      judul: 'Buat Permintaan',
+      ikon: Plus,
+      jalur: '/dashboard/masyarakat/penjemputan',
     },
     {
-      title: 'Lacak Penjemputan',
-      icon: Search,
-      path: '/dashboard/masyarakat/lacak',
+      judul: 'Lacak Penjemputan',
+      ikon: Search,
+      jalur: '/dashboard/masyarakat/lacak',
     },
     {
-      title: 'Riwayat Penjemputan',
-      icon: History,
-      path: '/dashboard/masyarakat/riwayat',
+      judul: 'Riwayat Penjemputan',
+      ikon: History,
+      jalur: '/dashboard/masyarakat/riwayat',
     },
   ],
 };
 
 // Bottom bar menu (mobile)
-export const bottomMenuItemsByRole = {
+export const itemMenuBawahBerdasarkanPeran = {
   Admin: [
-    { title: 'Dashboard', icon: Home, path: '/dashboard/admin' },
+    { judul: 'Dashboard', ikon: Home, jalur: '/dashboard/admin' },
     {
-      title: 'Verifikasi',
-      icon: User,
-      path: '/dashboard/admin/verifikasi-akun',
+      judul: 'Verifikasi',
+      ikon: User,
+      jalur: '/dashboard/admin/verifikasi-akun',
     },
-    { title: 'Data', icon: Database, path: '/dashboard/admin/data-master' },
-    { title: 'Transaksi', icon: History, path: '/dashboard/admin/transaksi' },
+    { judul: 'Data', ikon: Database, jalur: '/dashboard/admin/data-master' },
+    { judul: 'Transaksi', ikon: History, jalur: '/dashboard/admin/transaksi' },
   ],
   'Mitra Kurir': [
-    { title: 'Dashboard', icon: Home, path: '/dashboard/mitra-kurir' },
+    { judul: 'Dashboard', ikon: Home, jalur: '/dashboard/mitra-kurir' },
     {
-      title: 'Permintaan',
-      icon: BookA,
-      path: '/dashboard/mitra-kurir/daftar-permintaan',
+      judul: 'Permintaan',
+      ikon: BookA,
+      jalur: '/dashboard/mitra-kurir/daftar-permintaan',
     },
     {
-      title: 'Aktif',
-      icon: BookAlertIcon,
-      path: '/dashboard/mitra-kurir/permintaan-aktif',
+      judul: 'Aktif',
+      ikon: BookAlertIcon,
+      jalur: '/dashboard/mitra-kurir/permintaan-aktif',
     },
-    { title: 'Riwayat', icon: History, path: '/dashboard/mitra-kurir/riwayat' },
+    {
+      judul: 'Riwayat',
+      ikon: History,
+      jalur: '/dashboard/mitra-kurir/riwayat',
+    },
   ],
   Masyarakat: [
-    { title: 'Dashboard', icon: Home, path: '/dashboard/masyarakat' },
-    { title: 'Buat', icon: Plus, path: '/dashboard/masyarakat/penjemputan' },
-    { title: 'Lacak', icon: Search, path: '/dashboard/masyarakat/lacak' },
-    { title: 'Riwayat', icon: History, path: '/dashboard/masyarakat/riwayat' },
+    { judul: 'Dashboard', ikon: Home, jalur: '/dashboard/masyarakat' },
+    { judul: 'Buat', ikon: Plus, jalur: '/dashboard/masyarakat/penjemputan' },
+    { judul: 'Lacak', ikon: Search, jalur: '/dashboard/masyarakat/lacak' },
+    { judul: 'Riwayat', ikon: History, jalur: '/dashboard/masyarakat/riwayat' },
   ],
 };

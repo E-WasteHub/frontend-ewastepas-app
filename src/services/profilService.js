@@ -1,22 +1,21 @@
 // src/services/profilService.js
-
+import { ambilPesanError } from '../utils/errorUtils';
 import api from './api';
 
-// Ambil Profil
+// ambil profil
 export const ambilProfil = async () => {
   try {
-    const response = await api.get(`/akun`);
+    const response = await api.get('/akun');
     return response.data;
   } catch (error) {
-    console.error('Error ambil profil:', error);
-    throw error;
+    throw { message: ambilPesanError(error, 'gagal mengambil data profil') };
   }
 };
 
-// ubah Profil
+// ubah profil
 export const ubahProfil = async (payload) => {
   try {
-    const response = await api.put(`/akun`, payload, {
+    const response = await api.put('/akun', payload, {
       headers:
         payload instanceof FormData
           ? { 'Content-Type': 'multipart/form-data' }
@@ -25,37 +24,33 @@ export const ubahProfil = async (payload) => {
 
     const data = response.data;
 
-    // Pastikan selalu ada url_gambar_pengguna
     return {
       ...data,
       url_gambar_pengguna: data.url_gambar_pengguna || data.gambar_pengguna,
     };
   } catch (error) {
-    console.error('Error updating profil:', error);
-    throw error.response?.data || { message: 'Gagal memperbarui profil' };
+    throw { message: ambilPesanError(error, 'gagal memperbarui profil') };
   }
 };
 
-// Ubah Kata Sandi
+// ubah kata sandi
 export const ubahKataSandi = async (payload) => {
   try {
-    const response = await api.put(`/akun/kata-sandi`, payload);
+    const response = await api.put('/akun/kata-sandi', payload);
     return response.data;
   } catch (error) {
-    console.error('Error changing password:', error);
-    throw error;
+    throw { message: ambilPesanError(error, 'gagal mengubah kata sandi') };
   }
 };
 
-// Upload Dokumen
+// unggah dokumen
 export const unggahDokumen = async (payload) => {
   try {
-    const response = await api.post(`/akun/unggah-dokumen`, payload, {
+    const response = await api.post('/akun/unggah-dokumen', payload, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return response.data;
   } catch (error) {
-    console.error('Error uploading document:', error);
-    throw error;
+    throw { message: ambilPesanError(error, 'gagal mengunggah dokumen') };
   }
 };

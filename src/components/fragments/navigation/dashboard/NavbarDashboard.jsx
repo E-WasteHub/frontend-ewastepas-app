@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import usePengguna from '../../../../hooks/usePengguna';
 import useResponsive from '../../../../hooks/useResponsive';
+import { notifikasiByPeran } from '../../../../utils/notificationUtils';
 import { ThemeSelector } from '../../../elements';
 import LogoApp from '../../../elements/LogoApp';
 import NotificationDropdown from './NotificationDropdown';
@@ -17,27 +18,18 @@ const NavbarDashboard = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        setNotifications([
-          {
-            id: 1,
-            title: 'Halo 👋',
-            message: 'Selamat datang di dashboard',
-            isRead: false,
-          },
-          {
-            id: 2,
-            title: 'Update',
-            message: 'Ada fitur baru yang bisa dicoba',
-            isRead: true,
-          },
-        ]);
+        // Ambil notifikasi berdasarkan role pengguna
+        const peranNotifikasi = notifikasiByPeran[peran] || [];
+        setNotifications(peranNotifikasi);
       } catch (err) {
         console.error('Gagal ambil notifikasi:', err);
       }
     };
 
-    fetchNotifications();
-  }, []);
+    if (peran) {
+      fetchNotifications();
+    }
+  }, [peran]);
 
   return (
     <nav

@@ -1,23 +1,24 @@
 import { useCallback, useEffect, useState } from 'react';
+
 import {
   ambilDetailPenjemputan,
   ambilRiwayatPenjemputan,
-  batalPenjemputan,
+  ubahStatusPenjemputan,
 } from '../services/penjemputanService';
 import { ambilDataArrayAman } from '../utils/penjemputanUtils';
 
 const useMasyarakat = () => {
-  // ===== LIST DATA =====
+  // data list
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // ===== DETAIL =====
+  // detail
   const [detail, setDetail] = useState(null);
   const [isLoadingDetail, setIsLoadingDetail] = useState(false);
   const [errorDetail, setErrorDetail] = useState('');
 
-  // ===== FETCH LIST =====
+  // ambil data list
   const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -25,16 +26,15 @@ const useMasyarakat = () => {
       const response = await ambilRiwayatPenjemputan();
       const rawData = ambilDataArrayAman(response, 'data');
       setData(rawData);
-    } catch (err) {
-      console.error('❌ Gagal fetch data masyarakat:', err);
-      setError('Gagal memuat data penjemputan');
+    } catch {
+      setError('gagal memuat data penjemputan');
       setData([]);
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  // ===== FETCH DETAIL =====
+  // ambil detail
   const fetchDetail = useCallback(async (id_penjemputan) => {
     if (!id_penjemputan) return;
     try {
@@ -42,27 +42,25 @@ const useMasyarakat = () => {
       setErrorDetail('');
       const res = await ambilDetailPenjemputan(id_penjemputan);
       setDetail(res.data);
-    } catch (err) {
-      console.error('❌ Gagal fetch detail:', err);
-      setErrorDetail('Gagal memuat detail penjemputan');
+    } catch {
+      setErrorDetail('gagal memuat detail penjemputan');
       setDetail(null);
     } finally {
       setIsLoadingDetail(false);
     }
   }, []);
 
-  // ===== CANCEL =====
+  // batalkan penjemputan
   const batalkan = async (id_penjemputan) => {
     try {
-      await batalPenjemputan(id_penjemputan, {
-        status_penjemputan: 'Dibatalkan',
+      await ubahStatusPenjemputan(id_penjemputan, {
+        status_penjemputan: 'dibatalkan',
         waktu_dibatalkan: new Date().toISOString(),
       });
       await fetchData();
       return true;
-    } catch (err) {
-      console.error('❌ Gagal batalkan penjemputan:', err);
-      setError('Gagal membatalkan penjemputan');
+    } catch {
+      setError('gagal membatalkan penjemputan');
       return false;
     }
   };
@@ -71,28 +69,32 @@ const useMasyarakat = () => {
     fetchData();
   }, [fetchData]);
 
-  // ===== DASHBOARD STATS =====
+  // statistik dashboard
   const pengguna = JSON.parse(localStorage.getItem('pengguna')) || {};
 
-  // Gunakan poinRealtime jika ada, fallback ke localStorage
+  // gunakan poinRealtime jika ada, fallback ke localStorage
   const totalPoin = parseInt(pengguna.poin_pengguna, 10) || 0;
 
   const stats = {
     totalPenjemputan: data.length,
     sedangBerlangsung: data.filter((d) =>
-      ['Diproses', 'Diterima', 'Dijemput'].includes(d.status_penjemputan)
+      ['diproses', 'diterima', 'dijemput'].includes(
+        d.status_penjemputan?.toLowerCase()
+      )
     ).length,
     totalPoin,
   };
 
-  // ===== FILTERS =====
+  // filter data
   const daftarPenjemputan = data.filter((d) =>
-    ['Diproses', 'Diterima', 'Dijemput'].includes(d.status_penjemputan)
+    ['diproses', 'diterima', 'dijemput'].includes(
+      d.status_penjemputan?.toLowerCase()
+    )
   );
 
   const riwayat = data.filter((d) =>
-    ['Diproses', 'Diterima', 'Dijemput', 'Selesai', 'Dibatalkan'].includes(
-      d.status_penjemputan
+    ['diproses', 'diterima', 'dijemput', 'selesai', 'dibatalkan'].includes(
+      d.status_penjemputan?.toLowerCase()
     )
   );
 

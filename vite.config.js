@@ -45,7 +45,7 @@ export default defineConfig({
       workbox: {
         runtimeCaching: [
           {
-            // Halaman edukasi → tetap bisa diakses offline
+            // Halaman edukasi tetap bisa diakses offline
             urlPattern: ({ url }) => url.pathname.startsWith('/edukasi'),
             handler: 'CacheFirst',
             options: {

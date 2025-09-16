@@ -6,6 +6,7 @@ import { Button, InputForm, Loading } from '../../../elements';
 
 const FormUbahKataSandi = ({ isLoading, onSave }) => {
   const { error } = useToast();
+
   const [form, setForm] = useState({
     kata_sandi_lama: '',
     kata_sandi_baru: '',
@@ -13,12 +14,12 @@ const FormUbahKataSandi = ({ isLoading, onSave }) => {
   });
 
   // update field
-  const handleChange = (field, value) => {
+  const ubahInputForm = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  // validasi sederhana
-  const validateForm = () => {
+  // validasi form
+  const validasiForm = () => {
     if (
       !form.kata_sandi_lama ||
       !form.kata_sandi_baru ||
@@ -28,56 +29,56 @@ const FormUbahKataSandi = ({ isLoading, onSave }) => {
       return false;
     }
     if (form.kata_sandi_baru.length < 6) {
-      error('Password baru minimal 6 karakter');
+      error('Kata sandi baru minimal 6 karakter');
       return false;
     }
     if (form.kata_sandi_baru !== form.konfirmasi_kata_sandi) {
-      error('Konfirmasi password tidak sesuai');
+      error('Konfirmasi kata sandi tidak sesuai');
       return false;
     }
     return true;
   };
 
   // submit form
-  const handleSubmit = (e) => {
+  const submitForm = (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validasiForm()) return;
     if (onSave) onSave(form);
   };
 
   return (
-    <form onSubmit={handleSubmit} className='space-y-6'>
-      <h2 className='text-xl font-semibold'>Ubah Password</h2>
+    <form onSubmit={submitForm} className='space-y-6'>
+      <h2 className='text-xl font-semibold'>Ubah Kata Sandi</h2>
 
       <InputForm
-        label='Password Saat Ini'
+        label='Kata Sandi Saat Ini'
         type='password'
         name='kata_sandi_lama'
-        placeholder='Masukkan password lama'
+        placeholder='Masukkan kata sandi lama'
         value={form.kata_sandi_lama}
-        onChange={(e) => handleChange('kata_sandi_lama', e.target.value)}
+        onChange={(e) => ubahInputForm('kata_sandi_lama', e.target.value)}
         required
         showPasswordToggle
       />
 
       <InputForm
-        label='Password Baru'
+        label='Kata Sandi Baru'
         type='password'
         name='kata_sandi_baru'
-        placeholder='Masukkan password baru'
+        placeholder='Masukkan kata sandi baru'
         value={form.kata_sandi_baru}
-        onChange={(e) => handleChange('kata_sandi_baru', e.target.value)}
+        onChange={(e) => ubahInputForm('kata_sandi_baru', e.target.value)}
         required
         showPasswordToggle
       />
 
       <InputForm
-        label='Konfirmasi Password Baru'
+        label='Konfirmasi Kata Sandi Baru'
         type='password'
         name='konfirmasi_kata_sandi'
-        placeholder='Ulangi password baru'
+        placeholder='Ulangi kata sandi baru'
         value={form.konfirmasi_kata_sandi}
-        onChange={(e) => handleChange('konfirmasi_kata_sandi', e.target.value)}
+        onChange={(e) => ubahInputForm('konfirmasi_kata_sandi', e.target.value)}
         required
         showPasswordToggle
       />
@@ -92,7 +93,7 @@ const FormUbahKataSandi = ({ isLoading, onSave }) => {
         ) : (
           <>
             <Lock className='w-4 h-4' />
-            Simpan Password
+            Simpan Kata Sandi
           </>
         )}
       </Button>

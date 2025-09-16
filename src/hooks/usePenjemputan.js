@@ -1,6 +1,7 @@
 // src/hooks/usePenjemputan.js
 import { useEffect, useRef, useState } from 'react';
 import * as penjemputanService from '../services/penjemputanService';
+import { ambilPesanError } from '../utils/errorUtils';
 import {
   hitungEstimasiPoin,
   hitungTotalJumlahSampah,
@@ -8,23 +9,19 @@ import {
 import useToast from './useToast';
 
 const usePenjemputan = ({ showAlert }) => {
-  /* -------------------------------------------------------------------------- */
-  /*                                 STATE DATA                                 */
-  /* -------------------------------------------------------------------------- */
-
-  // master data (kategori, jenis, waktu operasional)
+  // master data
   const [kategoriList, setKategoriList] = useState([]);
   const [jenisList, setJenisList] = useState([]);
   const [waktuOperasionalList, setWaktuOperasionalList] = useState([]);
 
-  // daftar sampah yang ditambahkan user
+  // daftar sampah user
   const [daftarSampah, setDaftarSampah] = useState([]);
 
   // modal tambah sampah
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // input sementara untuk modal/form
-  const [draftSampah, setDraftSampah] = useState({
+  const [sampahSementara, setSampahSementara] = useState({
     id_kategori: '',
     id_jenis: '',
     jumlah_sampah: '',
@@ -33,18 +30,14 @@ const usePenjemputan = ({ showAlert }) => {
     previewUrl: null,
   });
 
-  // file input ref (untuk upload foto)
+  // file input ref
   const fileInputRef = useRef(null);
 
   // toast/alert
   const toast = useToast();
-  const alertFn = showAlert || toast.showAlert;
+  const tampilkanAlert = showAlert || toast.showAlert;
 
-  /* -------------------------------------------------------------------------- */
-  /*                               FETCHING DATA                                */
-  /* -------------------------------------------------------------------------- */
-
-  // ambil kategori + waktu operasional
+  // load kategori & waktu operasional
   useEffect(() => {
     let active = true;
     (async () => {
@@ -54,71 +47,77 @@ const usePenjemputan = ({ showAlert }) => {
         setKategoriList(res?.data?.kategori || []);
         setWaktuOperasionalList(res?.data?.waktu_operasional || []);
       } catch (err) {
-        console.error('❌ Gagal fetch kategori/waktu:', err);
-        alertFn('Error', 'Gagal memuat data awal', 'error');
+        tampilkanAlert(
+          'Error',
+          ambilPesanError(err, 'Gagal memuat data awal'),
+          'error'
+        );
       }
     })();
     return () => {
       active = false;
     };
-  }, [alertFn]);
+  }, [tampilkanAlert]);
 
-  // ambil jenis sampah saat kategori berubah
+  // load jenis sampah ketika kategori dipilih
   useEffect(() => {
-    if (!draftSampah.id_kategori) return;
+    if (!sampahSementara.id_kategori) return;
     (async () => {
       try {
         const res = await penjemputanService.ambilJenisByKategori(
-          draftSampah.id_kategori
+          sampahSementara.id_kategori
         );
         setJenisList(res?.data?.jenis || []);
       } catch (err) {
-        console.error('❌ Gagal fetch jenis sampah:', err);
-        alertFn('Error', 'Gagal memuat jenis sampah', 'error');
+        tampilkanAlert(
+          'Error',
+          ambilPesanError(err, 'Gagal memuat jenis sampah'),
+          'error'
+        );
       }
     })();
-  }, [draftSampah.id_kategori, alertFn]);
-
-  /* -------------------------------------------------------------------------- */
-  /*                                  HANDLERS                                  */
-  /* -------------------------------------------------------------------------- */
+  }, [sampahSementara.id_kategori, tampilkanAlert]);
 
   // tambah sampah ke daftar
-  const addSampah = () => {
+  const tambahSampah = () => {
     if (
-      !draftSampah.id_kategori ||
-      !draftSampah.id_jenis ||
-      !draftSampah.jumlah_sampah
+      !sampahSementara.id_kategori ||
+      !sampahSementara.id_jenis ||
+      !sampahSementara.jumlah_sampah
     ) {
-      alertFn('Peringatan', 'Lengkapi data sampah terlebih dahulu', 'warning');
+      tampilkanAlert(
+        'Peringatan',
+        'Lengkapi data sampah terlebih dahulu',
+        'warning'
+      );
       return;
     }
 
     const kategori = kategoriList.find(
-      (k) => Number(k.id_kategori) === Number(draftSampah.id_kategori)
+      (k) => Number(k.id_kategori) === Number(sampahSementara.id_kategori)
     );
     const jenis = jenisList.find(
-      (j) => Number(j.id_jenis) === Number(draftSampah.id_jenis)
+      (j) => Number(j.id_jenis) === Number(sampahSementara.id_jenis)
     );
 
     const newSampah = {
       id: Date.now(),
-      id_kategori: String(draftSampah.id_kategori),
+      id_kategori: String(sampahSementara.id_kategori),
       nama_kategori: kategori?.nama_kategori || 'Kategori',
       poin_per_unit: kategori?.poin_kategori || 0,
-      id_jenis: String(draftSampah.id_jenis),
+      id_jenis: String(sampahSementara.id_jenis),
       nama_jenis: jenis?.nama_jenis || 'Jenis',
-      jumlah_sampah: Number(draftSampah.jumlah_sampah),
-      catatan_sampah: draftSampah.catatan_sampah || '',
-      file: draftSampah.file,
-      previewUrl: draftSampah.previewUrl,
+      jumlah_sampah: Number(sampahSementara.jumlah_sampah),
+      catatan_sampah: sampahSementara.catatan_sampah || '',
+      file: sampahSementara.file,
+      previewUrl: sampahSementara.previewUrl,
     };
 
     setDaftarSampah((prev) => [...prev, newSampah]);
-    alertFn('Berhasil', 'Sampah ditambahkan.', 'success');
+    tampilkanAlert('Berhasil', 'Sampah ditambahkan', 'success');
 
-    // reset draft
-    setDraftSampah({
+    // reset input sementara
+    setSampahSementara({
       id_kategori: '',
       id_jenis: '',
       jumlah_sampah: '',
@@ -129,18 +128,18 @@ const usePenjemputan = ({ showAlert }) => {
   };
 
   // hapus sampah dari daftar
-  const removeSampah = (id) => {
+  const hapusSampah = (id) => {
     setDaftarSampah((prev) => prev.filter((s) => s.id !== id));
   };
 
-  // trigger upload foto
-  const triggerUploadFoto = (id) => {
+  // buka input file untuk upload foto
+  const bukaUploadFoto = (id) => {
     if (!fileInputRef.current) return;
     fileInputRef.current.dataset.id = id;
     fileInputRef.current.click();
   };
 
-  // saat user pilih file
+  // handle ketika user pilih file
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     const id = fileInputRef.current?.dataset?.id;
@@ -155,19 +154,14 @@ const usePenjemputan = ({ showAlert }) => {
     );
   };
 
-  /* -------------------------------------------------------------------------- */
-  /*                                  UTILITIES                                 */
-  /* -------------------------------------------------------------------------- */
-
-  // hitung total
+  // total jumlah dan estimasi poin
   const totalJumlah = hitungTotalJumlahSampah(daftarSampah);
   const estimasiPoin = hitungEstimasiPoin(daftarSampah);
 
-  // bentuk FormData untuk dikirim ke backend
-  const buildFormData = (formData) => {
+  // bentuk formData untuk backend
+  const buatFormData = (formData) => {
     const fd = new FormData();
 
-    // field utama
     fd.append(
       'id_waktu_operasional',
       String(formData.id_waktu_operasional || '')
@@ -175,7 +169,6 @@ const usePenjemputan = ({ showAlert }) => {
     fd.append('alamat_penjemputan', formData.alamat_penjemputan || '');
     fd.append('catatan', formData.catatan || '');
 
-    // data sampah
     const sampahData = daftarSampah.map((s) => ({
       id_kategori: s.id_kategori,
       id_jenis: s.id_jenis,
@@ -184,12 +177,10 @@ const usePenjemputan = ({ showAlert }) => {
     }));
     fd.append('sampah', JSON.stringify(sampahData));
 
-    // file upload dengan placeholder
     daftarSampah.forEach((s) => {
       if (s.file instanceof File) {
         fd.append('gambar', s.file);
       } else {
-        // placeholder kosong agar tidak geser
         fd.append('gambar', new Blob([], { type: 'image/png' }), 'empty.png');
       }
     });
@@ -197,10 +188,10 @@ const usePenjemputan = ({ showAlert }) => {
     return fd;
   };
 
-  // reset daftar sampah dan draft
+  // reset daftar sampah
   const resetSampah = () => {
     setDaftarSampah([]);
-    setDraftSampah({
+    setSampahSementara({
       id_kategori: '',
       id_jenis: '',
       jumlah_sampah: '',
@@ -210,36 +201,32 @@ const usePenjemputan = ({ showAlert }) => {
     });
   };
 
-  /* -------------------------------------------------------------------------- */
-  /*                                RETURN VALUE                                */
-  /* -------------------------------------------------------------------------- */
-
   return {
     // state
     kategoriList,
     jenisList,
     waktuOperasionalList,
     daftarSampah,
-    draftSampah,
+    sampahSementara,
     isModalOpen,
     totalJumlah,
     estimasiPoin,
     fileInputRef,
 
     // setter
-    setDraftSampah,
+    setSampahSementara,
     setIsModalOpen,
     setDaftarSampah,
 
-    // action
-    addSampah,
-    removeSampah,
-    triggerUploadFoto,
+    // actions
+    tambahSampah,
+    hapusSampah,
+    bukaUploadFoto,
     handleFileChange,
     resetSampah,
 
     // utils
-    buildFormData,
+    buatFormData,
   };
 };
 

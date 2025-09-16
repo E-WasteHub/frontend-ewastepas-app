@@ -54,7 +54,7 @@ const AdminKelolaJenisView = () => {
 
   // Pagination
   const { currentPage, setCurrentPage, totalPages, paginatedData } =
-    usePagination(filteredData, 7);
+    usePagination(filteredData, 10);
 
   // Get unique categories for filter
   const categoryOptions = useMemo(() => {
@@ -140,7 +140,6 @@ const AdminKelolaJenisView = () => {
           </button>
           <button
             onClick={() => {
-              console.log('🔴 Hapus target:', row.id_jenis);
               setConfirmTarget(row.id_jenis);
               setConfirmOpen(true);
             }}
@@ -176,14 +175,14 @@ const AdminKelolaJenisView = () => {
             data={paginatedData}
             topContent={
               <FilterCrud
-                search={search}
-                setSearch={setSearch}
+                pencarian={search}
+                setPencarian={setSearch}
                 filter={filter}
                 setFilter={setFilter}
                 placeholder='Cari jenis sampah...'
-                filterOptions={categoryOptions}
-                filterLabel='Filter Kategori'
-                onAdd={() => {
+                opsiFilter={categoryOptions}
+                labelFilter='Filter Kategori'
+                onTambah={() => {
                   setEditTarget(null);
                   setCrudOpen(true);
                 }}

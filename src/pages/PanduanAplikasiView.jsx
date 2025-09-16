@@ -24,7 +24,7 @@ const PanduanAplikasiPage = () => {
         }`}
       >
         <div className='max-w-3xl mx-auto'>
-          <Badge variant='solid' intent='success' size='md' className='mb-6'>
+          <Badge variant='solid' status='success' size='md' className='mb-6'>
             <BookText className='w-4 h-4 mr-2' />
             Panduan Mudah
           </Badge>

@@ -23,7 +23,7 @@ const InformasiSection = () => {
           className='text-center mb-12'
         >
           {/* Badge */}
-          <Badge variant='solid' intent='success' size='md' className='mb-4'>
+          <Badge variant='solid' status='success' size='md' className='mb-4'>
             <Zap className='w-4 h-4 mr-1.5' />
             Bergabung Sekarang
           </Badge>
@@ -61,7 +61,7 @@ const InformasiSection = () => {
             viewport={{ once: true }}
             className='group w-full'
           >
-            <Link to='/register?peran=masyarakat' className='block h-full'>
+            <Link to='/register?peran=Masyarakat' className='block h-full'>
               <div
                 className={`border rounded-xl hover:border-green-500 hover:shadow-lg transition-all duration-300 h-full text-center ${
                   isMobile ? 'p-4' : 'p-6'
@@ -102,7 +102,7 @@ const InformasiSection = () => {
             viewport={{ once: true }}
             className='group w-full'
           >
-            <Link to='/register?peran=mitra-kurir' className='block h-full'>
+            <Link to='/register?peran=Mitra Kurir' className='block h-full'>
               <div
                 className={`border rounded-xl hover:border-green-500 hover:shadow-lg transition-all duration-300 h-full text-center ${
                   isMobile ? 'p-4' : 'p-6'

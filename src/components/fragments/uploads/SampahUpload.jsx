@@ -13,10 +13,11 @@ const SampahUpload = ({
   const [showPreview, setShowPreview] = useState(false);
   const fileInputRef = useRef(null);
 
-  const handleFileSelect = (files) => {
+  // pilih file dari input
+  const pilihFile = (files) => {
     if (!files || files.length === 0) return;
 
-    const file = files[0]; // Only take first file
+    const file = files[0];
     if (!file.type.startsWith('image/')) return;
 
     const imageUrl = URL.createObjectURL(file);
@@ -27,33 +28,37 @@ const SampahUpload = ({
       id: Date.now(),
     };
 
-    // Replace existing image if any, or add new one (max 1 image)
+    // hanya simpan satu gambar (replace jika ada)
     onGambarChange([newImage]);
   };
 
-  const handleClick = () => {
+  // buka input file
+  const bukaInputFile = () => {
     if (disabled) return;
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e) => {
+  // handle ubah file
+  const ubahFile = (e) => {
     const files = e.target.files;
-    handleFileSelect(files);
+    pilihFile(files);
     e.target.value = '';
   };
 
-  const handleRemoveImage = () => {
+  // hapus gambar
+  const hapusGambar = () => {
     onGambarChange([]);
   };
 
-  const handlePreviewImage = (image) => {
+  // lihat preview gambar
+  const lihatPreviewGambar = (image) => {
     setPreviewImage(image);
     setShowPreview(true);
   };
 
   return (
     <div className='space-y-4'>
-      {/* Header */}
+      {/* header */}
       <div className='flex items-center space-x-2'>
         <Camera
           size={20}
@@ -68,7 +73,7 @@ const SampahUpload = ({
         </h3>
       </div>
 
-      {/* Upload Area - Show only when no images */}
+      {/* area upload (tampil jika belum ada gambar) */}
       {gambarSampah.length === 0 ? (
         <div
           className={`
@@ -79,7 +84,7 @@ const SampahUpload = ({
                 : 'border-gray-300 bg-gray-50 hover:border-gray-400'
             }
           `}
-          onClick={handleClick}
+          onClick={bukaInputFile}
         >
           <div className='text-center space-y-4'>
             <div
@@ -113,7 +118,7 @@ const SampahUpload = ({
           </div>
         </div>
       ) : (
-        /* Single Image Preview */
+        // preview single image
         <div className='space-y-3'>
           <div className='relative w-full'>
             <div
@@ -124,27 +129,27 @@ const SampahUpload = ({
             >
               <img
                 src={gambarSampah[0].url}
-                alt='Sampah'
+                alt='foto sampah elektronik'
                 className='w-full h-full object-cover cursor-pointer'
-                onClick={() => handlePreviewImage(gambarSampah[0])}
+                onClick={() => lihatPreviewGambar(gambarSampah[0])}
               />
 
-              {/* Top Action Buttons */}
+              {/* tombol aksi di atas gambar */}
               {!disabled && (
                 <div className='absolute top-2 left-2 right-2 flex justify-between'>
-                  {/* Replace Photo Button */}
+                  {/* ganti foto */}
                   <button
                     type='button'
-                    onClick={handleClick}
+                    onClick={bukaInputFile}
                     className='p-1 bg-emerald-500 bg-opacity-80 text-white rounded-full hover:bg-opacity-100 transition-colors'
                   >
                     <Camera size={14} />
                   </button>
 
-                  {/* Remove Button */}
+                  {/* hapus foto */}
                   <button
                     type='button'
-                    onClick={handleRemoveImage}
+                    onClick={hapusGambar}
                     className='p-1 bg-red-500 bg-opacity-80 text-white rounded-full hover:bg-opacity-100 transition-colors'
                   >
                     <X size={14} />
@@ -156,17 +161,17 @@ const SampahUpload = ({
         </div>
       )}
 
-      {/* File Input */}
+      {/* input file */}
       <input
         ref={fileInputRef}
         type='file'
         accept='image/*'
-        onChange={handleFileChange}
+        onChange={ubahFile}
         className='hidden'
         disabled={disabled}
       />
 
-      {/* Preview Modal using Modal component */}
+      {/* modal preview */}
       <Modal
         isOpen={showPreview}
         onClose={() => {
@@ -179,7 +184,7 @@ const SampahUpload = ({
           <div className='flex justify-center'>
             <img
               src={previewImage?.url}
-              alt='Preview foto sampah'
+              alt='preview foto sampah'
               className='max-w-full max-h-96 rounded-lg'
             />
           </div>

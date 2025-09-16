@@ -1,31 +1,28 @@
-// src/utils/authExpiredUtils.js
+const kunciToken = 'token';
+const kunciTokenExpired = 'token_expires_at';
+const kunciOtpExpired = 'otpExpiresAt';
 
-const tokenKey = 'token';
-const tokenExpiresKey = 'token_expires_at';
-const otpExpiresKey = 'otpExpiresAt';
-
-// ---- TOKEN -----
-// Simpan token dengan waktu kedaluwarsa (default 12 jam)
-export function setTokenWithExpiry(token, expirySeconds = 12 * 60 * 60) {
+// simpan token dengan waktu kedaluwarsa (default 12 jam)
+export function simpanTokenDenganExpiry(token, expirySeconds = 12 * 60 * 60) {
   if (!token) return;
   try {
-    localStorage.setItem(tokenKey, token);
+    localStorage.setItem(kunciToken, token);
     const expiresAt = Date.now() + expirySeconds * 1000;
-    localStorage.setItem(tokenExpiresKey, expiresAt.toString());
-  } catch (e) {
-    console.error('setTokenWithExpiry error:', e);
+    localStorage.setItem(kunciTokenExpired, expiresAt.toString());
+  } catch {
+    // error simpan token diabaikan
   }
 }
 
-// Ambil token jika masih berlaku
-export function ambilValidToken() {
-  const token = localStorage.getItem(tokenKey);
-  const expiresAt = localStorage.getItem(tokenExpiresKey);
+// ambil token jika masih berlaku
+export function ambilTokenValid() {
+  const token = localStorage.getItem(kunciToken);
+  const expiresAt = localStorage.getItem(kunciTokenExpired);
 
   if (!token || !expiresAt) return null;
 
   if (Date.now() > parseInt(expiresAt, 10)) {
-    clearAuth();
+    hapusAutentikasi();
     return null;
   }
 
@@ -33,9 +30,9 @@ export function ambilValidToken() {
 }
 
 // Hapus semua data autentikasi
-export function clearAuth() {
-  localStorage.removeItem(tokenKey);
-  localStorage.removeItem(tokenExpiresKey);
+export function hapusAutentikasi() {
+  localStorage.removeItem(kunciToken);
+  localStorage.removeItem(kunciTokenExpired);
   localStorage.removeItem('pengguna');
   localStorage.removeItem('peran');
 }
@@ -43,14 +40,14 @@ export function clearAuth() {
 
 // ---- OTP -----
 // Simpan waktu expired OTP (dalam detik, default 5 menit)
-export function setOtpWithExpiry(expirySeconds = 5 * 60) {
+export function simpanOtpDenganExpiry(expirySeconds = 5 * 60) {
   const expiresAt = Date.now() + expirySeconds * 1000;
-  localStorage.setItem(otpExpiresKey, expiresAt.toString());
+  localStorage.setItem(kunciOtpExpired, expiresAt.toString());
 }
 
 // Ambil sisa waktu OTP dalam detik
-export function getOtpRemaining() {
-  const expiry = localStorage.getItem(otpExpiresKey);
+export function ambilSisaWaktuOtp() {
+  const expiry = localStorage.getItem(kunciOtpExpired);
   if (!expiry) return 0;
 
   const remaining = Math.floor((parseInt(expiry, 10) - Date.now()) / 1000);
@@ -58,12 +55,12 @@ export function getOtpRemaining() {
 }
 
 // Hapus data OTP
-export function clearOtp() {
-  localStorage.removeItem(otpExpiresKey);
+export function hapusOtp() {
+  localStorage.removeItem(kunciOtpExpired);
 }
 
 // Cek apakah ada OTP yang tertunda
-export function hasPendingOtp() {
+export function adaOtpTertunda() {
   return Boolean(localStorage.getItem('userId'));
 }
 
