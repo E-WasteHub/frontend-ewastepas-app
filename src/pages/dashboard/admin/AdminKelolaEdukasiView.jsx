@@ -1,6 +1,6 @@
 // src/pages/admin/edukasi/AdminKelolaEdukasiView.jsx
 import { useMemo, useState } from 'react';
-import { Loading, Pagination } from '../../../components/elements';
+import { Button, Loading, Pagination } from '../../../components/elements';
 import {
   AdminTable,
   ConfirmModal,
@@ -8,14 +8,19 @@ import {
   FilterCrud,
   HeaderDashboard,
 } from '../../../components/fragments';
-import useAdminCrud from '../../../hooks/useAdminCrud';
-import usePagination from '../../../hooks/usePagination';
-import useToast from '../../../hooks/useToast';
+import {
+  useAdminCrud,
+  useDarkMode,
+  useDocumentTitle,
+  usePagination,
+  useToast,
+} from '../../../hooks';
 import * as edukasiService from '../../../services/edukasiService';
 
 const AdminKelolaEdukasiView = () => {
+  useDocumentTitle('Kelola Edukasi');
   const {
-    data: edukasi,
+    dataCrud: edukasi,
     isLoading,
     error,
     tambah,
@@ -25,6 +30,7 @@ const AdminKelolaEdukasiView = () => {
   } = useAdminCrud(edukasiService);
 
   const { showAlert } = useToast();
+  const { isDarkMode } = useDarkMode();
 
   const [crudOpen, setCrudOpen] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
@@ -63,14 +69,14 @@ const AdminKelolaEdukasiView = () => {
     try {
       if (editTarget) {
         await ubah(editTarget.id_konten, formValues);
-        showAlert('berhasil', 'konten edukasi berhasil diperbarui', 'success');
+        showAlert('Berhasil', 'Konten edukasi berhasil diperbarui', 'success');
       } else {
         await tambah(formValues);
-        showAlert('berhasil', 'konten edukasi berhasil ditambahkan', 'success');
+        showAlert('Berhasil', 'Konten edukasi berhasil ditambahkan', 'success');
       }
     } catch (error) {
       showAlert(
-        'gagal',
+        'Gagal',
         error.response?.data?.message ||
           error.message ||
           'terjadi kesalahan saat menyimpan data',
@@ -87,13 +93,13 @@ const AdminKelolaEdukasiView = () => {
     if (!confirmTarget) return;
     try {
       await hapus(confirmTarget);
-      showAlert('berhasil', 'konten edukasi berhasil dihapus', 'success');
+      showAlert('Berhasil', 'Konten edukasi berhasil dihapus', 'success');
     } catch (error) {
       showAlert(
-        'gagal',
+        'Gagal',
         error.response?.data?.message ||
           error.message ||
-          'konten edukasi gagal dihapus',
+          'Konten edukasi gagal dihapus',
         'error'
       );
     }
@@ -119,7 +125,7 @@ const AdminKelolaEdukasiView = () => {
       cell: (row) => {
         const imageUrl = row.gambar_url || row.gambar;
         const fallbackImage =
-          'http://34.128.104.134:3000/public/images/no-image.jpg';
+          'https://34.128.104.134:3000/public/images/no-image.jpg';
         return (
           <img
             src={imageUrl || fallbackImage}
@@ -172,9 +178,34 @@ const AdminKelolaEdukasiView = () => {
       ) : error ? (
         <p className='text-red-500'>Error: {error}</p>
       ) : edukasi.length === 0 ? (
-        <div className='text-center py-8 text-gray-500'>
-          <p>Belum ada konten edukasi.</p>
-          <p>Klik tombol "Tambah Edukasi" untuk menambahkan data pertama.</p>
+        <div
+          className={`text-center py-10 px-6 rounded-lg border transition-colors ${
+            isDarkMode
+              ? 'bg-slate-800 border-slate-700 text-slate-200'
+              : 'bg-slate-100 border-slate-300 text-slate-700'
+          }`}
+        >
+          <p className='text-lg font-semibold mb-2 text-red-500'>
+            Belum ada konten edukasi
+          </p>
+          <p className='text-sm mb-6'>
+            Klik tombol di bawah untuk menambahkan data pertama.
+          </p>
+
+          <Button
+            onClick={() => {
+              setEditTarget(null);
+              setCrudOpen(true);
+            }}
+            variant='primary'
+            className={`px-6 py-2 text-sm font-medium rounded shadow-md ${
+              isDarkMode
+                ? 'bg-green-600 hover:bg-green-700 text-white'
+                : 'bg-green-500 hover:bg-green-600 text-white'
+            }`}
+          >
+            Tambah Edukasi
+          </Button>
         </div>
       ) : (
         <>

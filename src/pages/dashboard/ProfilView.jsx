@@ -42,7 +42,7 @@ function handleStatus(pengguna, { warning, success, error }, setTabAktif) {
 
     case 'Aktif':
       success('Akun Anda sudah aktif. Terima kasih!');
-      localStorage.removeItem('sudahUpload'); // ✅ reset hanya saat final
+      localStorage.removeItem('sudahUpload');
       break;
 
     default:
@@ -58,8 +58,8 @@ const ProfilView = () => {
   const { success, warning, error: tampilkanError } = useToast();
 
   const {
-    form,
-    setForm,
+    formProfil,
+    setFormProfil,
     files,
     setFiles,
     peran,
@@ -122,7 +122,7 @@ const ProfilView = () => {
       success('Dokumen berhasil diunggah, status akun diperbarui');
       localStorage.setItem('sudahUpload', 'true'); // tandai user sudah pernah upload
 
-      setForm((prev) => ({
+      setFormProfil((prev) => ({
         ...prev,
         status_pengguna: hasil.data?.status_pengguna || prev.status_pengguna,
       }));
@@ -192,13 +192,13 @@ const ProfilView = () => {
         >
           {tabAktif === 'profil' && (
             <FormProfilData
-              {...form}
+              {...formProfil}
               isLoading={isLoading}
               onChange={(field, value) =>
-                setForm((prev) => ({ ...prev, [field]: value }))
+                setFormProfil((prev) => ({ ...prev, [field]: value }))
               }
               onPhotoChange={(file) =>
-                setForm((prev) => ({ ...prev, gambar_pengguna: file }))
+                setFormProfil((prev) => ({ ...prev, gambar_pengguna: file }))
               }
               onSave={simpanProfil}
             />
@@ -216,7 +216,7 @@ const ProfilView = () => {
               }
               onUnggah={simpanDokumen}
               isLoading={isLoading}
-              statusPengguna={form.status_pengguna}
+              statusPengguna={formProfil.status_pengguna}
             />
           )}
         </div>

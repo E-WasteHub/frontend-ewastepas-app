@@ -3,7 +3,7 @@ import * as authService from '../../services/authService';
 
 const useRegisterForm = () => {
   // state data form
-  const [form, setForm] = useState({
+  const [formRegistrasi, setFormRegistrasi] = useState({
     nama_lengkap: '',
     email: '',
     kata_sandi: '',
@@ -21,7 +21,7 @@ const useRegisterForm = () => {
   const handleChange = useCallback(
     (e) => {
       const { name, value } = e.target;
-      setForm((prev) => ({ ...prev, [name]: value }));
+      setFormRegistrasi((prev) => ({ ...prev, [name]: value }));
 
       // reset error field spesifik
       if (errorField[name]) {
@@ -44,29 +44,34 @@ const useRegisterForm = () => {
     const errors = {};
 
     if (!peran) errors.peran = 'Silakan pilih peran Anda';
-    if (!form.nama_lengkap.trim()) errors.nama_lengkap = 'Nama wajib diisi';
+    if (!formRegistrasi.nama_lengkap.trim())
+      errors.nama_lengkap = 'Nama wajib diisi';
 
-    if (!form.email.trim()) {
+    if (!formRegistrasi.email.trim()) {
       errors.email = 'Email wajib diisi';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+    } else if (
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formRegistrasi.email.trim())
+    ) {
       errors.email = 'Format email tidak valid';
     }
 
-    if (!form.kata_sandi) {
+    if (!formRegistrasi.kata_sandi) {
       errors.kata_sandi = 'Kata sandi wajib diisi';
-    } else if (form.kata_sandi.length < 6) {
+    } else if (formRegistrasi.kata_sandi.length < 6) {
       errors.kata_sandi = 'Kata sandi minimal 6 karakter';
     }
 
-    if (!form.konfirmasi_kata_sandi) {
+    if (!formRegistrasi.konfirmasi_kata_sandi) {
       errors.konfirmasi_kata_sandi = 'Konfirmasi kata sandi wajib diisi';
-    } else if (form.kata_sandi !== form.konfirmasi_kata_sandi) {
+    } else if (
+      formRegistrasi.kata_sandi !== formRegistrasi.konfirmasi_kata_sandi
+    ) {
       errors.konfirmasi_kata_sandi = 'Konfirmasi kata sandi tidak cocok';
     }
 
     setErrorField(errors);
     return Object.keys(errors).length === 0;
-  }, [form, peran]);
+  }, [formRegistrasi, peran]);
 
   // submit form register
   const handleSubmit = useCallback(async () => {
@@ -78,9 +83,9 @@ const useRegisterForm = () => {
       setPesanSukses('');
 
       const payload = {
-        ...form,
-        email: form.email.trim(),
-        nama_lengkap: form.nama_lengkap.trim(),
+        ...formRegistrasi,
+        email: formRegistrasi.email.trim(),
+        nama_lengkap: formRegistrasi.nama_lengkap.trim(),
         peran,
       };
 
@@ -93,7 +98,7 @@ const useRegisterForm = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [form, peran, validateForm]);
+  }, [formRegistrasi, peran, validateForm]);
 
   // helper clear pesan
   const clearError = useCallback(() => setPesanError(''), []);
@@ -101,7 +106,7 @@ const useRegisterForm = () => {
 
   return {
     // data
-    form,
+    formRegistrasi,
     peran,
 
     // status

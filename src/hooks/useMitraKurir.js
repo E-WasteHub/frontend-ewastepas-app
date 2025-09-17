@@ -14,55 +14,69 @@ import {
 
 const useMitraKurir = () => {
   // ================== STATE ==================
-  const [daftar, setDaftar] = useState([]);
-  const [riwayat, setRiwayat] = useState([]);
-  const [detail, setDetail] = useState(null);
+  const [daftarPenjemputanMitraKurir, setDaftarPenjemputanMitraKurir] =
+    useState([]);
+  const [riwayatPenjemputanMitraKurir, setRiwayatPenjemputanMitraKurir] =
+    useState([]);
+  const [detailPenjemputanMitraKurir, setDetailPenjemputanMitraKurir] =
+    useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoadingDetail, setIsLoadingDetail] = useState(false);
+  const [
+    isLoadingDetailPenjemputanMitraKurir,
+    setIsLoadingDetailPenjemputanMitraKurir,
+  ] = useState(false);
   const [error, setError] = useState('');
-  const [errorDetail, setErrorDetail] = useState('');
+  const [
+    errorDetailPenjemputanMitraKurir,
+    setErrorDetailPenjemputanMitraKurir,
+  ] = useState('');
 
   // ================== FETCH DATA ==================
-  const fetchData = useCallback(async () => {
+  const fetchDataDashboardMitraKurir = useCallback(async () => {
     try {
       setIsLoading(true);
       setError('');
 
       const daftarRes = await ambilDaftarPenjemputan();
-      setDaftar(ambilDataArrayAman(daftarRes));
+      setDaftarPenjemputanMitraKurir(ambilDataArrayAman(daftarRes));
 
       const riwayatRes = await ambilRiwayatPenjemputan();
-      setRiwayat(ambilDataArrayAman(riwayatRes));
+      setRiwayatPenjemputanMitraKurir(ambilDataArrayAman(riwayatRes));
     } catch (err) {
       console.error('  Gagal fetch data kurir:', err);
       setError('Gagal memuat data penjemputan');
-      setDaftar([]);
-      setRiwayat([]);
+      setDaftarPenjemputanMitraKurir([]);
+      setRiwayatPenjemputanMitraKurir([]);
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchDataDashboardMitraKurir();
+  }, [fetchDataDashboardMitraKurir]);
 
   // ================== SELECTOR ==================
-  const penjemputanTersedia = filterPenjemputanByStatus(daftar, 'Diproses');
-  const permintaanAktif = riwayat.find((d) =>
+  const penjemputanTersedia = filterPenjemputanByStatus(
+    daftarPenjemputanMitraKurir,
+    'Diproses'
+  );
+  const permintaanAktif = riwayatPenjemputanMitraKurir.find((d) =>
     ['Diterima', 'Dijemput'].includes(d.status_penjemputan)
   );
-  const riwayatSelesai = riwayat.filter((d) =>
+  const riwayatMitraKurir = riwayatPenjemputanMitraKurir.filter((d) =>
     ['Selesai', 'Dibatalkan'].includes(d.status_penjemputan)
   );
 
-  const statistikPenjemputan = hitungStatistikPenjemputan(riwayat);
+  const statistikPenjemputan = hitungStatistikPenjemputan(
+    riwayatPenjemputanMitraKurir
+  );
 
-  const stats = {
+  const statsDashboardMitraKurir = {
     penjemputanTersedia: penjemputanTersedia.length,
-    penjemputanBulanIni: riwayat.filter((d) => {
+    penjemputanBulanIni: riwayatPenjemputanMitraKurir.filter((d) => {
       const bulanIni = new Date().getMonth();
       const tahunIni = new Date().getFullYear();
       const tanggal = new Date(d.waktu_dijemput);
@@ -89,7 +103,7 @@ const useMitraKurir = () => {
         status_penjemputan: 'Diterima',
         waktu_diterima: new Date().toISOString(),
       });
-      await fetchData();
+      await fetchDataDashboardMitraKurir();
       return { success: true };
     } catch (err) {
       console.error('  Gagal ambil permintaan:', err);
@@ -109,7 +123,7 @@ const useMitraKurir = () => {
       if (id_dropbox) payload.id_dropbox = id_dropbox;
 
       await ubahStatusPenjemputan(id_penjemputan, payload);
-      await fetchData();
+      await fetchDataDashboardMitraKurir();
       return { success: true };
     } catch (err) {
       console.error('  Gagal tandai dijemput:', err);
@@ -128,7 +142,7 @@ const useMitraKurir = () => {
         waktu_selesai: new Date().toISOString(),
       });
 
-      await fetchData();
+      await fetchDataDashboardMitraKurir();
       return { success: true };
     } catch {
       return { success: false, error: 'gagal menandai selesai' };
@@ -145,7 +159,7 @@ const useMitraKurir = () => {
         id_kurir: null,
         waktu_dibatalkan: new Date().toISOString(),
       });
-      await fetchData();
+      await fetchDataDashboardMitraKurir();
       return { success: true };
     } catch (err) {
       console.error('  Gagal batalkan permintaan:', err);
@@ -156,29 +170,32 @@ const useMitraKurir = () => {
   };
 
   // FETCH DETAIL
-  const fetchDetail = useCallback(async (id_penjemputan) => {
-    if (!id_penjemputan) return;
-    try {
-      setIsLoadingDetail(true);
-      setErrorDetail('');
-      const response = await ambilDetailPenjemputan(id_penjemputan);
-      setDetail(response.data);
-    } catch (err) {
-      console.error('  Gagal fetch detail:', err);
-      setErrorDetail('Gagal memuat detail penjemputan');
-      setDetail(null);
-    } finally {
-      setIsLoadingDetail(false);
-    }
-  }, []);
+  const fetchDetailPenjemputanMitraKurir = useCallback(
+    async (id_penjemputan) => {
+      if (!id_penjemputan) return;
+      try {
+        setIsLoadingDetailPenjemputanMitraKurir(true);
+        setErrorDetailPenjemputanMitraKurir('');
+        const response = await ambilDetailPenjemputan(id_penjemputan);
+        setDetailPenjemputanMitraKurir(response.data);
+      } catch (err) {
+        console.error('  Gagal fetch detail:', err);
+        setErrorDetailPenjemputanMitraKurir('Gagal memuat detail penjemputan');
+        setDetailPenjemputanMitraKurir(null);
+      } finally {
+        setIsLoadingDetailPenjemputanMitraKurir(false);
+      }
+    },
+    []
+  );
 
   // ================== RETURN ==================
   return {
     // state utama
     penjemputanTersedia,
     permintaanAktif,
-    riwayat: riwayatSelesai,
-    stats,
+    riwayatMitraKurir,
+    statsDashboardMitraKurir,
 
     isLoading,
     error,
@@ -189,13 +206,13 @@ const useMitraKurir = () => {
     tandaiDijemput,
     tandaiSelesai,
     batalkanPermintaan,
-    refetch: fetchData,
+    fetchDataDashboardMitraKurir,
 
     // detail
-    detail,
-    isLoadingDetail,
-    errorDetail,
-    fetchDetail,
+    detailPenjemputanMitraKurir,
+    isLoadingDetailPenjemputanMitraKurir,
+    errorDetailPenjemputanMitraKurir,
+    fetchDetailPenjemputanMitraKurir,
   };
 };
 

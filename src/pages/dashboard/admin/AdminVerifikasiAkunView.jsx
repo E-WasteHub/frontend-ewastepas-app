@@ -15,8 +15,14 @@ import { formatTanggalWaktuIndonesia } from '../../../utils/dateUtils';
 
 const AdminVerifikasiAkunView = () => {
   useDocumentTitle('Verifikasi Akun');
-  const { data, isLoading, error, updateStatus, fetchDetail, isSubmitting } =
-    useAdminVerifikasi();
+  const {
+    dataVerifikasiAdmin,
+    isLoading,
+    error,
+    updateStatusVerifikasiAdmin,
+    fetchDetailVerifikasiAdmin,
+    isSubmitting,
+  } = useAdminVerifikasi();
 
   const { showAlert } = useToast();
 
@@ -24,7 +30,7 @@ const AdminVerifikasiAkunView = () => {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('');
 
-  //    Modal Confirm
+  // Modal Confirm
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState({
     id_pengguna: null,
@@ -36,14 +42,14 @@ const AdminVerifikasiAkunView = () => {
 
   // tampilkan detail dokumen
   const handleShowDetail = async (id_pengguna) => {
-    const res = await fetchDetail(id_pengguna);
+    const res = await fetchDetailVerifikasiAdmin(id_pengguna);
     if (res) {
       setSelectedUser(res);
     }
   };
   const handleCloseDetail = () => setSelectedUser(null);
 
-  //    Show confirm modal
+  // Show confirm modal
   const handleConfirmAction = (id_pengguna, status) => {
     setConfirmConfig({
       id_pengguna,
@@ -58,11 +64,11 @@ const AdminVerifikasiAkunView = () => {
     setConfirmOpen(true);
   };
 
-  //    Confirm update
+  // Confirm update
   const handleConfirmSubmit = async () => {
     setConfirmOpen(false);
     const { id_pengguna, status } = confirmConfig;
-    const res = await updateStatus(id_pengguna, status);
+    const res = await updateStatusVerifikasiAdmin(id_pengguna, status);
 
     if (res.success) {
       showAlert(
@@ -79,9 +85,9 @@ const AdminVerifikasiAkunView = () => {
     }
   };
 
-  //    Filter data by search & filter
+  // Filter data by search & filter
   const filteredData = useMemo(() => {
-    let temp = data;
+    let temp = dataVerifikasiAdmin;
     if (search) {
       temp = temp.filter(
         (item) =>
@@ -93,13 +99,13 @@ const AdminVerifikasiAkunView = () => {
       temp = temp.filter((item) => item.status_pengguna === filter);
     }
     return temp;
-  }, [data, search, filter]);
+  }, [dataVerifikasiAdmin, search, filter]);
 
-  //    Pagination
+  // Pagination
   const { currentPage, setCurrentPage, totalPages, paginatedData } =
     usePagination(filteredData, 7);
 
-  //    Kolom tabel
+  // Kolom tabel
   const columns = [
     {
       name: 'Tanggal Daftar',
@@ -171,7 +177,7 @@ const AdminVerifikasiAkunView = () => {
           {/* AdminTable */}
           <AdminTable columns={columns} data={paginatedData} />
 
-          {/*    Pagination */}
+          {/* Pagination */}
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

@@ -74,7 +74,7 @@ export const kirimResetLink = async (email) => {
 };
 
 /** Reset kata sandi dengan OTP */
-export const resetPassword = async (payload) => {
+export const resetKataSandi = async (payload) => {
   try {
     const res = await api.put('/pemulihan/reset-kata-sandi', {
       otp: payload.otp,

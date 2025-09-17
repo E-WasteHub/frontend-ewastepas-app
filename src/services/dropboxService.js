@@ -53,7 +53,7 @@ export const ambilSatuDropbox = async (id_dropbox) => {
   }
 };
 
-// fungsi versi singkat untuk kompatibilitas
+// fungsi versi singkat untuk kompatibilitas digunakan untuk useAdminCrud
 export const ambilSemua = async () => {
   try {
     const response = await api.get('/dropbox');

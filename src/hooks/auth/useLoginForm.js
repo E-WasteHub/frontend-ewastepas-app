@@ -8,7 +8,7 @@ import {
 
 const useLoginForm = () => {
   // state form
-  const [formData, setFormData] = useState({
+  const [formLogin, setFormLogin] = useState({
     email: '',
     kata_sandi: '',
     ingatSaya: false,
@@ -25,7 +25,7 @@ const useLoginForm = () => {
   useEffect(() => {
     const rememberedEmail = localStorage.getItem('rememberedEmail');
     if (rememberedEmail) {
-      setFormData((prev) => ({
+      setFormLogin((prev) => ({
         ...prev,
         email: rememberedEmail,
         ingatSaya: true,
@@ -39,7 +39,7 @@ const useLoginForm = () => {
       const { name, value, type, checked } = e.target;
       const newValue = type === 'checkbox' ? checked : value;
 
-      setFormData((prev) => ({ ...prev, [name]: newValue }));
+      setFormLogin((prev) => ({ ...prev, [name]: newValue }));
 
       // reset error field kalau user mulai ngetik lagi
       if (status.pesanErrorField[name]) {
@@ -59,12 +59,12 @@ const useLoginForm = () => {
 
   // simpan / hapus email di localStorage
   const handleRememberEmail = useCallback(() => {
-    if (formData.ingatSaya) {
-      localStorage.setItem('rememberedEmail', formData.email);
+    if (formLogin.ingatSaya) {
+      localStorage.setItem('rememberedEmail', formLogin.email);
     } else {
       localStorage.removeItem('rememberedEmail');
     }
-  }, [formData.email, formData.ingatSaya]);
+  }, [formLogin.email, formLogin.ingatSaya]);
 
   // simpan data login (token + user info)
   const simpanDataLogin = useCallback((data, token) => {
@@ -80,7 +80,7 @@ const useLoginForm = () => {
     async (e) => {
       if (e) e.preventDefault();
 
-      if (!formData.email.includes('@')) {
+      if (!formLogin.email.includes('@')) {
         setStatus((prev) => ({
           ...prev,
           pesanErrorField: {
@@ -99,8 +99,8 @@ const useLoginForm = () => {
         });
 
         const response = await login({
-          email: formData.email,
-          kata_sandi: formData.kata_sandi,
+          email: formLogin.email,
+          kata_sandi: formLogin.kata_sandi,
         });
 
         // === Admin OTP case ===
@@ -156,12 +156,17 @@ const useLoginForm = () => {
         setStatus((prev) => ({ ...prev, isLoading: false }));
       }
     },
-    [formData.email, formData.kata_sandi, simpanDataLogin, handleRememberEmail]
+    [
+      formLogin.email,
+      formLogin.kata_sandi,
+      simpanDataLogin,
+      handleRememberEmail,
+    ]
   );
 
   // reset form
   const resetForm = useCallback(() => {
-    setFormData({
+    setFormLogin({
       email: localStorage.getItem('rememberedEmail') || '',
       kata_sandi: '',
       ingatSaya: Boolean(localStorage.getItem('rememberedEmail')),
@@ -171,9 +176,7 @@ const useLoginForm = () => {
 
   return {
     // data
-    email: formData.email,
-    kata_sandi: formData.kata_sandi,
-    ingatSaya: formData.ingatSaya,
+    formLogin,
 
     // status
     isLoading: status.isLoading,

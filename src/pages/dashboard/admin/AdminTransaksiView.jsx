@@ -19,6 +19,14 @@ const AdminTransaksiView = () => {
 
   const { showAlert } = useToast();
 
+  const {
+    dataTransaksiAdmin,
+    detailTransaksiAdmin,
+    isLoading,
+    error,
+    fetchDetailTransaksiAdmin,
+  } = useAdminMonitoring(penjemputanService);
+
   // State untuk filter dan search
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('');
@@ -27,20 +35,12 @@ const AdminTransaksiView = () => {
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedDetail, setSelectedDetail] = useState(null);
 
-  const {
-    data: transaksi,
-    detail,
-    isLoading,
-    error,
-    fetchDetail,
-  } = useAdminMonitoring(penjemputanService);
-
   // Filter transaksi berdasarkan search dan filter
   const filteredData = useMemo(() => {
-    if (!transaksi?.length) return [];
-    if (!search && !filter) return transaksi;
+    if (!dataTransaksiAdmin?.length) return [];
+    if (!search && !filter) return dataTransaksiAdmin;
 
-    return transaksi.filter((item) => {
+    return dataTransaksiAdmin.filter((item) => {
       const matchSearch =
         !search ||
         item.kode_penjemputan?.toLowerCase().includes(search.toLowerCase()) ||
@@ -49,7 +49,7 @@ const AdminTransaksiView = () => {
       const matchFilter = !filter || item.status_penjemputan === filter;
       return matchSearch && matchFilter;
     });
-  }, [transaksi, search, filter]);
+  }, [dataTransaksiAdmin, search, filter]);
 
   // Pagination
   const { currentPage, setCurrentPage, totalPages, paginatedData } =
@@ -68,7 +68,7 @@ const AdminTransaksiView = () => {
   // Handler untuk detail modal
   const showDetailModal = async (row) => {
     try {
-      await fetchDetail(row.id_penjemputan);
+      await fetchDetailTransaksiAdmin(row.id_penjemputan);
       setSelectedDetail(row);
       setDetailOpen(true);
     } catch {
@@ -192,7 +192,7 @@ const AdminTransaksiView = () => {
       <DetailTransaksiModal
         isOpen={detailOpen}
         onClose={() => setDetailOpen(false)}
-        detail={detail}
+        detail={detailTransaksiAdmin}
         selectedDetail={selectedDetail}
       />
     </div>

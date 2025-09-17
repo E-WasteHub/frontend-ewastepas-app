@@ -27,10 +27,10 @@ const DetailLacakPenjemputan = () => {
   const navigate = useNavigate();
 
   const {
-    detail: detailPenjemputan,
-    isLoadingDetail,
-    fetchDetail,
-    batalkan,
+    detailPenjemputanMasyarakat,
+    isLoadingDetailPenjemputanMasyarakat,
+    fetchDetailPenjemputanMasyarakat,
+    batalkanPenjemputanMasyarakat,
   } = useMasyarakat();
 
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -38,15 +38,15 @@ const DetailLacakPenjemputan = () => {
   // Fetch detail sekali ketika id_penjemputan berubah
   useEffect(() => {
     if (id_penjemputan) {
-      fetchDetail(id_penjemputan);
+      fetchDetailPenjemputanMasyarakat(id_penjemputan);
     }
-  }, [id_penjemputan, fetchDetail]);
+  }, [id_penjemputan, fetchDetailPenjemputanMasyarakat]);
 
-  if (isLoadingDetail) {
+  if (isLoadingDetailPenjemputanMasyarakat) {
     return <Loading mode='overlay' text='Memuat detail penjemputan...' />;
   }
 
-  if (!detailPenjemputan?.penjemputan) {
+  if (!detailPenjemputanMasyarakat?.penjemputan) {
     return (
       <div className='p-6 text-center text-red-500'>
         Data penjemputan tidak ditemukan
@@ -54,7 +54,7 @@ const DetailLacakPenjemputan = () => {
     );
   }
 
-  const p = detailPenjemputan.penjemputan;
+  const p = detailPenjemputanMasyarakat.penjemputan;
   const langkahAktif = dapatkanLangkahAktif(p);
 
   return (
@@ -151,15 +151,15 @@ const DetailLacakPenjemputan = () => {
             <h3 className='text-lg font-semibold mb-3 flex items-center gap-2'>
               <FileText className='w-5 h-5 text-green-500' /> Detail Sampah
             </h3>
-            {detailPenjemputan.sampah?.length > 0 ? (
+            {detailPenjemputanMasyarakat.sampah?.length > 0 ? (
               <div
                 className={`space-y-3 ${
-                  detailPenjemputan.sampah.length > 3
+                  detailPenjemputanMasyarakat.sampah.length > 3
                     ? 'max-h-96 overflow-y-auto pr-2'
                     : ''
                 }`}
               >
-                {detailPenjemputan.sampah.map((s) => (
+                {detailPenjemputanMasyarakat.sampah.map((s) => (
                   <ItemSampahCard
                     key={s.id_sampah}
                     data={s}
@@ -194,7 +194,7 @@ const DetailLacakPenjemputan = () => {
         message='Apakah Anda yakin ingin membatalkan penjemputan ini?'
         onClose={() => setConfirmOpen(false)}
         onConfirm={async () => {
-          const success = await batalkan(p.id_penjemputan);
+          const success = await batalkanPenjemputanMasyarakat(p.id_penjemputan);
           if (success) {
             setConfirmOpen(false);
             showAlert(

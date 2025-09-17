@@ -8,7 +8,6 @@ import {
   useToast,
 } from '../../../../hooks';
 import { dapatkanPathDashboardBerdasarkanPeran } from '../../../../utils/peranUtils';
-
 import { Button, Checkbox, InputForm, Message } from '../../../elements';
 import FormHeader from '../FormHeader';
 
@@ -20,9 +19,7 @@ const FormLogin = () => {
   const location = useLocation();
 
   const {
-    email,
-    kata_sandi,
-    ingatSaya,
+    formLogin,
     isLoading,
     pesanErrorGlobal,
     pesanErrorField,
@@ -68,7 +65,7 @@ const FormLogin = () => {
   // Handler login berhasil (selain Admin OTP)
   const handleLoginBerhasil = (dataPengguna) => {
     const { peran } = dataPengguna;
-    if (peran === 'Admin') return; // Admin OTP udah di-handle
+    if (peran === 'Admin') return;
 
     success(`Selamat datang! Mengarahkan ke dashboard ${peran}...`);
     setPengguna(dataPengguna);
@@ -114,7 +111,7 @@ const FormLogin = () => {
             name='email'
             type='email'
             placeholder='Masukkan email Anda'
-            value={email}
+            value={formLogin.email}
             onChange={handlePerubahanInput}
             disabled={isLoading}
             required
@@ -126,7 +123,7 @@ const FormLogin = () => {
             name='kata_sandi'
             type='password'
             placeholder='Masukkan kata sandi Anda'
-            value={kata_sandi}
+            value={formLogin.kata_sandi}
             onChange={handlePerubahanInput}
             disabled={isLoading}
             required
@@ -138,7 +135,7 @@ const FormLogin = () => {
             <label className='flex items-center space-x-2'>
               <Checkbox
                 name='ingatSaya'
-                checked={ingatSaya}
+                checked={formLogin.ingatSaya}
                 onChange={handlePerubahanInput}
                 disabled={isLoading}
               />
@@ -164,7 +161,11 @@ const FormLogin = () => {
             variant='primary'
             isLoading={isLoading}
             loadingText='Memproses login...'
-            disabled={isLoading || !email.trim() || !kata_sandi.trim()}
+            disabled={
+              isLoading ||
+              !formLogin.email.trim() ||
+              !formLogin.kata_sandi.trim()
+            }
             className='w-full mt-6'
           >
             Masuk

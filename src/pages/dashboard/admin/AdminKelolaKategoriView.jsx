@@ -7,14 +7,16 @@ import {
   HeaderDashboard,
   KategoriCrudModal,
 } from '../../../components/fragments';
+import { useDarkMode, useDocumentTitle } from '../../../hooks';
 import useAdminCrud from '../../../hooks/useAdminCrud';
 import usePagination from '../../../hooks/usePagination';
 import useToast from '../../../hooks/useToast';
 import * as kategoriService from '../../../services/kategoriService';
 
 const AdminKelolaKategoriView = () => {
+  useDocumentTitle('Kelola Kategori');
   const {
-    data: kategori,
+    dataCrud: kategori,
     isLoading,
     error,
     tambah,
@@ -24,16 +26,17 @@ const AdminKelolaKategoriView = () => {
   } = useAdminCrud(kategoriService);
 
   const { showAlert } = useToast();
+  const { isDarkMode } = useDarkMode();
 
-  //    State Modal CRUD
+  // State Modal CRUD
   const [crudOpen, setCrudOpen] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
 
-  //    State Confirm
+  // State Confirm
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState(null);
 
-  //    Search state
+  // Search state
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('');
 
@@ -147,9 +150,32 @@ const AdminKelolaKategoriView = () => {
       ) : error ? (
         <p className='text-red-500'>Error: {error}</p>
       ) : kategori.length === 0 ? (
-        <div className='text-center py-8 text-gray-500'>
-          <p>Belum ada data kategori.</p>
-          <p>Klik tombol "Tambah Kategori" untuk menambahkan data pertama.</p>
+        <div
+          className={`text-center py-10 px-6 rounded-lg border transition-colors ${
+            isDarkMode
+              ? 'bg-gray-800 border-gray-700 text-gray-200'
+              : 'bg-gray-100 border-gray-300 text-gray-700'
+          }`}
+        >
+          <p className='text-lg font-semibold mb-2'>Belum ada data kategori</p>
+          <p className='text-sm mb-6'>
+            Klik tombol di bawah untuk menambahkan data pertama.
+          </p>
+
+          <Button
+            onClick={() => {
+              setEditTarget(null);
+              setCrudOpen(true);
+            }}
+            variant='primary'
+            className={`px-6 py-2 text-sm font-medium rounded shadow-md ${
+              isDarkMode
+                ? 'bg-green-600 hover:bg-green-700 text-white'
+                : 'bg-green-500 hover:bg-green-600 text-white'
+            }`}
+          >
+            Tambah Kategori
+          </Button>
         </div>
       ) : (
         <>

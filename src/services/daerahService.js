@@ -53,7 +53,7 @@ export const ambilSatuDaerah = async (id_daerah) => {
   }
 };
 
-// fungsi versi singkat untuk kompatibilitas
+// fungsi versi singkat untuk kompatibilitas digunakan untuk useAdminCrud
 export const ambilSemua = async () => {
   try {
     const response = await api.get('/daerah');

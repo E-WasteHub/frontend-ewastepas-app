@@ -1,15 +1,13 @@
 // src/views/EdukasiView.jsx
-import { BookOpen } from 'lucide-react';
+import { ArrowRightIcon, BookOpen } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Badge, Loading } from '../components/elements';
-import Pagination from '../components/elements/Pagination';
+import { Badge, Loading, Pagination } from '../components/elements';
 import MainLayout from '../components/layouts/MainLayout';
-import useDarkMode from '../hooks/useDarkMode';
-import useDocumentTitle from '../hooks/useDocumentTitle';
+import { useDarkMode, useDocumentTitle } from '../hooks';
 import * as edukasiService from '../services/edukasiService';
-import getLatestEdukasi from '../utils/getLatestEdukasi';
+import { edukasiTerbaru } from '../utils/edukasiTerbaruUtils';
 import { stripHtmlUtils } from '../utils/stripHtmlUtils';
 
 const EdukasiView = () => {
@@ -23,7 +21,7 @@ const EdukasiView = () => {
   const itemsPerPage = 4;
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchDataEdukasi = async () => {
       try {
         setIsLoading(true);
         setError('');
@@ -36,15 +34,15 @@ const EdukasiView = () => {
       }
     };
 
-    fetchData();
+    fetchDataEdukasi();
   }, []);
 
-  const sortedData = getLatestEdukasi(edukasiData, edukasiData.length);
+  const sortedData = edukasiTerbaru(edukasiData, edukasiData.length);
 
   // Pagination
   const totalPages = Math.ceil(sortedData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentTopics = sortedData.slice(startIndex, startIndex + itemsPerPage);
+  const topikEdukasi = sortedData.slice(startIndex, startIndex + itemsPerPage);
 
   const goToPage = (page) => {
     setCurrentPage(page);
@@ -99,59 +97,68 @@ const EdukasiView = () => {
           {!isLoading && !error && (
             <>
               <Motion.div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
-                {currentTopics.map((topic, index) => (
+                {topikEdukasi.map((topik, index) => (
                   <Motion.div
-                    key={topic.id_konten}
+                    key={topik.id_konten}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
                     <Link
-                      to={`/edukasi/${topic.id_konten}`}
+                      to={`/edukasi/${topik.id_konten}`}
                       className='block h-full'
                     >
                       <article
-                        className={`border rounded-xl overflow-hidden hover:border-green-500 transition h-full flex flex-col ${
+                        className={`border rounded-xl shadow-sm overflow-hidden hover:border-green-500 transition h-full flex flex-col ${
                           isDarkMode
                             ? 'bg-slate-800 border-slate-700'
-                            : 'bg-white border-slate-200'
+                            : 'bg-white border-slate-300'
                         }`}
                       >
-                        {/* Thumbnail */}
-                        <div className='w-full h-48'>
+                        {/* Gambar Thumbnail */}
+                        <div className='w-full aspect-[16/9] h-48 overflow-hidden'>
                           <img
-                            src={topic.gambar_url}
-                            alt={topic.judul_konten}
+                            src={topik.gambar_url}
+                            alt={topik.judul_konten}
                             className='w-full h-full object-cover'
                           />
                         </div>
 
-                        {/* Konten */}
-                        <div className='flex flex-col text-center flex-1 p-6'>
-                          <h3
-                            className={`text-lg font-semibold mb-3 ${
-                              isDarkMode ? 'text-white' : 'text-slate-900'
-                            }`}
-                          >
-                            {topic.judul_konten}
-                          </h3>
-
-                          <p
-                            className={`text-sm line-clamp-4 flex-1 ${
-                              isDarkMode ? 'text-slate-400' : 'text-slate-600'
-                            }`}
-                          >
-                            {stripHtmlUtils(topic.isi_konten).substring(0, 100)}
-                            ...
-                          </p>
-
-                          <div className='flex items-center justify-end text-sm mt-4'>
-                            <span
-                              className={`font-medium ${
-                                isDarkMode ? 'text-green-400' : 'text-green-600'
+                        {/* Konten dalam card */}
+                        <div className='p-6 flex flex-col flex-1 text-center'>
+                          <div className='flex-1 flex flex-col justify-between'>
+                            {/* Judul */}
+                            <h3
+                              className={`text-lg font-semibold mb-3 line-clamp-2 ${
+                                isDarkMode ? 'text-white' : 'text-slate-900'
                               }`}
                             >
-                              Baca selengkapnya →
+                              {topik.judul_konten}
+                            </h3>
+
+                            {/* Isi konten */}
+                            <p
+                              className={`text-sm leading-relaxed mb-4 line-clamp-3 ${
+                                isDarkMode ? 'text-slate-400' : 'text-slate-600'
+                              }`}
+                            >
+                              {stripHtmlUtils(topik.isi_konten).substring(
+                                0,
+                                100
+                              )}
+                              ...
+                            </p>
+                          </div>
+
+                          {/* Tombol baca selengkapnya */}
+                          <div
+                            className={`text-xs font-medium mt-auto ${
+                              isDarkMode ? 'text-green-400' : 'text-green-600'
+                            }`}
+                          >
+                            <span className='flex items-center justify-end gap-1'>
+                              Baca selengkapnya
+                              <ArrowRightIcon className='w-5 h-5' />
                             </span>
                           </div>
                         </div>

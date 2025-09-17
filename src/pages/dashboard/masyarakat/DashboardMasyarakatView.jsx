@@ -14,11 +14,12 @@ import usePengguna from '../../../hooks/usePengguna';
 const DashboardMasyarakatView = () => {
   useDocumentTitle('Dashboard Masyarakat');
   const { isDarkMode } = useDarkMode();
-  const { stats, data, isLoading: loading } = useMasyarakat();
+  const { statsDashboardMasyarakat, dataDashboardMasyarakat, isLoading } =
+    useMasyarakat();
   const { pengguna } = usePengguna();
   const navigate = useNavigate();
 
-  const safeStats = stats || {
+  const safeStats = statsDashboardMasyarakat || {
     totalPoin: 0,
     totalPenjemputan: 0,
     sedangBerlangsung: 0,
@@ -79,11 +80,11 @@ const DashboardMasyarakatView = () => {
             </Link>
           </div>
 
-          {loading ? (
+          {isLoading ? (
             <Loading mode='inline' text='Memuat data...' />
-          ) : data.length > 0 ? (
+          ) : dataDashboardMasyarakat.length > 0 ? (
             <div className='grid gap-4'>
-              {data.slice(0, 3).map((req) => (
+              {dataDashboardMasyarakat.slice(0, 3).map((req) => (
                 <PenjemputanMasyarakatCard
                   key={req.id_penjemputan}
                   req={req}

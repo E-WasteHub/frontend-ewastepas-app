@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Loading, Pagination } from '../../../components/elements';
+import { Button, Loading, Pagination } from '../../../components/elements';
 import {
   AdminTable,
   ConfirmModal,
@@ -7,14 +7,16 @@ import {
   HeaderDashboard,
   JenisCrudModal,
 } from '../../../components/fragments';
+import { useDarkMode, useDocumentTitle } from '../../../hooks';
 import useAdminCrud from '../../../hooks/useAdminCrud';
 import usePagination from '../../../hooks/usePagination';
 import useToast from '../../../hooks/useToast';
 import * as jenisService from '../../../services/jenisService';
 
 const AdminKelolaJenisView = () => {
+  useDocumentTitle('Kelola Jenis');
   const {
-    data: jenis,
+    dataCrud: jenis,
     isLoading,
     error,
     tambah,
@@ -24,6 +26,7 @@ const AdminKelolaJenisView = () => {
   } = useAdminCrud(jenisService);
 
   const { showAlert } = useToast();
+  const { isDarkMode } = useDarkMode();
 
   // State Modal CRUD
   const [crudOpen, setCrudOpen] = useState(false);
@@ -164,9 +167,34 @@ const AdminKelolaJenisView = () => {
       ) : error ? (
         <p className='text-red-500'>Error: {error}</p>
       ) : jenis.length === 0 ? (
-        <div className='text-center py-8 text-gray-500'>
-          <p>Belum ada data jenis sampah.</p>
-          <p>Klik tombol "Tambah Jenis" untuk menambahkan data pertama.</p>
+        <div
+          className={`text-center py-10 px-6 rounded-lg border transition-colors ${
+            isDarkMode
+              ? 'bg-gray-800 border-gray-700 text-gray-200'
+              : 'bg-gray-100 border-gray-300 text-gray-700'
+          }`}
+        >
+          <p className='text-lg font-semibold mb-2'>
+            Belum ada data jenis sampah
+          </p>
+          <p className='text-sm mb-6'>
+            Klik tombol di bawah untuk menambahkan data pertama.
+          </p>
+
+          <Button
+            onClick={() => {
+              setEditTarget(null);
+              setCrudOpen(true);
+            }}
+            variant='primary'
+            className={`px-6 py-2 text-sm font-medium rounded shadow-md ${
+              isDarkMode
+                ? 'bg-green-600 hover:bg-green-700 text-white'
+                : 'bg-green-500 hover:bg-green-600 text-white'
+            }`}
+          >
+            Tambah Jenis
+          </Button>
         </div>
       ) : (
         <>

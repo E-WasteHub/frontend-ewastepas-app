@@ -7,11 +7,13 @@ import {
   SapaanDashboard,
   StatCard,
 } from '../../../components/fragments';
-import useAdminMonitoring from '../../../hooks/useAdminMonitoring';
-import useDarkMode from '../../../hooks/useDarkMode';
-import useDocumentTitle from '../../../hooks/useDocumentTitle';
-import usePagination from '../../../hooks/usePagination';
-import usePengguna from '../../../hooks/usePengguna';
+import {
+  useAdminMonitoring,
+  useDarkMode,
+  useDocumentTitle,
+  usePagination,
+  usePengguna,
+} from '../../../hooks';
 import * as penjemputanService from '../../../services/penjemputanService';
 import { ambilSemuaDataBelumVerifikasi } from '../../../services/verifikasiService';
 import { formatTanggalIndonesia } from '../../../utils/dateUtils';

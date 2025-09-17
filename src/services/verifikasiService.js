@@ -1,5 +1,3 @@
-//src/services/verifikasiService.js
-
 import { ambilPesanError } from '../utils/errorUtils';
 import api from './api';
 

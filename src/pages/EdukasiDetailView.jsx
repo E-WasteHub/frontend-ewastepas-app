@@ -105,8 +105,8 @@ const EdukasiDetailView = () => {
             <img
               src={
                 artikel.gambar_url ||
-                'http://be.ewastepas.my.id/public/images/no-image.jpg'
-              } // ✅ fallback
+                'https://be.ewastepas.my.id/public/images/no-image.jpg'
+              }
               alt={artikel.judul_konten}
               className='w-full h-64 object-cover rounded-lg'
             />

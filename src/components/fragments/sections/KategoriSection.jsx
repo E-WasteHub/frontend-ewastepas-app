@@ -13,13 +13,13 @@ const KategoriSection = () => {
   const [selectedKategori, setSelectedKategori] = useState(null);
   const [kategoriData, setKategoriData] = useState([]);
   const [jenisData, setJenisData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  //    Ambil kategori & jenis dari backend
+  // Ambil kategori & jenis dari backend
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchDataKategori = async () => {
       try {
-        setLoading(true);
+        setIsLoading(true);
         const kategoriRes = await kategoriService.ambilSemuaKategori();
         const jenisRes = await jenisService.ambilSemuaJenis();
         setKategoriData(kategoriRes.data || []);
@@ -27,10 +27,10 @@ const KategoriSection = () => {
       } catch (err) {
         console.error('  Gagal ambil kategori/jenis:', err);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
-    fetchData();
+    fetchDataKategori();
   }, []);
 
   const ambilJenisByKategori = (kategoriNama) =>
@@ -70,7 +70,7 @@ const KategoriSection = () => {
         </Motion.div>
 
         {/* Categories Grid */}
-        {loading ? (
+        {isLoading ? (
           <p className='text-center text-slate-500'>Loading...</p>
         ) : (
           <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>

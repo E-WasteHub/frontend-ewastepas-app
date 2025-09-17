@@ -1,5 +1,5 @@
 // Utility untuk mendapatkan edukasi terbaru
-export const getLatestEdukasi = (data, count = 4) => {
+export const edukasiTerbaru = (data, count = 4) => {
   if (!Array.isArray(data)) return [];
 
   return [...data]
@@ -14,4 +14,4 @@ export const getLatestEdukasi = (data, count = 4) => {
     .slice(0, count);
 };
 
-export default getLatestEdukasi;
+export default edukasiTerbaru;

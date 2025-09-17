@@ -5,7 +5,7 @@ import { deteksiPeranDariPath } from '../utils/peranUtils';
 
 const useProfil = () => {
   // state utama
-  const [form, setForm] = useState({
+  const [formProfil, setFormProfil] = useState({
     nama_lengkap: '',
     email: '',
     no_telepon: '',
@@ -29,7 +29,7 @@ const useProfil = () => {
       const res = await profilService.ambilProfil();
       const pengguna = res.data || res;
 
-      setForm({
+      setFormProfil({
         nama_lengkap: pengguna.nama_lengkap || '',
         email: pengguna.email || '',
         no_telepon: pengguna.no_telepon || '',
@@ -74,20 +74,20 @@ const useProfil = () => {
       setPesanError('');
 
       let payload;
-      if (form.gambar_pengguna instanceof File) {
+      if (formProfil.gambar_pengguna instanceof File) {
         const formData = new FormData();
-        formData.append('nama_lengkap', form.nama_lengkap);
-        formData.append('email', form.email);
-        formData.append('no_telepon', form.no_telepon);
-        formData.append('alamat_pengguna', form.alamat_pengguna);
-        formData.append('gambar_pengguna', form.gambar_pengguna);
+        formData.append('nama_lengkap', formProfil.nama_lengkap);
+        formData.append('email', formProfil.email);
+        formData.append('no_telepon', formProfil.no_telepon);
+        formData.append('alamat_pengguna', formProfil.alamat_pengguna);
+        formData.append('gambar_pengguna', formProfil.gambar_pengguna);
         payload = formData;
       } else {
         payload = {
-          nama_lengkap: form.nama_lengkap,
-          email: form.email,
-          no_telepon: form.no_telepon,
-          alamat_pengguna: form.alamat_pengguna,
+          nama_lengkap: formProfil.nama_lengkap,
+          email: formProfil.email,
+          no_telepon: formProfil.no_telepon,
+          alamat_pengguna: formProfil.alamat_pengguna,
         };
       }
 
@@ -95,7 +95,7 @@ const useProfil = () => {
       const data = res.data || res;
 
       // update state dengan data terbaru
-      setForm((prev) => ({
+      setFormProfil((prev) => ({
         ...prev,
         ...data,
         gambar_pengguna: data.url_gambar_pengguna || prev.gambar_pengguna,
@@ -106,7 +106,8 @@ const useProfil = () => {
         'pengguna',
         JSON.stringify({
           ...data,
-          url_gambar_pengguna: data.url_gambar_pengguna || form.gambar_pengguna,
+          url_gambar_pengguna:
+            data.url_gambar_pengguna || formProfil.gambar_pengguna,
         })
       );
 
@@ -179,13 +180,18 @@ const useProfil = () => {
 
   // expose hook
   return {
-    form,
-    setForm,
+    // data dan state
+    formProfil,
+    setFormProfil,
     files,
     setFiles,
     peran,
+
+    // loading dan error
     isLoading,
     pesanError,
+
+    // aksi
     fetchProfil,
     updateProfil,
     ubahPassword,

@@ -8,14 +8,16 @@ import {
   FilterCrud,
   HeaderDashboard,
 } from '../../../components/fragments';
+import { useDarkMode, useDocumentTitle } from '../../../hooks';
 import useAdminCrud from '../../../hooks/useAdminCrud';
 import usePagination from '../../../hooks/usePagination';
 import useToast from '../../../hooks/useToast';
 import * as daerahService from '../../../services/daerahService';
 
 const AdminKelolaDaerahView = () => {
+  useDocumentTitle('Kelola Daerah');
   const {
-    data: daerah,
+    dataCrud: daerah,
     isLoading,
     error,
     tambah,
@@ -25,6 +27,7 @@ const AdminKelolaDaerahView = () => {
   } = useAdminCrud(daerahService);
 
   const { showAlert } = useToast();
+  const { isDarkMode } = useDarkMode();
 
   const [crudOpen, setCrudOpen] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
@@ -142,9 +145,32 @@ const AdminKelolaDaerahView = () => {
       ) : error ? (
         <p className='text-red-500'>Error: {error}</p>
       ) : daerah.length === 0 ? (
-        <div className='text-center py-8 text-gray-500'>
-          <p>Belum ada data daerah.</p>
-          <p>Klik tombol "Tambah Daerah" untuk menambahkan data pertama.</p>
+        <div
+          className={`text-center py-10 px-6 rounded-lg border transition-colors ${
+            isDarkMode
+              ? 'bg-gray-800 border-gray-700 text-gray-200'
+              : 'bg-gray-100 border-gray-300 text-gray-700'
+          }`}
+        >
+          <p className='text-lg font-semibold mb-2'>Belum ada data daerah</p>
+          <p className='text-sm mb-6'>
+            Klik tombol di bawah untuk menambahkan data pertama.
+          </p>
+
+          <Button
+            onClick={() => {
+              setEditTarget(null);
+              setCrudOpen(true);
+            }}
+            variant='primary'
+            className={`px-6 py-2 text-sm font-medium rounded shadow-md ${
+              isDarkMode
+                ? 'bg-green-600 hover:bg-green-700 text-white'
+                : 'bg-green-500 hover:bg-green-600 text-white'
+            }`}
+          >
+            Tambah Daerah
+          </Button>
         </div>
       ) : (
         <>

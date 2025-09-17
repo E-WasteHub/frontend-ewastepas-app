@@ -12,7 +12,7 @@ const FormRegister = () => {
   const [searchParams] = useSearchParams();
 
   const {
-    form,
+    formRegistrasi,
     peran,
     isLoading,
     errorField,
@@ -61,7 +61,7 @@ const FormRegister = () => {
 
     // simpan info otp di localStorage
     localStorage.setItem('userId', res.data.id_pengguna);
-    localStorage.setItem('userEmail', form.email);
+    localStorage.setItem('userEmail', formRegistrasi.email);
 
     // simpan otp expiry
     simpanOtpDenganKadaluarsa(5 * 60);
@@ -128,7 +128,7 @@ const FormRegister = () => {
             name='nama_lengkap'
             type='text'
             placeholder='Masukkan nama lengkap Anda'
-            value={form.nama_lengkap}
+            value={formRegistrasi.nama_lengkap}
             onChange={handleChange}
             disabled={isLoading}
             required
@@ -142,7 +142,7 @@ const FormRegister = () => {
             name='email'
             type='email'
             placeholder='Masukkan email Anda'
-            value={form.email}
+            value={formRegistrasi.email}
             onChange={handleChange}
             disabled={isLoading}
             required
@@ -156,7 +156,7 @@ const FormRegister = () => {
             name='kata_sandi'
             type='password'
             placeholder='Masukkan kata sandi'
-            value={form.kata_sandi}
+            value={formRegistrasi.kata_sandi}
             onChange={handleChange}
             disabled={isLoading}
             required
@@ -171,7 +171,7 @@ const FormRegister = () => {
             name='konfirmasi_kata_sandi'
             type='password'
             placeholder='Konfirmasi kata sandi'
-            value={form.konfirmasi_kata_sandi}
+            value={formRegistrasi.konfirmasi_kata_sandi}
             onChange={handleChange}
             disabled={isLoading}
             required

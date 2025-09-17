@@ -9,55 +9,65 @@ import { ambilDataArrayAman } from '../utils/penjemputanUtils';
 
 const useMasyarakat = () => {
   // data list
-  const [data, setData] = useState([]);
+  const [dataDashboardMasyarakat, setDataDashboardMasyarakat] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
   // detail
-  const [detail, setDetail] = useState(null);
-  const [isLoadingDetail, setIsLoadingDetail] = useState(false);
-  const [errorDetail, setErrorDetail] = useState('');
+  const [detailPenjemputanMasyarakat, setDetailPenjemputanMasyarakat] =
+    useState(null);
+  const [
+    isLoadingDetailPenjemputanMasyarakat,
+    setIsLoadingDetailPenjemputanMasyarakat,
+  ] = useState(false);
+  const [
+    errorDetailPenjemputanMasyarakat,
+    setErrorDetailPenjemputanMasyarakat,
+  ] = useState('');
 
   // ambil data list
-  const fetchData = useCallback(async () => {
+  const fetchDataDashboardMasyarakat = useCallback(async () => {
     try {
       setIsLoading(true);
       setError('');
       const response = await ambilRiwayatPenjemputan();
       const rawData = ambilDataArrayAman(response, 'data');
-      setData(rawData);
+      setDataDashboardMasyarakat(rawData);
     } catch {
-      setError('gagal memuat data penjemputan');
-      setData([]);
+      setError('Gagal memuat data penjemputan');
+      setDataDashboardMasyarakat([]);
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   // ambil detail
-  const fetchDetail = useCallback(async (id_penjemputan) => {
-    if (!id_penjemputan) return;
-    try {
-      setIsLoadingDetail(true);
-      setErrorDetail('');
-      const res = await ambilDetailPenjemputan(id_penjemputan);
-      setDetail(res.data);
-    } catch {
-      setErrorDetail('gagal memuat detail penjemputan');
-      setDetail(null);
-    } finally {
-      setIsLoadingDetail(false);
-    }
-  }, []);
+  const fetchDetailPenjemputanMasyarakat = useCallback(
+    async (id_penjemputan) => {
+      if (!id_penjemputan) return;
+      try {
+        setIsLoadingDetailPenjemputanMasyarakat(true);
+        setErrorDetailPenjemputanMasyarakat('');
+        const res = await ambilDetailPenjemputan(id_penjemputan);
+        setDetailPenjemputanMasyarakat(res.data);
+      } catch {
+        setErrorDetailPenjemputanMasyarakat('gagal memuat detail penjemputan');
+        setDetailPenjemputanMasyarakat(null);
+      } finally {
+        setIsLoadingDetailPenjemputanMasyarakat(false);
+      }
+    },
+    []
+  );
 
   // batalkan penjemputan
-  const batalkan = async (id_penjemputan) => {
+  const batalkanPenjemputanMasyarakat = async (id_penjemputan) => {
     try {
       await ubahStatusPenjemputan(id_penjemputan, {
         status_penjemputan: 'dibatalkan',
         waktu_dibatalkan: new Date().toISOString(),
       });
-      await fetchData();
+      await fetchDataDashboardMasyarakat();
       return true;
     } catch {
       setError('gagal membatalkan penjemputan');
@@ -66,8 +76,8 @@ const useMasyarakat = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchDataDashboardMasyarakat();
+  }, [fetchDataDashboardMasyarakat]);
 
   // statistik dashboard
   const pengguna = JSON.parse(localStorage.getItem('pengguna')) || {};
@@ -75,51 +85,47 @@ const useMasyarakat = () => {
   // gunakan poinRealtime jika ada, fallback ke localStorage
   const totalPoin = parseInt(pengguna.poin_pengguna, 10) || 0;
 
-  const stats = {
-    totalPenjemputan: data.length,
-    sedangBerlangsung: data.filter((d) =>
-      ['diproses', 'diterima', 'dijemput'].includes(
-        d.status_penjemputan?.toLowerCase()
-      )
+  const statsDashboardMasyarakat = {
+    totalPenjemputan: dataDashboardMasyarakat.length,
+    sedangBerlangsung: dataDashboardMasyarakat.filter((d) =>
+      ['Diproses', 'Diterima', 'Dijemput'].includes(d.status_penjemputan)
     ).length,
     totalPoin,
   };
 
   // filter data
-  const daftarPenjemputan = data.filter((d) =>
-    ['diproses', 'diterima', 'dijemput'].includes(
-      d.status_penjemputan?.toLowerCase()
-    )
+  const daftarPenjemputanMasyarakat = dataDashboardMasyarakat.filter((d) =>
+    ['Diproses', 'Diterima', 'Dijemput'].includes(d.status_penjemputan)
   );
 
-  const riwayat = data.filter((d) =>
-    ['diproses', 'diterima', 'dijemput', 'selesai', 'dibatalkan'].includes(
-      d.status_penjemputan?.toLowerCase()
+  const riwayatPenjemputanMasyarakat = dataDashboardMasyarakat.filter((d) =>
+    ['Diproses', 'Diterima', 'Dijemput', 'Selesai', 'Dibatalkan'].includes(
+      d.status_penjemputan
     )
   );
 
   return {
     // list
-    data,
+    dataDashboardMasyarakat,
     isLoading,
     error,
 
     // detail
-    detail,
-    isLoadingDetail,
-    errorDetail,
-    fetchDetail,
+    detailPenjemputanMasyarakat,
+    isLoadingDetailPenjemputanMasyarakat,
+    errorDetailPenjemputanMasyarakat,
+    fetchDetailPenjemputanMasyarakat,
 
     // dashboard
-    stats,
+    statsDashboardMasyarakat,
 
     // lacak/riwayat
-    daftarPenjemputan,
-    riwayat,
+    daftarPenjemputanMasyarakat,
+    riwayatPenjemputanMasyarakat,
 
     // actions
-    fetchData,
-    batalkan,
+    fetchDataDashboardMasyarakat,
+    batalkanPenjemputanMasyarakat,
   };
 };
 

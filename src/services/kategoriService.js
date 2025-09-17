@@ -44,14 +44,8 @@ export const hapusKategori = async (id_kategori_sampah) => {
   }
 };
 
-// ambil single kategori
-export const ambilKategori = async (id_kategori_sampah) => {
-  const response = await api.get(`/kategori-sampah/${id_kategori_sampah}`);
-  return response.data;
-};
-
 // ambil 1 kategori
-export const pilihKategori = async (id_kategori_sampah) => {
+export const ambilSatuKategori = async (id_kategori_sampah) => {
   try {
     const response = await api.get(`/kategori-sampah/${id_kategori_sampah}`);
     return response.data;

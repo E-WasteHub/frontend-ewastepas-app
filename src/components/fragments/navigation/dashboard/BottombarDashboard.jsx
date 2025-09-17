@@ -22,21 +22,21 @@ const BottombarDashboard = ({ userRole = 'Masyarakat' }) => {
     >
       <div className='flex h-16 items-center px-2'>
         {navItems.map((item) => {
-          const IconComponent = item.ikon;
-          const isRootDashboard = item.jalur.split('/').length === 3;
+          const IconComponent = item.icon;
+          const isRootDashboard = item.path.split('/').length === 3;
 
           // cek apakah salah satu child aktif
-          const isChildActive = item.anak?.some((child) =>
-            location.pathname.startsWith(child.jalur)
+          const isChildActive = item.children?.some((child) =>
+            location.pathname.startsWith(child.path)
           );
 
           return (
             <NavLink
-              key={item.jalur}
-              to={item.jalur}
+              key={item.path}
+              to={item.path}
               end={isRootDashboard}
               className='flex flex-col items-center justify-center flex-1 py-2 px-1 mx-1 rounded-lg transition-all duration-200'
-              aria-label={item.judul}
+              aria-label={item.title}
             >
               {({ isActive }) => {
                 // kalau child aktif, override isActive jadi true
@@ -64,7 +64,7 @@ const BottombarDashboard = ({ userRole = 'Masyarakat' }) => {
                           : `font-normal ${inactiveColor}`
                       }`}
                     >
-                      {item.judul}
+                      {item.title}
                     </span>
                   </>
                 );

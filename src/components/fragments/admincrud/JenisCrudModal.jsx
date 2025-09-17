@@ -23,7 +23,7 @@ const JenisCrudModal = ({
   useEffect(() => {
     const ambilKategori = async () => {
       try {
-        const res = await kategoriService.ambilSemua();
+        const res = await kategoriService.ambilSemuaKategori();
         const data = Array.isArray(res?.data)
           ? res.data
           : Array.isArray(res?.data?.data)

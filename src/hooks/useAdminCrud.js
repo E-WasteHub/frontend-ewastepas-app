@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { ambilDataArrayAman } from '../utils/penjemputanUtils';
 
 const useAdminCrud = (service) => {
-  const [data, setData] = useState([]);
+  const [dataCrud, setDataCrud] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -21,23 +21,23 @@ const useAdminCrud = (service) => {
   };
 
   // ambil data
-  const fetchData = useCallback(async () => {
+  const fetchDataCrud = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await service.ambilSemua();
       const rawData = ambilDataArrayAman(response.data, 'data');
-      setData(sortByCreatedAt(rawData));
+      setDataCrud(sortByCreatedAt(rawData));
     } catch {
       setError('gagal memuat data');
-      setData([]);
+      setDataCrud([]);
     } finally {
       setIsLoading(false);
     }
   }, [service]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchDataCrud();
+  }, [fetchDataCrud]);
 
   // tambah data
   const tambah = async (payload) => {
@@ -49,10 +49,10 @@ const useAdminCrud = (service) => {
       // jika backend mengembalikan data baru, unshift ke atas
       const newItem = res?.data?.data || res?.data;
       if (newItem) {
-        setData((prev) => sortByCreatedAt([newItem, ...prev]));
+        setDataCrud((prev) => sortByCreatedAt([newItem, ...prev]));
       } else {
         // fallback → refetch
-        await fetchData();
+        await fetchDataCrud();
       }
 
       setMessage('data berhasil ditambahkan');
@@ -71,7 +71,7 @@ const useAdminCrud = (service) => {
       setIsSubmitting(true);
       setError('');
       const res = await service.ubah(id, payload);
-      await fetchData();
+      await fetchDataCrud();
       setMessage('data berhasil diubah');
       return { success: true, data: res };
     } catch (err) {
@@ -88,7 +88,7 @@ const useAdminCrud = (service) => {
       setIsSubmitting(true);
       setError('');
       const res = await service.hapus(id);
-      await fetchData();
+      await fetchDataCrud();
       setMessage('data berhasil dihapus');
       return { success: true, data: res };
     } catch (err) {
@@ -100,12 +100,12 @@ const useAdminCrud = (service) => {
   };
 
   return {
-    data,
+    dataCrud,
     isLoading,
     isSubmitting,
     error,
     message,
-    fetchData,
+    fetchDataCrud,
     tambah,
     ubah,
     hapus,

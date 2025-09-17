@@ -23,29 +23,29 @@ const DetailRiwayatMasyarakatView = () => {
   const { id_penjemputan } = useParams();
 
   const {
-    detail: detailRiwayat,
-    isLoadingDetail,
-    fetchDetail,
+    detailPenjemputanMasyarakat,
+    isLoadingDetailPenjemputanMasyarakat,
+    fetchDetailPenjemputanMasyarakat,
   } = useMasyarakat();
 
   // ambil detail saat id_penjemputan berubah
   useEffect(() => {
     if (id_penjemputan) {
-      fetchDetail(id_penjemputan);
+      fetchDetailPenjemputanMasyarakat(id_penjemputan);
     }
-  }, [id_penjemputan, fetchDetail]);
+  }, [id_penjemputan, fetchDetailPenjemputanMasyarakat]);
 
-  if (isLoadingDetail) {
+  if (isLoadingDetailPenjemputanMasyarakat) {
     return <Loading mode='overlay' text='Memuat detail riwayat...' />;
   }
 
-  if (!detailRiwayat?.penjemputan) {
+  if (!detailPenjemputanMasyarakat?.penjemputan) {
     return (
       <p className='p-6 text-center text-red-500'>Riwayat tidak ditemukan</p>
     );
   }
 
-  const p = detailRiwayat.penjemputan;
+  const p = detailPenjemputanMasyarakat.penjemputan;
   const langkahAktif = dapatkanLangkahAktif(p);
 
   return (
@@ -142,15 +142,15 @@ const DetailRiwayatMasyarakatView = () => {
             <h3 className='text-lg font-semibold mb-3 flex items-center gap-2'>
               <FileText className='w-5 h-5 text-green-500' /> Detail Sampah
             </h3>
-            {detailRiwayat.sampah?.length > 0 ? (
+            {detailPenjemputanMasyarakat.sampah?.length > 0 ? (
               <div
                 className={`space-y-3 ${
-                  detailRiwayat.sampah.length > 3
+                  detailPenjemputanMasyarakat.sampah.length > 3
                     ? 'max-h-96 overflow-y-auto pr-2'
                     : ''
                 }`}
               >
-                {detailRiwayat.sampah.map((s) => (
+                {detailPenjemputanMasyarakat.sampah.map((s) => (
                   <ItemSampahCard
                     key={s.id_sampah}
                     data={s}

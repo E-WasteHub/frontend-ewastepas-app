@@ -8,11 +8,13 @@ import {
   SapaanDashboard,
   StatCard,
 } from '../../../components/fragments';
-import useDarkMode from '../../../hooks/useDarkMode';
-import useDocumentTitle from '../../../hooks/useDocumentTitle';
-import useMitraKurir from '../../../hooks/useMitraKurir';
-import usePengguna from '../../../hooks/usePengguna';
-import useToast from '../../../hooks/useToast';
+import {
+  useDarkMode,
+  useDocumentTitle,
+  useMitraKurir,
+  usePengguna,
+  useToast,
+} from '../../../hooks';
 
 const DashboardMitraKurirView = () => {
   useDocumentTitle('Dashboard Mitra Kurir');
@@ -21,7 +23,8 @@ const DashboardMitraKurirView = () => {
   const { error: showError } = useToast();
 
   // data dan actions
-  const { penjemputanTersedia, stats, isLoading, error } = useMitraKurir();
+  const { penjemputanTersedia, statsDashboardMitraKurir, isLoading, error } =
+    useMitraKurir();
 
   // Show error toast when error occurs
   useEffect(() => {
@@ -30,7 +33,7 @@ const DashboardMitraKurirView = () => {
     }
   }, [error, showError]);
 
-  const safeStats = stats || {
+  const safeStats = statsDashboardMitraKurir || {
     penjemputanTersedia: 0,
     penjemputanBulanIni: 0,
     totalPenjemputan: 0,

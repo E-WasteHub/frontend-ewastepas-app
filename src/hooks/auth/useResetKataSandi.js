@@ -4,7 +4,7 @@ import * as authService from '../../services/authService';
 
 const useResetKataSandi = () => {
   // state form
-  const [form, setForm] = useState({
+  const [formResetKataSandi, setFormResetKataSandi] = useState({
     kata_sandi: '',
     konfirmasi_kata_sandi: '',
   });
@@ -18,7 +18,7 @@ const useResetKataSandi = () => {
   // handler perubahan input
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setFormResetKataSandi((prev) => ({ ...prev, [name]: value }));
 
     // Reset error & pesan terkait
     if (pesanErrorField[name]) {
@@ -32,15 +32,17 @@ const useResetKataSandi = () => {
   const validateForm = () => {
     const errors = {};
 
-    if (!form.kata_sandi) {
+    if (!formResetKataSandi.kata_sandi) {
       errors.kata_sandi = 'Kata sandi baru wajib diisi';
-    } else if (form.kata_sandi.length < 6) {
+    } else if (formResetKataSandi.kata_sandi.length < 6) {
       errors.kata_sandi = 'Kata sandi minimal 6 karakter';
     }
 
-    if (!form.konfirmasi_kata_sandi) {
+    if (!formResetKataSandi.konfirmasi_kata_sandi) {
       errors.konfirmasi_kata_sandi = 'Konfirmasi kata sandi wajib diisi';
-    } else if (form.kataSandi !== form.konfirmasi_kata_sandi) {
+    } else if (
+      formResetKataSandi.kata_sandi !== formResetKataSandi.konfirmasi_kata_sandi
+    ) {
       errors.konfirmasi_kata_sandi = 'Konfirmasi kata sandi tidak cocok';
     }
 
@@ -60,14 +62,14 @@ const useResetKataSandi = () => {
     try {
       setIsLoading(true);
 
-      const res = await authService.resetPassword({
+      const res = await authService.resetKataSandi({
         otp,
-        kata_sandi: form.kata_sandi,
-        konfirmasi_kata_sandi: form.konfirmasi_kata_sandi,
+        kata_sandi: formResetKataSandi.kata_sandi,
+        konfirmasi_kata_sandi: formResetKataSandi.konfirmasi_kata_sandi,
       });
 
       setPesanSukses(res.message || 'Reset kata sandi berhasil');
-      setForm({ kata_sandi: '', konfirmasi_kata_sandi: '' });
+      setFormResetKataSandi({ kata_sandi: '', konfirmasi_kata_sandi: '' });
 
       return res;
     } catch (err) {
@@ -80,7 +82,7 @@ const useResetKataSandi = () => {
 
   return {
     // Data
-    form,
+    formResetKataSandi,
     isLoading,
     pesanErrorField,
     pesanErrorGlobal,

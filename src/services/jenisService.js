@@ -42,7 +42,7 @@ export const hapusJenis = async (id_jenis) => {
 };
 
 // ambil single jenis sampah
-export const ambilJenis = async (id_jenis) => {
+export const ambilSatuJenis = async (id_jenis) => {
   try {
     const response = await api.get(`/jenis-sampah/${id_jenis}`);
     return response.data;
@@ -53,7 +53,7 @@ export const ambilJenis = async (id_jenis) => {
   }
 };
 
-// alias untuk useAdminCrud compatibility
+// fungsi versi singkat untuk kompatibilitas digunakan untuk useAdminCrud
 export const ambilSemua = async () => {
   try {
     const response = await api.get('/jenis-sampah');

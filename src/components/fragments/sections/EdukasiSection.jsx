@@ -5,25 +5,25 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useDarkMode from '../../../hooks/useDarkMode';
 import * as edukasiService from '../../../services/edukasiService';
-import getLatestEdukasi from '../../../utils/getLatestEdukasi';
+import { edukasiTerbaru } from '../../../utils/edukasiTerbaruUtils';
 import { stripHtmlUtils } from '../../../utils/stripHtmlUtils';
 import { Badge } from '../../elements';
 
 const EdukasiSection = () => {
   const { isDarkMode } = useDarkMode();
 
-  const [data, setData] = useState([]);
+  const [dataEdukasi, setDataEdukasi] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
   // ambil data edukasi saat mount
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchDataEdukasi = async () => {
       try {
         setIsLoading(true);
         setError('');
         const edukasiData = await edukasiService.ambilSemuaEdukasi();
-        setData(edukasiData?.data || []);
+        setDataEdukasi(edukasiData?.data || []);
       } catch (err) {
         setError(err.message || 'Gagal memuat data edukasi');
       } finally {
@@ -31,11 +31,11 @@ const EdukasiSection = () => {
       }
     };
 
-    fetchData();
+    fetchDataEdukasi();
   }, []);
 
   // hanya ambil 4 edukasi terbaru
-  const edukasiPreview = getLatestEdukasi(data, 4);
+  const edukasiPreview = edukasiTerbaru(dataEdukasi, 4);
 
   return (
     <section
@@ -103,7 +103,7 @@ const EdukasiSection = () => {
                     }`}
                   >
                     {/* Gambar Thumbnail */}
-                    <div className='w-full aspect-[16/9]'>
+                    <div className='w-full aspect-[16/9] overflow-hidden'>
                       <img
                         src={item.gambar_url}
                         alt={item.judul_konten}
@@ -113,22 +113,27 @@ const EdukasiSection = () => {
 
                     {/* Konten dalam card */}
                     <div className='p-6 flex flex-col flex-1 text-center'>
-                      <h3
-                        className={`text-lg font-semibold mb-3 ${
-                          isDarkMode ? 'text-white' : 'text-slate-900'
-                        }`}
-                      >
-                        {item.judul_konten}
-                      </h3>
+                      <div className='flex-1 flex flex-col justify-between'>
+                        {/* Judul */}
+                        <h3
+                          className={`text-lg font-semibold mb-3 line-clamp-2 ${
+                            isDarkMode ? 'text-white' : 'text-slate-900'
+                          }`}
+                        >
+                          {item.judul_konten}
+                        </h3>
 
-                      <p
-                        className={`text-sm leading-relaxed mb-4 line-clamp-3 flex-1 ${
-                          isDarkMode ? 'text-slate-400' : 'text-slate-600'
-                        }`}
-                      >
-                        {stripHtmlUtils(item.isi_konten).substring(0, 100)}...
-                      </p>
+                        {/* Isi konten */}
+                        <p
+                          className={`text-sm leading-relaxed mb-4 line-clamp-3 ${
+                            isDarkMode ? 'text-slate-400' : 'text-slate-600'
+                          }`}
+                        >
+                          {stripHtmlUtils(item.isi_konten).substring(0, 100)}...
+                        </p>
+                      </div>
 
+                      {/* Tombol baca selengkapnya */}
                       <div
                         className={`text-xs font-medium mt-auto ${
                           isDarkMode ? 'text-green-400' : 'text-green-600'
@@ -147,7 +152,7 @@ const EdukasiSection = () => {
         )}
 
         {/* Tombol Lihat Semua */}
-        {data.length > 4 && (
+        {dataEdukasi.length > 4 && (
           <Motion.div
             className='text-end'
             initial={{ opacity: 0, y: 20 }}

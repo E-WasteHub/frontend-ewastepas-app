@@ -3,14 +3,14 @@ import * as verifikasiService from '../services/verifikasiService';
 import { ambilDataArrayAman } from '../utils/penjemputanUtils';
 
 const useAdminVerifikasi = () => {
-  const [data, setData] = useState([]);
-  const [detail, setDetail] = useState(null);
+  const [dataVerifikasiAdmin, setDataVerifikasiAdmin] = useState([]);
+  const [detailVerifikasiAdmin, setDetailVerifikasiAdmin] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // ===== FETCH SEMUA AKUN BELUM VERIFIKASI =====
-  const fetchData = useCallback(async () => {
+  const fetchDataVerifikasiAdmin = useCallback(async () => {
     try {
       setIsLoading(true);
       setError('');
@@ -19,21 +19,21 @@ const useAdminVerifikasi = () => {
       const rawData = ambilDataArrayAman(response);
 
       // tampilkan semua data untuk verifikasi admin
-      setData(rawData || []);
+      setDataVerifikasiAdmin(rawData || []);
     } catch {
       setError('gagal memuat data akun verifikasi');
-      setData([]);
+      setDataVerifikasiAdmin([]);
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchDataVerifikasiAdmin();
+  }, [fetchDataVerifikasiAdmin]);
 
   // ===== FETCH DETAIL AKUN =====
-  const fetchDetail = async (id_pengguna) => {
+  const fetchDetailVerifikasiAdmin = async (id_pengguna) => {
     try {
       setIsLoading(true);
       setError('');
@@ -55,11 +55,11 @@ const useAdminVerifikasi = () => {
         };
       }
 
-      setDetail(result);
+      setDetailVerifikasiAdmin(result);
       return result;
     } catch {
       setError('gagal memuat detail akun');
-      setDetail(null);
+      setDetailVerifikasiAdmin(null);
       return null;
     } finally {
       setIsLoading(false);
@@ -67,7 +67,7 @@ const useAdminVerifikasi = () => {
   };
 
   // ===== UPDATE STATUS AKUN =====
-  const updateStatus = async (id_pengguna, status_pengguna) => {
+  const updateStatusVerifikasiAdmin = async (id_pengguna, status_pengguna) => {
     try {
       setIsSubmitting(true);
       setError('');
@@ -78,7 +78,7 @@ const useAdminVerifikasi = () => {
       );
 
       if (response?.data || response?.message) {
-        await fetchData();
+        await fetchDataVerifikasiAdmin();
         return { success: true };
       } else {
         throw new Error(response?.message || 'update gagal');
@@ -92,14 +92,14 @@ const useAdminVerifikasi = () => {
   };
 
   return {
-    data,
-    detail,
+    dataVerifikasiAdmin,
+    detailVerifikasiAdmin,
     isLoading,
     error,
     isSubmitting,
-    fetchData,
-    fetchDetail,
-    updateStatus,
+    fetchDataVerifikasiAdmin,
+    fetchDetailVerifikasiAdmin,
+    updateStatusVerifikasiAdmin,
   };
 };
 

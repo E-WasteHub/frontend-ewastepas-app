@@ -7,10 +7,12 @@ import {
   HeaderDashboard,
   PenjemputanKurirCard,
 } from '../../../components/fragments';
-import useDarkMode from '../../../hooks/useDarkMode';
-import useDocumentTitle from '../../../hooks/useDocumentTitle';
-import useMitraKurir from '../../../hooks/useMitraKurir';
-import usePagination from '../../../hooks/usePagination';
+import {
+  useDarkMode,
+  useDocumentTitle,
+  useMitraKurir,
+  usePagination,
+} from '../../../hooks';
 
 const itemsPerPage = 3;
 
@@ -26,16 +28,16 @@ const RiwayatMitraKurirView = () => {
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
 
-  //    Ambil data riwayat dari hook kurir
-  const { riwayat, isLoading } = useMitraKurir();
+  // Ambil data riwayat dari hook kurir
+  const { riwayatMitraKurir, isLoading } = useMitraKurir();
 
-  //    State filter + search
+  // State filter + search
   const [pencarian, setPencarian] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
 
-  //    Filter data
+  // Filter data
   const filteredData = useMemo(() => {
-    let result = riwayat;
+    let result = riwayatMitraKurir;
 
     if (filterStatus !== 'all') {
       result = result.filter((r) => r.status_penjemputan === filterStatus);
@@ -51,9 +53,9 @@ const RiwayatMitraKurirView = () => {
     }
 
     return result;
-  }, [riwayat, filterStatus, pencarian]);
+  }, [riwayatMitraKurir, filterStatus, pencarian]);
 
-  //    Pagination
+  // Pagination
   const { currentPage, setCurrentPage, paginatedData, totalPages } =
     usePagination(filteredData, itemsPerPage);
 

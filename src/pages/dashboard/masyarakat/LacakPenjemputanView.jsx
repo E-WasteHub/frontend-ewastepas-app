@@ -24,7 +24,7 @@ const LacakPenjemputanView = () => {
   const navigate = useNavigate();
 
   // ambil data dari hook
-  const { daftarPenjemputan, isLoading } = useMasyarakat();
+  const { daftarPenjemputanMasyarakat, isLoading } = useMasyarakat();
 
   // state untuk filter & search
   const [pencarian, setPencarian] = useState('');
@@ -34,7 +34,7 @@ const LacakPenjemputanView = () => {
 
   // filter data
   const filteredData = useMemo(() => {
-    let result = daftarPenjemputan;
+    let result = daftarPenjemputanMasyarakat;
 
     // filter status
     if (filterStatus !== 'all') {
@@ -55,7 +55,7 @@ const LacakPenjemputanView = () => {
     }
 
     return result;
-  }, [daftarPenjemputan, pencarian, filterStatus]);
+  }, [daftarPenjemputanMasyarakat, pencarian, filterStatus]);
 
   // pagination
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);

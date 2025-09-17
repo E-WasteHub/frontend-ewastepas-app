@@ -9,10 +9,12 @@ import {
   PilihDropboxModal,
   Timeline,
 } from '../../../components/fragments';
-import useDarkMode from '../../../hooks/useDarkMode';
-import useDocumentTitle from '../../../hooks/useDocumentTitle';
-import useMitraKurir from '../../../hooks/useMitraKurir';
-import useToast from '../../../hooks/useToast';
+import {
+  useDarkMode,
+  useDocumentTitle,
+  useMitraKurir,
+  useToast,
+} from '../../../hooks';
 import { formatTanggalIndonesia } from '../../../utils/dateUtils';
 import { daftarLangkahStatus } from '../../../utils/penjemputanUtils';
 
@@ -23,12 +25,12 @@ const PermintaanAktifKurir = () => {
 
   const {
     permintaanAktif,
-    detail,
-    fetchDetail,
+    detailPenjemputanMitraKurir,
+    fetchDetailPenjemputanMitraKurir,
     isLoading,
-    isLoadingDetail,
+    isLoadingDetailPenjemputanMitraKurir,
     error,
-    errorDetail,
+    errorDetailPenjemputanMitraKurir,
     tandaiDijemput,
     tandaiSelesai,
     batalkanPermintaan,
@@ -40,9 +42,9 @@ const PermintaanAktifKurir = () => {
   // fetch detail begitu permintaanAktif sudah ada
   useEffect(() => {
     if (permintaanAktif?.id_penjemputan) {
-      fetchDetail(permintaanAktif.id_penjemputan);
+      fetchDetailPenjemputanMitraKurir(permintaanAktif.id_penjemputan);
     }
-  }, [permintaanAktif, fetchDetail]);
+  }, [permintaanAktif, fetchDetailPenjemputanMitraKurir]);
 
   // Show error toasts when errors occur
   useEffect(() => {
@@ -52,10 +54,10 @@ const PermintaanAktifKurir = () => {
   }, [error, showError]);
 
   useEffect(() => {
-    if (errorDetail) {
-      showError(errorDetail);
+    if (errorDetailPenjemputanMitraKurir) {
+      showError(errorDetailPenjemputanMitraKurir);
     }
-  }, [errorDetail, showError]);
+  }, [errorDetailPenjemputanMitraKurir, showError]);
 
   if (isLoading) {
     return <Loading mode='overlay' text='Memuat data...' />;
@@ -74,7 +76,7 @@ const PermintaanAktifKurir = () => {
   }
 
   const p = permintaanAktif;
-  const d = detail;
+  const d = detailPenjemputanMitraKurir;
   const currentStatus = p.status_penjemputan;
 
   return (
@@ -184,9 +186,9 @@ const PermintaanAktifKurir = () => {
               <FileText className='w-5 h-5 text-green-500' />
               Detail Sampah
             </h3>
-            {isLoadingDetail ? (
+            {isLoadingDetailPenjemputanMitraKurir ? (
               <p className='text-sm text-gray-500 text-center'>
-                ⏳ Memuat detail sampah...
+                Memuat detail sampah...
               </p>
             ) : d?.sampah?.length > 0 ? (
               <div

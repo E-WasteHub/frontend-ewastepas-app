@@ -16,7 +16,7 @@ const FormResetKataSandi = () => {
   const otp = searchParams.get('otp');
 
   const {
-    form,
+    formResetKataSandi,
     isLoading,
     pesanErrorGlobal,
     pesanErrorField,
@@ -74,7 +74,7 @@ const FormResetKataSandi = () => {
             label='Kata Sandi Baru'
             name='kata_sandi'
             placeholder='Masukkan kata sandi baru'
-            value={form.kata_sandi}
+            value={formResetKataSandi.kata_sandi}
             onChange={handleInputChange}
             disabled={isLoading}
             required
@@ -89,7 +89,7 @@ const FormResetKataSandi = () => {
             label='Konfirmasi Kata Sandi'
             name='konfirmasi_kata_sandi'
             placeholder='Konfirmasi kata sandi baru'
-            value={form.konfirmasi_kata_sandi}
+            value={formResetKataSandi.konfirmasi_kata_sandi}
             onChange={handleInputChange}
             disabled={isLoading}
             required

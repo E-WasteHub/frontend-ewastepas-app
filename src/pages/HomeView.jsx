@@ -5,7 +5,7 @@ import KategoriSection from '../components/fragments/sections/KategoriSection';
 import MainLayout from '../components/layouts/MainLayout';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
-const HomePage = () => {
+const HomeView = () => {
   useDocumentTitle('Ewastepas App');
 
   return (
@@ -18,4 +18,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default HomeView;

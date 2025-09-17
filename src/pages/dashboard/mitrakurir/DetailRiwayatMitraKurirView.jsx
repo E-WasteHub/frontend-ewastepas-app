@@ -8,9 +8,7 @@ import {
   ItemSampahCard,
   Timeline,
 } from '../../../components/fragments';
-import useDarkMode from '../../../hooks/useDarkMode';
-import useDocumentTitle from '../../../hooks/useDocumentTitle';
-import useMitraKurir from '../../../hooks/useMitraKurir';
+import { useDarkMode, useDocumentTitle, useMitraKurir } from '../../../hooks';
 import { formatTanggalIndonesia } from '../../../utils/dateUtils';
 import {
   daftarLangkahStatus,
@@ -23,23 +21,23 @@ const DetailRiwayatMitraKurirView = () => {
   const { id_penjemputan } = useParams();
 
   const {
-    detail: detailRiwayat,
+    detailPenjemputanMitraKurir,
     isLoadingDetail,
     errorDetail,
-    fetchDetail,
+    fetchDetailPenjemputanMitraKurir,
   } = useMitraKurir();
 
   // fetch detail riwayat saat id_penjemputan tersedia
   useEffect(() => {
     if (id_penjemputan) {
-      fetchDetail(id_penjemputan);
+      fetchDetailPenjemputanMitraKurir(id_penjemputan);
     }
-  }, [id_penjemputan, fetchDetail]);
+  }, [id_penjemputan, fetchDetailPenjemputanMitraKurir]);
 
   if (isLoadingDetail)
     return <Loading mode='overlay' text='Memuat detail...' />;
 
-  if (!detailRiwayat?.penjemputan) {
+  if (!detailPenjemputanMitraKurir?.penjemputan) {
     return (
       <p className='p-6 text-center text-red-500'>
         {errorDetail || 'Riwayat tidak ditemukan'}
@@ -47,7 +45,7 @@ const DetailRiwayatMitraKurirView = () => {
     );
   }
 
-  const p = detailRiwayat.penjemputan;
+  const p = detailPenjemputanMitraKurir.penjemputan;
   const langkahAktif = dapatkanLangkahAktif(p);
 
   return (
@@ -148,15 +146,15 @@ const DetailRiwayatMitraKurirView = () => {
               <FileText className='w-5 h-5 text-green-500' />
               Detail Sampah
             </h3>
-            {detailRiwayat.sampah?.length > 0 ? (
+            {detailPenjemputanMitraKurir.sampah?.length > 0 ? (
               <div
                 className={`space-y-3 ${
-                  detailRiwayat.sampah.length > 3
+                  detailPenjemputanMitraKurir.sampah.length > 3
                     ? 'max-h-96 overflow-y-auto pr-2'
                     : ''
                 }`}
               >
-                {detailRiwayat.sampah.map((s) => (
+                {detailPenjemputanMitraKurir.sampah.map((s) => (
                   <ItemSampahCard
                     key={s.id_sampah}
                     data={s}

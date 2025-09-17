@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 
 const useAdminMonitoring = (service) => {
-  const [data, setData] = useState([]);
-  const [detail, setDetail] = useState(null);
+  const [dataTransaksiAdmin, setDataTransaksiAdmin] = useState([]);
+  const [detailTransaksiAdmin, setDetailTransaksiAdmin] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isDetailLoading, setIsDetailLoading] = useState(false);
   const [error, setError] = useState('');
 
   // ambil semua transaksi
-  const fetchData = useCallback(async () => {
+  const fetchDataTransaksiAdmin = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await service.ambilSemuaTransaksi();
@@ -20,7 +20,7 @@ const useAdminMonitoring = (service) => {
         ? response.data
         : [];
 
-      setData(rawData);
+      setDataTransaksiAdmin(rawData);
     } catch {
       setError('Gagal memuat transaksi');
     } finally {
@@ -29,17 +29,17 @@ const useAdminMonitoring = (service) => {
   }, [service]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchDataTransaksiAdmin();
+  }, [fetchDataTransaksiAdmin]);
 
   // ambil detail transaksi
-  const fetchDetail = useCallback(
+  const fetchDetailTransaksiAdmin = useCallback(
     async (id) => {
       try {
         setIsDetailLoading(true);
         const response = await service.detailTransaksi(id);
         const rawData = response?.data?.data || null;
-        setDetail(rawData);
+        setDetailTransaksiAdmin(rawData);
         return rawData;
       } catch {
         setError('gagal memuat detail transaksi');
@@ -52,14 +52,14 @@ const useAdminMonitoring = (service) => {
   );
 
   return {
-    data,
-    detail,
+    dataTransaksiAdmin,
+    detailTransaksiAdmin,
     isLoading,
     isDetailLoading,
     error,
-    fetchData,
-    fetchDetail,
-    setDetail,
+    fetchDataTransaksiAdmin,
+    fetchDetailTransaksiAdmin,
+    setDetailTransaksiAdmin,
   };
 };
 

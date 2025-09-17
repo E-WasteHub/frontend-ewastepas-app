@@ -5,7 +5,7 @@ import { DokumenUpload } from '../../../fragments';
 
 const FormUnggahDokumen = ({
   berkas,
-  onBerkasChange,
+  onDokumenChange,
   onUnggah,
   isLoading,
   statusPengguna,
@@ -115,7 +115,7 @@ const FormUnggahDokumen = ({
         <DokumenUpload
           jenisDokumen='KTP'
           dokumenSaatIni={berkas.ktp}
-          onDokumenChange={(file) => onBerkasChange('ktp', file)}
+          onDokumenChange={(file) => onDokumenChange('ktp', file)}
           isLoading={isLoading}
           disabled={isLoading}
           required
@@ -123,7 +123,7 @@ const FormUnggahDokumen = ({
         <DokumenUpload
           jenisDokumen='SIM'
           dokumenSaatIni={berkas.sim}
-          onDokumenChange={(file) => onBerkasChange('sim', file)}
+          onDokumenChange={(file) => onDokumenChange('sim', file)}
           isLoading={isLoading}
           disabled={isLoading}
           required

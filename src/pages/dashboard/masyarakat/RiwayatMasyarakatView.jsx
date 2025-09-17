@@ -30,7 +30,7 @@ const RiwayatMasyarakatView = () => {
   const navigate = useNavigate();
 
   // Ambil data riwayat dari hook
-  const { riwayat, isLoading: sedangMemuat } = useMasyarakat();
+  const { riwayatPenjemputanMasyarakat, isLoading } = useMasyarakat();
 
   // Search + Filter state
   const [pencarian, setPencarian] = useState('');
@@ -38,7 +38,7 @@ const RiwayatMasyarakatView = () => {
 
   // Filter berdasarkan pencarian & status
   const filteredRiwayat = useMemo(() => {
-    let result = riwayat;
+    let result = riwayatPenjemputanMasyarakat;
 
     // filter status
     if (filterStatus !== 'all') {
@@ -59,7 +59,7 @@ const RiwayatMasyarakatView = () => {
     }
 
     return result;
-  }, [riwayat, filterStatus, pencarian]);
+  }, [riwayatPenjemputanMasyarakat, filterStatus, pencarian]);
 
   // Pagination (setelah filter & search)
   const { currentPage, setCurrentPage, paginatedData, totalPages } =
@@ -103,7 +103,7 @@ const RiwayatMasyarakatView = () => {
               Daftar Riwayat Penjemputan
             </h3>
 
-            {sedangMemuat ? (
+            {isLoading ? (
               <Loading mode='inline' text='Memuat data...' />
             ) : paginatedData.length === 0 ? (
               <p className='text-gray-500 text-center'>
