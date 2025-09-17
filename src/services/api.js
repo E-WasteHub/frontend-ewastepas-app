@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { ambilTokenValid, hapusAutentikasi } from '../utils/authExpiredUtils';
+import { ambilTokenValid, hapusAutentikasi } from '../utils/authUtils';
 
 // axios instance global
 const api = axios.create({

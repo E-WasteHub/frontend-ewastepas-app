@@ -3,7 +3,6 @@ import { Suspense, lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Loading } from '../components/elements';
 import DashboardLayout from '../components/layouts/DashboardLayout';
-import ProtectedResetPasswordRoute from './ProtectedResetPasswordRoute';
 import ProtectedRoute from './ProtectedRoute';
 
 // ================= Public Pages =================
@@ -20,7 +19,6 @@ import ResetKataSandiView from '../pages/auth/ResetKataSandiView';
 import VerifikasiAdmin from '../pages/auth/VerifikasiAdminView';
 import VerifikasiOTPView from '../pages/auth/VerifikasiOTPView';
 import NotFoundView from '../pages/NotFoundView';
-import ProtectedOtpRoute from './ProtectedOtpRoute';
 
 // ================= Admin Pages =================
 const AdminDashboardView = lazy(() =>
@@ -108,17 +106,17 @@ const AppRouter = () => {
         <Route
           path='/verifikasi-otp'
           element={
-            <ProtectedOtpRoute>
+            <ProtectedRoute>
               <VerifikasiOTPView />
-            </ProtectedOtpRoute>
+            </ProtectedRoute>
           }
         />
         <Route
           path='/reset-kata-sandi'
           element={
-            <ProtectedResetPasswordRoute>
+            <ProtectedRoute>
               <ResetKataSandiView />
-            </ProtectedResetPasswordRoute>
+            </ProtectedRoute>
           }
         />
         <Route path='/verifikasi-admin' element={<VerifikasiAdmin />} />

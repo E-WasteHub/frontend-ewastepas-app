@@ -1,7 +1,7 @@
-// src/components/forms/auth/FormRegister.jsx
 import { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useDarkMode, useRegisterForm, useToast } from '../../../../hooks';
+import { simpanOtpDenganKadaluarsa } from '../../../../utils/authUtils';
 import { Button, InputForm, Label } from '../../../elements';
 import FormHeader from '../FormHeader';
 
@@ -25,44 +25,47 @@ const FormRegister = () => {
     clearSuccess,
   } = useRegisterForm();
 
-  // Reset pesan saat mount
+  // reset pesan saat mount
   useEffect(() => {
     clearError();
     clearSuccess();
   }, [clearError, clearSuccess]);
 
-  // Ambil peran dari query string (?peran=...)
+  // ambil peran dari query string (?peran=...) atau set default
   useEffect(() => {
     const peranParam = searchParams.get('peran');
-    handlePeranSelect(peranParam || '');
+    handlePeranSelect(peranParam || 'Masyarakat');
   }, [searchParams, handlePeranSelect]);
 
-  // Tampilkan error via toast
+  // tampilkan toast error sekali
   useEffect(() => {
-    if (pesanError) error(pesanError);
-  }, [pesanError, error]);
+    if (pesanError) {
+      error(pesanError);
+      clearError();
+    }
+  }, [pesanError, error, clearError]);
 
-  // Tampilkan sukses via toast
+  // tampilkan toast sukses sekali
   useEffect(() => {
-    if (pesanSukses) success(pesanSukses);
-  }, [pesanSukses, success]);
+    if (pesanSukses) {
+      success(pesanSukses);
+      clearSuccess();
+    }
+  }, [pesanSukses, success, clearSuccess]);
 
-  // Submit register
+  // submit register
   const onSubmit = async (e) => {
     e.preventDefault();
     const res = await handleSubmit();
     if (!res?.data?.id_pengguna) return;
 
-    // Simpan info OTP di localStorage
+    // simpan info otp di localStorage
     localStorage.setItem('userId', res.data.id_pengguna);
     localStorage.setItem('userEmail', form.email);
 
-    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 menit
-    localStorage.setItem('otpExpiresAt', expiresAt.toString());
-
-    // Toast sukses lalu redirect
-    success('Akun berhasil dibuat. Silakan verifikasi OTP.');
-    setTimeout(() => navigate('/verifikasi-otp'), 2000);
+    // simpan otp expiry
+    simpanOtpDenganKadaluarsa(5 * 60);
+    navigate('/verifikasi-otp');
   };
 
   const roleOptions = [
@@ -86,9 +89,8 @@ const FormRegister = () => {
           className='mb-6'
         />
 
-        {/* Form Register */}
         <form onSubmit={onSubmit} className='space-y-4'>
-          {/* Pilih Peran */}
+          {/* pilih peran */}
           <div>
             <Label htmlFor='peran' error={errorField.peran}>
               Pilih Peran
@@ -120,7 +122,7 @@ const FormRegister = () => {
             )}
           </div>
 
-          {/* Input Nama */}
+          {/* input nama */}
           <InputForm
             label='Nama Lengkap'
             name='nama_lengkap'
@@ -134,7 +136,7 @@ const FormRegister = () => {
             error={errorField.nama_lengkap}
           />
 
-          {/* Input Email */}
+          {/* input email */}
           <InputForm
             label='Email'
             name='email'
@@ -148,7 +150,7 @@ const FormRegister = () => {
             error={errorField.email}
           />
 
-          {/* Input Kata Sandi */}
+          {/* input kata sandi */}
           <InputForm
             label='Kata Sandi'
             name='kata_sandi'
@@ -163,7 +165,7 @@ const FormRegister = () => {
             error={errorField.kata_sandi}
           />
 
-          {/* Konfirmasi Kata Sandi */}
+          {/* konfirmasi kata sandi */}
           <InputForm
             label='Konfirmasi Kata Sandi'
             name='konfirmasi_kata_sandi'
@@ -174,11 +176,10 @@ const FormRegister = () => {
             disabled={isLoading}
             required
             showPasswordToggle
-            autoComplete='new-password'
+            autoComplete='off'
             error={errorField.konfirmasi_kata_sandi}
           />
 
-          {/* Tombol Submit */}
           <Button
             type='submit'
             variant='primary'
@@ -190,7 +191,6 @@ const FormRegister = () => {
           </Button>
         </form>
 
-        {/* Footer */}
         <div
           className={`text-center mt-6 pt-4 border-t ${
             isDarkMode ? 'border-slate-700' : 'border-gray-200'

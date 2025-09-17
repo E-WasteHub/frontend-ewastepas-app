@@ -1,9 +1,8 @@
-// src/hooks/auth/useRegisterForm.js
 import { useCallback, useState } from 'react';
 import * as authService from '../../services/authService';
 
 const useRegisterForm = () => {
-  // state form
+  // state data form
   const [form, setForm] = useState({
     nama_lengkap: '',
     email: '',
@@ -12,38 +11,44 @@ const useRegisterForm = () => {
   });
   const [peran, setPeran] = useState('');
 
-  // state feedback UI
+  // state status ui
   const [isLoading, setIsLoading] = useState(false);
   const [errorField, setErrorField] = useState({});
   const [pesanError, setPesanError] = useState('');
   const [pesanSukses, setPesanSukses] = useState('');
 
-  // handler input change
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+  // handler input teks
+  const handleChange = useCallback(
+    (e) => {
+      const { name, value } = e.target;
+      setForm((prev) => ({ ...prev, [name]: value }));
 
-    if (errorField[name]) {
-      setErrorField((prev) => ({ ...prev, [name]: '' }));
-    }
-    setPesanError('');
-  };
+      // reset error field spesifik
+      if (errorField[name]) {
+        setErrorField((prev) => ({ ...prev, [name]: '' }));
+      }
+      setPesanError('');
+    },
+    [errorField]
+  );
 
+  // handler pilih peran
   const handlePeranSelect = useCallback((value) => {
     setPeran(value);
     setErrorField((prev) => ({ ...prev, peran: '' }));
+    setPesanError('');
   }, []);
 
   // validasi form sebelum submit
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
     const errors = {};
 
     if (!peran) errors.peran = 'Silakan pilih peran Anda';
     if (!form.nama_lengkap.trim()) errors.nama_lengkap = 'Nama wajib diisi';
 
-    if (!form.email) {
+    if (!form.email.trim()) {
       errors.email = 'Email wajib diisi';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
       errors.email = 'Format email tidak valid';
     }
 
@@ -61,10 +66,10 @@ const useRegisterForm = () => {
 
     setErrorField(errors);
     return Object.keys(errors).length === 0;
-  };
+  }, [form, peran]);
 
-  // handle submit form
-  const handleSubmit = async () => {
+  // submit form register
+  const handleSubmit = useCallback(async () => {
     if (!validateForm()) return null;
 
     try {
@@ -72,7 +77,14 @@ const useRegisterForm = () => {
       setPesanError('');
       setPesanSukses('');
 
-      const res = await authService.register({ ...form, peran });
+      const payload = {
+        ...form,
+        email: form.email.trim(),
+        nama_lengkap: form.nama_lengkap.trim(),
+        peran,
+      };
+
+      const res = await authService.register(payload);
       setPesanSukses(res.message || 'Registrasi berhasil');
       return res;
     } catch (err) {
@@ -81,24 +93,24 @@ const useRegisterForm = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [form, peran, validateForm]);
 
-  // helper untuk clear pesan
+  // helper clear pesan
   const clearError = useCallback(() => setPesanError(''), []);
   const clearSuccess = useCallback(() => setPesanSukses(''), []);
 
   return {
-    // Data form
+    // data
     form,
     peran,
 
-    // Status
+    // status
     isLoading,
     errorField,
     pesanError,
     pesanSukses,
 
-    // Actions
+    // actions
     handleChange,
     handlePeranSelect,
     handleSubmit,

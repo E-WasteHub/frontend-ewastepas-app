@@ -1,7 +1,6 @@
 // src/components/fragments/forms/auth/FormLogin.jsx
 import { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-
 import {
   useDarkMode,
   useLoginForm,
@@ -14,14 +13,12 @@ import { Button, Checkbox, InputForm, Message } from '../../../elements';
 import FormHeader from '../FormHeader';
 
 const FormLogin = () => {
-  // Hooks context dan utilitas
   const { isDarkMode } = useDarkMode();
   const { setPengguna } = usePengguna();
   const { success, info, warning } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // State & actions dari custom hook login
   const {
     email,
     kata_sandi,
@@ -33,50 +30,45 @@ const FormLogin = () => {
     handleSubmitLogin,
   } = useLoginForm();
 
-  // Cek status sesi expired via query param
+  // Cek query param expired / unauthorized → hanya 1 toast
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get('expired') === '1') {
       warning('Sesi Anda sudah berakhir, silakan login kembali.');
+    } else if (params.get('unauthorized') === '1') {
+      warning('Anda tidak memiliki izin untuk mengakses halaman tersebut.');
     }
-  }, [location.search, warning]);
+    if (params.has('expired') || params.has('unauthorized')) {
+      params.delete('expired');
+      params.delete('unauthorized');
+      navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+    }
+  }, [location, warning, navigate]);
 
   // Handler submit form login
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const userIdPending = localStorage.getItem('userId');
-    if (userIdPending) {
-      info(
-        'Anda memiliki proses verifikasi OTP yang belum selesai. Silakan lanjutkan.'
-      );
-      navigate('/verifikasi-otp');
-      return;
-    }
-
     const response = await handleSubmitLogin(e);
+    if (!response) return;
 
-    if (response?.data?.peran === 'Admin') {
-      info(
-        response.message ||
-          'Login berhasil! Silakan cek email untuk kode verifikasi.'
-      );
+    if (response?.redirectToOtp) {
+      info('Akun Anda belum aktif. Mengarahkan ke halaman verifikasi OTP...');
+      setTimeout(() => navigate('/verifikasi-otp', { replace: true }), 1500);
       return;
     }
 
-    if (response?.data?.peran) {
-      handleLoginBerhasil(response.data);
+    if (response?.isAdminOtp) {
+      info('OTP login Admin sudah dikirim ke email. Silakan cek email Anda.');
+      return;
     }
+
+    handleLoginBerhasil(response.data);
   };
 
-  // Handler jika login berhasil
+  // Handler login berhasil (selain Admin OTP)
   const handleLoginBerhasil = (dataPengguna) => {
     const { peran } = dataPengguna;
-
-    if (peran === 'Admin') {
-      info('Login berhasil! Silakan cek email untuk kode verifikasi.');
-      return;
-    }
+    if (peran === 'Admin') return; // Admin OTP udah di-handle
 
     success(`Selamat datang! Mengarahkan ke dashboard ${peran}...`);
     setPengguna(dataPengguna);
@@ -84,7 +76,7 @@ const FormLogin = () => {
     setTimeout(() => {
       const dashboardPath = dapatkanPathDashboardBerdasarkanPeran(peran);
       navigate(dashboardPath, { replace: true });
-    }, 2500);
+    }, 1500);
   };
 
   return (
@@ -103,7 +95,6 @@ const FormLogin = () => {
           className='mb-6'
         />
 
-        {/* Pesan error global */}
         {pesanErrorGlobal && (
           <Message
             type='error'
@@ -117,7 +108,6 @@ const FormLogin = () => {
           </Message>
         )}
 
-        {/* Form login */}
         <form onSubmit={handleSubmit} className='space-y-4' noValidate>
           <InputForm
             label='Email'
@@ -144,11 +134,10 @@ const FormLogin = () => {
             error={pesanErrorField.kata_sandi}
           />
 
-          {/* Ingat saya + link lupa password */}
           <div className='flex items-center justify-between text-sm'>
             <label className='flex items-center space-x-2'>
               <Checkbox
-                name='rememberMe'
+                name='ingatSaya'
                 checked={ingatSaya}
                 onChange={handlePerubahanInput}
                 disabled={isLoading}
@@ -182,7 +171,6 @@ const FormLogin = () => {
           </Button>
         </form>
 
-        {/* Link registrasi */}
         <div
           className={`text-center text-sm mt-6 pt-4 border-t ${
             isDarkMode ? 'border-slate-700' : 'border-gray-200'

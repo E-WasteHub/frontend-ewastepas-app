@@ -1,8 +1,12 @@
-import { Navigate, useNavigate } from 'react-router-dom';
+// src/routes/ProtectedRoute.jsx
+import { Navigate, useLocation } from 'react-router-dom';
 import { Loading } from '../components/elements';
 import usePengguna from '../hooks/usePengguna';
-import useToast from '../hooks/useToast';
-import { ambilTokenValid, hapusAutentikasi } from '../utils/authExpiredUtils';
+import {
+  adaOtpTertunda,
+  ambilTokenValid,
+  hapusAutentikasi,
+} from '../utils/authUtils';
 import {
   dapatkanPathDashboardBerdasarkanPeran,
   dapatkanPathProfilBerdasarkanPeran,
@@ -10,136 +14,61 @@ import {
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { pengguna, isLoading } = usePengguna();
-  const navigate = useNavigate();
-  const { error, warning } = useToast();
+  const location = useLocation();
 
-  // Cek token expired
   const token = ambilTokenValid();
-  if (!token) {
-    hapusAutentikasi();
+  const path = location.pathname;
+  const currentRole = pengguna?.peran;
+
+  // === case 1: OTP user ===
+  if (path === '/verifikasi-otp') {
+    if (
+      adaOtpTertunda() ||
+      (token && pengguna?.status_pengguna === 'Belum Aktif')
+    ) {
+      return children;
+    }
     return <Navigate to='/login' replace />;
   }
 
-  // ===== TAHAP 1: PEMERIKSAAN LOADING =====
-  // Tunggu sampai data pengguna selesai dimuat
+  // === case 2: reset password ===
+  if (path === '/reset-kata-sandi') return children;
+
+  // === case 3: verifikasi admin via link (OTP) ===
+  if (path.startsWith('/verifikasi-admin')) return children;
+
+  // === case 4: loading ===
   if (isLoading) {
     return <Loading mode='overlay' text='Memeriksa akses pengguna...' />;
   }
 
-  // ===== TAHAP 2: PEMERIKSAAN LOGIN =====
-  // Jika belum login, arahkan ke halaman login
-  if (!pengguna) {
+  // === case 5: belum login (selain admin OTP link) ===
+  if (!pengguna && !path.startsWith('/verifikasi-admin')) {
     return <Navigate to='/login' replace />;
   }
 
-  const currentRole = pengguna.peran;
-
-  // ===== TAHAP 3: PEMERIKSAAN OTORISASI PERAN =====
-  // Periksa apakah peran pengguna diizinkan mengakses halaman ini
-  if (allowedRoles && !allowedRoles.includes(currentRole)) {
-    warning(
-      `Anda tidak memiliki izin untuk mengakses halaman ini. Peran Anda: ${currentRole}`
-    );
-
-    setTimeout(() => {
-      navigate(dapatkanPathDashboardBerdasarkanPeran(currentRole), {
-        replace: true,
-      });
-    }, 2000);
-
-    return (
-      <Loading mode='overlay' text='Mengarahkan ke dashboard yang sesuai...' />
-    );
+  // === case 6: token wajib ===
+  if (!token && !path.startsWith('/verifikasi-admin')) {
+    hapusAutentikasi();
+    return <Navigate to='/login?expired=1' replace />;
   }
 
-  // ===== TAHAP 4: PEMERIKSAAN KHUSUS MITRA KURIR =====
-  // Mitra Kurir memiliki validasi status tambahan sebelum dapat mengakses fitur
+  // === case 7: role authorization ===
+  if (currentRole && allowedRoles && !allowedRoles.includes(currentRole)) {
+    const dashboardPath = dapatkanPathDashboardBerdasarkanPeran(currentRole);
+    return <Navigate to={`${dashboardPath}?unauthorized=1`} replace />;
+  }
+
+  // === case 8: khusus Mitra Kurir ===
   if (currentRole === 'Mitra Kurir' && pengguna.status_pengguna !== 'Aktif') {
     const profilePath = dapatkanPathProfilBerdasarkanPeran(currentRole);
-
-    // Cegah redirect loop - jika sudah di halaman profil, izinkan akses
-    const isCurrentlyOnProfile = window.location.pathname === profilePath;
-
-    // Status 1: Belum Aktif - Pengguna baru yang belum upload dokumen
-    if (pengguna.status_pengguna === 'Belum Aktif') {
-      if (!isCurrentlyOnProfile) {
-        warning(
-          'Akun Anda belum aktif. Silakan upload dokumen verifikasi terlebih dahulu di halaman profil untuk menggunakan fitur aplikasi.'
-        );
-
-        setTimeout(() => {
-          navigate(profilePath, { replace: true });
-        }, 2000);
-
-        return (
-          <Loading
-            mode='overlay'
-            text='Mengarahkan ke halaman profil untuk upload dokumen...'
-          />
-        );
-      }
-    }
-
-    // Status 2: Belum Selesai - Dokumen ditolak admin, perlu upload ulang
-    else if (pengguna.status_pengguna === 'Belum Selesai') {
-      if (!isCurrentlyOnProfile) {
-        error(
-          'Dokumen verifikasi Anda tidak sesuai dan telah ditolak oleh admin. Silakan upload dokumen yang benar di halaman profil.'
-        );
-
-        setTimeout(() => {
-          navigate(profilePath, { replace: true });
-        }, 2000);
-
-        return (
-          <Loading
-            mode='overlay'
-            text='Mengarahkan ke halaman profil untuk upload ulang dokumen...'
-          />
-        );
-      }
-    }
-
-    // Status 3: Menunggu Verifikasi - Dokumen sudah diupload, menunggu persetujuan admin
-    else if (pengguna.status_pengguna === 'Menunggu Verifikasi') {
-      if (!isCurrentlyOnProfile) {
-        warning(
-          'Dokumen Anda sedang dalam proses verifikasi oleh admin. Mohon tunggu konfirmasi dan jangan mengubah dokumen selama proses berlangsung.'
-        );
-
-        setTimeout(() => {
-          navigate(profilePath, { replace: true });
-        }, 2000);
-
-        return (
-          <Loading
-            mode='overlay'
-            text='Mengarahkan ke halaman profil untuk menunggu verifikasi...'
-          />
-        );
-      }
-    }
-
-    // Status lainnya - Kemungkinan ada status baru atau error
-    else {
-      if (!isCurrentlyOnProfile) {
-        error(
-          `Status akun Anda: ${pengguna.status_pengguna}. Silakan hubungi admin melalui customer service untuk informasi lebih lanjut.`
-        );
-
-        setTimeout(() => {
-          navigate(profilePath, { replace: true });
-        }, 2000);
-
-        return (
-          <Loading mode='overlay' text='Mengarahkan ke halaman profil...' />
-        );
-      }
+    // langsung paksa ke halaman profil, ga usah pakai query param
+    if (window.location.pathname !== profilePath) {
+      return <Navigate to={profilePath} replace />;
     }
   }
 
-  // ===== TAHAP 5: AKSES DIBERIKAN =====
-  // Semua pemeriksaan berhasil, render komponen yang diminta
+  // === case 9: default ===
   return children;
 };
 

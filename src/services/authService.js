@@ -43,7 +43,7 @@ export const register = async (payload) => {
 /** Verifikasi akun dengan kode OTP */
 export const verifikasiOtp = async (payload) => {
   try {
-    const res = await api.post('/akun/verifikasi', payload);
+    const res = await api.post('/akun/verifikasi-otp', payload);
     return res.data;
   } catch (error) {
     throw { message: ambilPesanError(error, 'Verifikasi OTP gagal') };
@@ -91,8 +91,15 @@ export const resetPassword = async (payload) => {
 export const verifikasiAdmin = async (kode_otp) => {
   try {
     const res = await api.post(`/masuk/${kode_otp}`);
+
+    // Pastikan response memiliki struktur yang benar
+    if (!res.data) {
+      throw new Error('Response tidak valid dari server');
+    }
+
     return res.data;
   } catch (error) {
+    console.error('Error dalam verifikasiAdmin:', error);
     throw { message: ambilPesanError(error, 'Verifikasi admin gagal') };
   }
 };

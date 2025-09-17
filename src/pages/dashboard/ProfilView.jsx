@@ -5,19 +5,57 @@ import {
   FormUbahKataSandi,
   FormUnggahDokumen,
 } from '../../components/fragments';
-import useDarkMode from '../../hooks/useDarkMode';
-import useDocumentTitle from '../../hooks/useDocumentTitle';
-import useProfil from '../../hooks/useProfil';
-import { useResponsive } from '../../hooks/useResponsive';
-import useToast from '../../hooks/useToast';
+import {
+  useDarkMode,
+  useDocumentTitle,
+  usePengguna,
+  useProfil,
+  useResponsive,
+  useToast,
+} from '../../hooks';
+
+// Helper status untuk peran Mitra Kurir
+function handleStatus(pengguna, { warning, success, error }, setTabAktif) {
+  const sudahUpload = localStorage.getItem('sudahUpload') === 'true';
+
+  switch (pengguna.status_pengguna) {
+    case 'Belum Selesai':
+      if (sudahUpload) {
+        error('Dokumen Anda ditolak admin. Silakan upload ulang.');
+      } else {
+        warning(
+          'Silakan upload dokumen pendukung untuk mengakses fitur Mitra Kurir.'
+        );
+      }
+      setTabAktif('dokumen');
+      break;
+
+    case 'Menunggu Verifikasi':
+      warning('Dokumen Anda sedang diverifikasi admin. Mohon tunggu.');
+      break;
+
+    case 'Belum Aktif':
+      warning(
+        'Akun Anda belum aktif. Silakan selesaikan proses Verifikasi OTP.'
+      );
+      break;
+
+    case 'Aktif':
+      success('Akun Anda sudah aktif. Terima kasih!');
+      localStorage.removeItem('sudahUpload'); // ✅ reset hanya saat final
+      break;
+
+    default:
+      break;
+  }
+}
 
 const ProfilView = () => {
   useDocumentTitle('Pengaturan Profil');
 
-  // hooks
   const { isDarkMode } = useDarkMode();
   const { isMobile } = useResponsive();
-  const { success, error: tampilkanError } = useToast();
+  const { success, warning, error: tampilkanError } = useToast();
 
   const {
     form,
@@ -32,13 +70,25 @@ const ProfilView = () => {
     unggahDokumen,
   } = useProfil();
 
-  // state ui
+  const { pengguna } = usePengguna();
   const [tabAktif, setTabAktif] = useState('profil');
+  const [toastShown, setToastShown] = useState(false);
 
-  // tampilkan error jika ada
+  // tampilkan error dari hook profil
   useEffect(() => {
     if (error) tampilkanError(error);
   }, [error, tampilkanError]);
+
+  // tampilkan status pengguna (sekali saja)
+  useEffect(() => {
+    if (!pengguna || toastShown) return;
+    handleStatus(
+      pengguna,
+      { warning, success, error: tampilkanError },
+      setTabAktif
+    );
+    setToastShown(true);
+  }, [pengguna, toastShown, warning, success, tampilkanError]);
 
   // simpan perubahan profil
   const simpanProfil = async () => {
@@ -70,6 +120,8 @@ const ProfilView = () => {
     const hasil = await unggahDokumen();
     if (hasil.success) {
       success('Dokumen berhasil diunggah, status akun diperbarui');
+      localStorage.setItem('sudahUpload', 'true'); // tandai user sudah pernah upload
+
       setForm((prev) => ({
         ...prev,
         status_pengguna: hasil.data?.status_pengguna || prev.status_pengguna,
@@ -138,7 +190,6 @@ const ProfilView = () => {
               : 'bg-white text-gray-900'
           }`}
         >
-          {/* Form Profil Data */}
           {tabAktif === 'profil' && (
             <FormProfilData
               {...form}
@@ -153,12 +204,10 @@ const ProfilView = () => {
             />
           )}
 
-          {/* Form Ubah Kata Sandi */}
           {tabAktif === 'password' && (
             <FormUbahKataSandi onSave={simpanKataSandi} isLoading={isLoading} />
           )}
 
-          {/* Form Unggah Dokumen */}
           {tabAktif === 'dokumen' && (
             <FormUnggahDokumen
               berkas={files}

@@ -14,6 +14,7 @@ const FormUnggahDokumen = ({
 
   // cek apakah kedua dokumen sudah siap diunggah
   const siapUnggah = !!berkas.ktp && !!berkas.sim;
+  const sudahUpload = localStorage.getItem('sudahUpload') === 'true';
 
   // status: sudah aktif
   if (statusPengguna === 'Aktif') {
@@ -51,7 +52,7 @@ const FormUnggahDokumen = ({
     );
   }
 
-  // status: belum unggah / belum lengkap
+  // status: belum unggah / ditolak / belum lengkap
   return (
     <div className='space-y-6'>
       {/* header */}
@@ -98,11 +99,22 @@ const FormUnggahDokumen = ({
         </div>
       </div>
 
+      {/* Catatan khusus kalau sudah pernah upload */}
+      {sudahUpload && (
+        <div className='mt-4 p-3 rounded-lg bg-yellow-50 border border-yellow-300 text-sm text-yellow-800'>
+          <p>
+            <strong>Catatan:</strong>
+            <em>"Dokumen yang ditolak bisa diunggah ulang"</em>, Pastikan
+            dokumen terlihat jelas, tidak buram, dan sesuai ketentuan format.
+          </p>
+        </div>
+      )}
+
       {/* area unggah dokumen */}
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         <DokumenUpload
           jenisDokumen='KTP'
-          dokumenSaatIni={null}
+          dokumenSaatIni={berkas.ktp}
           onDokumenChange={(file) => onBerkasChange('ktp', file)}
           isLoading={isLoading}
           disabled={isLoading}
@@ -110,7 +122,7 @@ const FormUnggahDokumen = ({
         />
         <DokumenUpload
           jenisDokumen='SIM'
-          dokumenSaatIni={null}
+          dokumenSaatIni={berkas.sim}
           onDokumenChange={(file) => onBerkasChange('sim', file)}
           isLoading={isLoading}
           disabled={isLoading}

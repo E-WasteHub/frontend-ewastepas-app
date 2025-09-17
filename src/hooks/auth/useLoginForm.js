@@ -1,7 +1,10 @@
 // src/hooks/auth/useLoginForm.js
 import { useCallback, useEffect, useState } from 'react';
 import { login } from '../../services/authService';
-import { simpanTokenDenganExpiry } from '../../utils/authExpiredUtils';
+import {
+  hapusAutentikasi,
+  simpanTokenDenganKadaluarsa,
+} from '../../utils/authUtils';
 
 const useLoginForm = () => {
   // state form
@@ -30,15 +33,6 @@ const useLoginForm = () => {
     }
   }, []);
 
-  // auto-clear pesan error global setelah 5 detik
-  useEffect(() => {
-    if (!status.pesanErrorGlobal) return;
-    const timer = setTimeout(() => {
-      setStatus((prev) => ({ ...prev, pesanErrorGlobal: '' }));
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, [status.pesanErrorGlobal]);
-
   // handler input
   const handlePerubahanInput = useCallback(
     (e) => {
@@ -47,18 +41,23 @@ const useLoginForm = () => {
 
       setFormData((prev) => ({ ...prev, [name]: newValue }));
 
-      // reset error field jika ada
+      // reset error field kalau user mulai ngetik lagi
       if (status.pesanErrorField[name]) {
         setStatus((prev) => ({
           ...prev,
           pesanErrorField: { ...prev.pesanErrorField, [name]: '' },
         }));
       }
+
+      // reset error global saat user interaksi
+      if (status.pesanErrorGlobal) {
+        setStatus((prev) => ({ ...prev, pesanErrorGlobal: '' }));
+      }
     },
-    [status.pesanErrorField]
+    [status.pesanErrorField, status.pesanErrorGlobal]
   );
 
-  // ingat email di localStorage
+  // simpan / hapus email di localStorage
   const handleRememberEmail = useCallback(() => {
     if (formData.ingatSaya) {
       localStorage.setItem('rememberedEmail', formData.email);
@@ -67,10 +66,10 @@ const useLoginForm = () => {
     }
   }, [formData.email, formData.ingatSaya]);
 
-  // simpan data login
+  // simpan data login (token + user info)
   const simpanDataLogin = useCallback((data, token) => {
     const TTL = 12 * 60 * 60; // 12 jam
-    simpanTokenDenganExpiry(token, TTL);
+    simpanTokenDenganKadaluarsa(token, TTL);
 
     localStorage.setItem('pengguna', JSON.stringify(data));
     localStorage.setItem('peran', data.peran?.trim() || '');
@@ -104,23 +103,40 @@ const useLoginForm = () => {
           kata_sandi: formData.kata_sandi,
         });
 
-        // cek response untuk kasus OTP (Admin)
+        // === Admin OTP case ===
         if (response?.message?.includes('OTP')) {
-          // kalau admin, balikin langsung responsenya tanpa token
           return {
             success: true,
-            data: { peran: 'Admin' },
+            data: response?.data,
+            message: response.message,
+            isAdminOtp: true,
+          };
+        }
+
+        // === Validasi wajib data pengguna ===
+        if (!response?.data) {
+          throw new Error('Data pengguna tidak ditemukan dalam response');
+        }
+
+        // === User Belum Aktif case ===
+        if (response.data.status_pengguna === 'Belum Aktif') {
+          localStorage.setItem('userId', response.data.id_pengguna);
+          localStorage.setItem('userEmail', response.data.email);
+          return {
+            redirectToOtp: true,
+            data: response.data,
             message: response.message,
           };
         }
 
-        // cek token ada/tidak
+        // === User aktif (butuh token) ===
         if (!response?.token) {
           throw new Error('Token tidak ditemukan dalam response');
         }
 
+        // hapus data login lama tapi jangan hapus rememberedEmail
         const rememberedEmail = localStorage.getItem('rememberedEmail');
-        localStorage.clear();
+        hapusAutentikasi();
         if (rememberedEmail) {
           localStorage.setItem('rememberedEmail', rememberedEmail);
         }

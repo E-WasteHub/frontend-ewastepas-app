@@ -1,6 +1,10 @@
-// src/hooks/auth/useVerifikasiOTPForm.js
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as authService from '../../services/authService';
+import {
+  ambilSisaWaktuOtp,
+  hapusOtp,
+  simpanOtpDenganKadaluarsa,
+} from '../../utils/authUtils';
 import { formatWaktuCountdown } from '../../utils/dateUtils';
 
 const useVerifikasiOTPForm = () => {
@@ -13,39 +17,38 @@ const useVerifikasiOTPForm = () => {
   const [errorField, setErrorField] = useState('');
   const [errorGlobal, setErrorGlobal] = useState('');
   const [pesanSukses, setPesanSukses] = useState('');
-  const [pesanLogin, setPesanLogin] = useState('');
   const [pesanResend, setPesanResend] = useState('');
+  const [redirectToLogin, setRedirectToLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   // state timer
   const [waktuTersisa, setWaktuTersisa] = useState(0);
+  const intervalRef = useRef(null);
 
-  // inisialisasi timer
+  // inisialisasi timer sekali saat mount
   useEffect(() => {
-    const expiry = localStorage.getItem('otpExpiresAt');
-    if (expiry) {
-      const sisa = Math.max(
-        0,
-        Math.floor((parseInt(expiry, 10) - Date.now()) / 1000)
-      );
-      setWaktuTersisa(sisa);
-    }
+    setWaktuTersisa(ambilSisaWaktuOtp());
   }, []);
 
-  // update timer setiap detik
+  // interval countdown sekali
   useEffect(() => {
-    if (waktuTersisa <= 0) {
-      localStorage.removeItem('otpExpiresAt');
-      return;
-    }
-    const interval = setInterval(
-      () => setWaktuTersisa((prev) => (prev > 0 ? prev - 1 : 0)),
-      1000
-    );
-    return () => clearInterval(interval);
+    if (waktuTersisa <= 0) return;
+
+    intervalRef.current = setInterval(() => {
+      setWaktuTersisa((prev) => {
+        if (prev <= 1) {
+          clearInterval(intervalRef.current);
+          hapusOtp();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(intervalRef.current);
   }, [waktuTersisa]);
 
-  // Handler submit OTP
+  // submit otp
   const handleOtpSubmit = async (e) => {
     if (e) e.preventDefault();
     if (!otp) return setErrorField('Kode OTP wajib diisi');
@@ -60,22 +63,18 @@ const useVerifikasiOTPForm = () => {
 
       const res = await authService.verifikasiOtp({
         id_pengguna: userId,
-        kode_otp: otp,
+        kode_otp: String(otp).padStart(6, '0'),
       });
 
       setPesanSukses(res.message || 'Verifikasi berhasil');
 
       // bersihkan storage
       localStorage.removeItem('userId');
-      localStorage.removeItem('otpExpiresAt');
       localStorage.removeItem('userEmail');
+      hapusOtp();
 
-      // arahkan ke login setelah 1.5 detik
-      setTimeout(() => {
-        setPesanSukses('');
-        setPesanLogin('Silahkan login dengan akun Anda');
-        setTimeout(() => setPesanLogin('arahkanKeLogin'), 2000);
-      }, 1500);
+      // arahkan ke login setelah delay
+      setTimeout(() => setRedirectToLogin(true), 1500);
 
       return res;
     } catch (err) {
@@ -86,11 +85,10 @@ const useVerifikasiOTPForm = () => {
     }
   };
 
-  // handler resend OTP
+  // resend otp
   const handleResend = async () => {
     if (!userEmail) {
       setErrorField('Email tidak ditemukan, silakan daftar ulang');
-      setTimeout(() => setErrorField(''), 2500);
       return;
     }
     try {
@@ -101,12 +99,8 @@ const useVerifikasiOTPForm = () => {
       const res = await authService.kirimUlangOtp(userEmail);
 
       // reset timer
-      const seconds = 300;
-      localStorage.setItem(
-        'otpExpiresAt',
-        (Date.now() + seconds * 1000).toString()
-      );
-      setWaktuTersisa(seconds);
+      simpanOtpDenganKadaluarsa(5 * 60);
+      setWaktuTersisa(5 * 60);
       setOtp('');
       setPesanResend(
         res.message || 'Kode OTP baru berhasil dikirim (berlaku 5 menit).'
@@ -129,8 +123,8 @@ const useVerifikasiOTPForm = () => {
     errorField,
     errorGlobal,
     pesanSukses,
-    pesanLogin,
     pesanResend,
+    redirectToLogin,
 
     // actions
     handleOtpChange: (val) => setOtp(val.replace(/\D/g, '').slice(0, 6)),
@@ -139,9 +133,11 @@ const useVerifikasiOTPForm = () => {
     formatWaktu: () => formatWaktuCountdown(waktuTersisa),
 
     // clear helpers
+    clearErrorField: () => setErrorField(''),
+    clearErrorGlobal: () => setErrorGlobal(''),
     clearPesanSukses: () => setPesanSukses(''),
-    clearPesanLogin: () => setPesanLogin(''),
     clearPesanResend: () => setPesanResend(''),
+    clearRedirect: () => setRedirectToLogin(false),
   };
 };
 

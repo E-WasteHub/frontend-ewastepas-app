@@ -1,4 +1,3 @@
-// src/components/forms/auth/FormVerifikasiOTP.jsx
 import { useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDarkMode, useToast, useVerifikasiOTPForm } from '../../../../hooks';
@@ -12,7 +11,6 @@ const FormVerifikasiOTP = () => {
 
   // refs
   const inputRefs = useRef([]);
-  const loginHandled = useRef(false);
 
   // custom hook
   const {
@@ -22,15 +20,17 @@ const FormVerifikasiOTP = () => {
     errorField,
     errorGlobal,
     pesanSukses,
-    pesanLogin,
     pesanResend,
+    redirectToLogin,
     handleOtpChange,
     handleOtpSubmit,
     handleResend,
     formatWaktu,
     clearPesanSukses,
-    clearPesanLogin,
     clearPesanResend,
+    clearErrorField,
+    clearErrorGlobal,
+    clearRedirect,
   } = useVerifikasiOTPForm();
 
   // sukses verifikasi
@@ -38,25 +38,17 @@ const FormVerifikasiOTP = () => {
     if (pesanSukses) {
       success(pesanSukses);
       clearPesanSukses();
-      loginHandled.current = false;
     }
   }, [pesanSukses, success, clearPesanSukses]);
 
-  // prompt login + redirect
+  // redirect login
   useEffect(() => {
-    if (pesanLogin) {
-      if (pesanLogin === 'arahkanKeLogin') {
-        clearPesanLogin();
-        navigate('/login');
-        return;
-      }
-      if (!loginHandled.current) {
-        loginHandled.current = true;
-        success(pesanLogin);
-        setTimeout(clearPesanLogin, 100);
-      }
+    if (redirectToLogin) {
+      success('Silahkan login dengan akun Anda');
+      clearRedirect();
+      navigate('/login', { replace: true });
     }
-  }, [pesanLogin, success, navigate, clearPesanLogin]);
+  }, [redirectToLogin, success, clearRedirect, navigate]);
 
   // sukses resend OTP
   useEffect(() => {
@@ -66,11 +58,17 @@ const FormVerifikasiOTP = () => {
     }
   }, [pesanResend, success, clearPesanResend]);
 
-  // tampilkan error
+  // tampilkan error (global / field)
   useEffect(() => {
-    if (errorField) error(errorField);
-    if (errorGlobal) error(errorGlobal);
-  }, [errorField, errorGlobal, error]);
+    if (errorField) {
+      error(errorField);
+      clearErrorField();
+    }
+    if (errorGlobal) {
+      error(errorGlobal);
+      clearErrorGlobal();
+    }
+  }, [errorField, errorGlobal, error, clearErrorField, clearErrorGlobal]);
 
   // === Input OTP helpers ===
   const handleChangeDigit = (index, value) => {
@@ -121,7 +119,6 @@ const FormVerifikasiOTP = () => {
           Masukkan kode OTP yang dikirim ke email Anda
         </p>
 
-        {/* Form OTP */}
         <form onSubmit={handleOtpSubmit} className='space-y-6'>
           <div className='flex justify-center gap-2 mb-4'>
             {Array(6)
@@ -216,7 +213,6 @@ const FormVerifikasiOTP = () => {
           </Button>
         </form>
 
-        {/* Footer */}
         <div
           className={`text-center mt-6 pt-4 border-t ${
             isDarkMode ? 'border-slate-700' : 'border-gray-200'

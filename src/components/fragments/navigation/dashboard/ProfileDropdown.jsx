@@ -5,7 +5,7 @@ import useDarkMode from '../../../../hooks/useDarkMode';
 import usePengguna from '../../../../hooks/usePengguna';
 import useToast from '../../../../hooks/useToast';
 import { logout } from '../../../../services/authService';
-import { hapusAutentikasi } from '../../../../utils/authExpiredUtils';
+import { hapusAutentikasi } from '../../../../utils/authUtils';
 import {
   dapatkanNamaTampilanPeran,
   dapatkanPathDashboardBerdasarkanPeran,
